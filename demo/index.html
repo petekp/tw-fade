@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en" class="dark h-full overflow-hidden bg-neutral-950">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>tw-fade — CSS-driven scroll edge masking for Tailwind</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <style>
+      /* Faint grid on the page SURFACE (which lives on <html>, behind the
+         transparent scrolling body). The body fade dissolves content into this
+         surface at the top/bottom edges, so the grid gives the dissolve something
+         to melt into — the edge fade reads as depth instead of just "going dark."
+         <html> doesn't scroll (overflow:hidden), so the grid stays fixed while the
+         body scrolls over it. */
+      html {
+        background-image: linear-gradient(to right, rgb(255 255 255 / 0.08) 1px, transparent 1px),
+          linear-gradient(to bottom, rgb(255 255 255 / 0.08) 1px, transparent 1px);
+        background-size: 44px 44px;
+      }
+
+      /* Subtle scrollbars so they don't fight the fade in the demo. */
+      .thin-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: rgb(255 255 255 / 0.18) transparent;
+      }
+      .thin-scroll::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      .thin-scroll::-webkit-scrollbar-thumb {
+        background: rgb(255 255 255 / 0.18);
+        border-radius: 9999px;
+      }
+    </style>
+  </head>
+  <!--
+    Whole-page fade: the BODY is the scroll container (not the viewport), so the
+    plugin's `scroll(self block)` timeline can attach to it. Two things make this work:
+      1. `html { overflow: hidden }` stops the browser from propagating body's
+         overflow up to the viewport — without it, the viewport scrolls and body
+         never becomes a real scroll container, so the fade would silently die.
+      2. The dark surface lives on <html> and body is `bg-transparent`, so the mask
+         on body fades content INTO the surface behind it (a mask masks the element's
+         own background too — there must be a surface behind to reveal).
+  -->
+  <body
+    class="fade-y fade-size-lg thin-scroll h-full overflow-y-auto bg-transparent text-neutral-200 antialiased"
+  >
+    <div class="mx-auto max-w-6xl px-6 py-16">
+      <header class="mb-14 max-w-2xl">
+        <p class="mb-3 font-mono text-xs uppercase tracking-[0.2em] text-emerald-400">
+          tailwind plugin
+        </p>
+        <h1 class="text-4xl font-semibold tracking-tight text-white">tw-fade</h1>
+        <p class="mt-4 text-lg leading-relaxed text-neutral-400">
+          Elegant, CSS-driven scroll-edge masking. Add
+          <code class="rounded bg-neutral-800 px-1.5 py-0.5 font-mono text-sm text-emerald-300"
+            >fade-y</code
+          >
+          to any scroll container and its content dissolves into the surface at the edges —
+          scroll-gated, zero JavaScript. Scroll the panels below.
+        </p>
+      </header>
+
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <!-- 1. The headline: vertical, both edges -->
+        <section class="space-y-3">
+          <div class="flex items-baseline justify-between">
+            <h2 class="text-sm font-medium text-white">Vertical · both edges</h2>
+            <code class="font-mono text-xs text-emerald-400">fade-y</code>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-neutral-900/60 p-1.5 shadow-2xl">
+            <div class="fade-y thin-scroll h-72 overflow-y-auto px-5 py-4" data-demo="y">
+              <ul class="space-y-3 text-sm leading-relaxed text-neutral-300"></ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. No fade reference -->
+        <section class="space-y-3">
+          <div class="flex items-baseline justify-between">
+            <h2 class="text-sm font-medium text-white">No plugin</h2>
+            <code class="font-mono text-xs text-neutral-500">(hard cut)</code>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-neutral-900/60 p-1.5 shadow-2xl">
+            <div class="thin-scroll h-72 overflow-y-auto px-5 py-4" data-demo="none">
+              <ul class="space-y-3 text-sm leading-relaxed text-neutral-300"></ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Top only -->
+        <section class="space-y-3">
+          <div class="flex items-baseline justify-between">
+            <h2 class="text-sm font-medium text-white">Top edge only</h2>
+            <code class="font-mono text-xs text-emerald-400">fade-t</code>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-neutral-900/60 p-1.5 shadow-2xl">
+            <div class="fade-t thin-scroll h-72 overflow-y-auto px-5 py-4" data-demo="t">
+              <ul class="space-y-3 text-sm leading-relaxed text-neutral-300"></ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Bottom only -->
+        <section class="space-y-3">
+          <div class="flex items-baseline justify-between">
+            <h2 class="text-sm font-medium text-white">Bottom edge only</h2>
+            <code class="font-mono text-xs text-emerald-400">fade-b</code>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-neutral-900/60 p-1.5 shadow-2xl">
+            <div class="fade-b thin-scroll h-72 overflow-y-auto px-5 py-4" data-demo="b">
+              <ul class="space-y-3 text-sm leading-relaxed text-neutral-300"></ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. Larger fade -->
+        <section class="space-y-3">
+          <div class="flex items-baseline justify-between">
+            <h2 class="text-sm font-medium text-white">Large fade length</h2>
+            <code class="font-mono text-xs text-emerald-400">fade-y · -size-lg</code>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-neutral-900/60 p-1.5 shadow-2xl">
+            <div
+              class="fade-y fade-size-lg thin-scroll h-72 overflow-y-auto px-5 py-4"
+              data-demo="lg"
+            >
+              <ul class="space-y-3 text-sm leading-relaxed text-neutral-300"></ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. Not scrollable -> no fade -->
+        <section class="space-y-3">
+          <div class="flex items-baseline justify-between">
+            <h2 class="text-sm font-medium text-white">Not scrollable</h2>
+            <code class="font-mono text-xs text-emerald-400">fade-y · (no fade)</code>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-neutral-900/60 p-1.5 shadow-2xl">
+            <div class="fade-y thin-scroll h-72 overflow-y-auto px-5 py-4" data-demo="short">
+              <ul class="space-y-3 text-sm leading-relaxed text-neutral-300"></ul>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- 7. Horizontal -->
+      <section class="mt-12 space-y-3">
+        <div class="flex items-baseline justify-between">
+          <h2 class="text-sm font-medium text-white">Horizontal · both edges</h2>
+          <code class="font-mono text-xs text-emerald-400">fade-x</code>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-neutral-900/60 p-1.5 shadow-2xl">
+          <div class="fade-x thin-scroll flex gap-4 overflow-x-auto px-5 py-5" data-demo="x">
+          </div>
+        </div>
+      </section>
+
+      <footer class="mt-16 border-t border-white/10 pt-6 font-mono text-xs text-neutral-500">
+        scroll any panel · the fade reveals only the edges you can actually scroll toward
+      </footer>
+    </div>
+
+    <script>
+      const LINES = [
+        'Quiet edges make a scroll feel bottomless.',
+        'A hard cut says "the list stops here."',
+        'A fade says "there is more — keep going."',
+        'The mask paints nothing; it removes.',
+        'Content alpha ramps along a smoothstep curve.',
+        'Thirteen stops, lifted from the original.',
+        'No gradient overlay, no second element.',
+        'The top only appears once you have moved.',
+        'The bottom retreats as you near the end.',
+        'Scroll-driven animations, zero JavaScript.',
+        'animation-timeline: scroll(self) does the watching.',
+        'A 50px window eases each edge in and out.',
+        'Not scrollable? No fade. Nothing to imply.',
+        'Firefox without the flag falls back to static.',
+        'Composited with mask-composite: intersect.',
+        'Each edge clips independently of the others.',
+        'Tailwind utilities, the way you already write.',
+        'fade-t, -b, -l, -r — or -x, -y, -xy.',
+        'Tune length with fade-size-*.',
+        'Tune the reveal window with fade-range-*.',
+        'The surface keeps its color; the content yields.',
+        'Designed to be indistinguishable from the source.',
+        'Keep scrolling — the edges are listening.',
+        'And then, gently, the list runs out.',
+      ]
+      function fill(ul, n) {
+        ul.innerHTML = ''
+        for (let i = 0; i < n; i++) {
+          const li = document.createElement('li')
+          li.className = 'border-b border-white/5 pb-3'
+          li.innerHTML =
+            '<span class="mr-2 font-mono text-xs text-emerald-500/70">' +
+            String(i + 1).padStart(2, '0') +
+            '</span>' +
+            LINES[i % LINES.length]
+          ul.appendChild(li)
+        }
+      }
+      document.querySelectorAll('[data-demo] ul').forEach((ul) => {
+        const kind = ul.closest('[data-demo]').dataset.demo
+        fill(ul, kind === 'short' ? 3 : 24)
+      })
+      // Horizontal cards
+      const xRow = document.querySelector('[data-demo="x"]')
+      if (xRow) {
+        for (let i = 0; i < 14; i++) {
+          const card = document.createElement('div')
+          card.className =
+            'flex h-40 w-56 shrink-0 flex-col justify-between rounded-xl border border-white/10 bg-neutral-800/60 p-4'
+          card.innerHTML =
+            '<span class="font-mono text-xs text-emerald-400">' +
+            String(i + 1).padStart(2, '0') +
+            '</span><span class="text-sm text-neutral-300">' +
+            LINES[i % LINES.length] +
+            '</span>'
+          xRow.appendChild(card)
+        }
+      }
+      // Pre-scroll the vertical "both edges" + size-lg panels a little so both
+      // edges are visible at first paint for screenshots.
+      requestAnimationFrame(() => {
+        document.querySelectorAll('[data-demo="y"],[data-demo="lg"],[data-demo="b"]').forEach((el) => {
+          el.scrollTop = 120
+        })
+      })
+    </script>
+  </body>
+</html>
