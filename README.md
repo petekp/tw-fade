@@ -2,6 +2,8 @@
 
 Elegant, CSS-driven scroll-edge fade masking for Tailwind CSS v4.
 
+[Live demo](https://pete.design/tw-fade)
+
 Add `fade-y` (or `-t` / `-b` / `-l` / `-r` / `-x` / `-xy`) to any scroll
 container and its content dissolves into the surface at the edges. The fade is
 **scroll-gated** — the top fade only appears once you've scrolled down, the
