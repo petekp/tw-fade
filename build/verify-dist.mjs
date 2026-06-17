@@ -17,11 +17,14 @@ const css = fs.readFileSync(path.resolve(__dirname, '../dist/tw-fade.css'), 'utf
 const html = `<!doctype html><html><head><meta charset="utf-8"><style>
   * { margin: 0; box-sizing: border-box; }
   .panel { width: 320px; height: 200px; overflow-y: auto; background: #111; }
+  .panel-both { width: 220px; height: 180px; overflow: auto; background: #111; }
+  .plane { width: 820px; height: 820px; }
   .panel p { padding: 8px 12px; color: #ddd; font: 14px/1.5 system-ui; border-bottom: 1px solid #222; }
   ${css}
 </style></head><body>
   <div class="panel fade-y" id="tall"></div>
   <div class="panel fade-y" id="short"></div>
+  <div class="panel-both fade-t fade-r" id="combo"><div class="plane"></div></div>
   <script>
     const tall = document.getElementById('tall')
     for (let i = 0; i < 30; i++) { const p = document.createElement('p'); p.textContent = 'Row ' + (i+1); tall.appendChild(p) }
@@ -56,12 +59,36 @@ async function probe(sel, top) {
   )
 }
 
+async function probeBoth(sel, top, left) {
+  return page.evaluate(
+    async ([s, t, l]) => {
+      const el = document.querySelector(s)
+      el.scrollTop = t
+      el.scrollLeft = l
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
+      const cs = getComputedStyle(el)
+      const num = (v) => Number(cs.getPropertyValue(v).trim() || 'NaN')
+      return {
+        scrollTop: el.scrollTop,
+        scrollLeft: el.scrollLeft,
+        maxScrollTop: el.scrollHeight - el.clientHeight,
+        maxScrollLeft: el.scrollWidth - el.clientWidth,
+        t: num('--sf-t'),
+        r: num('--sf-r'),
+        animationNames: cs.animationName.split(',').map((n) => n.trim()),
+      }
+    },
+    [sel, top, left],
+  )
+}
+
 const tallMax = (await probe('#tall', 0)).maxScroll
 const r = {
   top: await probe('#tall', 0),
   mid: await probe('#tall', Math.round(tallMax / 2)),
   bottom: await probe('#tall', tallMax),
   short: await probe('#short', 0),
+  combo: await probeBoth('#combo', 100, 100),
 }
 await browser.close()
 
@@ -73,6 +100,8 @@ const checks = [
   ['dist: bottom → full top fade (t≈1)', approx(r.bottom.t, 1)],
   ['dist: bottom → no bottom fade (b≈0)', approx(r.bottom.b, 0)],
   ['dist: not scrollable → no fade (t≈0,b≈0)', approx(r.short.t, 0) && approx(r.short.b, 0)],
+  ['dist: mixed fade-t fade-r composes (t≈1,r≈1)', approx(r.combo.t, 1) && approx(r.combo.r, 1)],
+  ['dist: mixed fade-t fade-r keeps four reveal animations', r.combo.animationNames.length === 4],
   ['dist: mask-composite intersect', /intersect/.test(r.top.maskComposite)],
   ['dist: mask-image has 4 layers', (r.top.maskImage.match(/gradient/g) || []).length >= 1],
 ]

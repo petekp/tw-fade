@@ -7,34 +7,58 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
+    --color-red-200: oklch(88.5% 0.062 18.334);
+    --color-red-400: oklch(70.4% 0.191 22.216);
+    --color-red-500: oklch(63.7% 0.237 25.331);
+    --color-amber-200: oklch(92.4% 0.12 95.746);
+    --color-amber-300: oklch(87.9% 0.169 91.605);
+    --color-amber-400: oklch(82.8% 0.189 84.429);
+    --color-lime-200: oklch(93.8% 0.127 124.321);
+    --color-lime-400: oklch(84.1% 0.238 128.85);
+    --color-emerald-100: oklch(95% 0.052 163.051);
+    --color-emerald-200: oklch(90.5% 0.093 164.15);
     --color-emerald-300: oklch(84.5% 0.143 164.978);
     --color-emerald-400: oklch(76.5% 0.177 163.223);
     --color-emerald-500: oklch(69.6% 0.17 162.48);
+    --color-cyan-200: oklch(91.7% 0.08 205.041);
+    --color-cyan-400: oklch(78.9% 0.154 211.53);
+    --color-blue-200: oklch(88.2% 0.059 254.128);
+    --color-blue-400: oklch(70.7% 0.165 254.624);
+    --color-violet-200: oklch(89.4% 0.057 293.283);
+    --color-violet-400: oklch(70.2% 0.183 293.541);
+    --color-fuchsia-200: oklch(90.3% 0.076 319.62);
+    --color-fuchsia-400: oklch(74% 0.238 322.16);
+    --color-rose-200: oklch(89.2% 0.058 10.001);
+    --color-rose-400: oklch(71.2% 0.194 13.428);
+    --color-neutral-50: oklch(98.5% 0 0);
+    --color-neutral-100: oklch(97% 0 0);
     --color-neutral-200: oklch(92.2% 0 0);
     --color-neutral-300: oklch(87% 0 0);
     --color-neutral-400: oklch(70.8% 0 0);
     --color-neutral-500: oklch(55.6% 0 0);
+    --color-neutral-700: oklch(37.1% 0 0);
     --color-neutral-800: oklch(26.9% 0 0);
     --color-neutral-900: oklch(20.5% 0 0);
     --color-neutral-950: oklch(14.5% 0 0);
+    --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
-    --container-2xl: 42rem;
     --container-6xl: 72rem;
-    --text-xs: 0.75rem;
-    --text-xs--line-height: calc(1 / 0.75);
-    --text-sm: 0.875rem;
-    --text-sm--line-height: calc(1.25 / 0.875);
     --text-lg: 1.125rem;
     --text-lg--line-height: calc(1.75 / 1.125);
-    --text-4xl: 2.25rem;
-    --text-4xl--line-height: calc(2.5 / 2.25);
+    --text-5xl: 3rem;
+    --text-5xl--line-height: 1;
+    --text-6xl: 3.75rem;
+    --text-6xl--line-height: 1;
+    --text-7xl: 4.5rem;
+    --text-7xl--line-height: 1;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
-    --tracking-tight: -0.025em;
-    --leading-relaxed: 1.625;
-    --radius-xl: 0.75rem;
-    --radius-2xl: 1rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --default-transition-duration: 150ms;
+    --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
     --fade-size-sm: 2.5rem;
@@ -212,6 +236,18 @@
   .static {
     position: static;
   }
+  .top-16 {
+    top: calc(var(--spacing) * 16);
+  }
+  .right-5 {
+    right: calc(var(--spacing) * 5);
+  }
+  .left-5 {
+    left: calc(var(--spacing) * 5);
+  }
+  .z-10 {
+    z-index: 10;
+  }
   .container {
     width: 100%;
     @media (width >= 40rem) {
@@ -233,23 +269,29 @@
   .mx-auto {
     margin-inline: auto;
   }
-  .mt-4 {
-    margin-top: calc(var(--spacing) * 4);
+  .mt-1 {
+    margin-top: var(--spacing);
+  }
+  .mt-2 {
+    margin-top: calc(var(--spacing) * 2);
+  }
+  .mt-3 {
+    margin-top: calc(var(--spacing) * 3);
+  }
+  .mt-5 {
+    margin-top: calc(var(--spacing) * 5);
+  }
+  .mt-10 {
+    margin-top: calc(var(--spacing) * 10);
   }
   .mt-12 {
     margin-top: calc(var(--spacing) * 12);
   }
-  .mt-16 {
-    margin-top: calc(var(--spacing) * 16);
+  .mb-4 {
+    margin-bottom: calc(var(--spacing) * 4);
   }
-  .mr-2 {
-    margin-right: calc(var(--spacing) * 2);
-  }
-  .mb-3 {
-    margin-bottom: calc(var(--spacing) * 3);
-  }
-  .mb-14 {
-    margin-bottom: calc(var(--spacing) * 14);
+  .mb-10 {
+    margin-bottom: calc(var(--spacing) * 10);
   }
   .block {
     display: block;
@@ -266,8 +308,23 @@
   .inline {
     display: inline;
   }
-  .h-40 {
-    height: calc(var(--spacing) * 40);
+  .inline-flex {
+    display: inline-flex;
+  }
+  .size-3 {
+    width: calc(var(--spacing) * 3);
+    height: calc(var(--spacing) * 3);
+  }
+  .size-8 {
+    width: calc(var(--spacing) * 8);
+    height: calc(var(--spacing) * 8);
+  }
+  .size-9 {
+    width: calc(var(--spacing) * 9);
+    height: calc(var(--spacing) * 9);
+  }
+  .h-9 {
+    height: calc(var(--spacing) * 9);
   }
   .h-72 {
     height: calc(var(--spacing) * 72);
@@ -278,30 +335,53 @@
   .h-96 {
     height: calc(var(--spacing) * 96);
   }
+  .h-\[18rem\] {
+    height: 18rem;
+  }
+  .h-\[28rem\] {
+    height: 28rem;
+  }
   .h-full {
     height: 100%;
   }
-  .w-56 {
-    width: calc(var(--spacing) * 56);
+  .max-h-80 {
+    max-height: calc(var(--spacing) * 80);
   }
-  .max-w-2xl {
-    max-width: var(--container-2xl);
+  .min-h-\[34rem\] {
+    min-height: 34rem;
+  }
+  .w-full {
+    width: 100%;
   }
   .max-w-6xl {
     max-width: var(--container-6xl);
   }
+  .max-w-\[28rem\] {
+    max-width: 28rem;
+  }
+  .max-w-\[43rem\] {
+    max-width: 43rem;
+  }
+  .max-w-\[45rem\] {
+    max-width: 45rem;
+  }
+  .min-w-0 {
+    min-width: 0;
+  }
+  .flex-1 {
+    flex: 1;
+  }
   .shrink-0 {
     flex-shrink: 0;
+  }
+  .transform {
+    transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
   }
   .fade-xy {
     mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
     mask-composite: intersect;
     mask-repeat: no-repeat;
     mask-size: 100% 100%;
-    --sf-mask-b: linear-gradient(to top, rgb(0 0 0 / calc(1 - var(--sf-b))) 0, rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b)));
-    --sf-mask-l: linear-gradient(to right, rgb(0 0 0 / calc(1 - var(--sf-l))) 0, rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l)));
-    --sf-mask-r: linear-gradient(to left, rgb(0 0 0 / calc(1 - var(--sf-r))) 0, rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r)));
-    --sf-mask-t: linear-gradient(to bottom, rgb(0 0 0 / calc(1 - var(--sf-t))) 0, rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t)));
     @supports (animation-timeline: scroll()) {
       animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
       animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
@@ -313,115 +393,472 @@
       --sf-l: 1;
       --sf-r: 1;
     }
+    --sf-mask-b: linear-gradient(
+        to top,
+        rgb(0 0 0 / calc(1 - var(--sf-b))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b))
+    );
+    --sf-mask-l: linear-gradient(
+        to right,
+        rgb(0 0 0 / calc(1 - var(--sf-l))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l))
+    );
+    --sf-mask-r: linear-gradient(
+        to left,
+        rgb(0 0 0 / calc(1 - var(--sf-r))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r))
+    );
+    --sf-mask-t: linear-gradient(
+        to bottom,
+        rgb(0 0 0 / calc(1 - var(--sf-t))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t))
+    );
   }
   .fade-x {
     mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
     mask-composite: intersect;
     mask-repeat: no-repeat;
     mask-size: 100% 100%;
-    --sf-mask-l: linear-gradient(to right, rgb(0 0 0 / calc(1 - var(--sf-l))) 0, rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l)));
-    --sf-mask-r: linear-gradient(to left, rgb(0 0 0 / calc(1 - var(--sf-r))) 0, rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r)));
     @supports (animation-timeline: scroll()) {
-      animation: sf-reveal-l auto linear both, sf-reveal-r auto linear both;
-      animation-timeline: scroll(self x), scroll(self x);
-      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+      animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
+      animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
+      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
     }
     @supports not (animation-timeline: scroll()) {
+      --sf-t: 1;
+      --sf-b: 1;
       --sf-l: 1;
       --sf-r: 1;
     }
+    --sf-mask-l: linear-gradient(
+        to right,
+        rgb(0 0 0 / calc(1 - var(--sf-l))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l))
+    );
+    --sf-mask-r: linear-gradient(
+        to left,
+        rgb(0 0 0 / calc(1 - var(--sf-r))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r))
+    );
   }
   .fade-y {
     mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
     mask-composite: intersect;
     mask-repeat: no-repeat;
     mask-size: 100% 100%;
-    --sf-mask-b: linear-gradient(to top, rgb(0 0 0 / calc(1 - var(--sf-b))) 0, rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b)));
-    --sf-mask-t: linear-gradient(to bottom, rgb(0 0 0 / calc(1 - var(--sf-t))) 0, rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t)));
     @supports (animation-timeline: scroll()) {
-      animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both;
-      animation-timeline: scroll(self y), scroll(self y);
-      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+      animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
+      animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
+      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
     }
     @supports not (animation-timeline: scroll()) {
       --sf-t: 1;
       --sf-b: 1;
+      --sf-l: 1;
+      --sf-r: 1;
     }
+    --sf-mask-b: linear-gradient(
+        to top,
+        rgb(0 0 0 / calc(1 - var(--sf-b))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b))
+    );
+    --sf-mask-t: linear-gradient(
+        to bottom,
+        rgb(0 0 0 / calc(1 - var(--sf-t))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t))
+    );
   }
   .fade-b {
     mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
     mask-composite: intersect;
     mask-repeat: no-repeat;
     mask-size: 100% 100%;
-    --sf-mask-b: linear-gradient(to top, rgb(0 0 0 / calc(1 - var(--sf-b))) 0, rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b)));
     @supports (animation-timeline: scroll()) {
-      animation: sf-reveal-b auto linear both;
-      animation-timeline: scroll(self y);
-      animation-range: calc(100% - var(--sf-range, 50px)) 100%;
+      animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
+      animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
+      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
     }
     @supports not (animation-timeline: scroll()) {
+      --sf-t: 1;
       --sf-b: 1;
+      --sf-l: 1;
+      --sf-r: 1;
     }
+    --sf-mask-b: linear-gradient(
+        to top,
+        rgb(0 0 0 / calc(1 - var(--sf-b))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b))
+    );
   }
   .fade-l {
     mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
     mask-composite: intersect;
     mask-repeat: no-repeat;
     mask-size: 100% 100%;
-    --sf-mask-l: linear-gradient(to right, rgb(0 0 0 / calc(1 - var(--sf-l))) 0, rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l)));
     @supports (animation-timeline: scroll()) {
-      animation: sf-reveal-l auto linear both;
-      animation-timeline: scroll(self x);
-      animation-range: 0 var(--sf-range, 50px);
+      animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
+      animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
+      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
     }
     @supports not (animation-timeline: scroll()) {
+      --sf-t: 1;
+      --sf-b: 1;
       --sf-l: 1;
+      --sf-r: 1;
     }
+    --sf-mask-l: linear-gradient(
+        to right,
+        rgb(0 0 0 / calc(1 - var(--sf-l))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l))
+    );
   }
   .fade-r {
     mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
     mask-composite: intersect;
     mask-repeat: no-repeat;
     mask-size: 100% 100%;
-    --sf-mask-r: linear-gradient(to left, rgb(0 0 0 / calc(1 - var(--sf-r))) 0, rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r)));
     @supports (animation-timeline: scroll()) {
-      animation: sf-reveal-r auto linear both;
-      animation-timeline: scroll(self x);
-      animation-range: calc(100% - var(--sf-range, 50px)) 100%;
+      animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
+      animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
+      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
     }
     @supports not (animation-timeline: scroll()) {
+      --sf-t: 1;
+      --sf-b: 1;
+      --sf-l: 1;
       --sf-r: 1;
     }
+    --sf-mask-r: linear-gradient(
+        to left,
+        rgb(0 0 0 / calc(1 - var(--sf-r))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r))
+    );
   }
   .fade-t {
     mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
     mask-composite: intersect;
     mask-repeat: no-repeat;
     mask-size: 100% 100%;
-    --sf-mask-t: linear-gradient(to bottom, rgb(0 0 0 / calc(1 - var(--sf-t))) 0, rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t)));
     @supports (animation-timeline: scroll()) {
-      animation: sf-reveal-t auto linear both;
-      animation-timeline: scroll(self y);
-      animation-range: 0 var(--sf-range, 50px);
+      animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
+      animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
+      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
     }
     @supports not (animation-timeline: scroll()) {
       --sf-t: 1;
+      --sf-b: 1;
+      --sf-l: 1;
+      --sf-r: 1;
     }
+    --sf-mask-t: linear-gradient(
+        to bottom,
+        rgb(0 0 0 / calc(1 - var(--sf-t))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t))
+    );
   }
   .flex-col {
     flex-direction: column;
   }
+  .flex-wrap {
+    flex-wrap: wrap;
+  }
+  .place-items-center {
+    place-items: center;
+  }
   .items-baseline {
     align-items: baseline;
+  }
+  .items-center {
+    align-items: center;
+  }
+  .items-end {
+    align-items: flex-end;
   }
   .justify-between {
     justify-content: space-between;
   }
+  .gap-2 {
+    gap: calc(var(--spacing) * 2);
+  }
+  .gap-3 {
+    gap: calc(var(--spacing) * 3);
+  }
   .gap-4 {
     gap: calc(var(--spacing) * 4);
   }
-  .gap-8 {
-    gap: calc(var(--spacing) * 8);
+  .gap-6 {
+    gap: calc(var(--spacing) * 6);
+  }
+  .space-y-1 {
+    :where(& > :not(:last-child)) {
+      --tw-space-y-reverse: 0;
+      margin-block-start: calc(var(--spacing) * var(--tw-space-y-reverse));
+      margin-block-end: calc(var(--spacing) * calc(1 - var(--tw-space-y-reverse)));
+    }
   }
   .space-y-3 {
     :where(& > :not(:last-child)) {
@@ -429,6 +866,45 @@
       margin-block-start: calc(calc(var(--spacing) * 3) * var(--tw-space-y-reverse));
       margin-block-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-y-reverse)));
     }
+  }
+  .space-y-5 {
+    :where(& > :not(:last-child)) {
+      --tw-space-y-reverse: 0;
+      margin-block-start: calc(calc(var(--spacing) * 5) * var(--tw-space-y-reverse));
+      margin-block-end: calc(calc(var(--spacing) * 5) * calc(1 - var(--tw-space-y-reverse)));
+    }
+  }
+  .space-y-6 {
+    :where(& > :not(:last-child)) {
+      --tw-space-y-reverse: 0;
+      margin-block-start: calc(calc(var(--spacing) * 6) * var(--tw-space-y-reverse));
+      margin-block-end: calc(calc(var(--spacing) * 6) * calc(1 - var(--tw-space-y-reverse)));
+    }
+  }
+  .divide-y {
+    :where(& > :not(:last-child)) {
+      --tw-divide-y-reverse: 0;
+      border-bottom-style: var(--tw-border-style);
+      border-top-style: var(--tw-border-style);
+      border-top-width: calc(1px * var(--tw-divide-y-reverse));
+      border-bottom-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
+    }
+  }
+  .divide-white\/10 {
+    :where(& > :not(:last-child)) {
+      border-color: color-mix(in srgb, #fff 10%, transparent);
+      @supports (color: color-mix(in lab, red, red)) {
+        border-color: color-mix(in oklab, var(--color-white) 10%, transparent);
+      }
+    }
+  }
+  .truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .overflow-auto {
+    overflow: auto;
   }
   .overflow-hidden {
     overflow: hidden;
@@ -439,14 +915,14 @@
   .overflow-y-auto {
     overflow-y: auto;
   }
-  .rounded {
-    border-radius: 0.25rem;
+  .rounded-full {
+    border-radius: calc(infinity * 1px);
   }
-  .rounded-2xl {
-    border-radius: var(--radius-2xl);
+  .rounded-lg {
+    border-radius: var(--radius-lg);
   }
-  .rounded-xl {
-    border-radius: var(--radius-xl);
+  .rounded-md {
+    border-radius: var(--radius-md);
   }
   .border {
     border-style: var(--tw-border-style);
@@ -460,10 +936,22 @@
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 1px;
   }
-  .border-white\/5 {
-    border-color: color-mix(in srgb, #fff 5%, transparent);
+  .border-amber-300\/20 {
+    border-color: color-mix(in srgb, oklch(87.9% 0.169 91.605) 20%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, var(--color-white) 5%, transparent);
+      border-color: color-mix(in oklab, var(--color-amber-300) 20%, transparent);
+    }
+  }
+  .border-emerald-400\/20 {
+    border-color: color-mix(in srgb, oklch(76.5% 0.177 163.223) 20%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-emerald-400) 20%, transparent);
+    }
+  }
+  .border-emerald-400\/40 {
+    border-color: color-mix(in srgb, oklch(76.5% 0.177 163.223) 40%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-emerald-400) 40%, transparent);
     }
   }
   .border-white\/10 {
@@ -472,85 +960,230 @@
       border-color: color-mix(in oklab, var(--color-white) 10%, transparent);
     }
   }
+  .border-white\/12 {
+    border-color: color-mix(in srgb, #fff 12%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-white) 12%, transparent);
+    }
+  }
+  .bg-amber-300\/10 {
+    background-color: color-mix(in srgb, oklch(87.9% 0.169 91.605) 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-amber-300) 10%, transparent);
+    }
+  }
+  .bg-amber-400\/10 {
+    background-color: color-mix(in srgb, oklch(82.8% 0.189 84.429) 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-amber-400) 10%, transparent);
+    }
+  }
+  .bg-black\/40 {
+    background-color: color-mix(in srgb, #000 40%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-black) 40%, transparent);
+    }
+  }
+  .bg-blue-400\/10 {
+    background-color: color-mix(in srgb, oklch(70.7% 0.165 254.624) 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-blue-400) 10%, transparent);
+    }
+  }
+  .bg-cyan-400\/10 {
+    background-color: color-mix(in srgb, oklch(78.9% 0.154 211.53) 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-cyan-400) 10%, transparent);
+    }
+  }
+  .bg-emerald-400 {
+    background-color: var(--color-emerald-400);
+  }
+  .bg-emerald-400\/10 {
+    background-color: color-mix(in srgb, oklch(76.5% 0.177 163.223) 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-emerald-400) 10%, transparent);
+    }
+  }
+  .bg-emerald-500 {
+    background-color: var(--color-emerald-500);
+  }
+  .bg-fuchsia-400\/10 {
+    background-color: color-mix(in srgb, oklch(74% 0.238 322.16) 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-fuchsia-400) 10%, transparent);
+    }
+  }
+  .bg-lime-400\/10 {
+    background-color: color-mix(in srgb, oklch(84.1% 0.238 128.85) 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-lime-400) 10%, transparent);
+    }
+  }
+  .bg-neutral-50 {
+    background-color: var(--color-neutral-50);
+  }
+  .bg-neutral-700 {
+    background-color: var(--color-neutral-700);
+  }
   .bg-neutral-800 {
     background-color: var(--color-neutral-800);
   }
-  .bg-neutral-800\/60 {
-    background-color: color-mix(in srgb, oklch(26.9% 0 0) 60%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-neutral-800) 60%, transparent);
-    }
-  }
-  .bg-neutral-900\/60 {
-    background-color: color-mix(in srgb, oklch(20.5% 0 0) 60%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-neutral-900) 60%, transparent);
-    }
+  .bg-neutral-900 {
+    background-color: var(--color-neutral-900);
   }
   .bg-neutral-950 {
     background-color: var(--color-neutral-950);
   }
+  .bg-neutral-950\/70 {
+    background-color: color-mix(in srgb, oklch(14.5% 0 0) 70%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-neutral-950) 70%, transparent);
+    }
+  }
+  .bg-neutral-950\/75 {
+    background-color: color-mix(in srgb, oklch(14.5% 0 0) 75%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-neutral-950) 75%, transparent);
+    }
+  }
+  .bg-neutral-950\/95 {
+    background-color: color-mix(in srgb, oklch(14.5% 0 0) 95%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-neutral-950) 95%, transparent);
+    }
+  }
+  .bg-red-400\/10 {
+    background-color: color-mix(in srgb, oklch(70.4% 0.191 22.216) 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-red-400) 10%, transparent);
+    }
+  }
+  .bg-red-500 {
+    background-color: var(--color-red-500);
+  }
+  .bg-rose-400\/10 {
+    background-color: color-mix(in srgb, oklch(71.2% 0.194 13.428) 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-rose-400) 10%, transparent);
+    }
+  }
   .bg-transparent {
     background-color: transparent;
+  }
+  .bg-violet-400\/10 {
+    background-color: color-mix(in srgb, oklch(70.2% 0.183 293.541) 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-violet-400) 10%, transparent);
+    }
+  }
+  .bg-white\/\[0\.03\] {
+    background-color: color-mix(in srgb, #fff 3%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-white) 3%, transparent);
+    }
   }
   .mask-repeat {
     mask-repeat: repeat;
   }
-  .p-1\.5 {
-    padding: calc(var(--spacing) * 1.5);
+  .p-1 {
+    padding: var(--spacing);
+  }
+  .p-2 {
+    padding: calc(var(--spacing) * 2);
+  }
+  .p-3 {
+    padding: calc(var(--spacing) * 3);
   }
   .p-4 {
     padding: calc(var(--spacing) * 4);
   }
-  .px-1\.5 {
-    padding-inline: calc(var(--spacing) * 1.5);
+  .p-5 {
+    padding: calc(var(--spacing) * 5);
+  }
+  .px-2 {
+    padding-inline: calc(var(--spacing) * 2);
+  }
+  .px-2\.5 {
+    padding-inline: calc(var(--spacing) * 2.5);
+  }
+  .px-3 {
+    padding-inline: calc(var(--spacing) * 3);
+  }
+  .px-4 {
+    padding-inline: calc(var(--spacing) * 4);
   }
   .px-5 {
     padding-inline: calc(var(--spacing) * 5);
   }
-  .px-6 {
-    padding-inline: calc(var(--spacing) * 6);
+  .py-1 {
+    padding-block: var(--spacing);
   }
-  .py-0\.5 {
-    padding-block: calc(var(--spacing) * 0.5);
+  .py-2 {
+    padding-block: calc(var(--spacing) * 2);
+  }
+  .py-2\.5 {
+    padding-block: calc(var(--spacing) * 2.5);
+  }
+  .py-3 {
+    padding-block: calc(var(--spacing) * 3);
   }
   .py-4 {
     padding-block: calc(var(--spacing) * 4);
   }
-  .py-5 {
-    padding-block: calc(var(--spacing) * 5);
-  }
-  .py-16 {
-    padding-block: calc(var(--spacing) * 16);
+  .py-10 {
+    padding-block: calc(var(--spacing) * 10);
   }
   .pt-6 {
     padding-top: calc(var(--spacing) * 6);
   }
-  .pb-3 {
-    padding-bottom: calc(var(--spacing) * 3);
+  .text-left {
+    text-align: left;
   }
   .font-mono {
     font-family: var(--font-mono);
   }
-  .text-4xl {
-    font-size: var(--text-4xl);
-    line-height: var(--tw-leading, var(--text-4xl--line-height));
+  .text-5xl {
+    font-size: var(--text-5xl);
+    line-height: var(--tw-leading, var(--text-5xl--line-height));
   }
-  .text-lg {
-    font-size: var(--text-lg);
-    line-height: var(--tw-leading, var(--text-lg--line-height));
+  .text-\[0\.75rem\] {
+    font-size: 0.75rem;
   }
-  .text-sm {
-    font-size: var(--text-sm);
-    line-height: var(--tw-leading, var(--text-sm--line-height));
+  .text-\[0\.875rem\] {
+    font-size: 0.875rem;
   }
-  .text-xs {
-    font-size: var(--text-xs);
-    line-height: var(--tw-leading, var(--text-xs--line-height));
+  .text-\[0\.6875rem\] {
+    font-size: 0.6875rem;
   }
-  .leading-relaxed {
-    --tw-leading: var(--leading-relaxed);
-    line-height: var(--leading-relaxed);
+  .text-\[0\.8125rem\] {
+    font-size: 0.8125rem;
+  }
+  .text-\[0\.9375rem\] {
+    font-size: 0.9375rem;
+  }
+  .text-\[1\.0625rem\] {
+    font-size: 1.0625rem;
+  }
+  .leading-4 {
+    --tw-leading: calc(var(--spacing) * 4);
+    line-height: calc(var(--spacing) * 4);
+  }
+  .leading-5 {
+    --tw-leading: calc(var(--spacing) * 5);
+    line-height: calc(var(--spacing) * 5);
+  }
+  .leading-6 {
+    --tw-leading: calc(var(--spacing) * 6);
+    line-height: calc(var(--spacing) * 6);
+  }
+  .leading-8 {
+    --tw-leading: calc(var(--spacing) * 8);
+    line-height: calc(var(--spacing) * 8);
+  }
+  .leading-none {
+    --tw-leading: 1;
+    line-height: 1;
   }
   .font-medium {
     --tw-font-weight: var(--font-weight-medium);
@@ -560,13 +1193,37 @@
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
   }
-  .tracking-\[0\.2em\] {
-    --tw-tracking: 0.2em;
-    letter-spacing: 0.2em;
+  .tracking-\[0\.18em\] {
+    --tw-tracking: 0.18em;
+    letter-spacing: 0.18em;
   }
-  .tracking-tight {
-    --tw-tracking: var(--tracking-tight);
-    letter-spacing: var(--tracking-tight);
+  .tracking-\[0\.22em\] {
+    --tw-tracking: 0.22em;
+    letter-spacing: 0.22em;
+  }
+  .text-wrap {
+    text-wrap: wrap;
+  }
+  .break-words {
+    overflow-wrap: break-word;
+  }
+  .whitespace-pre-wrap {
+    white-space: pre-wrap;
+  }
+  .text-amber-200 {
+    color: var(--color-amber-200);
+  }
+  .text-blue-200 {
+    color: var(--color-blue-200);
+  }
+  .text-cyan-200 {
+    color: var(--color-cyan-200);
+  }
+  .text-emerald-100 {
+    color: var(--color-emerald-100);
+  }
+  .text-emerald-200 {
+    color: var(--color-emerald-200);
   }
   .text-emerald-300 {
     color: var(--color-emerald-300);
@@ -574,11 +1231,17 @@
   .text-emerald-400 {
     color: var(--color-emerald-400);
   }
-  .text-emerald-500\/70 {
-    color: color-mix(in srgb, oklch(69.6% 0.17 162.48) 70%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in oklab, var(--color-emerald-500) 70%, transparent);
-    }
+  .text-fuchsia-200 {
+    color: var(--color-fuchsia-200);
+  }
+  .text-lime-200 {
+    color: var(--color-lime-200);
+  }
+  .text-neutral-50 {
+    color: var(--color-neutral-50);
+  }
+  .text-neutral-100 {
+    color: var(--color-neutral-100);
   }
   .text-neutral-200 {
     color: var(--color-neutral-200);
@@ -586,17 +1249,45 @@
   .text-neutral-300 {
     color: var(--color-neutral-300);
   }
+  .text-neutral-300\/85 {
+    color: color-mix(in srgb, oklch(87% 0 0) 85%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      color: color-mix(in oklab, var(--color-neutral-300) 85%, transparent);
+    }
+  }
   .text-neutral-400 {
     color: var(--color-neutral-400);
   }
   .text-neutral-500 {
     color: var(--color-neutral-500);
   }
-  .text-white {
-    color: var(--color-white);
+  .text-red-200 {
+    color: var(--color-red-200);
+  }
+  .text-rose-200 {
+    color: var(--color-rose-200);
+  }
+  .text-violet-200 {
+    color: var(--color-violet-200);
   }
   .uppercase {
     text-transform: uppercase;
+  }
+  .tabular-nums {
+    --tw-numeric-spacing: tabular-nums;
+    font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
+  }
+  .underline {
+    text-decoration-line: underline;
+  }
+  .decoration-emerald-400\/30 {
+    text-decoration-color: color-mix(in srgb, oklch(76.5% 0.177 163.223) 30%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      text-decoration-color: color-mix(in oklab, var(--color-emerald-400) 30%, transparent);
+    }
+  }
+  .underline-offset-4 {
+    text-underline-offset: 4px;
   }
   .antialiased {
     -webkit-font-smoothing: antialiased;
@@ -605,6 +1296,51 @@
   .shadow-2xl {
     --tw-shadow: 0 25px 50px -12px var(--tw-shadow-color, rgb(0 0 0 / 0.25));
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .ring-1 {
+    --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .shadow-black\/40 {
+    --tw-shadow-color: color-mix(in srgb, #000 40%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-black) 40%, transparent) var(--tw-shadow-alpha), transparent);
+    }
+  }
+  .shadow-black\/50 {
+    --tw-shadow-color: color-mix(in srgb, #000 50%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-black) 50%, transparent) var(--tw-shadow-alpha), transparent);
+    }
+  }
+  .ring-white\/20 {
+    --tw-ring-color: color-mix(in srgb, #fff 20%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-ring-color: color-mix(in oklab, var(--color-white) 20%, transparent);
+    }
+  }
+  .outline {
+    outline-style: var(--tw-outline-style);
+    outline-width: 1px;
+  }
+  .backdrop-blur {
+    --tw-backdrop-blur: blur(8px);
+    -webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
+    backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
+  }
+  .transition {
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .transition-colors {
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .ease-in {
+    --tw-ease: var(--ease-in);
+    transition-timing-function: var(--ease-in);
   }
   .fade-static {
     --sf-t: 1 !important;
@@ -628,52 +1364,93 @@
   .fade-size-lg {
     --sf-size: var(--fade-size-lg);
   }
+  .fade-size-md {
+    --sf-size: var(--fade-size-md);
+  }
   .fade-size-sm {
     --sf-size: var(--fade-size-sm);
   }
-  .md\:grid-cols-2 {
-    @media (width >= 48rem) {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  .placeholder\:text-neutral-500 {
+    &::placeholder {
+      color: var(--color-neutral-500);
     }
   }
-  .lg\:grid-cols-3 {
+  .hover\:text-emerald-300 {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-emerald-300);
+      }
+    }
+  }
+  .sm\:block {
+    @media (width >= 40rem) {
+      display: block;
+    }
+  }
+  .sm\:flex-row {
+    @media (width >= 40rem) {
+      flex-direction: row;
+    }
+  }
+  .sm\:items-end {
+    @media (width >= 40rem) {
+      align-items: flex-end;
+    }
+  }
+  .sm\:justify-between {
+    @media (width >= 40rem) {
+      justify-content: space-between;
+    }
+  }
+  .sm\:px-6 {
+    @media (width >= 40rem) {
+      padding-inline: calc(var(--spacing) * 6);
+    }
+  }
+  .sm\:text-6xl {
+    @media (width >= 40rem) {
+      font-size: var(--text-6xl);
+      line-height: var(--tw-leading, var(--text-6xl--line-height));
+    }
+  }
+  .sm\:text-lg {
+    @media (width >= 40rem) {
+      font-size: var(--text-lg);
+      line-height: var(--tw-leading, var(--text-lg--line-height));
+    }
+  }
+  .lg\:mb-12 {
     @media (width >= 64rem) {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-bottom: calc(var(--spacing) * 12);
+    }
+  }
+  .lg\:grid-cols-\[minmax\(0\,1fr\)_18rem\] {
+    @media (width >= 64rem) {
+      grid-template-columns: minmax(0,1fr) 18rem;
+    }
+  }
+  .lg\:py-16 {
+    @media (width >= 64rem) {
+      padding-block: calc(var(--spacing) * 16);
+    }
+  }
+  .lg\:pt-10 {
+    @media (width >= 64rem) {
+      padding-top: calc(var(--spacing) * 10);
+    }
+  }
+  .lg\:text-7xl {
+    @media (width >= 64rem) {
+      font-size: var(--text-7xl);
+      line-height: var(--tw-leading, var(--text-7xl--line-height));
+    }
+  }
+  .xl\:grid-cols-\[minmax\(0\,1\.05fr\)_minmax\(20rem\,0\.95fr\)\] {
+    @media (width >= 80rem) {
+      grid-template-columns: minmax(0,1.05fr) minmax(20rem,0.95fr);
     }
   }
 }
-/*!
- * tw-fade — elegant, CSS-driven scroll-edge fade masking for Tailwind CSS v4.
- *
- * Usage (Tailwind v4, CSS-first):
- *     @import "tailwindcss";
- *     @import "tw-fade";
- *
- * Then add fade-t / fade-b / fade-l / fade-r (or the -x / -y / -xy axis
- * shorthands) to any scroll container; its content dissolves into the surface at
- * the chosen edges, scroll-gated, with ZERO JavaScript.
- *
- * HOW IT WORKS
- * 1. MASK, not paint. Each edge is one layer of a 4-layer mask-image, composited
- *    with mask-composite: intersect so edges clip independently. Unset edges fall
- *    back to an opaque identity layer (linear-gradient(#000,#000)) that never clips.
- * 2. A numeric "amount" per edge (--sf-t/-b/-l/-r, a registered <number> in [0,1])
- *    drives each gradient: 0 = no fade, 1 = full fade. The amount scales BOTH the
- *    gradient length and its alpha, matching the reference component's scaleY + opacity.
- * 3. Scroll-gating IS the timeline: animation-timeline: scroll(self <axis>) animates
- *    each amount across a fixed scroll window (--sf-range). Leading edges (top/left)
- *    reveal over the first range; trailing edges (bottom/right) hide over the last.
- *    The axis is PHYSICAL — scroll(self y) / scroll(self x), not the logical
- *    block/inline — so the timeline tracks the same physical axis the mask gradients
- *    paint (to bottom / to right …). Logical axes would desync under vertical
- *    writing modes (block becomes horizontal), dimming a non-scrolling edge.
- * 4. Graceful fallback. Amounts default to 0, so a non-scrollable container shows no
- *    fade. In engines without scroll-driven animations (Firefox stable as of 2026),
- *    the @supports-not branch pins active edges to a static always-on fade.
- *
- * The 13-stop smoothstep ramp below is lifted verbatim from the reference
- * arc-design-studio ScrollEdgeFade component so the curve is visually identical.
- */
 @property --sf-t {
   syntax: "<number>";
   inherits: false;
@@ -699,6 +1476,22 @@
   inherits: false;
 }
 @property --sf-range {
+  syntax: "*";
+  inherits: false;
+}
+@property --sf-mask-t {
+  syntax: "*";
+  inherits: false;
+}
+@property --sf-mask-b {
+  syntax: "*";
+  inherits: false;
+}
+@property --sf-mask-l {
+  syntax: "*";
+  inherits: false;
+}
+@property --sf-mask-r {
   syntax: "*";
   inherits: false;
 }
@@ -734,7 +1527,32 @@
     --sf-r: 0;
   }
 }
+@property --tw-rotate-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-y {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-z {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-y {
+  syntax: "*";
+  inherits: false;
+}
 @property --tw-space-y-reverse {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-divide-y-reverse {
   syntax: "*";
   inherits: false;
   initial-value: 0;
@@ -753,6 +1571,26 @@
   inherits: false;
 }
 @property --tw-tracking {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ordinal {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-slashed-zero {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-numeric-figure {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-numeric-spacing {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-numeric-fraction {
   syntax: "*";
   inherits: false;
 }
@@ -821,14 +1659,70 @@
   inherits: false;
   initial-value: 0 0 #0000;
 }
+@property --tw-outline-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-backdrop-blur {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-brightness {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-contrast {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-grayscale {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-hue-rotate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-invert {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-opacity {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-saturate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-sepia {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ease {
+  syntax: "*";
+  inherits: false;
+}
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
+      --tw-rotate-x: initial;
+      --tw-rotate-y: initial;
+      --tw-rotate-z: initial;
+      --tw-skew-x: initial;
+      --tw-skew-y: initial;
       --tw-space-y-reverse: 0;
+      --tw-divide-y-reverse: 0;
       --tw-border-style: solid;
       --tw-leading: initial;
       --tw-font-weight: initial;
       --tw-tracking: initial;
+      --tw-ordinal: initial;
+      --tw-slashed-zero: initial;
+      --tw-numeric-figure: initial;
+      --tw-numeric-spacing: initial;
+      --tw-numeric-fraction: initial;
       --tw-shadow: 0 0 #0000;
       --tw-shadow-color: initial;
       --tw-shadow-alpha: 100%;
@@ -843,12 +1737,27 @@
       --tw-ring-offset-width: 0px;
       --tw-ring-offset-color: #fff;
       --tw-ring-offset-shadow: 0 0 #0000;
+      --tw-outline-style: solid;
+      --tw-backdrop-blur: initial;
+      --tw-backdrop-brightness: initial;
+      --tw-backdrop-contrast: initial;
+      --tw-backdrop-grayscale: initial;
+      --tw-backdrop-hue-rotate: initial;
+      --tw-backdrop-invert: initial;
+      --tw-backdrop-opacity: initial;
+      --tw-backdrop-saturate: initial;
+      --tw-backdrop-sepia: initial;
+      --tw-ease: initial;
       --sf-t: 0;
       --sf-b: 0;
       --sf-l: 0;
       --sf-r: 0;
       --sf-size: initial;
       --sf-range: initial;
+      --sf-mask-t: initial;
+      --sf-mask-b: initial;
+      --sf-mask-l: initial;
+      --sf-mask-r: initial;
     }
   }
 }

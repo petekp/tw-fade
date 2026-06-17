@@ -24,31 +24,31 @@ async function setScroll(sel, top) {
   )
 }
 
-// Full overview.
+async function setRail(left) {
+  await page.evaluate(async (l) => {
+    const el = document.querySelector('[data-demo="rail"]')
+    el.scrollLeft = l
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
+  }, left)
+}
+
 await page.screenshot({ path: path.join(shots, 'overview.png'), fullPage: true })
 
-// Close-up of the vertical both-edges panel at three scroll states.
-const ySection = page.locator('section', { hasText: 'Vertical · both edges' })
-await setScroll('[data-demo="y"]', 0)
-await ySection.screenshot({ path: path.join(shots, 'y-top.png') })
-await setScroll('[data-demo="y"]', 575)
-await ySection.screenshot({ path: path.join(shots, 'y-mid.png') })
-await setScroll('[data-demo="y"]', 1151)
-await ySection.screenshot({ path: path.join(shots, 'y-bottom.png') })
+const examplesSection = page.locator('[aria-label="shadcn Base UI examples"]')
+await setScroll('[data-demo="popover"]', 0)
+await examplesSection.screenshot({ path: path.join(shots, 'y-top.png') })
+await setScroll('[data-demo="popover"]', 120)
+await examplesSection.screenshot({ path: path.join(shots, 'y-mid.png') })
+await setScroll('[data-demo="popover"]', 9999)
+await examplesSection.screenshot({ path: path.join(shots, 'y-bottom.png') })
 
-// Side-by-side: faded vs not (mid scroll on both).
-await setScroll('[data-demo="none"]', 575)
-const grid = page.locator('div.grid').first()
-await grid.screenshot({ path: path.join(shots, 'grid.png') })
+await setScroll('[data-demo="command"]', 180)
+await setScroll('[data-demo="list"]', 120)
+await examplesSection.screenshot({ path: path.join(shots, 'grid.png') })
 
-// Horizontal.
-const xSection = page.locator('section', { hasText: 'Horizontal · both edges' })
-await page.evaluate(async () => {
-  const el = document.querySelector('[data-demo="x"]')
-  el.scrollLeft = el.scrollWidth / 2 - el.clientWidth / 2
-  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
-})
-await xSection.screenshot({ path: path.join(shots, 'x-mid.png') })
+const railSection = page.locator('[aria-label="Horizontal tabs demo"]')
+await setRail(280)
+await railSection.screenshot({ path: path.join(shots, 'x-mid.png') })
 
 await browser.close()
 console.log('shots written to', shots)

@@ -14,6 +14,8 @@
  *   4. nested isolation — a DEFAULT fade under an ancestor that sets a larger
  *      `--sf-size` still renders the DEFAULT band, proving the `@property`
  *      `inherits: false` registration stops size/range leaking down (the cascade fix)
+ *   5. mixed individual edges (fade-t fade-r) — arbitrary edge utilities compose
+ *   6. nested single edge under a faded ancestor — mask layers do not leak down
  *
  * Usage: node build/verify-fade.mjs [path-to-css]   (defaults to the shipped dist)
  */
@@ -34,8 +36,10 @@ const HARNESS = `
   body { background: #000; }
   .panel-v { width: 240px; height: 200px; overflow-y: auto; background: transparent; }
   .panel-h { width: 240px; height: 160px; overflow-x: auto; white-space: nowrap; background: transparent; }
+  .panel-xy { width: 240px; height: 200px; overflow: auto; background: transparent; }
   .vb { height: 40px; background: #fff; }
   .hb { display: inline-block; width: 40px; height: 100%; background: #fff; }
+  .xy-plane { width: 840px; height: 840px; background: #fff; }
 `
 
 const blocks = (cls, n) => Array.from({ length: n }, () => `<div class="${cls}"></div>`).join('')
@@ -95,6 +99,50 @@ async function profileLine({ axis, body, innerSelector }) {
   return lum
 }
 
+/** Render a two-axis scroller and sample top/right/middle luminance from pixels. */
+async function samplePanel({ body, innerSelector }) {
+  const html = `<!doctype html><html><head><meta charset="utf-8"><style>${HARNESS}${css}</style></head><body>${body}</body></html>`
+
+  const page = await browser.newPage({ viewport: { width: 600, height: 600 }, deviceScaleFactor: 1 })
+  await page.setContent(html, { waitUntil: 'networkidle' })
+
+  await page.evaluate(async () => {
+    for (const el of document.querySelectorAll('[data-scroll]')) {
+      el.scrollTop = Math.round((el.scrollHeight - el.clientHeight) / 2)
+      el.scrollLeft = Math.round((el.scrollWidth - el.clientWidth) / 2)
+    }
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
+  })
+
+  const shot = await page.locator(innerSelector).screenshot()
+  const dataUrl = 'data:image/png;base64,' + shot.toString('base64')
+  const samples = await page.evaluate(async (url) => {
+    const img = new Image()
+    img.src = url
+    await img.decode()
+    const c = document.createElement('canvas')
+    c.width = img.width
+    c.height = img.height
+    const ctx = c.getContext('2d')
+    ctx.drawImage(img, 0, 0)
+    const meanRect = (x0, y0, w, h) => {
+      const d = ctx.getImageData(x0, y0, w, h).data
+      let sum = 0
+      for (let i = 0; i < d.length; i += 4) sum += (d[i] + d[i + 1] + d[i + 2]) / 3
+      return sum / (d.length / 4)
+    }
+    return {
+      top: meanRect(Math.floor(img.width * 0.45), 0, Math.floor(img.width * 0.1), 12),
+      bottom: meanRect(Math.floor(img.width * 0.45), img.height - 12, Math.floor(img.width * 0.1), 12),
+      right: meanRect(img.width - 12, Math.floor(img.height * 0.45), 12, Math.floor(img.height * 0.1)),
+      mid: meanRect(Math.floor(img.width * 0.45), Math.floor(img.height * 0.45), Math.floor(img.width * 0.1), Math.floor(img.height * 0.1)),
+    }
+  }, dataUrl)
+
+  await page.close()
+  return samples
+}
+
 const mean = (a, lo, hi) => a.slice(lo, hi).reduce((x, y) => x + y, 0) / (hi - lo)
 
 /**
@@ -149,6 +197,20 @@ const nestLum = await profileLine({
 })
 const nestCross = crossing(nestLum)
 
+// 5. Mixed individual edges. This catches the cascade failure where one utility's
+//    animation shorthand used to overwrite the other edge's reveal animation.
+const combo = await samplePanel({
+  innerSelector: '#combo',
+  body: `<div id="combo" data-scroll class="fade-t fade-r panel-xy"><div class="xy-plane"></div></div>`,
+})
+
+// 6. A page-level/body-level fade used to leak its mask layer variables into
+//    nested single-edge examples. The child should fade only at the top.
+const nestedSingle = await samplePanel({
+  innerSelector: '#nested-single',
+  body: `<div class="fade-y" style="padding: 120px 0"><div id="nested-single" data-scroll class="fade-t panel-v">${blocks('vb', 40)}</div></div>`,
+})
+
 await browser.close()
 
 const checks = [
@@ -172,13 +234,22 @@ const checks = [
     nestCross < (vCross + bigCross) / 2,
     `inner≈${nestCross}px (default≈${vCross}px, leaked≈${bigCross}px)`,
   ],
+
+  ['mixed fade-t fade-r: top edge masked toward background', combo.top < 60, `top≈${combo.top.toFixed(0)}`],
+  ['mixed fade-t fade-r: right edge masked toward background', combo.right < 60, `right≈${combo.right.toFixed(0)}`],
+  ['mixed fade-t fade-r: middle stays bright', combo.mid > 200, `mid≈${combo.mid.toFixed(0)}`],
+  ['nested fade-t: top edge masked toward background', nestedSingle.top < 60, `top≈${nestedSingle.top.toFixed(0)}`],
+  ['nested fade-t: bottom edge remains unmasked', nestedSingle.bottom > 200, `bottom≈${nestedSingle.bottom.toFixed(0)}`],
+  ['nested fade-t: middle stays bright', nestedSingle.mid > 200, `mid≈${nestedSingle.mid.toFixed(0)}`],
 ]
 
 console.log(`CSS: ${path.relative(path.resolve(__dirname, '..'), cssPath)}`)
 console.log(
   `vertical — top:${vTop.toFixed(0)} mid:${vMid.toFixed(0)} bot:${vBot.toFixed(0)} | ` +
     `horizontal — left:${hLeft.toFixed(0)} mid:${hMid.toFixed(0)} right:${hRight.toFixed(0)} | ` +
-    `crossings — default:${vCross} big:${bigCross} nested:${nestCross}`,
+    `crossings — default:${vCross} big:${bigCross} nested:${nestCross} | ` +
+    `combo — top:${combo.top.toFixed(0)} right:${combo.right.toFixed(0)} mid:${combo.mid.toFixed(0)} | ` +
+    `nested fade-t — top:${nestedSingle.top.toFixed(0)} bottom:${nestedSingle.bottom.toFixed(0)} mid:${nestedSingle.mid.toFixed(0)}`,
 )
 console.log('\n=== FADE PIXEL CHECKS ===')
 let pass = 0
