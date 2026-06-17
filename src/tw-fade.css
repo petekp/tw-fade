@@ -1,0 +1,319 @@
+/*! tw-fade — CSS scroll-edge fade masking for Tailwind v4. MIT · github.com/petekp/tw-fade */
+
+/* Amounts: keep <number> so scroll animation interpolates them; initial 0 = no fade. */
+@property --sf-t {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+}
+@property --sf-b {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+}
+@property --sf-l {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+}
+@property --sf-r {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+}
+/* Config: keep "*" with NO initial-value — a typed <length> rejects the rem initial, dropping the registration (fade collapses); inherits:false stops size leaking into nested fades. */
+@property --sf-size {
+    syntax: "*";
+    inherits: false;
+}
+@property --sf-range {
+    syntax: "*";
+    inherits: false;
+}
+
+@theme {
+    --fade-size-sm: 2.5rem;
+    --fade-size-md: 3.125rem;
+    --fade-size-lg: 4.375rem;
+    --fade-range-sm: 24px;
+    --fade-range-md: 50px;
+    --fade-range-lg: 96px;
+}
+
+@keyframes sf-reveal-t {
+    from {
+        --sf-t: 0;
+    }
+    to {
+        --sf-t: 1;
+    }
+}
+@keyframes sf-reveal-b {
+    from {
+        --sf-b: 1;
+    }
+    to {
+        --sf-b: 0;
+    }
+}
+@keyframes sf-reveal-l {
+    from {
+        --sf-l: 0;
+    }
+    to {
+        --sf-l: 1;
+    }
+}
+@keyframes sf-reveal-r {
+    from {
+        --sf-r: 1;
+    }
+    to {
+        --sf-r: 0;
+    }
+}
+
+@utility fade-size-* {
+    --sf-size: --value(--fade-size-*, [length], [percentage]);
+}
+@utility fade-range-* {
+    --sf-range: --value(--fade-range-*, [length], [percentage]);
+}
+
+/* Private (only @apply'd by fade-*). The gradient must live on the element so var(--sf-t) resolves per-element — a :root copy would bake in --sf-t:0. */
+@utility sf-mask {
+    mask-image:
+        var(--sf-mask-t, linear-gradient(#000, #000)),
+        var(--sf-mask-b, linear-gradient(#000, #000)),
+        var(--sf-mask-l, linear-gradient(#000, #000)),
+        var(--sf-mask-r, linear-gradient(#000, #000));
+    mask-composite: intersect;
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+}
+@utility sf-edge-t {
+    --sf-mask-t: linear-gradient(
+        to bottom,
+        rgb(0 0 0 / calc(1 - var(--sf-t))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t))
+    );
+}
+@utility sf-edge-b {
+    --sf-mask-b: linear-gradient(
+        to top,
+        rgb(0 0 0 / calc(1 - var(--sf-b))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b))
+    );
+}
+@utility sf-edge-l {
+    --sf-mask-l: linear-gradient(
+        to right,
+        rgb(0 0 0 / calc(1 - var(--sf-l))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l))
+    );
+}
+@utility sf-edge-r {
+    --sf-mask-r: linear-gradient(
+        to left,
+        rgb(0 0 0 / calc(1 - var(--sf-r))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r))
+    );
+}
+
+/* The animation shorthand resets animation-timeline to auto, so the longhand must follow it. @supports-not = static fallback. */
+@utility fade-t {
+    @apply sf-mask sf-edge-t;
+    @supports (animation-timeline: scroll()) {
+        animation: sf-reveal-t auto linear both;
+        animation-timeline: scroll(self y);
+        animation-range: 0 var(--sf-range, 50px);
+    }
+    @supports not (animation-timeline: scroll()) {
+        --sf-t: 1;
+    }
+}
+@utility fade-b {
+    @apply sf-mask sf-edge-b;
+    @supports (animation-timeline: scroll()) {
+        animation: sf-reveal-b auto linear both;
+        animation-timeline: scroll(self y);
+        animation-range: calc(100% - var(--sf-range, 50px)) 100%;
+    }
+    @supports not (animation-timeline: scroll()) {
+        --sf-b: 1;
+    }
+}
+@utility fade-l {
+    @apply sf-mask sf-edge-l;
+    @supports (animation-timeline: scroll()) {
+        animation: sf-reveal-l auto linear both;
+        animation-timeline: scroll(self x);
+        animation-range: 0 var(--sf-range, 50px);
+    }
+    @supports not (animation-timeline: scroll()) {
+        --sf-l: 1;
+    }
+}
+@utility fade-r {
+    @apply sf-mask sf-edge-r;
+    @supports (animation-timeline: scroll()) {
+        animation: sf-reveal-r auto linear both;
+        animation-timeline: scroll(self x);
+        animation-range: calc(100% - var(--sf-range, 50px)) 100%;
+    }
+    @supports not (animation-timeline: scroll()) {
+        --sf-r: 1;
+    }
+}
+@utility fade-y {
+    @apply sf-mask sf-edge-t sf-edge-b;
+    @supports (animation-timeline: scroll()) {
+        animation:
+            sf-reveal-t auto linear both,
+            sf-reveal-b auto linear both;
+        animation-timeline: scroll(self y), scroll(self y);
+        animation-range:
+            0 var(--sf-range, 50px),
+            calc(100% - var(--sf-range, 50px)) 100%;
+    }
+    @supports not (animation-timeline: scroll()) {
+        --sf-t: 1;
+        --sf-b: 1;
+    }
+}
+@utility fade-x {
+    @apply sf-mask sf-edge-l sf-edge-r;
+    @supports (animation-timeline: scroll()) {
+        animation:
+            sf-reveal-l auto linear both,
+            sf-reveal-r auto linear both;
+        animation-timeline: scroll(self x), scroll(self x);
+        animation-range:
+            0 var(--sf-range, 50px),
+            calc(100% - var(--sf-range, 50px)) 100%;
+    }
+    @supports not (animation-timeline: scroll()) {
+        --sf-l: 1;
+        --sf-r: 1;
+    }
+}
+@utility fade-xy {
+    @apply sf-mask sf-edge-t sf-edge-b sf-edge-l sf-edge-r;
+    @supports (animation-timeline: scroll()) {
+        animation:
+            sf-reveal-t auto linear both,
+            sf-reveal-b auto linear both,
+            sf-reveal-l auto linear both,
+            sf-reveal-r auto linear both;
+        animation-timeline:
+            scroll(self y), scroll(self y), scroll(self x), scroll(self x);
+        animation-range:
+            0 var(--sf-range, 50px),
+            calc(100% - var(--sf-range, 50px)) 100%,
+            0 var(--sf-range, 50px),
+            calc(100% - var(--sf-range, 50px)) 100%;
+    }
+    @supports not (animation-timeline: scroll()) {
+        --sf-t: 1;
+        --sf-b: 1;
+        --sf-l: 1;
+        --sf-r: 1;
+    }
+}
+
+/* !important so the static fade outranks the running animation (which itself outranks normal author decls); order-independent vs the edge utility. */
+@utility fade-static {
+    --sf-t: 1 !important;
+    --sf-b: 1 !important;
+    --sf-l: 1 !important;
+    --sf-r: 1 !important;
+    animation-name: none;
+}

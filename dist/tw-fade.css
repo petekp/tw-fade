@@ -1,4 +1,459 @@
-/*! tw-fade — framework-free build. Generated from src/index.js; do not edit by hand. */
+/*! tw-fade — framework-free build for plain HTML / CDN.
+ * Generated from src/tw-fade.css; do not edit by hand. */
+@layer properties;
+.fade-xy {
+  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+  mask-composite: intersect;
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  --sf-mask-b: linear-gradient(
+        to top,
+        rgb(0 0 0 / calc(1 - var(--sf-b))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b))
+    );
+  --sf-mask-l: linear-gradient(
+        to right,
+        rgb(0 0 0 / calc(1 - var(--sf-l))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l))
+    );
+  --sf-mask-r: linear-gradient(
+        to left,
+        rgb(0 0 0 / calc(1 - var(--sf-r))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r))
+    );
+  --sf-mask-t: linear-gradient(
+        to bottom,
+        rgb(0 0 0 / calc(1 - var(--sf-t))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t))
+    );
+  @supports (animation-timeline: scroll()) {
+    animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
+    animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
+    animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+  }
+  @supports not (animation-timeline: scroll()) {
+    --sf-t: 1;
+    --sf-b: 1;
+    --sf-l: 1;
+    --sf-r: 1;
+  }
+}
+.fade-x {
+  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+  mask-composite: intersect;
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  --sf-mask-l: linear-gradient(
+        to right,
+        rgb(0 0 0 / calc(1 - var(--sf-l))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l))
+    );
+  --sf-mask-r: linear-gradient(
+        to left,
+        rgb(0 0 0 / calc(1 - var(--sf-r))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r))
+    );
+  @supports (animation-timeline: scroll()) {
+    animation: sf-reveal-l auto linear both, sf-reveal-r auto linear both;
+    animation-timeline: scroll(self x), scroll(self x);
+    animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+  }
+  @supports not (animation-timeline: scroll()) {
+    --sf-l: 1;
+    --sf-r: 1;
+  }
+}
+.fade-y {
+  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+  mask-composite: intersect;
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  --sf-mask-b: linear-gradient(
+        to top,
+        rgb(0 0 0 / calc(1 - var(--sf-b))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b))
+    );
+  --sf-mask-t: linear-gradient(
+        to bottom,
+        rgb(0 0 0 / calc(1 - var(--sf-t))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t))
+    );
+  @supports (animation-timeline: scroll()) {
+    animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both;
+    animation-timeline: scroll(self y), scroll(self y);
+    animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+  }
+  @supports not (animation-timeline: scroll()) {
+    --sf-t: 1;
+    --sf-b: 1;
+  }
+}
+.fade-b {
+  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+  mask-composite: intersect;
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  --sf-mask-b: linear-gradient(
+        to top,
+        rgb(0 0 0 / calc(1 - var(--sf-b))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b))
+    );
+  @supports (animation-timeline: scroll()) {
+    animation: sf-reveal-b auto linear both;
+    animation-timeline: scroll(self y);
+    animation-range: calc(100% - var(--sf-range, 50px)) 100%;
+  }
+  @supports not (animation-timeline: scroll()) {
+    --sf-b: 1;
+  }
+}
+.fade-l {
+  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+  mask-composite: intersect;
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  --sf-mask-l: linear-gradient(
+        to right,
+        rgb(0 0 0 / calc(1 - var(--sf-l))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l))
+    );
+  @supports (animation-timeline: scroll()) {
+    animation: sf-reveal-l auto linear both;
+    animation-timeline: scroll(self x);
+    animation-range: 0 var(--sf-range, 50px);
+  }
+  @supports not (animation-timeline: scroll()) {
+    --sf-l: 1;
+  }
+}
+.fade-r {
+  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+  mask-composite: intersect;
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  --sf-mask-r: linear-gradient(
+        to left,
+        rgb(0 0 0 / calc(1 - var(--sf-r))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r))
+    );
+  @supports (animation-timeline: scroll()) {
+    animation: sf-reveal-r auto linear both;
+    animation-timeline: scroll(self x);
+    animation-range: calc(100% - var(--sf-range, 50px)) 100%;
+  }
+  @supports not (animation-timeline: scroll()) {
+    --sf-r: 1;
+  }
+}
+.fade-t {
+  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+  mask-composite: intersect;
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  --sf-mask-t: linear-gradient(
+        to bottom,
+        rgb(0 0 0 / calc(1 - var(--sf-t))) 0,
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017))
+            calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t))
+    );
+  @supports (animation-timeline: scroll()) {
+    animation: sf-reveal-t auto linear both;
+    animation-timeline: scroll(self y);
+    animation-range: 0 var(--sf-range, 50px);
+  }
+  @supports not (animation-timeline: scroll()) {
+    --sf-t: 1;
+  }
+}
+.fade-static {
+  --sf-t: 1 !important;
+  --sf-b: 1 !important;
+  --sf-l: 1 !important;
+  --sf-r: 1 !important;
+  animation-name: none;
+}
+.fade-range-lg {
+  --sf-range: var(--fade-range-lg);
+}
+.fade-range-md {
+  --sf-range: var(--fade-range-md);
+}
+.fade-range-sm {
+  --sf-range: var(--fade-range-sm);
+}
+.fade-size-lg {
+  --sf-size: var(--fade-size-lg);
+}
+.fade-size-md {
+  --sf-size: var(--fade-size-md);
+}
+.fade-size-sm {
+  --sf-size: var(--fade-size-sm);
+}
+/*! tw-fade — CSS scroll-edge fade masking for Tailwind v4. MIT · github.com/petekp/tw-fade */
 @property --sf-t {
   syntax: "<number>";
   inherits: false;
@@ -26,6 +481,14 @@
 @property --sf-range {
   syntax: "*";
   inherits: false;
+}
+:root, :host {
+  --fade-size-sm: 2.5rem;
+  --fade-size-md: 3.125rem;
+  --fade-size-lg: 4.375rem;
+  --fade-range-sm: 24px;
+  --fade-range-md: 50px;
+  --fade-range-lg: 96px;
 }
 @keyframes sf-reveal-t {
   from {
@@ -59,125 +522,15 @@
     --sf-r: 0;
   }
 }
-@supports (animation-timeline: scroll()) {
-  .fade-t, .fade-b, .fade-y {
-    animation-name: sf-reveal-t, sf-reveal-b;
-    animation-duration: auto, auto;
-    animation-timing-function: linear, linear;
-    animation-fill-mode: both, both;
-    animation-timeline: scroll(self block), scroll(self block);
-    animation-range-start: 0, calc(100% - var(--sf-range, 50px));
-    animation-range-end: var(--sf-range, 50px), 100%;
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --sf-t: 0;
+      --sf-b: 0;
+      --sf-l: 0;
+      --sf-r: 0;
+      --sf-size: initial;
+      --sf-range: initial;
+    }
   }
-  .fade-l, .fade-r, .fade-x {
-    animation-name: sf-reveal-l, sf-reveal-r;
-    animation-duration: auto, auto;
-    animation-timing-function: linear, linear;
-    animation-fill-mode: both, both;
-    animation-timeline: scroll(self inline), scroll(self inline);
-    animation-range-start: 0, calc(100% - var(--sf-range, 50px));
-    animation-range-end: var(--sf-range, 50px), 100%;
-  }
-  .fade-xy {
-    animation-name: sf-reveal-t, sf-reveal-b, sf-reveal-l, sf-reveal-r;
-    animation-duration: auto, auto, auto, auto;
-    animation-timing-function: linear, linear, linear, linear;
-    animation-fill-mode: both, both, both, both;
-    animation-timeline: scroll(self block), scroll(self block), scroll(self inline), scroll(self inline);
-    animation-range-start: 0, calc(100% - var(--sf-range, 50px)), 0, calc(100% - var(--sf-range, 50px));
-    animation-range-end: var(--sf-range, 50px), 100%, var(--sf-range, 50px), 100%;
-  }
-}
-@supports not (animation-timeline: scroll()) {
-  .fade-t, .fade-y, .fade-xy {
-    --sf-t: 1;
-  }
-  .fade-b, .fade-y, .fade-xy {
-    --sf-b: 1;
-  }
-  .fade-l, .fade-x, .fade-xy {
-    --sf-l: 1;
-  }
-  .fade-r, .fade-x, .fade-xy {
-    --sf-r: 1;
-  }
-}
-.fade-t {
-  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-  mask-repeat: no-repeat;
-  mask-size: 100% 100%;
-  mask-composite: intersect;
-  --sf-mask-t: linear-gradient(to bottom, rgb(0 0 0 / calc(1 - var(--sf-t))) 0, rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t)));
-}
-.fade-b {
-  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-  mask-repeat: no-repeat;
-  mask-size: 100% 100%;
-  mask-composite: intersect;
-  --sf-mask-b: linear-gradient(to top, rgb(0 0 0 / calc(1 - var(--sf-b))) 0, rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b)));
-}
-.fade-l {
-  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-  mask-repeat: no-repeat;
-  mask-size: 100% 100%;
-  mask-composite: intersect;
-  --sf-mask-l: linear-gradient(to right, rgb(0 0 0 / calc(1 - var(--sf-l))) 0, rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l)));
-}
-.fade-r {
-  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-  mask-repeat: no-repeat;
-  mask-size: 100% 100%;
-  mask-composite: intersect;
-  --sf-mask-r: linear-gradient(to left, rgb(0 0 0 / calc(1 - var(--sf-r))) 0, rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r)));
-}
-.fade-y {
-  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-  mask-repeat: no-repeat;
-  mask-size: 100% 100%;
-  mask-composite: intersect;
-  --sf-mask-t: linear-gradient(to bottom, rgb(0 0 0 / calc(1 - var(--sf-t))) 0, rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t)));
-  --sf-mask-b: linear-gradient(to top, rgb(0 0 0 / calc(1 - var(--sf-b))) 0, rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b)));
-}
-.fade-x {
-  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-  mask-repeat: no-repeat;
-  mask-size: 100% 100%;
-  mask-composite: intersect;
-  --sf-mask-l: linear-gradient(to right, rgb(0 0 0 / calc(1 - var(--sf-l))) 0, rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l)));
-  --sf-mask-r: linear-gradient(to left, rgb(0 0 0 / calc(1 - var(--sf-r))) 0, rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r)));
-}
-.fade-xy {
-  mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-  mask-repeat: no-repeat;
-  mask-size: 100% 100%;
-  mask-composite: intersect;
-  --sf-mask-t: linear-gradient(to bottom, rgb(0 0 0 / calc(1 - var(--sf-t))) 0, rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t)));
-  --sf-mask-b: linear-gradient(to top, rgb(0 0 0 / calc(1 - var(--sf-b))) 0, rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b)));
-  --sf-mask-l: linear-gradient(to right, rgb(0 0 0 / calc(1 - var(--sf-l))) 0, rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l)));
-  --sf-mask-r: linear-gradient(to left, rgb(0 0 0 / calc(1 - var(--sf-r))) 0, rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r)));
-}
-.fade-static {
-  --sf-t: 1;
-  --sf-b: 1;
-  --sf-l: 1;
-  --sf-r: 1;
-  animation-name: none;
-}
-.fade-size-sm {
-  --sf-size: 2.5rem;
-}
-.fade-size-md {
-  --sf-size: 3.125rem;
-}
-.fade-size-lg {
-  --sf-size: 4.375rem;
-}
-.fade-range-sm {
-  --sf-range: 24px;
-}
-.fade-range-md {
-  --sf-range: 50px;
-}
-.fade-range-lg {
-  --sf-range: 96px;
 }

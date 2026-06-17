@@ -1,1115 +1,854 @@
-*, ::before, ::after {
-  --tw-border-spacing-x: 0;
-  --tw-border-spacing-y: 0;
-  --tw-translate-x: 0;
-  --tw-translate-y: 0;
-  --tw-rotate: 0;
-  --tw-skew-x: 0;
-  --tw-skew-y: 0;
-  --tw-scale-x: 1;
-  --tw-scale-y: 1;
-  --tw-pan-x:  ;
-  --tw-pan-y:  ;
-  --tw-pinch-zoom:  ;
-  --tw-scroll-snap-strictness: proximity;
-  --tw-gradient-from-position:  ;
-  --tw-gradient-via-position:  ;
-  --tw-gradient-to-position:  ;
-  --tw-ordinal:  ;
-  --tw-slashed-zero:  ;
-  --tw-numeric-figure:  ;
-  --tw-numeric-spacing:  ;
-  --tw-numeric-fraction:  ;
-  --tw-ring-inset:  ;
-  --tw-ring-offset-width: 0px;
-  --tw-ring-offset-color: #fff;
-  --tw-ring-color: rgb(59 130 246 / 0.5);
-  --tw-ring-offset-shadow: 0 0 #0000;
-  --tw-ring-shadow: 0 0 #0000;
-  --tw-shadow: 0 0 #0000;
-  --tw-shadow-colored: 0 0 #0000;
-  --tw-blur:  ;
-  --tw-brightness:  ;
-  --tw-contrast:  ;
-  --tw-grayscale:  ;
-  --tw-hue-rotate:  ;
-  --tw-invert:  ;
-  --tw-saturate:  ;
-  --tw-sepia:  ;
-  --tw-drop-shadow:  ;
-  --tw-backdrop-blur:  ;
-  --tw-backdrop-brightness:  ;
-  --tw-backdrop-contrast:  ;
-  --tw-backdrop-grayscale:  ;
-  --tw-backdrop-hue-rotate:  ;
-  --tw-backdrop-invert:  ;
-  --tw-backdrop-opacity:  ;
-  --tw-backdrop-saturate:  ;
-  --tw-backdrop-sepia:  ;
-  --tw-contain-size:  ;
-  --tw-contain-layout:  ;
-  --tw-contain-paint:  ;
-  --tw-contain-style:  ;
+/*! tailwindcss v4.3.1 | MIT License | https://tailwindcss.com */
+@layer properties;
+@layer theme, base, components, utilities;
+@layer theme {
+  :root, :host {
+    --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
+    --color-emerald-300: oklch(84.5% 0.143 164.978);
+    --color-emerald-400: oklch(76.5% 0.177 163.223);
+    --color-emerald-500: oklch(69.6% 0.17 162.48);
+    --color-neutral-200: oklch(92.2% 0 0);
+    --color-neutral-300: oklch(87% 0 0);
+    --color-neutral-400: oklch(70.8% 0 0);
+    --color-neutral-500: oklch(55.6% 0 0);
+    --color-neutral-800: oklch(26.9% 0 0);
+    --color-neutral-900: oklch(20.5% 0 0);
+    --color-neutral-950: oklch(14.5% 0 0);
+    --color-white: #fff;
+    --spacing: 0.25rem;
+    --container-2xl: 42rem;
+    --container-6xl: 72rem;
+    --text-xs: 0.75rem;
+    --text-xs--line-height: calc(1 / 0.75);
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
+    --text-lg: 1.125rem;
+    --text-lg--line-height: calc(1.75 / 1.125);
+    --text-4xl: 2.25rem;
+    --text-4xl--line-height: calc(2.5 / 2.25);
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --tracking-tight: -0.025em;
+    --leading-relaxed: 1.625;
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+    --default-font-family: var(--font-sans);
+    --default-mono-font-family: var(--font-mono);
+    --fade-size-sm: 2.5rem;
+    --fade-size-md: 3.125rem;
+    --fade-size-lg: 4.375rem;
+    --fade-range-sm: 24px;
+    --fade-range-md: 50px;
+    --fade-range-lg: 96px;
+  }
 }
-
-::backdrop {
-  --tw-border-spacing-x: 0;
-  --tw-border-spacing-y: 0;
-  --tw-translate-x: 0;
-  --tw-translate-y: 0;
-  --tw-rotate: 0;
-  --tw-skew-x: 0;
-  --tw-skew-y: 0;
-  --tw-scale-x: 1;
-  --tw-scale-y: 1;
-  --tw-pan-x:  ;
-  --tw-pan-y:  ;
-  --tw-pinch-zoom:  ;
-  --tw-scroll-snap-strictness: proximity;
-  --tw-gradient-from-position:  ;
-  --tw-gradient-via-position:  ;
-  --tw-gradient-to-position:  ;
-  --tw-ordinal:  ;
-  --tw-slashed-zero:  ;
-  --tw-numeric-figure:  ;
-  --tw-numeric-spacing:  ;
-  --tw-numeric-fraction:  ;
-  --tw-ring-inset:  ;
-  --tw-ring-offset-width: 0px;
-  --tw-ring-offset-color: #fff;
-  --tw-ring-color: rgb(59 130 246 / 0.5);
-  --tw-ring-offset-shadow: 0 0 #0000;
-  --tw-ring-shadow: 0 0 #0000;
-  --tw-shadow: 0 0 #0000;
-  --tw-shadow-colored: 0 0 #0000;
-  --tw-blur:  ;
-  --tw-brightness:  ;
-  --tw-contrast:  ;
-  --tw-grayscale:  ;
-  --tw-hue-rotate:  ;
-  --tw-invert:  ;
-  --tw-saturate:  ;
-  --tw-sepia:  ;
-  --tw-drop-shadow:  ;
-  --tw-backdrop-blur:  ;
-  --tw-backdrop-brightness:  ;
-  --tw-backdrop-contrast:  ;
-  --tw-backdrop-grayscale:  ;
-  --tw-backdrop-hue-rotate:  ;
-  --tw-backdrop-invert:  ;
-  --tw-backdrop-opacity:  ;
-  --tw-backdrop-saturate:  ;
-  --tw-backdrop-sepia:  ;
-  --tw-contain-size:  ;
-  --tw-contain-layout:  ;
-  --tw-contain-paint:  ;
-  --tw-contain-style:  ;
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+  }
+  html, :host {
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    font-family: var(--default-font-family, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    font-feature-settings: var(--default-font-feature-settings, normal);
+    font-variation-settings: var(--default-font-variation-settings, normal);
+    -webkit-tap-highlight-color: transparent;
+  }
+  hr {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
+  }
+  abbr:where([title]) {
+    -webkit-text-decoration: underline dotted;
+    text-decoration: underline dotted;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+  a {
+    color: inherit;
+    -webkit-text-decoration: inherit;
+    text-decoration: inherit;
+  }
+  b, strong {
+    font-weight: bolder;
+  }
+  code, kbd, samp, pre {
+    font-family: var(--default-mono-font-family, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+    font-feature-settings: var(--default-mono-font-feature-settings, normal);
+    font-variation-settings: var(--default-mono-font-variation-settings, normal);
+    font-size: 1em;
+  }
+  small {
+    font-size: 80%;
+  }
+  sub, sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+  sub {
+    bottom: -0.25em;
+  }
+  sup {
+    top: -0.5em;
+  }
+  table {
+    text-indent: 0;
+    border-color: inherit;
+    border-collapse: collapse;
+  }
+  :-moz-focusring {
+    outline: auto;
+  }
+  progress {
+    vertical-align: baseline;
+  }
+  summary {
+    display: list-item;
+  }
+  ol, ul, menu {
+    list-style: none;
+  }
+  img, svg, video, canvas, audio, iframe, embed, object {
+    display: block;
+    vertical-align: middle;
+  }
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+  button, input, select, optgroup, textarea, ::file-selector-button {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    border-radius: 0;
+    background-color: transparent;
+    opacity: 1;
+  }
+  :where(select:is([multiple], [size])) optgroup {
+    font-weight: bolder;
+  }
+  :where(select:is([multiple], [size])) optgroup option {
+    padding-inline-start: 20px;
+  }
+  ::file-selector-button {
+    margin-inline-end: 4px;
+  }
+  ::placeholder {
+    opacity: 1;
+  }
+  @supports (not (-webkit-appearance: -apple-pay-button))  or (contain-intrinsic-size: 1px) {
+    ::placeholder {
+      color: currentcolor;
+      @supports (color: color-mix(in lab, red, red)) {
+        color: color-mix(in oklab, currentcolor 50%, transparent);
+      }
+    }
+  }
+  textarea {
+    resize: vertical;
+  }
+  ::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+  ::-webkit-date-and-time-value {
+    min-height: 1lh;
+    text-align: inherit;
+  }
+  ::-webkit-datetime-edit {
+    display: inline-flex;
+  }
+  ::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+  ::-webkit-datetime-edit, ::-webkit-datetime-edit-year-field, ::-webkit-datetime-edit-month-field, ::-webkit-datetime-edit-day-field, ::-webkit-datetime-edit-hour-field, ::-webkit-datetime-edit-minute-field, ::-webkit-datetime-edit-second-field, ::-webkit-datetime-edit-millisecond-field, ::-webkit-datetime-edit-meridiem-field {
+    padding-block: 0;
+  }
+  ::-webkit-calendar-picker-indicator {
+    line-height: 1;
+  }
+  :-moz-ui-invalid {
+    box-shadow: none;
+  }
+  button, input:where([type="button"], [type="reset"], [type="submit"]), ::file-selector-button {
+    appearance: button;
+  }
+  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+    height: auto;
+  }
+  [hidden]:where(:not([hidden="until-found"])) {
+    display: none !important;
+  }
 }
-
-/*
-! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com
-*/
-
-/*
-1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
-2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
-*/
-
-*,
-::before,
-::after {
-  box-sizing: border-box;
-  /* 1 */
-  border-width: 0;
-  /* 2 */
-  border-style: solid;
-  /* 2 */
-  border-color: #e5e7eb;
-  /* 2 */
+@layer utilities {
+  .collapse {
+    visibility: collapse;
+  }
+  .visible {
+    visibility: visible;
+  }
+  .absolute {
+    position: absolute;
+  }
+  .fixed {
+    position: fixed;
+  }
+  .relative {
+    position: relative;
+  }
+  .static {
+    position: static;
+  }
+  .container {
+    width: 100%;
+    @media (width >= 40rem) {
+      max-width: 40rem;
+    }
+    @media (width >= 48rem) {
+      max-width: 48rem;
+    }
+    @media (width >= 64rem) {
+      max-width: 64rem;
+    }
+    @media (width >= 80rem) {
+      max-width: 80rem;
+    }
+    @media (width >= 96rem) {
+      max-width: 96rem;
+    }
+  }
+  .mx-auto {
+    margin-inline: auto;
+  }
+  .mt-4 {
+    margin-top: calc(var(--spacing) * 4);
+  }
+  .mt-12 {
+    margin-top: calc(var(--spacing) * 12);
+  }
+  .mt-16 {
+    margin-top: calc(var(--spacing) * 16);
+  }
+  .mr-2 {
+    margin-right: calc(var(--spacing) * 2);
+  }
+  .mb-3 {
+    margin-bottom: calc(var(--spacing) * 3);
+  }
+  .mb-14 {
+    margin-bottom: calc(var(--spacing) * 14);
+  }
+  .block {
+    display: block;
+  }
+  .flex {
+    display: flex;
+  }
+  .grid {
+    display: grid;
+  }
+  .hidden {
+    display: none;
+  }
+  .inline {
+    display: inline;
+  }
+  .h-40 {
+    height: calc(var(--spacing) * 40);
+  }
+  .h-72 {
+    height: calc(var(--spacing) * 72);
+  }
+  .h-80 {
+    height: calc(var(--spacing) * 80);
+  }
+  .h-96 {
+    height: calc(var(--spacing) * 96);
+  }
+  .h-full {
+    height: 100%;
+  }
+  .w-56 {
+    width: calc(var(--spacing) * 56);
+  }
+  .max-w-2xl {
+    max-width: var(--container-2xl);
+  }
+  .max-w-6xl {
+    max-width: var(--container-6xl);
+  }
+  .shrink-0 {
+    flex-shrink: 0;
+  }
+  .fade-xy {
+    mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+    mask-composite: intersect;
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+    --sf-mask-b: linear-gradient(to top, rgb(0 0 0 / calc(1 - var(--sf-b))) 0, rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b)));
+    --sf-mask-l: linear-gradient(to right, rgb(0 0 0 / calc(1 - var(--sf-l))) 0, rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l)));
+    --sf-mask-r: linear-gradient(to left, rgb(0 0 0 / calc(1 - var(--sf-r))) 0, rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r)));
+    --sf-mask-t: linear-gradient(to bottom, rgb(0 0 0 / calc(1 - var(--sf-t))) 0, rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t)));
+    @supports (animation-timeline: scroll()) {
+      animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
+      animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
+      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+    }
+    @supports not (animation-timeline: scroll()) {
+      --sf-t: 1;
+      --sf-b: 1;
+      --sf-l: 1;
+      --sf-r: 1;
+    }
+  }
+  .fade-x {
+    mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+    mask-composite: intersect;
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+    --sf-mask-l: linear-gradient(to right, rgb(0 0 0 / calc(1 - var(--sf-l))) 0, rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l)));
+    --sf-mask-r: linear-gradient(to left, rgb(0 0 0 / calc(1 - var(--sf-r))) 0, rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r)));
+    @supports (animation-timeline: scroll()) {
+      animation: sf-reveal-l auto linear both, sf-reveal-r auto linear both;
+      animation-timeline: scroll(self x), scroll(self x);
+      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+    }
+    @supports not (animation-timeline: scroll()) {
+      --sf-l: 1;
+      --sf-r: 1;
+    }
+  }
+  .fade-y {
+    mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+    mask-composite: intersect;
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+    --sf-mask-b: linear-gradient(to top, rgb(0 0 0 / calc(1 - var(--sf-b))) 0, rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b)));
+    --sf-mask-t: linear-gradient(to bottom, rgb(0 0 0 / calc(1 - var(--sf-t))) 0, rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t)));
+    @supports (animation-timeline: scroll()) {
+      animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both;
+      animation-timeline: scroll(self y), scroll(self y);
+      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+    }
+    @supports not (animation-timeline: scroll()) {
+      --sf-t: 1;
+      --sf-b: 1;
+    }
+  }
+  .fade-b {
+    mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+    mask-composite: intersect;
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+    --sf-mask-b: linear-gradient(to top, rgb(0 0 0 / calc(1 - var(--sf-b))) 0, rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b)));
+    @supports (animation-timeline: scroll()) {
+      animation: sf-reveal-b auto linear both;
+      animation-timeline: scroll(self y);
+      animation-range: calc(100% - var(--sf-range, 50px)) 100%;
+    }
+    @supports not (animation-timeline: scroll()) {
+      --sf-b: 1;
+    }
+  }
+  .fade-l {
+    mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+    mask-composite: intersect;
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+    --sf-mask-l: linear-gradient(to right, rgb(0 0 0 / calc(1 - var(--sf-l))) 0, rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l)));
+    @supports (animation-timeline: scroll()) {
+      animation: sf-reveal-l auto linear both;
+      animation-timeline: scroll(self x);
+      animation-range: 0 var(--sf-range, 50px);
+    }
+    @supports not (animation-timeline: scroll()) {
+      --sf-l: 1;
+    }
+  }
+  .fade-r {
+    mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+    mask-composite: intersect;
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+    --sf-mask-r: linear-gradient(to left, rgb(0 0 0 / calc(1 - var(--sf-r))) 0, rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r)));
+    @supports (animation-timeline: scroll()) {
+      animation: sf-reveal-r auto linear both;
+      animation-timeline: scroll(self x);
+      animation-range: calc(100% - var(--sf-range, 50px)) 100%;
+    }
+    @supports not (animation-timeline: scroll()) {
+      --sf-r: 1;
+    }
+  }
+  .fade-t {
+    mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
+    mask-composite: intersect;
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+    --sf-mask-t: linear-gradient(to bottom, rgb(0 0 0 / calc(1 - var(--sf-t))) 0, rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t)));
+    @supports (animation-timeline: scroll()) {
+      animation: sf-reveal-t auto linear both;
+      animation-timeline: scroll(self y);
+      animation-range: 0 var(--sf-range, 50px);
+    }
+    @supports not (animation-timeline: scroll()) {
+      --sf-t: 1;
+    }
+  }
+  .flex-col {
+    flex-direction: column;
+  }
+  .items-baseline {
+    align-items: baseline;
+  }
+  .justify-between {
+    justify-content: space-between;
+  }
+  .gap-4 {
+    gap: calc(var(--spacing) * 4);
+  }
+  .gap-8 {
+    gap: calc(var(--spacing) * 8);
+  }
+  .space-y-3 {
+    :where(& > :not(:last-child)) {
+      --tw-space-y-reverse: 0;
+      margin-block-start: calc(calc(var(--spacing) * 3) * var(--tw-space-y-reverse));
+      margin-block-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-y-reverse)));
+    }
+  }
+  .overflow-hidden {
+    overflow: hidden;
+  }
+  .overflow-x-auto {
+    overflow-x: auto;
+  }
+  .overflow-y-auto {
+    overflow-y: auto;
+  }
+  .rounded {
+    border-radius: 0.25rem;
+  }
+  .rounded-2xl {
+    border-radius: var(--radius-2xl);
+  }
+  .rounded-xl {
+    border-radius: var(--radius-xl);
+  }
+  .border {
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+  }
+  .border-t {
+    border-top-style: var(--tw-border-style);
+    border-top-width: 1px;
+  }
+  .border-b {
+    border-bottom-style: var(--tw-border-style);
+    border-bottom-width: 1px;
+  }
+  .border-white\/5 {
+    border-color: color-mix(in srgb, #fff 5%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-white) 5%, transparent);
+    }
+  }
+  .border-white\/10 {
+    border-color: color-mix(in srgb, #fff 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-white) 10%, transparent);
+    }
+  }
+  .bg-neutral-800 {
+    background-color: var(--color-neutral-800);
+  }
+  .bg-neutral-800\/60 {
+    background-color: color-mix(in srgb, oklch(26.9% 0 0) 60%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-neutral-800) 60%, transparent);
+    }
+  }
+  .bg-neutral-900\/60 {
+    background-color: color-mix(in srgb, oklch(20.5% 0 0) 60%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-neutral-900) 60%, transparent);
+    }
+  }
+  .bg-neutral-950 {
+    background-color: var(--color-neutral-950);
+  }
+  .bg-transparent {
+    background-color: transparent;
+  }
+  .mask-repeat {
+    mask-repeat: repeat;
+  }
+  .p-1\.5 {
+    padding: calc(var(--spacing) * 1.5);
+  }
+  .p-4 {
+    padding: calc(var(--spacing) * 4);
+  }
+  .px-1\.5 {
+    padding-inline: calc(var(--spacing) * 1.5);
+  }
+  .px-5 {
+    padding-inline: calc(var(--spacing) * 5);
+  }
+  .px-6 {
+    padding-inline: calc(var(--spacing) * 6);
+  }
+  .py-0\.5 {
+    padding-block: calc(var(--spacing) * 0.5);
+  }
+  .py-4 {
+    padding-block: calc(var(--spacing) * 4);
+  }
+  .py-5 {
+    padding-block: calc(var(--spacing) * 5);
+  }
+  .py-16 {
+    padding-block: calc(var(--spacing) * 16);
+  }
+  .pt-6 {
+    padding-top: calc(var(--spacing) * 6);
+  }
+  .pb-3 {
+    padding-bottom: calc(var(--spacing) * 3);
+  }
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+  .text-4xl {
+    font-size: var(--text-4xl);
+    line-height: var(--tw-leading, var(--text-4xl--line-height));
+  }
+  .text-lg {
+    font-size: var(--text-lg);
+    line-height: var(--tw-leading, var(--text-lg--line-height));
+  }
+  .text-sm {
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+  }
+  .text-xs {
+    font-size: var(--text-xs);
+    line-height: var(--tw-leading, var(--text-xs--line-height));
+  }
+  .leading-relaxed {
+    --tw-leading: var(--leading-relaxed);
+    line-height: var(--leading-relaxed);
+  }
+  .font-medium {
+    --tw-font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-medium);
+  }
+  .font-semibold {
+    --tw-font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-semibold);
+  }
+  .tracking-\[0\.2em\] {
+    --tw-tracking: 0.2em;
+    letter-spacing: 0.2em;
+  }
+  .tracking-tight {
+    --tw-tracking: var(--tracking-tight);
+    letter-spacing: var(--tracking-tight);
+  }
+  .text-emerald-300 {
+    color: var(--color-emerald-300);
+  }
+  .text-emerald-400 {
+    color: var(--color-emerald-400);
+  }
+  .text-emerald-500\/70 {
+    color: color-mix(in srgb, oklch(69.6% 0.17 162.48) 70%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      color: color-mix(in oklab, var(--color-emerald-500) 70%, transparent);
+    }
+  }
+  .text-neutral-200 {
+    color: var(--color-neutral-200);
+  }
+  .text-neutral-300 {
+    color: var(--color-neutral-300);
+  }
+  .text-neutral-400 {
+    color: var(--color-neutral-400);
+  }
+  .text-neutral-500 {
+    color: var(--color-neutral-500);
+  }
+  .text-white {
+    color: var(--color-white);
+  }
+  .uppercase {
+    text-transform: uppercase;
+  }
+  .antialiased {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .shadow-2xl {
+    --tw-shadow: 0 25px 50px -12px var(--tw-shadow-color, rgb(0 0 0 / 0.25));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .fade-static {
+    --sf-t: 1 !important;
+    --sf-b: 1 !important;
+    --sf-l: 1 !important;
+    --sf-r: 1 !important;
+    animation-name: none;
+  }
+  .fade-range-\[80px\] {
+    --sf-range: 80px;
+  }
+  .fade-range-lg {
+    --sf-range: var(--fade-range-lg);
+  }
+  .fade-size-\[6rem\] {
+    --sf-size: 6rem;
+  }
+  .fade-size-\[120px\] {
+    --sf-size: 120px;
+  }
+  .fade-size-lg {
+    --sf-size: var(--fade-size-lg);
+  }
+  .fade-size-sm {
+    --sf-size: var(--fade-size-sm);
+  }
+  .md\:grid-cols-2 {
+    @media (width >= 48rem) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .lg\:grid-cols-3 {
+    @media (width >= 64rem) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
 }
-
-::before,
-::after {
-  --tw-content: '';
-}
-
-/*
-1. Use a consistent sensible line-height in all browsers.
-2. Prevent adjustments of font size after orientation changes in iOS.
-3. Use a more readable tab size.
-4. Use the user's configured `sans` font-family by default.
-5. Use the user's configured `sans` font-feature-settings by default.
-6. Use the user's configured `sans` font-variation-settings by default.
-7. Disable tap highlights on iOS
-*/
-
-html,
-:host {
-  line-height: 1.5;
-  /* 1 */
-  -webkit-text-size-adjust: 100%;
-  /* 2 */
-  -moz-tab-size: 4;
-  /* 3 */
-  -o-tab-size: 4;
-     tab-size: 4;
-  /* 3 */
-  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  /* 4 */
-  font-feature-settings: normal;
-  /* 5 */
-  font-variation-settings: normal;
-  /* 6 */
-  -webkit-tap-highlight-color: transparent;
-  /* 7 */
-}
-
-/*
-1. Remove the margin in all browsers.
-2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
-*/
-
-body {
-  margin: 0;
-  /* 1 */
-  line-height: inherit;
-  /* 2 */
-}
-
-/*
-1. Add the correct height in Firefox.
-2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
-3. Ensure horizontal rules are visible by default.
-*/
-
-hr {
-  height: 0;
-  /* 1 */
-  color: inherit;
-  /* 2 */
-  border-top-width: 1px;
-  /* 3 */
-}
-
-/*
-Add the correct text decoration in Chrome, Edge, and Safari.
-*/
-
-abbr:where([title]) {
-  -webkit-text-decoration: underline dotted;
-          text-decoration: underline dotted;
-}
-
-/*
-Remove the default font size and weight for headings.
-*/
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-size: inherit;
-  font-weight: inherit;
-}
-
-/*
-Reset links to optimize for opt-in styling instead of opt-out.
-*/
-
-a {
-  color: inherit;
-  text-decoration: inherit;
-}
-
-/*
-Add the correct font weight in Edge and Safari.
-*/
-
-b,
-strong {
-  font-weight: bolder;
-}
-
-/*
-1. Use the user's configured `mono` font-family by default.
-2. Use the user's configured `mono` font-feature-settings by default.
-3. Use the user's configured `mono` font-variation-settings by default.
-4. Correct the odd `em` font sizing in all browsers.
-*/
-
-code,
-kbd,
-samp,
-pre {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  /* 1 */
-  font-feature-settings: normal;
-  /* 2 */
-  font-variation-settings: normal;
-  /* 3 */
-  font-size: 1em;
-  /* 4 */
-}
-
-/*
-Add the correct font size in all browsers.
-*/
-
-small {
-  font-size: 80%;
-}
-
-/*
-Prevent `sub` and `sup` elements from affecting the line height in all browsers.
-*/
-
-sub,
-sup {
-  font-size: 75%;
-  line-height: 0;
-  position: relative;
-  vertical-align: baseline;
-}
-
-sub {
-  bottom: -0.25em;
-}
-
-sup {
-  top: -0.5em;
-}
-
-/*
-1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
-2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
-3. Remove gaps between table borders by default.
-*/
-
-table {
-  text-indent: 0;
-  /* 1 */
-  border-color: inherit;
-  /* 2 */
-  border-collapse: collapse;
-  /* 3 */
-}
-
-/*
-1. Change the font styles in all browsers.
-2. Remove the margin in Firefox and Safari.
-3. Remove default padding in all browsers.
-*/
-
-button,
-input,
-optgroup,
-select,
-textarea {
-  font-family: inherit;
-  /* 1 */
-  font-feature-settings: inherit;
-  /* 1 */
-  font-variation-settings: inherit;
-  /* 1 */
-  font-size: 100%;
-  /* 1 */
-  font-weight: inherit;
-  /* 1 */
-  line-height: inherit;
-  /* 1 */
-  letter-spacing: inherit;
-  /* 1 */
-  color: inherit;
-  /* 1 */
-  margin: 0;
-  /* 2 */
-  padding: 0;
-  /* 3 */
-}
-
-/*
-Remove the inheritance of text transform in Edge and Firefox.
-*/
-
-button,
-select {
-  text-transform: none;
-}
-
-/*
-1. Correct the inability to style clickable types in iOS and Safari.
-2. Remove default button styles.
-*/
-
-button,
-input:where([type='button']),
-input:where([type='reset']),
-input:where([type='submit']) {
-  -webkit-appearance: button;
-  /* 1 */
-  background-color: transparent;
-  /* 2 */
-  background-image: none;
-  /* 2 */
-}
-
-/*
-Use the modern Firefox focus style for all focusable elements.
-*/
-
-:-moz-focusring {
-  outline: auto;
-}
-
-/*
-Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
-*/
-
-:-moz-ui-invalid {
-  box-shadow: none;
-}
-
-/*
-Add the correct vertical alignment in Chrome and Firefox.
-*/
-
-progress {
-  vertical-align: baseline;
-}
-
-/*
-Correct the cursor style of increment and decrement buttons in Safari.
-*/
-
-::-webkit-inner-spin-button,
-::-webkit-outer-spin-button {
-  height: auto;
-}
-
-/*
-1. Correct the odd appearance in Chrome and Safari.
-2. Correct the outline style in Safari.
-*/
-
-[type='search'] {
-  -webkit-appearance: textfield;
-  /* 1 */
-  outline-offset: -2px;
-  /* 2 */
-}
-
-/*
-Remove the inner padding in Chrome and Safari on macOS.
-*/
-
-::-webkit-search-decoration {
-  -webkit-appearance: none;
-}
-
-/*
-1. Correct the inability to style clickable types in iOS and Safari.
-2. Change font properties to `inherit` in Safari.
-*/
-
-::-webkit-file-upload-button {
-  -webkit-appearance: button;
-  /* 1 */
-  font: inherit;
-  /* 2 */
-}
-
-/*
-Add the correct display in Chrome and Safari.
-*/
-
-summary {
-  display: list-item;
-}
-
-/*
-Removes the default spacing and border for appropriate elements.
-*/
-
-blockquote,
-dl,
-dd,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-hr,
-figure,
-p,
-pre {
-  margin: 0;
-}
-
-fieldset {
-  margin: 0;
-  padding: 0;
-}
-
-legend {
-  padding: 0;
-}
-
-ol,
-ul,
-menu {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-/*
-Reset default styling for dialogs.
-*/
-
-dialog {
-  padding: 0;
-}
-
-/*
-Prevent resizing textareas horizontally by default.
-*/
-
-textarea {
-  resize: vertical;
-}
-
-/*
-1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
-2. Set the default placeholder color to the user's configured gray 400 color.
-*/
-
-input::-moz-placeholder, textarea::-moz-placeholder {
-  opacity: 1;
-  /* 1 */
-  color: #9ca3af;
-  /* 2 */
-}
-
-input::placeholder,
-textarea::placeholder {
-  opacity: 1;
-  /* 1 */
-  color: #9ca3af;
-  /* 2 */
-}
-
-/*
-Set the default cursor for buttons.
-*/
-
-button,
-[role="button"] {
-  cursor: pointer;
-}
-
-/*
-Make sure disabled buttons don't get the pointer cursor.
-*/
-
-:disabled {
-  cursor: default;
-}
-
-/*
-1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
-2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
-   This can trigger a poorly considered lint error in some tools but is included by design.
-*/
-
-img,
-svg,
-video,
-canvas,
-audio,
-iframe,
-embed,
-object {
-  display: block;
-  /* 1 */
-  vertical-align: middle;
-  /* 2 */
-}
-
-/*
-Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
-*/
-
-img,
-video {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Make elements with the HTML hidden attribute stay hidden by default */
-
-[hidden]:where(:not([hidden="until-found"])) {
-  display: none;
-}
-
+/*!
+ * tw-fade — elegant, CSS-driven scroll-edge fade masking for Tailwind CSS v4.
+ *
+ * Usage (Tailwind v4, CSS-first):
+ *     @import "tailwindcss";
+ *     @import "tw-fade";
+ *
+ * Then add fade-t / fade-b / fade-l / fade-r (or the -x / -y / -xy axis
+ * shorthands) to any scroll container; its content dissolves into the surface at
+ * the chosen edges, scroll-gated, with ZERO JavaScript.
+ *
+ * HOW IT WORKS
+ * 1. MASK, not paint. Each edge is one layer of a 4-layer mask-image, composited
+ *    with mask-composite: intersect so edges clip independently. Unset edges fall
+ *    back to an opaque identity layer (linear-gradient(#000,#000)) that never clips.
+ * 2. A numeric "amount" per edge (--sf-t/-b/-l/-r, a registered <number> in [0,1])
+ *    drives each gradient: 0 = no fade, 1 = full fade. The amount scales BOTH the
+ *    gradient length and its alpha, matching the reference component's scaleY + opacity.
+ * 3. Scroll-gating IS the timeline: animation-timeline: scroll(self <axis>) animates
+ *    each amount across a fixed scroll window (--sf-range). Leading edges (top/left)
+ *    reveal over the first range; trailing edges (bottom/right) hide over the last.
+ *    The axis is PHYSICAL — scroll(self y) / scroll(self x), not the logical
+ *    block/inline — so the timeline tracks the same physical axis the mask gradients
+ *    paint (to bottom / to right …). Logical axes would desync under vertical
+ *    writing modes (block becomes horizontal), dimming a non-scrolling edge.
+ * 4. Graceful fallback. Amounts default to 0, so a non-scrollable container shows no
+ *    fade. In engines without scroll-driven animations (Firefox stable as of 2026),
+ *    the @supports-not branch pins active edges to a static always-on fade.
+ *
+ * The 13-stop smoothstep ramp below is lifted verbatim from the reference
+ * arc-design-studio ScrollEdgeFade component so the curve is visually identical.
+ */
 @property --sf-t {
   syntax: "<number>";
-
   inherits: false;
-
   initial-value: 0;
 }
-
 @property --sf-b {
   syntax: "<number>";
-
   inherits: false;
-
   initial-value: 0;
 }
-
 @property --sf-l {
   syntax: "<number>";
-
   inherits: false;
-
   initial-value: 0;
 }
-
 @property --sf-r {
   syntax: "<number>";
-
   inherits: false;
-
   initial-value: 0;
 }
-
 @property --sf-size {
   syntax: "*";
-
   inherits: false;
 }
-
 @property --sf-range {
   syntax: "*";
-
   inherits: false;
 }
-
 @keyframes sf-reveal-t {
   from {
     --sf-t: 0;
   }
-
   to {
     --sf-t: 1;
   }
 }
-
 @keyframes sf-reveal-b {
   from {
     --sf-b: 1;
   }
-
   to {
     --sf-b: 0;
   }
 }
-
 @keyframes sf-reveal-l {
   from {
     --sf-l: 0;
   }
-
   to {
     --sf-l: 1;
   }
 }
-
 @keyframes sf-reveal-r {
   from {
     --sf-r: 1;
   }
-
   to {
     --sf-r: 0;
   }
 }
-
-@supports (animation-timeline: scroll()) {
-  .fade-t, .fade-b, .fade-y {
-    animation-name: sf-reveal-t, sf-reveal-b;
-    animation-duration: auto, auto;
-    animation-timing-function: linear, linear;
-    animation-fill-mode: both, both;
-    animation-timeline: scroll(self block), scroll(self block);
-    animation-range-start: 0, calc(100% - var(--sf-range, 50px));
-    animation-range-end: var(--sf-range, 50px), 100%;
-  }
-
-  .fade-l, .fade-r, .fade-x {
-    animation-name: sf-reveal-l, sf-reveal-r;
-    animation-duration: auto, auto;
-    animation-timing-function: linear, linear;
-    animation-fill-mode: both, both;
-    animation-timeline: scroll(self inline), scroll(self inline);
-    animation-range-start: 0, calc(100% - var(--sf-range, 50px));
-    animation-range-end: var(--sf-range, 50px), 100%;
-  }
-
-  .fade-xy {
-    animation-name: sf-reveal-t, sf-reveal-b, sf-reveal-l, sf-reveal-r;
-    animation-duration: auto, auto, auto, auto;
-    animation-timing-function: linear, linear, linear, linear;
-    animation-fill-mode: both, both, both, both;
-    animation-timeline: scroll(self block), scroll(self block), scroll(self inline), scroll(self inline);
-    animation-range-start: 0, calc(100% - var(--sf-range, 50px)), 0, calc(100% - var(--sf-range, 50px));
-    animation-range-end: var(--sf-range, 50px), 100%, var(--sf-range, 50px), 100%;
-  }
-}
-
-@supports not (animation-timeline: scroll()) {
-  .fade-t, .fade-y, .fade-xy {
-    --sf-t: 1;
-  }
-
-  .fade-b, .fade-y, .fade-xy {
-    --sf-b: 1;
-  }
-
-  .fade-l, .fade-x, .fade-xy {
-    --sf-l: 1;
-  }
-
-  .fade-r, .fade-x, .fade-xy {
-    --sf-r: 1;
-  }
-}
-
-.container {
-  width: 100%;
-}
-
-@media (min-width: 640px) {
-  .container {
-    max-width: 640px;
-  }
-}
-
-@media (min-width: 768px) {
-  .container {
-    max-width: 768px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .container {
-    max-width: 1024px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .container {
-    max-width: 1280px;
-  }
-}
-
-@media (min-width: 1536px) {
-  .container {
-    max-width: 1536px;
-  }
-}
-
-.visible {
-  visibility: visible;
-}
-
-.static {
-  position: static;
-}
-
-.fixed {
-  position: fixed;
-}
-
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.mb-14 {
-  margin-bottom: 3.5rem;
-}
-
-.mb-3 {
-  margin-bottom: 0.75rem;
-}
-
-.mr-2 {
-  margin-right: 0.5rem;
-}
-
-.mt-12 {
-  margin-top: 3rem;
-}
-
-.mt-16 {
-  margin-top: 4rem;
-}
-
-.mt-4 {
-  margin-top: 1rem;
-}
-
-.block {
-  display: block;
-}
-
-.flex {
-  display: flex;
-}
-
-.grid {
-  display: grid;
-}
-
-.hidden {
-  display: none;
-}
-
-.h-40 {
-  height: 10rem;
-}
-
-.h-72 {
-  height: 18rem;
-}
-
-.h-full {
-  height: 100%;
-}
-
-.w-56 {
-  width: 14rem;
-}
-
-.max-w-2xl {
-  max-width: 42rem;
-}
-
-.max-w-6xl {
-  max-width: 72rem;
-}
-
-.shrink-0 {
-  flex-shrink: 0;
-}
-
-.flex-col {
-  flex-direction: column;
-}
-
-.items-baseline {
-  align-items: baseline;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.gap-4 {
-  gap: 1rem;
-}
-
-.gap-8 {
-  gap: 2rem;
-}
-
-.space-y-3 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0;
-  margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(0.75rem * var(--tw-space-y-reverse));
-}
-
-.overflow-hidden {
-  overflow: hidden;
-}
-
-.overflow-x-auto {
-  overflow-x: auto;
-}
-
-.overflow-y-auto {
-  overflow-y: auto;
-}
-
-.rounded {
-  border-radius: 0.25rem;
-}
-
-.rounded-2xl {
-  border-radius: 1rem;
-}
-
-.rounded-xl {
-  border-radius: 0.75rem;
-}
-
-.border {
-  border-width: 1px;
-}
-
-.border-b {
-  border-bottom-width: 1px;
-}
-
-.border-t {
-  border-top-width: 1px;
-}
-
-.border-white\/10 {
-  border-color: rgb(255 255 255 / 0.1);
-}
-
-.border-white\/5 {
-  border-color: rgb(255 255 255 / 0.05);
-}
-
-.bg-neutral-800 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(38 38 38 / var(--tw-bg-opacity, 1));
-}
-
-.bg-neutral-800\/60 {
-  background-color: rgb(38 38 38 / 0.6);
-}
-
-.bg-neutral-900\/60 {
-  background-color: rgb(23 23 23 / 0.6);
-}
-
-.bg-neutral-950 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(10 10 10 / var(--tw-bg-opacity, 1));
-}
-
-.bg-transparent {
-  background-color: transparent;
-}
-
-.p-1\.5 {
-  padding: 0.375rem;
-}
-
-.p-4 {
-  padding: 1rem;
-}
-
-.px-1\.5 {
-  padding-left: 0.375rem;
-  padding-right: 0.375rem;
-}
-
-.px-5 {
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
-}
-
-.px-6 {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-
-.py-0\.5 {
-  padding-top: 0.125rem;
-  padding-bottom: 0.125rem;
-}
-
-.py-16 {
-  padding-top: 4rem;
-  padding-bottom: 4rem;
-}
-
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
-.py-5 {
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
-}
-
-.pb-3 {
-  padding-bottom: 0.75rem;
-}
-
-.pt-6 {
-  padding-top: 1.5rem;
-}
-
-.font-mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-}
-
-.text-4xl {
-  font-size: 2.25rem;
-  line-height: 2.5rem;
-}
-
-.text-lg {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-}
-
-.text-sm {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-.text-xs {
-  font-size: 0.75rem;
-  line-height: 1rem;
-}
-
-.font-medium {
-  font-weight: 500;
-}
-
-.font-semibold {
-  font-weight: 600;
-}
-
-.uppercase {
-  text-transform: uppercase;
-}
-
-.leading-relaxed {
-  line-height: 1.625;
-}
-
-.tracking-\[0\.2em\] {
-  letter-spacing: 0.2em;
-}
-
-.tracking-tight {
-  letter-spacing: -0.025em;
-}
-
-.text-emerald-300 {
-  --tw-text-opacity: 1;
-  color: rgb(110 231 183 / var(--tw-text-opacity, 1));
-}
-
-.text-emerald-400 {
-  --tw-text-opacity: 1;
-  color: rgb(52 211 153 / var(--tw-text-opacity, 1));
-}
-
-.text-emerald-500\/70 {
-  color: rgb(16 185 129 / 0.7);
-}
-
-.text-neutral-200 {
-  --tw-text-opacity: 1;
-  color: rgb(229 229 229 / var(--tw-text-opacity, 1));
-}
-
-.text-neutral-300 {
-  --tw-text-opacity: 1;
-  color: rgb(212 212 212 / var(--tw-text-opacity, 1));
-}
-
-.text-neutral-400 {
-  --tw-text-opacity: 1;
-  color: rgb(163 163 163 / var(--tw-text-opacity, 1));
-}
-
-.text-neutral-500 {
-  --tw-text-opacity: 1;
-  color: rgb(115 115 115 / var(--tw-text-opacity, 1));
-}
-
-.text-white {
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
-}
-
-.antialiased {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.shadow-2xl {
-  --tw-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-  --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
-.fade-t {
-  -webkit-mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-          mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-  -webkit-mask-size: 100% 100%;
-          mask-size: 100% 100%;
-  -webkit-mask-composite: source-in, xor;
-          mask-composite: intersect;
-  --sf-mask-t: linear-gradient(to bottom, rgb(0 0 0 / calc(1 - var(--sf-t))) 0, rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t)));
-}
-
-.fade-b {
-  -webkit-mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-          mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-  -webkit-mask-size: 100% 100%;
-          mask-size: 100% 100%;
-  -webkit-mask-composite: source-in, xor;
-          mask-composite: intersect;
-  --sf-mask-b: linear-gradient(to top, rgb(0 0 0 / calc(1 - var(--sf-b))) 0, rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b)));
-}
-
-.fade-y {
-  -webkit-mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-          mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-  -webkit-mask-size: 100% 100%;
-          mask-size: 100% 100%;
-  -webkit-mask-composite: source-in, xor;
-          mask-composite: intersect;
-  --sf-mask-t: linear-gradient(to bottom, rgb(0 0 0 / calc(1 - var(--sf-t))) 0, rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-t)));
-  --sf-mask-b: linear-gradient(to top, rgb(0 0 0 / calc(1 - var(--sf-b))) 0, rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-b)));
-}
-
-.fade-x {
-  -webkit-mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-          mask-image: var(--sf-mask-t, linear-gradient(#000, #000)), var(--sf-mask-b, linear-gradient(#000, #000)), var(--sf-mask-l, linear-gradient(#000, #000)), var(--sf-mask-r, linear-gradient(#000, #000));
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-  -webkit-mask-size: 100% 100%;
-          mask-size: 100% 100%;
-  -webkit-mask-composite: source-in, xor;
-          mask-composite: intersect;
-  --sf-mask-l: linear-gradient(to right, rgb(0 0 0 / calc(1 - var(--sf-l))) 0, rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-l)));
-  --sf-mask-r: linear-gradient(to left, rgb(0 0 0 / calc(1 - var(--sf-r))) 0, rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.25), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.5), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.75), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333), rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017)) calc(var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667), rgb(0 0 0 / 1) calc(var(--sf-size, 3.125rem) * var(--sf-r)));
-}
-
-.fade-size-lg {
-  --sf-size: 4.375rem;
-}
-
-@media (min-width: 768px) {
-  .md\:grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .lg\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+@property --tw-space-y-reverse {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-leading {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-tracking {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-inset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-ring-inset {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-offset-width {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --tw-ring-offset-color {
+  syntax: "*";
+  inherits: false;
+  initial-value: #fff;
+}
+@property --tw-ring-offset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --tw-space-y-reverse: 0;
+      --tw-border-style: solid;
+      --tw-leading: initial;
+      --tw-font-weight: initial;
+      --tw-tracking: initial;
+      --tw-shadow: 0 0 #0000;
+      --tw-shadow-color: initial;
+      --tw-shadow-alpha: 100%;
+      --tw-inset-shadow: 0 0 #0000;
+      --tw-inset-shadow-color: initial;
+      --tw-inset-shadow-alpha: 100%;
+      --tw-ring-color: initial;
+      --tw-ring-shadow: 0 0 #0000;
+      --tw-inset-ring-color: initial;
+      --tw-inset-ring-shadow: 0 0 #0000;
+      --tw-ring-inset: initial;
+      --tw-ring-offset-width: 0px;
+      --tw-ring-offset-color: #fff;
+      --tw-ring-offset-shadow: 0 0 #0000;
+      --sf-t: 0;
+      --sf-b: 0;
+      --sf-l: 0;
+      --sf-r: 0;
+      --sf-size: initial;
+      --sf-range: initial;
+    }
   }
 }

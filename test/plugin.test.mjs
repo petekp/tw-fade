@@ -3,29 +3,67 @@
  *
  *   npm test            (runs `node --test`)
  *
- * These are fast, browser-free assertions on the CSS the plugin emits. They lock
- * in the structural invariants that make the effect correct: the registered
- * custom properties, the scroll-driven reveal wiring, the multi-layer
- * intersect-composited mask, and the per-edge isolation. The end-to-end visual
- * behaviour is covered separately by build/verify.mjs and build/verify-dist.mjs
- * (which drive real Chromium).
+ * tw-fade is now a pure Tailwind v4 CSS plugin: src/tw-fade.css is the single
+ * source of truth, authored with @utility / @theme / --value(). These tests
+ * compile that source the same way the shipped dist is built (scripts/build-css
+ * → the v4 CLI, utilities-only, isolated) and assert on the REAL emitted CSS.
+ * That keeps them honest: they exercise the exact bytes a consumer's <link> gets,
+ * not a hand-rolled model of what the plugin "should" produce.
+ *
+ * They lock in the structural invariants that make the effect correct: the
+ * registered custom properties (and the @property computational-independence
+ * rule that the "only large fades" bug taught us), the scroll-driven reveal
+ * wiring, the multi-layer intersect-composited mask, per-edge isolation, and the
+ * 13-stop smoothstep ramp. End-to-end visual behaviour is covered separately by
+ * build/verify*.mjs (which drive real Chromium).
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { createRequire } from 'node:module'
-import { collect, compileCss } from '../scripts/compile.mjs'
+import { compileCss } from '../scripts/build-css.mjs'
 
-const requireCjs = createRequire(import.meta.url)
-const plugin = requireCjs('../src/index.js')
-
-const { base, utilities } = collect()
 const css = compileCss()
 
+/**
+ * Return the balanced-brace body of the first `<selector> {` block — including any
+ * nested at-rules (@supports …). A tiny brace scanner beats a regex here because
+ * the utility blocks legitimately nest braces.
+ */
+function block(selector, source = css) {
+  const at = source.indexOf(selector + ' {')
+  if (at === -1) return null
+  const open = source.indexOf('{', at)
+  let depth = 0
+  for (let i = open; i < source.length; i++) {
+    if (source[i] === '{') depth++
+    else if (source[i] === '}' && --depth === 0) return source.slice(open + 1, i)
+  }
+  return null
+}
+
+/** Parse an @property registration into { syntax, inherits, initial-value }. */
+function property(name) {
+  const body = block('@property ' + name)
+  if (body == null) return null
+  const field = (k) => {
+    const m = body.match(new RegExp(`${k}:\\s*([^;]+);`))
+    return m ? m[1].trim() : undefined
+  }
+  return { syntax: field('syntax'), inherits: field('inherits'), 'initial-value': field('initial-value') }
+}
+
+/** The value of a single declaration `prop: …;` within a block body. */
+function declValue(body, prop) {
+  const m = body.match(new RegExp(`${prop}:\\s*([^;]+);`))
+  return m ? m[1].trim() : undefined
+}
+
+const EDGES = { '.fade-t': 't', '.fade-b': 'b', '.fade-l': 'l', '.fade-r': 'r' }
+const ALL = ['.fade-t', '.fade-b', '.fade-l', '.fade-r', '.fade-y', '.fade-x', '.fade-xy']
 const MASK_VARS = ['--sf-mask-t', '--sf-mask-b', '--sf-mask-l', '--sf-mask-r']
 
 test('registers the amounts as typed <number> and size/range as universal, non-inheriting', () => {
   for (const amt of ['--sf-t', '--sf-b', '--sf-l', '--sf-r']) {
-    const prop = base[`@property ${amt}`]
+    const prop = property(amt)
     assert.ok(prop, `missing @property ${amt}`)
     // A typed <number> (not `*`) is what lets scroll-driven animation interpolate
     // the amount SMOOTHLY instead of snapping between keyframes.
@@ -42,7 +80,7 @@ test('registers the amounts as typed <number> and size/range as universal, non-i
   // default. The point of registering at all is `inherits: false`, which stops a
   // nested fade from leaking its parent's size/range.
   for (const v of ['--sf-size', '--sf-range']) {
-    const prop = base[`@property ${v}`]
+    const prop = property(v)
     assert.ok(prop, `missing @property ${v}`)
     assert.equal(prop.syntax, '"*"')
     assert.equal(prop.inherits, 'false')
@@ -59,153 +97,159 @@ test('every typed @property has a computationally-independent initial-value', ()
   // insensitive, future-proof against new relative units). The universal syntax
   // (`*`) carries no such rule and legitimately omits initial-value, so it's exempt.
   const ABSOLUTE = /^-?(?:\d+\.?\d*|\.\d+)(px|cm|mm|in|pt|pc|q)?$/i
-  for (const [key, decl] of Object.entries(base)) {
-    if (!key.startsWith('@property')) continue
+  const names = [...css.matchAll(/@property\s+(--[\w-]+)\s*\{/g)].map((m) => m[1])
+  assert.ok(names.length >= 6, 'expected at least 6 registered properties')
+  for (const name of names) {
+    const decl = property(name)
     if (decl.syntax === '"*"') {
-      assert.equal(decl['initial-value'], undefined, `${key} (universal) should omit initial-value`)
+      assert.equal(decl['initial-value'], undefined, `${name} (universal) should omit initial-value`)
       continue
     }
     const initial = decl['initial-value']
-    assert.ok(initial !== undefined, `typed ${key} must declare an initial-value`)
-    // Every numeric token must be unitless or absolutely-sized. Allowlist beats a
-    // denylist: new CSS units (cqw, lh, dvh…) can't outrun "only px/cm/…/unitless".
+    assert.ok(initial !== undefined, `typed ${name} must declare an initial-value`)
     for (const token of String(initial).split(/[\s,()]+/).filter(Boolean)) {
       if (!/\d/.test(token)) continue
-      assert.match(
-        token,
-        ABSOLUTE,
-        `typed ${key} initial-value token "${token}" must be unitless or absolute`,
-      )
+      assert.match(token, ABSOLUTE, `typed ${name} initial token "${token}" must be unitless or absolute`)
     }
   }
 })
 
 test('leading edges reveal 0→1, trailing edges hide 1→0', () => {
-  assert.equal(base['@keyframes sf-reveal-t'].from['--sf-t'], '0')
-  assert.equal(base['@keyframes sf-reveal-t'].to['--sf-t'], '1')
-  assert.equal(base['@keyframes sf-reveal-b'].from['--sf-b'], '1')
-  assert.equal(base['@keyframes sf-reveal-b'].to['--sf-b'], '0')
-  assert.equal(base['@keyframes sf-reveal-l'].from['--sf-l'], '0')
-  assert.equal(base['@keyframes sf-reveal-r'].from['--sf-r'], '1')
+  const kf = (n) => block('@keyframes ' + n)
+  assert.match(kf('sf-reveal-t'), /from\s*\{[^}]*--sf-t:\s*0/)
+  assert.match(kf('sf-reveal-t'), /to\s*\{[^}]*--sf-t:\s*1/)
+  assert.match(kf('sf-reveal-b'), /from\s*\{[^}]*--sf-b:\s*1/)
+  assert.match(kf('sf-reveal-b'), /to\s*\{[^}]*--sf-b:\s*0/)
+  assert.match(kf('sf-reveal-l'), /from\s*\{[^}]*--sf-l:\s*0/)
+  assert.match(kf('sf-reveal-r'), /from\s*\{[^}]*--sf-r:\s*1/)
 })
 
 test('every edge utility carries the composited multi-layer mask base', () => {
-  for (const cls of ['.fade-t', '.fade-b', '.fade-l', '.fade-r', '.fade-y', '.fade-x', '.fade-xy']) {
-    const u = utilities[cls]
+  for (const cls of ALL) {
+    const u = block(cls)
     assert.ok(u, `missing ${cls}`)
     // intersect is mandatory: the initial `add` (union) would erase the fade.
-    assert.equal(u['mask-composite'], 'intersect')
-    assert.equal(u['mask-repeat'], 'no-repeat')
-    assert.equal(u['mask-size'], '100% 100%')
+    assert.equal(declValue(u, 'mask-composite'), 'intersect')
+    assert.equal(declValue(u, 'mask-repeat'), 'no-repeat')
+    assert.equal(declValue(u, 'mask-size'), '100% 100%')
     // Four layers, each defaulting to the opaque identity (no-op) gradient.
-    const layers = u['mask-image'].split('linear-gradient(#000, #000)').length - 1
+    const layers = u.split('linear-gradient(#000, #000)').length - 1
     assert.equal(layers, 4, `${cls} should have 4 identity fallbacks`)
   }
 })
 
 test('each directional utility sets ONLY its own mask layer', () => {
-  const own = { '.fade-t': '--sf-mask-t', '.fade-b': '--sf-mask-b', '.fade-l': '--sf-mask-l', '.fade-r': '--sf-mask-r' }
-  for (const [cls, mine] of Object.entries(own)) {
+  for (const [cls, edge] of Object.entries(EDGES)) {
+    const u = block(cls)
+    const mine = `--sf-mask-${edge}`
     for (const v of MASK_VARS) {
-      if (v === mine) assert.ok(utilities[cls][v], `${cls} must set ${v}`)
-      else assert.equal(utilities[cls][v], undefined, `${cls} must NOT set ${v}`)
+      // A real declaration is `--sf-mask-x: …`; a var() reference is `--sf-mask-x, …`.
+      // Matching the colon distinguishes the two, so the shared 4-layer fallback
+      // (which references all four) doesn't read as "this utility sets all four".
+      if (v === mine) assert.ok(declValue(u, v), `${cls} must set ${v}`)
+      else assert.equal(declValue(u, v), undefined, `${cls} must NOT set ${v}`)
     }
   }
 })
 
 test('axis shorthands set exactly their constituent mask layers', () => {
-  assert.ok(utilities['.fade-y']['--sf-mask-t'] && utilities['.fade-y']['--sf-mask-b'])
-  assert.equal(utilities['.fade-y']['--sf-mask-l'], undefined)
-  assert.ok(utilities['.fade-x']['--sf-mask-l'] && utilities['.fade-x']['--sf-mask-r'])
-  assert.equal(utilities['.fade-x']['--sf-mask-t'], undefined)
-  for (const v of MASK_VARS) assert.ok(utilities['.fade-xy'][v], `xy must set ${v}`)
+  const y = block('.fade-y')
+  assert.ok(declValue(y, '--sf-mask-t') && declValue(y, '--sf-mask-b'))
+  assert.equal(declValue(y, '--sf-mask-l'), undefined)
+  const x = block('.fade-x')
+  assert.ok(declValue(x, '--sf-mask-l') && declValue(x, '--sf-mask-r'))
+  assert.equal(declValue(x, '--sf-mask-t'), undefined)
+  const xy = block('.fade-xy')
+  for (const v of MASK_VARS) assert.ok(declValue(xy, v), `xy must set ${v}`)
 })
 
 test('mask gradients point the right way and are driven by their amount', () => {
-  assert.match(utilities['.fade-t']['--sf-mask-t'], /to bottom/)
-  assert.match(utilities['.fade-b']['--sf-mask-b'], /to top/)
-  assert.match(utilities['.fade-l']['--sf-mask-l'], /to right/)
-  assert.match(utilities['.fade-r']['--sf-mask-r'], /to left/)
-  // The amount scales both the gradient length (size * amount) and its alpha
-  // (1 - amount * …), so at amount 0 the layer collapses to fully opaque.
-  assert.match(utilities['.fade-t']['--sf-mask-t'], /calc\(1 - var\(--sf-t\)\)/)
-  // Size is read with a fallback default so a panel WITHOUT a fade-size-*
-  // utility still gets a real fade band (the bug was an unset --sf-size).
-  assert.match(
-    utilities['.fade-t']['--sf-mask-t'],
-    /calc\(var\(--sf-size, [^)]+\) \* var\(--sf-t\)\)/,
-  )
-})
-
-test('scroll-driven reveal wires the correct axis per group', () => {
-  const sup = base['@supports (animation-timeline: scroll())']
-  const block = sup['.fade-t, .fade-b, .fade-y']
-  const inline = sup['.fade-l, .fade-r, .fade-x']
-  assert.match(block['animation-timeline'], /scroll\(self block\)/)
-  assert.ok(!/inline/.test(block['animation-timeline']))
-  assert.match(inline['animation-timeline'], /scroll\(self inline\)/)
-  // Leading reveals over the first range; trailing hides over the last. Range is
-  // read with a fallback default (same fix as --sf-size).
-  assert.match(block['animation-range-start'], /^0, calc\(100% - var\(--sf-range, [^)]+\)\)$/)
-  assert.match(block['animation-range-end'], /^var\(--sf-range, [^)]+\), 100%$/)
-  // The animation MUST be set via longhands; the `animation` shorthand would
-  // reset animation-timeline back to `auto` and break scroll-gating.
-  assert.equal(sup['.fade-xy']['animation-name'].split(',').length, 4)
-})
-
-test('provides a static fallback when scroll-driven animation is unsupported', () => {
-  const fb = base['@supports not (animation-timeline: scroll())']
-  assert.equal(fb['.fade-t, .fade-y, .fade-xy']['--sf-t'], '1')
-  assert.equal(fb['.fade-b, .fade-y, .fade-xy']['--sf-b'], '1')
-})
-
-test('fade-static forces the fade on and disables the animation', () => {
-  const s = utilities['.fade-static']
-  assert.equal(s['--sf-t'], '1')
-  assert.equal(s['animation-name'], 'none')
-  // It must come AFTER the reveal @supports block so `animation-name: none` wins.
-  assert.ok(css.indexOf('@supports (animation-timeline') < css.indexOf('.fade-static'))
-})
-
-test('exposes the size and range scales, skipping the no-op DEFAULT', () => {
-  assert.equal(utilities['.fade-size-sm']['--sf-size'], '2.5rem')
-  assert.equal(utilities['.fade-size-lg']['--sf-size'], '4.375rem')
-  assert.equal(utilities['.fade-range-lg']['--sf-range'], '96px')
-  // No bare `.fade-size` utility (a DEFAULT-valued no-op).
-  assert.equal(utilities['.fade-size'], undefined)
-  assert.ok(!/\.fade-size \{/.test(css))
+  assert.match(declValue(block('.fade-t'), '--sf-mask-t'), /^linear-gradient\(\s*to bottom/)
+  assert.match(declValue(block('.fade-b'), '--sf-mask-b'), /^linear-gradient\(\s*to top/)
+  assert.match(declValue(block('.fade-l'), '--sf-mask-l'), /^linear-gradient\(\s*to right/)
+  assert.match(declValue(block('.fade-r'), '--sf-mask-r'), /^linear-gradient\(\s*to left/)
+  // The amount scales both the gradient alpha (1 - amount * …) and its length
+  // (size * amount), so at amount 0 the layer collapses to fully opaque.
+  const t = declValue(block('.fade-t'), '--sf-mask-t')
+  assert.match(t, /calc\(1 - var\(--sf-t\)\)/)
+  // Size is read with a fallback default (the md scale) so a panel WITHOUT a
+  // fade-size-* utility still gets a real band — the bug was an unset --sf-size.
+  assert.match(t, /calc\(var\(--sf-size, 3\.125rem\) \* var\(--sf-t\)\)/)
 })
 
 test('the smoothstep ramp is the 13-stop sigmoid from the reference', () => {
-  assert.equal(plugin.STOPS.length, 13)
-  assert.deepEqual(plugin.STOPS[0], [0, 0])
-  assert.deepEqual(plugin.STOPS[12], [1, 1])
-  assert.deepEqual(plugin.STOPS[6], [0.5, 0.5])
-  // Strictly monotonic in both fraction and alpha — a clean S-curve.
-  for (let i = 1; i < plugin.STOPS.length; i++) {
-    assert.ok(plugin.STOPS[i][0] > plugin.STOPS[i - 1][0], 'fraction must increase')
-    assert.ok(plugin.STOPS[i][1] > plugin.STOPS[i - 1][1], 'alpha must increase')
+  for (const [cls, edge] of Object.entries(EDGES)) {
+    const grad = declValue(block(cls), `--sf-mask-${edge}`)
+    const stops = (grad.match(/rgb\(0 0 0 \//g) || []).length
+    assert.equal(stops, 13, `${cls} gradient should have 13 colour stops`)
   }
+  // The curve endpoints: first stop fully transparent-capable (1 - amount), last
+  // stop fully opaque (rgb(0 0 0 / 1)) at the band's far edge.
+  const t = declValue(block('.fade-t'), '--sf-mask-t')
+  assert.match(t, /rgb\(0 0 0 \/ calc\(1 - var\(--sf-t\)\)\) 0,/)
+  assert.match(t, /rgb\(0 0 0 \/ 1\) calc\(var\(--sf-size, 3\.125rem\) \* var\(--sf-t\)\)\s*\)\s*$/)
 })
 
-test('plugin options set the default fade length/range, not the named scale', () => {
-  const custom = collect({ size: '5rem', range: '120px' })
-  // options.size/range change the DEFAULT applied to bare usage — baked in as the
-  // fallback of `var(--sf-size, …)` / `var(--sf-range, …)`, which is what shows
-  // when no -size-*/-range-* utility is set. A rem default is fine here (it's a
-  // plain var fallback, not a registered @property initial-value).
-  assert.match(custom.utilities['.fade-y']['--sf-mask-t'], /var\(--sf-size, 5rem\)/)
-  const block = custom.base['@supports (animation-timeline: scroll())'][
-    '.fade-t, .fade-b, .fade-y'
-  ]
-  assert.match(block['animation-range-end'], /var\(--sf-range, 120px\)/)
-  // The named scale (sm/md/lg) is intentionally fixed and unaffected by options.
-  assert.equal(custom.utilities['.fade-size-md']['--sf-size'], '3.125rem')
+test('scroll-driven reveal wires the correct PHYSICAL axis per utility', () => {
+  // Physical axes (scroll(self y) / scroll(self x)) — NOT the logical block/inline —
+  // so the timeline tracks the same physical axis the mask gradients paint. Logical
+  // axes desync under vertical writing modes (block becomes horizontal).
+  const y = block('@supports (animation-timeline: scroll())', block('.fade-y'))
+  assert.match(y, /animation-timeline:\s*scroll\(self y\), scroll\(self y\)/)
+  assert.ok(!/scroll\(self x\)/.test(y), 'fade-y must not wire a horizontal timeline')
+  // Leading reveals over the first range; trailing hides over the last. Range is
+  // read with a fallback default (same fix as --sf-size).
+  assert.match(y, /animation-range:\s*0 var\(--sf-range, 50px\), calc\(100% - var\(--sf-range, 50px\)\) 100%/)
+
+  const x = block('@supports (animation-timeline: scroll())', block('.fade-x'))
+  assert.match(x, /animation-timeline:\s*scroll\(self x\), scroll\(self x\)/)
+  assert.ok(!/scroll\(self y\)/.test(x), 'fade-x must not wire a vertical timeline')
+
+  // fade-xy animates all four amounts.
+  const xy = block('@supports (animation-timeline: scroll())', block('.fade-xy'))
+  assert.equal(declValue(xy, 'animation').split(',').length, 4)
 })
 
-test('compiled output is ordered base-before-utilities and is self-contained', () => {
-  assert.ok(css.indexOf('@property --sf-t') < css.indexOf('.fade-t {'))
-  assert.ok(css.indexOf('@keyframes sf-reveal-t') < css.indexOf('.fade-t {'))
-  // No Tailwind base noise leaked in.
-  assert.ok(!/--tw-/.test(css))
+test('provides a static fallback when scroll-driven animation is unsupported', () => {
+  const yFb = block('@supports not (animation-timeline: scroll())', block('.fade-y'))
+  assert.equal(declValue(yFb, '--sf-t'), '1')
+  assert.equal(declValue(yFb, '--sf-b'), '1')
+  const tFb = block('@supports not (animation-timeline: scroll())', block('.fade-t'))
+  assert.equal(declValue(tFb, '--sf-t'), '1')
+  assert.equal(declValue(tFb, '--sf-b'), undefined, 'fade-t fallback must not pin the bottom edge')
+})
+
+test('fade-static forces the fade on, order-independently, and disables the animation', () => {
+  const s = block('.fade-static')
+  // The amounts are pinned with !important so fade-static wins regardless of where
+  // Tailwind sorts it relative to the reveal animation — an important author value
+  // outranks a running keyframe animation in the cascade.
+  for (const amt of ['--sf-t', '--sf-b', '--sf-l', '--sf-r']) {
+    assert.equal(declValue(s, amt), '1 !important', `${amt} must be pinned !important`)
+  }
+  assert.equal(declValue(s, 'animation-name'), 'none')
+})
+
+test('exposes the size and range scales as theme-backed utilities', () => {
+  assert.equal(declValue(block('.fade-size-sm'), '--sf-size'), 'var(--fade-size-sm)')
+  assert.equal(declValue(block('.fade-size-lg'), '--sf-size'), 'var(--fade-size-lg)')
+  assert.equal(declValue(block('.fade-range-lg'), '--sf-range'), 'var(--fade-range-lg)')
+  // The theme exposes the actual scale values for consumers to override/extend.
+  const root = block(':root, :host')
+  assert.equal(declValue(root, '--fade-size-sm'), '2.5rem')
+  assert.equal(declValue(root, '--fade-size-lg'), '4.375rem')
+  assert.equal(declValue(root, '--fade-range-lg'), '96px')
+  // No bare `.fade-size` / `.fade-range` no-op utility leaks out.
+  assert.equal(block('.fade-size'), null)
+  assert.equal(block('.fade-range'), null)
+})
+
+test('the framework-free build is real CSS, self-contained, with no Tailwind noise', () => {
+  // Source-only constructs must be fully compiled away.
+  for (const token of ['@utility', '@theme', '@apply', '--value(']) {
+    assert.ok(!css.includes(token), `compiled output must not contain ${token}`)
+  }
+  // No Preflight / theme-dump leakage from the utilities-only, isolated build.
+  assert.ok(!/--tw-/.test(css), 'no --tw-* variables should leak in')
+  assert.ok(!/\.flex\s*\{|\.grid\s*\{|\.border\s*\{/.test(css), 'no built-in utilities should leak in')
 })

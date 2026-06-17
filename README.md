@@ -1,6 +1,6 @@
 # tw-fade
 
-Elegant, CSS-driven scroll-edge fade masking for Tailwind CSS.
+Elegant, CSS-driven scroll-edge fade masking for Tailwind CSS v4.
 
 Add `fade-y` (or `-t` / `-b` / `-l` / `-r` / `-x` / `-xy`) to any scroll
 container and its content dissolves into the surface at the edges. The fade is
@@ -16,7 +16,8 @@ element, no scroll listeners, no `requestAnimationFrame` loop.
 
 It's a CSS port of a progress-driven React component, reproducing the same
 13-stop smoothstep curve so the result is visually identical — but it's just a
-class.
+class. tw-fade is **Tailwind v4-native**: a CSS-first plugin authored entirely
+with `@utility` / `@theme`, no JavaScript anywhere.
 
 ## Why it's nice
 
@@ -39,37 +40,36 @@ class.
 npm install tw-fade
 ```
 
-### Tailwind CSS v3 (JavaScript config)
-
-```js
-// tailwind.config.js
-module.exports = {
-  content: ['./src/**/*.{html,js,jsx,ts,tsx,vue}'],
-  plugins: [require('tw-fade')],
-}
-```
-
-### Tailwind CSS v4 (CSS-first config)
+Then import it after Tailwind in your CSS entrypoint:
 
 ```css
 /* app.css */
-@import 'tailwindcss';
-@plugin 'tw-fade';
+@import "tailwindcss";
+@import "tw-fade";
 ```
+
+That's it — the import adds the `fade-*` utilities to your build. tw-fade is a
+CSS-first plugin, so it needs **Tailwind CSS v4**. (Using v3, or no build step at
+all? See [No build step](#no-build-step-plain-html--cdn) below.)
 
 ### No build step (plain HTML / CDN)
 
 A precompiled, framework-free stylesheet ships in the package. It contains only
 this plugin's rules — no Tailwind reset, no `--tw-*` defaults — so you can drop it
-into any page:
+into any page, with or without Tailwind:
 
 ```html
 <link rel="stylesheet" href="node_modules/tw-fade/dist/tw-fade.css" />
 ```
 
 ```js
-import 'tw-fade/css' // or via a bundler
+import 'tw-fade/css' // or via a bundler that handles CSS imports
 ```
+
+The precompiled CSS includes the full named scale (`fade-size-sm/md/lg`,
+`fade-range-sm/md/lg`). Arbitrary values like `fade-size-[6rem]` are generated on
+demand by Tailwind's JIT, so they're only available through the v4 build path
+above — not the prebuilt drop-in.
 
 ## Usage
 
@@ -114,7 +114,7 @@ scrolls, put the fade on `<body>` itself. Two things are easy to get wrong:
 ```
 
 1. **`<body>` must be the scroll container.** The fade is driven by
-   `animation-timeline: scroll(self block)`, which only attaches to the element's
+   `animation-timeline: scroll(self y)`, which only attaches to the element's
    *own* scrollport. If you let the page scroll on the viewport, there's no `self`
    scroll to track. Give `<body>` `height: 100%` + `overflow-y: auto`, **and** set
    `overflow: hidden` on `<html>` — otherwise the browser [propagates][prop] the
@@ -129,6 +129,20 @@ context** on the body, and in the Firefox static fallback the page shows a
 permanent top *and* bottom fade (so the header is gently dimmed even at the very
 top, where there's nothing to scroll up to).
 
+### Writing direction
+
+The timeline tracks a **physical** axis, so the vertical utilities (`fade-y`,
+`fade-t`, `fade-b`) are correct in every writing mode and direction — they fade
+only when there's real vertical overflow.
+
+The horizontal utilities (`fade-x`, `fade-l`, `fade-r`) currently **assume
+left-to-right**. In a right-to-left context the scroll progress runs the other
+way while the mask edges stay physical, so the fade lands on the opposite side
+from the hidden content. For an order-neutral horizontal scroller (e.g. a card
+carousel) you can force `dir="ltr"` on the scroll container to get correct fades;
+otherwise treat horizontal fades as LTR-only for now. Full RTL support for
+`fade-x` is planned.
+
 ### Tuning the fade
 
 Two knobs, each with an `sm` / `md` / `lg` scale and arbitrary-value support:
@@ -141,34 +155,33 @@ Two knobs, each with an `sm` / `md` / `lg` scale and arbitrary-value support:
 ```html
 <div class="fade-y fade-size-lg h-80 overflow-y-auto">…</div>
 
-<!-- arbitrary values (plugin builds; not in the precompiled CSS) -->
+<!-- arbitrary values (v4 build only; not in the precompiled CSS) -->
 <div class="fade-y fade-size-[6rem] fade-range-[80px] …">…</div>
 ```
 
-- **size** is how tall/wide the faded band is.
+- **size** is how tall/wide the faded band is. A bare `fade-y` with no
+  `fade-size-*` uses the `md` length.
 - **range** is how far you scroll before an edge is fully revealed (leading
   edges) or fully hidden (trailing edges). A small range snaps the fade in
-  quickly; a large one eases it.
+  quickly; a large one eases it. Bare usage defaults to `50px`.
 
-### Plugin options
+### Extending the scale
 
-Change the project-wide defaults when registering the plugin:
+The scale lives in Tailwind's theme, so you add or override steps with `@theme` —
+no plugin config, no JavaScript:
 
-```js
-// tailwind.config.js
-plugins: [
-  require('tw-fade')({
-    size: '4rem',   // default fade length
-    range: '64px',  // default reveal distance
-    sizes: { xl: '6rem' },   // extend the -size-* scale
-    ranges: { xl: '120px' }, // extend the -range-* scale
-  }),
-]
+```css
+@import "tailwindcss";
+@import "tw-fade";
+
+@theme {
+  --fade-size-xl: 6rem; /* enables fade-size-xl */
+  --fade-range-xl: 120px; /* enables fade-range-xl */
+}
 ```
 
-`size` / `range` set the default applied to bare usage (e.g. `fade-y` with
-no `-size-*`); the named scale stays fixed unless you extend it via `sizes` /
-`ranges`.
+Each `--fade-size-*` / `--fade-range-*` theme key automatically becomes a
+matching `fade-size-*` / `fade-range-*` utility.
 
 ## How it works
 
@@ -180,40 +193,52 @@ no `-size-*`); the named scale stays fixed unless you extend it via `sizes` /
    `@property … <number>` values in `[0, 1]`: `0` = no fade, `1` = full fade. The
    amount scales **both** the gradient's length and its alpha, so the reveal is
    pixel-faithful to the source component's `scaleY` + `opacity` animation.
-3. **Scroll-gating is the timeline.** `animation-timeline: scroll(self block)`
-   drives each amount across a fixed scroll window (`--sf-range`). Leading edges
-   reveal over the first range; trailing edges hide over the last. Because the
-   amount is a typed `<number>`, the browser interpolates it smoothly.
+3. **Scroll-gating is the timeline.** `animation-timeline: scroll(self y)` (or
+   `scroll(self x)` for horizontal edges) drives each amount across a fixed scroll
+   window (`--sf-range`). Leading edges reveal over the first range; trailing edges
+   hide over the last. Because the amount is a typed `<number>`, the browser
+   interpolates it smoothly. The axis is **physical** (`y`/`x`), matching the
+   physical mask gradients, so the fade stays correct under any writing mode.
 4. **Inactive timeline → base value.** When the container isn't scrollable the
    timeline is inactive, so the registered initial value (`0` = no fade) shows.
-   That's the same "don't fade what you can't scroll" guard the JS version did,
+   That's the same "don't fade what you can't scroll" guard the original did,
    for free.
 
-The fade is defined with mask **longhands** (`animation-name`,
-`animation-timeline`, …) rather than the `animation` shorthand on purpose: the
-shorthand resets `animation-timeline` back to `auto` and would silently break
-scroll-gating.
+The reveal is written as the `animation` shorthand followed by an explicit
+`animation-timeline` longhand. The shorthand resets `animation-timeline` to
+`auto`, then the longhand immediately re-points it at the scroll timeline — the
+canonical scroll-driven pattern, since the shorthand has no slot for a timeline.
+`fade-static` pins each amount with `!important`, so it forces the fade on
+regardless of where Tailwind sorts it relative to the reveal animation.
 
 ## Browser support
 
 | Engine            | Behaviour                                            |
 | ----------------- | ---------------------------------------------------- |
-| Chrome/Edge 115+  | Full scroll-gated fade                               |
+| Chrome/Edge 120+  | Full scroll-gated fade                               |
 | Safari 26+        | Full scroll-gated fade                               |
 | Firefox           | Static always-on fade (via `@supports not (…)`)      |
 
 The scroll-driven behaviour is wrapped in
 `@supports (animation-timeline: scroll())`; the `@supports not (…)` branch pins
 active edges to a static fade so the effect degrades to "always faded" rather
-than disappearing. Masking itself is supported everywhere unprefixed in the
-above. (The plugin emits standard mask properties only and leaves any legacy
-`-webkit-` prefixing to your build's autoprefixer.)
+than disappearing. The plugin emits **unprefixed** mask properties only, so the
+floor is the first engine with unprefixed CSS masking: Chrome/Edge **120** (Dec
+2023) — note scroll-driven animations shipped earlier, in 115, but 115–119 still
+needed `-webkit-` masking, so 120 is the real lower bound for the full effect.
+Add an autoprefixer if you need to reach those older versions.
 
 ## Development
 
+`src/tw-fade.css` is the single source of truth — a Tailwind v4 CSS-first
+stylesheet. `dist/tw-fade.css` is generated from it by running the v4 CLI over
+the source in isolation (utilities only, no Preflight), so the shipped drop-in
+contains nothing but this plugin's rules.
+
 ```sh
-npm test                      # fast, browser-free unit tests on the emitted CSS
-node scripts/build-css.mjs    # regenerate dist/tw-fade.css from src/
+npm test                      # fast, browser-free unit tests on the compiled CSS
+node scripts/build-css.mjs    # regenerate dist/tw-fade.css from src/tw-fade.css
+npm run build:demo            # rebuild the demo stylesheet (demo/styles.css)
 
 # real-browser verification (needs Chromium via Playwright)
 npm run verify                # runs all four checks below
@@ -226,8 +251,9 @@ node build/shots.mjs          # capture demo screenshots
 open demo/index.html          # the interactive demo
 ```
 
-`src/index.js` is the single source of truth — `dist/tw-fade.css` is
-generated from it.
+The unit tests compile `src/tw-fade.css` the same way the dist is built and
+assert on the real emitted bytes, so they exercise exactly what a consumer's
+`<link>` receives.
 
 ## Credit
 

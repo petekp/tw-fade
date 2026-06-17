@@ -1,3 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "../src/tw-fade.css";
+
+/* Scan the demo markup for utility classes. */
+@source "./index.html";

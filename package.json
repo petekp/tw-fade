@@ -1,10 +1,11 @@
 {
   "name": "tw-fade",
-  "version": "0.1.0",
-  "description": "Elegant, CSS-driven scroll-edge fade masking for Tailwind CSS. Add fade-t/b/l/r (or -x/-y) to any scroll container to fade content into its surface at the edges — scroll-gated with zero JavaScript.",
+  "version": "0.2.0",
+  "description": "Elegant, CSS-driven scroll-edge fade masking for Tailwind CSS v4. Add fade-t/b/l/r (or -x/-y/-xy) to any scroll container to fade content into its surface at the edges — scroll-gated with zero JavaScript.",
   "keywords": [
     "tailwindcss",
     "tailwind-plugin",
+    "tailwindcss-v4",
     "scroll",
     "fade",
     "mask",
@@ -15,14 +16,17 @@
   ],
   "license": "MIT",
   "author": "Pete Petrash",
-  "type": "commonjs",
-  "main": "./src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/petekp/tw-fade.git"
+  },
+  "homepage": "https://github.com/petekp/tw-fade#readme",
+  "bugs": {
+    "url": "https://github.com/petekp/tw-fade/issues"
+  },
+  "style": "./dist/tw-fade.css",
   "exports": {
-    ".": {
-      "require": "./src/index.js",
-      "import": "./src/index.js",
-      "default": "./src/index.js"
-    },
+    ".": "./src/tw-fade.css",
     "./css": "./dist/tw-fade.css",
     "./dist/tw-fade.css": "./dist/tw-fade.css",
     "./package.json": "./package.json"
@@ -35,13 +39,13 @@
   ],
   "scripts": {
     "build": "node scripts/build-css.mjs",
-    "build:demo": "tailwind -c tailwind.config.js -i demo/input.css -o demo/styles.css",
+    "build:demo": "tailwindcss -i demo/input.css -o demo/styles.css",
     "test": "node --test",
     "verify": "node build/verify.mjs && node build/verify-dist.mjs && node build/verify-fade.mjs && node build/verify-page.mjs",
     "prepublishOnly": "node scripts/build-css.mjs && node --test"
   },
   "peerDependencies": {
-    "tailwindcss": ">=3.4.0"
+    "tailwindcss": ">=4.0.0"
   },
   "peerDependenciesMeta": {
     "tailwindcss": {
@@ -51,6 +55,6 @@
   "devDependencies": {
     "@tailwindcss/cli": "^4.0.0",
     "playwright": "^1.61.0",
-    "tailwindcss": "^3.4.0"
+    "tailwindcss": "^4.3.1"
   }
 }
