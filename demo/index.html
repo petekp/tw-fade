@@ -179,9 +179,14 @@
           "calt" 1;
       }
 
-      p,
+      p:not(.whitespace-nowrap),
       blockquote {
         text-wrap: pretty;
+      }
+
+      h2,
+      h3 {
+        text-wrap: balance;
       }
 
       .text-balance {
@@ -587,7 +592,7 @@
   >
     <main class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:py-16">
       <header class="flex min-h-[75vh] max-w-[45rem] flex-col justify-center pb-12">
-        <p class="mb-4 font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.22em] api-label">
+        <p class="mb-4 font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.16em] api-label">
           Tailwind v4 Plugin
         </p>
         <h1 class="hero-title hero-title-stack text-[5.5rem] text-neutral-50 sm:text-[6.75rem] lg:text-[8rem]" aria-label="tw-fade">
@@ -603,7 +608,7 @@
           <span class="hero-title-depth" style="--depth-y: 0.018em; --depth-scale: 0.992; --depth-opacity: 0.16" aria-hidden="true">tw-fade</span>
           <span class="hero-title-main" aria-hidden="true">tw-fade</span>
         </h1>
-        <p class="mt-9 max-w-[43rem] text-balance text-[1.0625rem] leading-8 text-neutral-300/85 sm:text-lg">
+        <p class="mt-9 max-w-[40rem] text-balance text-[1.0625rem] leading-7 text-neutral-300/85 sm:text-lg">
           Elegant, scroll-driven edge masking. Add a single class and content edges dissolve
           into the surface. Zero JavaScript.
         </p>
@@ -1013,7 +1018,7 @@
               <div class="fade-y fade-size-sm thin-scroll h-64 overflow-x-hidden overflow-y-auto p-5 sm:h-72" data-demo="balanced-specimen">
                 <article class="space-y-6">
                   <header class="space-y-2 border-b border-white/10 pb-4">
-                    <p class="mono-copy font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.18em] text-neutral-500">
+                    <p class="mono-copy font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.14em] text-neutral-500">
                       type scale
                     </p>
                     <p class="text-[0.875rem] leading-6 text-neutral-400">
@@ -1093,7 +1098,7 @@
               <div class="fade-y fade-size-sm fade-size-b-lg thin-scroll h-64 overflow-x-hidden overflow-y-auto p-5 sm:h-72" data-demo="bottom-specimen">
                 <article class="space-y-6">
                   <header class="space-y-2 border-b border-emerald-400/20 pb-4">
-                    <p class="mono-copy font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.18em] text-neutral-500">
+                    <p class="mono-copy font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.14em] text-neutral-500">
                       type scale
                     </p>
                     <p class="text-[0.875rem] leading-6 text-neutral-400">
@@ -1178,7 +1183,7 @@
                 <div class="space-y-5 p-5">
                   <article class="space-y-4">
                     <header class="space-y-2">
-                      <p class="mono-copy font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.18em] text-neutral-500">
+                      <p class="mono-copy font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.14em] text-neutral-500">
                         specimen 03
                       </p>
                       <h3 class="text-xl font-semibold leading-7 text-neutral-50">Editorial filters</h3>
@@ -1228,7 +1233,7 @@
   <span class="code-comment">...</span>
 <span class="code-tag">&lt;/div&gt;</span></code></pre>
           <div class="rounded-lg border border-amber-300/15 bg-amber-300/[0.08] p-4 backdrop-blur">
-            <p class="mono-copy font-mono text-[0.6875rem] uppercase leading-4 tracking-[0.18em] text-amber-200/80">
+            <p class="mono-copy font-mono text-[0.6875rem] uppercase leading-4 tracking-[0.14em] text-amber-200/80">
               sticky edges
             </p>
             <p class="text-[0.8125rem] leading-5 text-amber-100/90">

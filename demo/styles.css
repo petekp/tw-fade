@@ -367,6 +367,9 @@
   .max-w-\[28rem\] {
     max-width: 28rem;
   }
+  .max-w-\[40rem\] {
+    max-width: 40rem;
+  }
   .max-w-\[43rem\] {
     max-width: 43rem;
   }
@@ -1271,13 +1274,13 @@
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
   }
-  .tracking-\[0\.18em\] {
-    --tw-tracking: 0.18em;
-    letter-spacing: 0.18em;
+  .tracking-\[0\.14em\] {
+    --tw-tracking: 0.14em;
+    letter-spacing: 0.14em;
   }
-  .tracking-\[0\.22em\] {
-    --tw-tracking: 0.22em;
-    letter-spacing: 0.22em;
+  .tracking-\[0\.16em\] {
+    --tw-tracking: 0.16em;
+    letter-spacing: 0.16em;
   }
   .text-balance {
     text-wrap: balance;
