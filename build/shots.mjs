@@ -35,11 +35,11 @@ async function setRail(left) {
 await page.screenshot({ path: path.join(shots, 'overview.png'), fullPage: true })
 
 const examplesSection = page.locator('[aria-label="Scroll fade examples"]')
-await setScroll('[data-demo="popover"]', 0)
+await setScroll('[data-demo="list"]', 0)
 await examplesSection.screenshot({ path: path.join(shots, 'y-top.png') })
-await setScroll('[data-demo="popover"]', 120)
+await setScroll('[data-demo="list"]', 120)
 await examplesSection.screenshot({ path: path.join(shots, 'y-mid.png') })
-await setScroll('[data-demo="popover"]', 9999)
+await setScroll('[data-demo="list"]', 9999)
 await examplesSection.screenshot({ path: path.join(shots, 'y-bottom.png') })
 
 await setScroll('[data-demo="list"]', 120)

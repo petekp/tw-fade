@@ -6,7 +6,7 @@
     <title>tw-fade — CSS-driven scroll edge masking for Tailwind</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Climate+Crisis&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
     <style>
       html[data-surface="graphite"] {
@@ -123,9 +123,9 @@
 
       html[data-surface] {
         background-color: var(--demo-page-bg);
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='68' height='540' viewBox='0 0 68 540'%3E%3Cpath d='M34 0 C54 22.5 54 67.5 34 90 S14 157.5 34 180 S54 247.5 34 270 S14 337.5 34 360 S54 427.5 34 450 S14 517.5 34 540' fill='none' stroke='%23ffffff' stroke-opacity='0.075' stroke-width='1' stroke-linecap='round' stroke-linejoin='round' shape-rendering='geometricPrecision'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='1215' viewBox='0 0 128 1215'%3E%3Cpath d='M64 0 C124 50.625 124 151.875 64 202.5 S4 354.375 64 405 S124 556.875 64 607.5 S4 759.375 64 810 S124 961.875 64 1012.5 S4 1164.375 64 1215' fill='none' stroke='%23ffffff' stroke-opacity='0.075' stroke-width='1' stroke-linecap='round' stroke-linejoin='round' shape-rendering='geometricPrecision'/%3E%3C/svg%3E");
         background-repeat: repeat;
-        background-size: 68px 540px;
+        background-size: 128px 1215px;
         transition: background-color 180ms ease;
       }
 
@@ -198,7 +198,7 @@
       }
 
       .hero-title {
-        font-family: "Kaushan Script", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+        font-family: "Climate Crisis", "Arial Black", Impact, ui-sans-serif, system-ui, sans-serif;
         font-weight: 400;
         letter-spacing: 0;
         line-height: 0.92;
@@ -208,6 +208,7 @@
         display: inline-grid;
         max-width: 100%;
         transform-style: preserve-3d;
+        --hero-scroll: 0;
       }
 
       .hero-title-stack > span {
@@ -217,18 +218,62 @@
 
       .hero-title-depth {
         color: var(--demo-text-strong);
-        opacity: var(--depth-opacity);
+        opacity: calc(var(--depth-opacity) + var(--hero-scroll) * var(--depth-scroll-opacity));
         pointer-events: none;
-        transform: translate3d(0, var(--depth-y), 0) scale(var(--depth-scale));
+        transform: translate3d(
+            calc(var(--hero-scroll) * var(--depth-scroll-x)),
+            calc(var(--depth-y) + var(--hero-scroll) * var(--depth-scroll-y)),
+            0
+          )
+          scale(calc(var(--depth-scale) - var(--hero-scroll) * var(--depth-scroll-scale)));
         transform-origin: left center;
+        will-change: opacity, transform;
       }
 
       .hero-title-main {
         position: relative;
       }
 
+      @media (prefers-reduced-motion: reduce) {
+        .hero-title-stack {
+          --hero-scroll: 0 !important;
+        }
+      }
+
       .mono-copy {
         font-variant-numeric: tabular-nums slashed-zero;
+      }
+
+      .footer-social {
+        border-color: var(--demo-border) !important;
+      }
+
+      .footer-social-link {
+        display: inline-grid;
+        width: 2.25rem;
+        height: 2.25rem;
+        place-items: center;
+        border: 1px solid var(--demo-border);
+        border-radius: 9999px;
+        background-color: color-mix(in srgb, var(--demo-panel-bg) 54%, transparent);
+        color: color-mix(in srgb, var(--demo-text-strong) 68%, transparent);
+        backdrop-filter: blur(12px);
+        transition:
+          color 180ms ease,
+          background-color 180ms ease,
+          border-color 180ms ease;
+      }
+
+      .footer-social-link:hover {
+        border-color: var(--demo-border-strong);
+        background-color: var(--demo-panel-strong);
+        color: var(--demo-text-strong);
+      }
+
+      .footer-social-link svg {
+        width: 1rem;
+        height: 1rem;
+        fill: currentColor;
       }
 
       .surface-panel {
@@ -353,20 +398,15 @@
       .support-chip {
         display: inline-flex;
         align-items: center;
-        gap: 0.45rem;
+        gap: 0.5rem;
         border-radius: 9999px;
-        border: 1px solid rgb(255 255 255 / 0.1);
-        background: rgb(255 255 255 / 0.03);
-        -webkit-backdrop-filter: blur(12px);
-        backdrop-filter: blur(12px);
-        padding: 0.25rem 0.625rem;
+        padding: 0.125rem 0;
         color: var(--demo-text-primary);
         font-size: 0.75rem;
         line-height: 1.25rem;
       }
 
-      .support-tooltip-trigger:focus-visible .support-chip {
-        border-color: var(--demo-focus);
+      .support-tooltip-trigger:focus-visible {
         box-shadow: 0 0 0 3px rgb(255 255 255 / 0.08);
       }
 
@@ -510,16 +550,43 @@
         box-shadow: 0 0 0 3px color-mix(in srgb, var(--demo-focus) 24%, transparent);
       }
 
-      .rail-tab {
+      .rail-card {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
         border-color: var(--demo-border);
         background: var(--demo-control-bg);
         color: var(--demo-text-primary);
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
       }
 
-      .rail-tab[aria-selected="true"] {
+      .rail-card[aria-selected="true"] {
         border-color: var(--demo-focus);
         background: var(--demo-control-active);
         color: var(--demo-accent-text-strong);
+      }
+
+      .rail-card-initial {
+        position: absolute;
+        bottom: -0.28em;
+        left: 0.35rem;
+        z-index: -1;
+        color: var(--demo-accent-text-strong);
+        font-family: "Climate Crisis", "Arial Black", Impact, ui-sans-serif, system-ui, sans-serif;
+        font-size: 9.75rem;
+        line-height: 0.8;
+        opacity: 0.12;
+        pointer-events: none;
+      }
+
+      .rail-card[aria-selected="true"] .rail-card-initial {
+        color: var(--demo-accent-text);
+        opacity: 0.18;
+      }
+
+      .rail-card-label {
+        position: relative;
+        z-index: 1;
       }
 
       .ui-input {
@@ -541,50 +608,6 @@
         }
       }
 
-      .popover-panel {
-        background-color: color-mix(in srgb, var(--demo-panel-strong) 68%, transparent) !important;
-        transform-origin: top left;
-        will-change: opacity, transform;
-        -webkit-backdrop-filter: blur(18px);
-        backdrop-filter: blur(18px);
-      }
-
-      .popover-panel[data-state="open"] {
-        animation: popover-in 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
-      }
-
-      .popover-panel[data-state="closed"] {
-        pointer-events: none;
-        animation: popover-out 120ms ease-in both;
-      }
-
-      @keyframes popover-in {
-        from {
-          opacity: 0;
-          transform: translateY(-4px) scale(0.985);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-
-      @keyframes popover-out {
-        from {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-        to {
-          opacity: 0;
-          transform: translateY(-3px) scale(0.985);
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .popover-panel {
-          animation: none !important;
-        }
-      }
     </style>
   </head>
   <body
@@ -595,27 +618,37 @@
         <p class="mb-4 font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.16em] api-label">
           Tailwind v4 Plugin
         </p>
-        <h1 class="hero-title hero-title-stack text-[5.5rem] text-neutral-50 sm:text-[6.75rem] lg:text-[8rem]" aria-label="tw-fade">
-          <span class="hero-title-depth" style="--depth-y: 0.18em; --depth-scale: 0.92; --depth-opacity: 0.025" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.162em; --depth-scale: 0.928; --depth-opacity: 0.04" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.144em; --depth-scale: 0.936; --depth-opacity: 0.055" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.126em; --depth-scale: 0.944; --depth-opacity: 0.07" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.108em; --depth-scale: 0.952; --depth-opacity: 0.085" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.09em; --depth-scale: 0.96; --depth-opacity: 0.1" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.072em; --depth-scale: 0.968; --depth-opacity: 0.115" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.054em; --depth-scale: 0.976; --depth-opacity: 0.13" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.036em; --depth-scale: 0.984; --depth-opacity: 0.145" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.018em; --depth-scale: 0.992; --depth-opacity: 0.16" aria-hidden="true">tw-fade</span>
+        <h1 class="hero-title hero-title-stack text-[5.5rem] text-neutral-50 sm:text-[6.75rem] lg:text-[8rem]" aria-label="tw-fade" data-hero-title>
+          <span class="hero-title-depth" style="--depth-y: 0.19em; --depth-scale: 0.91; --depth-opacity: 0.01; --depth-scroll-x: -0.014em; --depth-scroll-y: 0.22em; --depth-scroll-scale: 0.03; --depth-scroll-opacity: 0.04" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.1805em; --depth-scale: 0.9145; --depth-opacity: 0.017; --depth-scroll-x: -0.0133em; --depth-scroll-y: 0.209em; --depth-scroll-scale: 0.0285; --depth-scroll-opacity: 0.038" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.171em; --depth-scale: 0.919; --depth-opacity: 0.024; --depth-scroll-x: -0.0126em; --depth-scroll-y: 0.198em; --depth-scroll-scale: 0.027; --depth-scroll-opacity: 0.036" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.1615em; --depth-scale: 0.9235; --depth-opacity: 0.031; --depth-scroll-x: -0.0119em; --depth-scroll-y: 0.187em; --depth-scroll-scale: 0.0255; --depth-scroll-opacity: 0.034" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.152em; --depth-scale: 0.928; --depth-opacity: 0.038; --depth-scroll-x: -0.0112em; --depth-scroll-y: 0.176em; --depth-scroll-scale: 0.024; --depth-scroll-opacity: 0.032" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.1425em; --depth-scale: 0.9325; --depth-opacity: 0.045; --depth-scroll-x: -0.0105em; --depth-scroll-y: 0.165em; --depth-scroll-scale: 0.0225; --depth-scroll-opacity: 0.03" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.133em; --depth-scale: 0.937; --depth-opacity: 0.052; --depth-scroll-x: -0.0098em; --depth-scroll-y: 0.154em; --depth-scroll-scale: 0.021; --depth-scroll-opacity: 0.028" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.1235em; --depth-scale: 0.9415; --depth-opacity: 0.059; --depth-scroll-x: -0.0091em; --depth-scroll-y: 0.143em; --depth-scroll-scale: 0.0195; --depth-scroll-opacity: 0.026" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.114em; --depth-scale: 0.946; --depth-opacity: 0.066; --depth-scroll-x: -0.0084em; --depth-scroll-y: 0.132em; --depth-scroll-scale: 0.018; --depth-scroll-opacity: 0.024" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.1045em; --depth-scale: 0.9505; --depth-opacity: 0.073; --depth-scroll-x: -0.0077em; --depth-scroll-y: 0.121em; --depth-scroll-scale: 0.0165; --depth-scroll-opacity: 0.022" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.095em; --depth-scale: 0.955; --depth-opacity: 0.08; --depth-scroll-x: -0.007em; --depth-scroll-y: 0.11em; --depth-scroll-scale: 0.015; --depth-scroll-opacity: 0.02" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.0855em; --depth-scale: 0.9595; --depth-opacity: 0.087; --depth-scroll-x: -0.0063em; --depth-scroll-y: 0.099em; --depth-scroll-scale: 0.0135; --depth-scroll-opacity: 0.018" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.076em; --depth-scale: 0.964; --depth-opacity: 0.094; --depth-scroll-x: -0.0056em; --depth-scroll-y: 0.088em; --depth-scroll-scale: 0.012; --depth-scroll-opacity: 0.016" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.0665em; --depth-scale: 0.9685; --depth-opacity: 0.101; --depth-scroll-x: -0.0049em; --depth-scroll-y: 0.077em; --depth-scroll-scale: 0.0105; --depth-scroll-opacity: 0.014" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.057em; --depth-scale: 0.973; --depth-opacity: 0.108; --depth-scroll-x: -0.0042em; --depth-scroll-y: 0.066em; --depth-scroll-scale: 0.009; --depth-scroll-opacity: 0.012" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.0475em; --depth-scale: 0.9775; --depth-opacity: 0.115; --depth-scroll-x: -0.0035em; --depth-scroll-y: 0.055em; --depth-scroll-scale: 0.0075; --depth-scroll-opacity: 0.01" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.038em; --depth-scale: 0.982; --depth-opacity: 0.122; --depth-scroll-x: -0.0028em; --depth-scroll-y: 0.044em; --depth-scroll-scale: 0.006; --depth-scroll-opacity: 0.008" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.0285em; --depth-scale: 0.9865; --depth-opacity: 0.129; --depth-scroll-x: -0.0021em; --depth-scroll-y: 0.033em; --depth-scroll-scale: 0.0045; --depth-scroll-opacity: 0.006" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.019em; --depth-scale: 0.991; --depth-opacity: 0.136; --depth-scroll-x: -0.0014em; --depth-scroll-y: 0.022em; --depth-scroll-scale: 0.003; --depth-scroll-opacity: 0.004" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.0095em; --depth-scale: 0.9955; --depth-opacity: 0.143; --depth-scroll-x: -0.0007em; --depth-scroll-y: 0.011em; --depth-scroll-scale: 0.0015; --depth-scroll-opacity: 0.002" aria-hidden="true">tw-fade</span>
           <span class="hero-title-main" aria-hidden="true">tw-fade</span>
         </h1>
         <p class="mt-9 max-w-[40rem] text-balance text-[1.0625rem] leading-7 text-neutral-300/85 sm:text-lg">
           Elegant, scroll-driven edge masking. Add a single class and content edges dissolve
-          into the surface. Zero JavaScript.
+          into any surface. Zero JavaScript.
         </p>
-        <div class="mt-6 flex max-w-[43rem] select-none flex-wrap gap-2" aria-label="Browser support">
+        <div class="mt-6 flex max-w-[43rem] select-none flex-wrap gap-x-5 gap-y-2" aria-label="Browser support">
           <span class="support-tooltip-root" data-slot="tooltip">
             <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-chrome">
-              <span class="support-chip" data-slot="badge" data-variant="outline">
+              <span class="support-chip">
                 <span class="support-indicator support-indicator-full" data-icon="inline-start" aria-hidden="true"></span>
                 Chrome
               </span>
@@ -624,7 +657,7 @@
           </span>
           <span class="support-tooltip-root" data-slot="tooltip">
             <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-edge">
-              <span class="support-chip" data-slot="badge" data-variant="outline">
+              <span class="support-chip">
                 <span class="support-indicator support-indicator-full" data-icon="inline-start" aria-hidden="true"></span>
                 Edge
               </span>
@@ -633,7 +666,7 @@
           </span>
           <span class="support-tooltip-root" data-slot="tooltip">
             <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-safari">
-              <span class="support-chip" data-slot="badge" data-variant="outline">
+              <span class="support-chip">
                 <span class="support-indicator support-indicator-full" data-icon="inline-start" aria-hidden="true"></span>
                 Safari
               </span>
@@ -642,7 +675,7 @@
           </span>
           <span class="support-tooltip-root" data-slot="tooltip">
             <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-mobile-safari">
-              <span class="support-chip" data-slot="badge" data-variant="outline">
+              <span class="support-chip">
                 <span class="support-indicator support-indicator-full" data-icon="inline-start" aria-hidden="true"></span>
                 Mobile Safari
               </span>
@@ -651,7 +684,7 @@
           </span>
           <span class="support-tooltip-root" data-slot="tooltip">
             <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-firefox">
-              <span class="support-chip" data-slot="badge" data-variant="outline">
+              <span class="support-chip">
                 <span class="support-indicator support-indicator-partial" data-icon="inline-start" aria-hidden="true"></span>
                 Firefox
               </span>
@@ -660,7 +693,7 @@
           </span>
           <span class="support-tooltip-root" data-slot="tooltip">
             <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-firefox-nightly">
-              <span class="support-chip" data-slot="badge" data-variant="outline">
+              <span class="support-chip">
                 <span class="support-indicator support-indicator-full" data-icon="inline-start" aria-hidden="true"></span>
                 Firefox Nightly
               </span>
@@ -669,7 +702,7 @@
           </span>
           <span class="support-tooltip-root" data-slot="tooltip">
             <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-opera">
-              <span class="support-chip" data-slot="badge" data-variant="outline">
+              <span class="support-chip">
                 <span class="support-indicator support-indicator-full" data-icon="inline-start" aria-hidden="true"></span>
                 Opera
               </span>
@@ -684,14 +717,14 @@
         aria-label="Scroll fade examples"
       >
         <div class="min-w-0 space-y-6">
+          <div>
+            <h2 id="list-title" class="text-[1.875rem] font-medium leading-9 text-neutral-50">
+              Item list
+            </h2>
+          </div>
+
           <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(21rem,0.82fr)]">
             <section class="min-w-0" aria-labelledby="list-title">
-              <div class="mb-4">
-                <h2 id="list-title" class="text-[1.875rem] font-medium leading-9 text-neutral-50">
-                  Item list
-                </h2>
-              </div>
-
               <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
                 <div
                   class="fade-y thin-scroll h-[18rem] overflow-y-auto divide-y divide-white/10"
@@ -700,7 +733,7 @@
                   <article class="flex gap-4 px-5 py-4 sm:px-6">
                     <span class="grid size-9 shrink-0 place-items-center rounded-full bg-white/[0.04] text-[0.8125rem] font-medium text-neutral-400">MP</span>
                     <div class="min-w-0 flex-1">
-                      <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Merge popover polish</h3>
+                      <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Merge scroll polish</h3>
                       <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">A long row still fades as one surface, including row content and metadata.</p>
                     </div>
                     <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#241</span>
@@ -717,7 +750,7 @@
                     <span class="grid size-9 shrink-0 place-items-center rounded-full bg-white/[0.04] text-[0.8125rem] font-medium text-neutral-400">DS</span>
                     <div class="min-w-0 flex-1">
                       <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Document Base UI variant</h3>
-                      <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">The example maps cleanly to PopoverContent, CommandList, and ScrollArea.</p>
+                      <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">The example maps cleanly to nested scroll containers and dense action lists.</p>
                     </div>
                     <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#239</span>
                   </article>
@@ -741,7 +774,7 @@
                     <span class="grid size-9 shrink-0 place-items-center rounded-full bg-white/[0.04] text-[0.8125rem] font-medium text-neutral-400">DX</span>
                     <div class="min-w-0 flex-1">
                       <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Tighten scroll primitives</h3>
-                      <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">Utilities should feel native inside menus, drawers, panes, and popovers.</p>
+                      <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">Utilities should feel native inside menus, drawers, panes, and sheets.</p>
                     </div>
                     <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#236</span>
                   </article>
@@ -805,7 +838,7 @@
                     <span class="grid size-9 shrink-0 place-items-center rounded-full bg-white/[0.04] text-[0.8125rem] font-medium text-neutral-400">ST</span>
                     <div class="min-w-0 flex-1">
                       <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Prepare sticky guidance</h3>
-                      <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">Sticky-edge caveats stay separate from the common list and popover paths.</p>
+                      <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">Sticky-edge caveats stay separate from the common list and panel paths.</p>
                     </div>
                     <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#228</span>
                   </article>
@@ -827,7 +860,7 @@
   <span class="code-tag">&lt;article</span> <span class="code-attr">className</span>=<span class="code-string">"flex gap-4 px-6 py-4"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;Avatar</span> <span class="code-attr">initials</span>=<span class="code-string">"MP"</span> <span class="code-tag">/&gt;</span>
     <span class="code-tag">&lt;div</span> <span class="code-attr">className</span>=<span class="code-string">"min-w-0 flex-1"</span><span class="code-tag">&gt;</span>
-      <span class="code-tag">&lt;h3&gt;</span>Merge popover polish<span class="code-tag">&lt;/h3&gt;</span>
+      <span class="code-tag">&lt;h3&gt;</span>Merge scroll polish<span class="code-tag">&lt;/h3&gt;</span>
       <span class="code-tag">&lt;p&gt;</span>Every child fades together.<span class="code-tag">&lt;/p&gt;</span>
     <span class="code-tag">&lt;/div&gt;</span>
   <span class="code-tag">&lt;/article&gt;</span>
@@ -845,169 +878,70 @@
               </div>
             </div>
             <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
-              <div
-                class="fade-x thin-scroll flex gap-3 overflow-x-auto p-3"
-                data-demo="rail"
-              >
-                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="true">Overview</button>
-                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Deployments</button>
-                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Observability</button>
-                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Functions</button>
-                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Storage</button>
-                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Domains</button>
-                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Settings</button>
-                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Audit log</button>
-                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Cron jobs</button>
-                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Feature flags</button>
-                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Queues</button>
-                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Firewall</button>
-                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Cache</button>
+              <div class="fade-x thin-scroll flex h-44 gap-4 overflow-x-auto p-4" data-demo="rail">
+                <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="true">
+                  <span class="rail-card-initial" aria-hidden="true">D</span>
+                  <span class="rail-card-label">Dissolve</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">S</span>
+                  <span class="rail-card-label">Soften</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">D</span>
+                  <span class="rail-card-label">Dim</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">W</span>
+                  <span class="rail-card-label">Wane</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">R</span>
+                  <span class="rail-card-label">Recede</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">T</span>
+                  <span class="rail-card-label">Taper</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">B</span>
+                  <span class="rail-card-label">Blur</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">M</span>
+                  <span class="rail-card-label">Melt</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">G</span>
+                  <span class="rail-card-label">Ghost</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">V</span>
+                  <span class="rail-card-label">Vanish</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">E</span>
+                  <span class="rail-card-label">Evaporate</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">D</span>
+                  <span class="rail-card-label">Dissipate</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">H</span>
+                  <span class="rail-card-label">Haze</span>
+                </button>
               </div>
             </div>
           </section>
-
-            <section class="min-w-0" aria-labelledby="popover-title">
-              <div class="mb-4">
-                <h2 id="popover-title" class="text-[1.875rem] font-medium leading-9 text-neutral-50">
-                  Scrollable popover
-                </h2>
-              </div>
-
-              <div class="relative">
-                <button
-                  class="surface-panel ui-button inline-flex h-10 items-center rounded-md border border-white/10 bg-white/[0.03] px-3 text-[0.875rem] font-medium leading-none text-neutral-100 shadow-2xl shadow-black/30"
-                  type="button"
-                  aria-expanded="false"
-                  aria-controls="token-popover"
-                  data-popover-toggle
-                >
-                  Open Popover
-                </button>
-
-                <div
-                  id="token-popover"
-                  class="surface-panel-strong popover-panel absolute left-0 top-14 z-10 w-full max-w-[28rem] rounded-lg border border-white/12 bg-neutral-950/95 p-1 shadow-2xl shadow-black/50"
-                  role="dialog"
-                  aria-labelledby="token-popover-title"
-                  aria-hidden="true"
-                  data-state="closed"
-                  data-popover-panel
-                  hidden
-                >
-                  <div class="px-3 py-3">
-                    <h3 id="token-popover-title" class="text-[0.875rem] font-medium leading-5 text-neutral-50">
-                      Component tokens
-                    </h3>
-                    <p class="mt-1 text-[0.8125rem] leading-5 text-neutral-500">
-                      A popover can scroll without extra overlay elements.
-                    </p>
-                  </div>
-                  <div
-                    class="fade-y fade-size-md thin-scroll max-h-80 overflow-y-auto rounded-md"
-                    data-demo="popover"
-                  >
-                    <div class="space-y-1 p-1">
-                      <button class="ui-row flex w-full items-center gap-3 rounded-md px-2 py-2.5 text-left">
-                        <span class="grid size-8 shrink-0 place-items-center rounded-md bg-emerald-400/10 text-[0.8125rem] font-medium text-emerald-200">bg</span>
-                        <span class="min-w-0 flex-1">
-                          <span class="block text-[0.875rem] font-medium leading-5 text-neutral-100">Background</span>
-                          <span class="block truncate text-[0.8125rem] leading-5 text-neutral-500">--color-background</span>
-                        </span>
-                        <span class="size-3 rounded-full bg-neutral-950 ring-1 ring-white/20"></span>
-                      </button>
-                      <button class="ui-row flex w-full items-center gap-3 rounded-md px-2 py-2.5 text-left">
-                        <span class="grid size-8 shrink-0 place-items-center rounded-md bg-cyan-400/10 text-[0.8125rem] font-medium text-cyan-200">fg</span>
-                        <span class="min-w-0 flex-1">
-                          <span class="block text-[0.875rem] font-medium leading-5 text-neutral-100">Foreground</span>
-                          <span class="block truncate text-[0.8125rem] leading-5 text-neutral-500">--color-foreground</span>
-                        </span>
-                        <span class="size-3 rounded-full bg-neutral-50"></span>
-                      </button>
-                      <button class="ui-row flex w-full items-center gap-3 rounded-md px-2 py-2.5 text-left">
-                        <span class="grid size-8 shrink-0 place-items-center rounded-md bg-violet-400/10 text-[0.8125rem] font-medium text-violet-200">cd</span>
-                        <span class="min-w-0 flex-1">
-                          <span class="block text-[0.875rem] font-medium leading-5 text-neutral-100">Card</span>
-                          <span class="block truncate text-[0.8125rem] leading-5 text-neutral-500">--color-card</span>
-                        </span>
-                        <span class="size-3 rounded-full bg-neutral-900 ring-1 ring-white/20"></span>
-                      </button>
-                      <button class="ui-row flex w-full items-center gap-3 rounded-md px-2 py-2.5 text-left">
-                        <span class="grid size-8 shrink-0 place-items-center rounded-md bg-amber-400/10 text-[0.8125rem] font-medium text-amber-200">bd</span>
-                        <span class="min-w-0 flex-1">
-                          <span class="block text-[0.875rem] font-medium leading-5 text-neutral-100">Border</span>
-                          <span class="block truncate text-[0.8125rem] leading-5 text-neutral-500">--color-border</span>
-                        </span>
-                        <span class="size-3 rounded-full bg-neutral-700 ring-1 ring-white/20"></span>
-                      </button>
-                      <button class="ui-row flex w-full items-center gap-3 rounded-md px-2 py-2.5 text-left">
-                        <span class="grid size-8 shrink-0 place-items-center rounded-md bg-rose-400/10 text-[0.8125rem] font-medium text-rose-200">rg</span>
-                        <span class="min-w-0 flex-1">
-                          <span class="block text-[0.875rem] font-medium leading-5 text-neutral-100">Ring</span>
-                          <span class="block truncate text-[0.8125rem] leading-5 text-neutral-500">--color-ring</span>
-                        </span>
-                        <span class="size-3 rounded-full bg-emerald-400"></span>
-                      </button>
-                      <button class="ui-row flex w-full items-center gap-3 rounded-md px-2 py-2.5 text-left">
-                        <span class="grid size-8 shrink-0 place-items-center rounded-md bg-blue-400/10 text-[0.8125rem] font-medium text-blue-200">pr</span>
-                        <span class="min-w-0 flex-1">
-                          <span class="block text-[0.875rem] font-medium leading-5 text-neutral-100">Primary</span>
-                          <span class="block truncate text-[0.8125rem] leading-5 text-neutral-500">--color-primary</span>
-                        </span>
-                        <span class="size-3 rounded-full bg-emerald-500"></span>
-                      </button>
-                      <button class="ui-row flex w-full items-center gap-3 rounded-md px-2 py-2.5 text-left">
-                        <span class="grid size-8 shrink-0 place-items-center rounded-md bg-fuchsia-400/10 text-[0.8125rem] font-medium text-fuchsia-200">ac</span>
-                        <span class="min-w-0 flex-1">
-                          <span class="block text-[0.875rem] font-medium leading-5 text-neutral-100">Accent</span>
-                          <span class="block truncate text-[0.8125rem] leading-5 text-neutral-500">--color-accent</span>
-                        </span>
-                        <span class="size-3 rounded-full bg-neutral-800 ring-1 ring-white/20"></span>
-                      </button>
-                      <button class="ui-row flex w-full items-center gap-3 rounded-md px-2 py-2.5 text-left">
-                        <span class="grid size-8 shrink-0 place-items-center rounded-md bg-lime-400/10 text-[0.8125rem] font-medium text-lime-200">mt</span>
-                        <span class="min-w-0 flex-1">
-                          <span class="block text-[0.875rem] font-medium leading-5 text-neutral-100">Muted</span>
-                          <span class="block truncate text-[0.8125rem] leading-5 text-neutral-500">--color-muted</span>
-                        </span>
-                        <span class="size-3 rounded-full bg-neutral-800 ring-1 ring-white/20"></span>
-                      </button>
-                      <button class="ui-row flex w-full items-center gap-3 rounded-md px-2 py-2.5 text-left">
-                        <span class="grid size-8 shrink-0 place-items-center rounded-md bg-red-400/10 text-[0.8125rem] font-medium text-red-200">ds</span>
-                        <span class="min-w-0 flex-1">
-                          <span class="block text-[0.875rem] font-medium leading-5 text-neutral-100">Destructive</span>
-                          <span class="block truncate text-[0.8125rem] leading-5 text-neutral-500">--color-destructive</span>
-                        </span>
-                        <span class="size-3 rounded-full bg-red-500"></span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
         </div>
-
-        <section aria-label="Base UI code example">
-          <pre class="surface-panel-soft code-surface mono-copy min-w-0 overflow-x-auto rounded-lg border border-white/10 bg-neutral-950/70 p-4 text-[0.8125rem] leading-6 text-neutral-300"><code><span class="code-tag">&lt;PopoverContent&gt;</span>
-  <span class="code-tag">&lt;ScrollArea</span> <span class="code-attr">className</span>=<span class="code-string">"</span><span class="code-fade">fade-y</span><span class="code-string"> overflow-auto"</span><span class="code-tag">&gt;</span>
-    <span class="code-comment">...</span>
-  <span class="code-tag">&lt;/ScrollArea&gt;</span>
-<span class="code-tag">&lt;/PopoverContent&gt;</span></code></pre>
-        </section>
       </section>
 
       <section class="mt-10 space-y-6" aria-labelledby="tuning-title">
         <div class="min-w-0">
-          <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 id="tuning-title" class="text-[1.875rem] font-medium leading-9 text-neutral-50">
-                Tune one edge at a time
-              </h2>
-            </div>
-            <p class="max-w-md text-[0.875rem] leading-5 text-neutral-500">
-              Edge sizes override axis sizes. Clear zones keep chrome readable before the fade ramp starts.
-            </p>
-          </div>
+          <h2 id="tuning-title" class="mb-4 text-[1.875rem] font-medium leading-9 text-neutral-50">
+            Tune one edge at a time
+          </h2>
 
           <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
@@ -1017,67 +951,59 @@
               </div>
               <div class="fade-y fade-size-sm thin-scroll h-64 overflow-x-hidden overflow-y-auto p-5 sm:h-72" data-demo="balanced-specimen">
                 <article class="space-y-6">
-                  <header class="space-y-2 border-b border-white/10 pb-4">
-                    <p class="mono-copy font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.14em] text-neutral-500">
-                      type scale
-                    </p>
-                    <p class="text-[0.875rem] leading-6 text-neutral-400">
-                      Oversized samples clip on the x-axis; the scroller only moves vertically.
-                    </p>
-                  </header>
                   <section class="space-y-7">
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">80</span>
                       <p class="whitespace-nowrap text-[5rem] font-semibold leading-none text-neutral-50">
-                        Dissolve
+                        Dissolving
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">64</span>
                       <p class="whitespace-nowrap text-[4rem] font-semibold leading-none text-neutral-50">
-                        Dissolve
+                        Dissolving
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">48</span>
                       <p class="whitespace-nowrap text-[3rem] font-semibold leading-none text-neutral-50">
-                        Dissolve
+                        Dissolving
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">32</span>
                       <p class="whitespace-nowrap text-[2rem] font-semibold leading-none text-neutral-50">
-                        Dissolve
+                        Dissolving
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">24</span>
                       <p class="whitespace-nowrap text-2xl font-semibold leading-8 text-neutral-50">
-                        Dissolve
+                        Dissolving
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">20</span>
                       <p class="whitespace-nowrap text-xl font-medium leading-7 text-neutral-100">
-                        Dissolve
+                        Dissolving
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">16</span>
                       <p class="whitespace-nowrap text-base leading-6 text-neutral-200">
-                        Dissolve
+                        Dissolving
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">14</span>
                       <p class="whitespace-nowrap text-[0.875rem] leading-5 text-neutral-300">
-                        Dissolve
+                        Dissolving
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">12</span>
                       <p class="whitespace-nowrap text-[0.75rem] leading-4 text-neutral-400">
-                        Dissolve
+                        Dissolving
                       </p>
                     </div>
                   </section>
@@ -1091,81 +1017,68 @@
             </div>
 
             <div class="surface-panel overflow-hidden rounded-lg border border-emerald-400/20 bg-neutral-950/75 shadow-2xl shadow-black/40">
-              <div class="border-b border-emerald-400/20 px-4 py-3">
+              <div class="border-b border-white/10 px-4 py-3">
                 <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Bottom emphasis</p>
                 <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">fade-y fade-size-sm fade-size-b-lg</code>
               </div>
               <div class="fade-y fade-size-sm fade-size-b-lg thin-scroll h-64 overflow-x-hidden overflow-y-auto p-5 sm:h-72" data-demo="bottom-specimen">
                 <article class="space-y-6">
-                  <header class="space-y-2 border-b border-emerald-400/20 pb-4">
-                    <p class="mono-copy font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.14em] text-neutral-500">
-                      type scale
-                    </p>
-                    <p class="text-[0.875rem] leading-6 text-neutral-400">
-                      The lower ramp extends farther while the scale stays matched to the balanced sample.
-                    </p>
-                  </header>
                   <section class="space-y-7">
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">80</span>
                       <p class="whitespace-nowrap text-[5rem] font-semibold leading-none text-neutral-50">
                         Surfaces
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">64</span>
                       <p class="whitespace-nowrap text-[4rem] font-semibold leading-none text-neutral-50">
                         Surfaces
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">48</span>
                       <p class="whitespace-nowrap text-[3rem] font-semibold leading-none text-neutral-50">
                         Surfaces
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">32</span>
                       <p class="whitespace-nowrap text-[2rem] font-semibold leading-none text-neutral-50">
                         Surfaces
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">24</span>
                       <p class="whitespace-nowrap text-2xl font-semibold leading-8 text-neutral-50">
                         Surfaces
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">20</span>
                       <p class="whitespace-nowrap text-xl font-medium leading-7 text-neutral-100">
                         Surfaces
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">16</span>
                       <p class="whitespace-nowrap text-base leading-6 text-neutral-200">
                         Surfaces
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">14</span>
                       <p class="whitespace-nowrap text-[0.875rem] leading-5 text-neutral-300">
                         Surfaces
                       </p>
                     </div>
-                    <div class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4">
+                    <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
                       <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">12</span>
                       <p class="whitespace-nowrap text-[0.75rem] leading-4 text-neutral-400">
                         Surfaces
                       </p>
                     </div>
                   </section>
-                  <footer class="border-t border-emerald-400/20 pt-4">
-                    <p class="text-[0.875rem] leading-6 text-neutral-400">
-                      The matched scale makes the larger bottom edge easier to compare.
-                    </p>
-                  </footer>
                 </article>
               </div>
             </div>
@@ -1175,82 +1088,92 @@
                 <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Sticky clearance</p>
                 <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">fade-y fade-clear-t-lg</code>
               </div>
-              <div class="fade-y fade-clear-t-lg thin-scroll h-64 overflow-y-auto sm:h-72" data-demo="clearance">
+              <div class="fade-y fade-clear-t-lg thin-scroll h-64 overflow-x-hidden overflow-y-auto sm:h-72" data-demo="clearance">
                 <div class="surface-panel-strong sticky-clearance-bar sticky top-0 z-10 flex h-12 items-center justify-between gap-3 border-b border-emerald-400/20 bg-neutral-950/95 px-4 backdrop-blur">
-                  <p class="text-[0.875rem] font-medium leading-5 text-emerald-100">Pinned filters</p>
-                  <span class="mono-copy font-mono text-[0.6875rem] leading-none text-neutral-500">3rem clear</span>
+                  <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Pinned filters</p>
                 </div>
-                <div class="space-y-5 p-5">
-                  <article class="space-y-4">
-                    <header class="space-y-2">
-                      <p class="mono-copy font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.14em] text-neutral-500">
-                        specimen 03
-                      </p>
-                      <h3 class="text-xl font-semibold leading-7 text-neutral-50">Editorial filters</h3>
-                      <p class="text-[0.875rem] leading-6 text-neutral-400">
-                        The clear zone starts the fade below the pinned control row.
-                      </p>
-                    </header>
-                    <section class="space-y-4 border-t border-white/10 pt-4">
-                      <div>
-                        <p class="text-[0.9375rem] font-medium leading-6 text-neutral-100">Architecture</p>
-                        <p class="mt-1 text-[0.875rem] leading-6 text-neutral-400">Component notes, token rules, and migration remarks stay readable under the header.</p>
-                      </div>
-                      <div>
-                        <p class="text-[0.9375rem] font-medium leading-6 text-neutral-100">Motion</p>
-                        <p class="mt-1 text-[0.875rem] leading-6 text-neutral-400">Scroll-driven masks remain passive; the content owns the movement.</p>
-                      </div>
-                      <div>
-                        <p class="text-[0.9375rem] font-medium leading-6 text-neutral-100">Density</p>
-                        <p class="mt-1 text-[0.875rem] leading-6 text-neutral-400">Short labels and longer descriptions can share a single masked surface.</p>
-                      </div>
-                      <div>
-                        <p class="text-[0.9375rem] font-medium leading-6 text-neutral-100">Review</p>
-                        <p class="mt-1 text-[0.875rem] leading-6 text-neutral-400">A clear zone keeps the first line from dissolving beneath sticky controls.</p>
-                      </div>
-                      <div>
-                        <p class="text-[0.9375rem] font-medium leading-6 text-neutral-100">Preview</p>
-                        <p class="mt-1 text-[0.875rem] leading-6 text-neutral-400">The rest of the panel still fades normally once it scrolls past the reserved space.</p>
-                      </div>
-                      <div>
-                        <p class="text-[0.9375rem] font-medium leading-6 text-neutral-100">Caveat</p>
-                        <p class="mt-1 text-[0.875rem] leading-6 text-neutral-400">On rubber-banding platforms, prefer avoiding fades on sticky edges when the tradeoff is visible.</p>
-                      </div>
-                      <div>
-                        <p class="text-[0.9375rem] font-medium leading-6 text-neutral-100">Fallback</p>
-                        <p class="mt-1 text-[0.875rem] leading-6 text-neutral-400">Use a bottom-only fade when the sticky top needs to remain completely stable.</p>
-                      </div>
-                    </section>
-                  </article>
-                </div>
+                <section class="space-y-7 p-5">
+                  <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
+                    <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">80</span>
+                    <p class="whitespace-nowrap text-[5rem] font-semibold leading-none text-neutral-50">
+                      Melting
+                    </p>
+                  </div>
+                  <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
+                    <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">64</span>
+                    <p class="whitespace-nowrap text-[4rem] font-semibold leading-none text-neutral-50">
+                      Melting
+                    </p>
+                  </div>
+                  <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
+                    <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">48</span>
+                    <p class="whitespace-nowrap text-[3rem] font-semibold leading-none text-neutral-50">
+                      Melting
+                    </p>
+                  </div>
+                  <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
+                    <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">32</span>
+                    <p class="whitespace-nowrap text-[2rem] font-semibold leading-none text-neutral-50">
+                      Melting
+                    </p>
+                  </div>
+                  <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
+                    <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">24</span>
+                    <p class="whitespace-nowrap text-2xl font-semibold leading-8 text-neutral-50">
+                      Melting
+                    </p>
+                  </div>
+                  <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
+                    <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">20</span>
+                    <p class="whitespace-nowrap text-xl font-medium leading-7 text-neutral-100">
+                      Melting
+                    </p>
+                  </div>
+                  <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
+                    <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">16</span>
+                    <p class="whitespace-nowrap text-base leading-6 text-neutral-200">
+                      Melting
+                    </p>
+                  </div>
+                  <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
+                    <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">14</span>
+                    <p class="whitespace-nowrap text-[0.875rem] leading-5 text-neutral-300">
+                      Melting
+                    </p>
+                  </div>
+                  <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
+                    <span class="mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500">12</span>
+                    <p class="whitespace-nowrap text-[0.75rem] leading-4 text-neutral-400">
+                      Melting
+                    </p>
+                  </div>
+                </section>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.42fr)]">
-          <pre class="surface-panel-soft code-surface mono-copy min-w-0 overflow-x-auto rounded-lg border border-white/10 bg-neutral-950/70 p-4 text-[0.8125rem] leading-6 text-neutral-300"><code><span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"</span><span class="code-fade">fade-y</span> <span class="code-fade">fade-size-sm</span> <span class="code-fade">fade-size-b-lg</span><span class="code-string"> overflow-y-auto"</span><span class="code-tag">&gt;</span>
-  <span class="code-comment">...</span>
-<span class="code-tag">&lt;/div&gt;</span></code></pre>
-          <div class="rounded-lg border border-amber-300/15 bg-amber-300/[0.08] p-4 backdrop-blur">
-            <p class="mono-copy font-mono text-[0.6875rem] uppercase leading-4 tracking-[0.14em] text-amber-200/80">
-              sticky edges
-            </p>
-            <p class="text-[0.8125rem] leading-5 text-amber-100/90">
-              Sticky elements can rubber-band past a fixed mask on macOS. For sticky headers, prefer fading only the bottom edge.
-            </p>
-            <code class="mono-copy mt-2 block font-mono text-[0.75rem] leading-5 text-amber-200">fade-b</code>
-          </div>
-        </div>
       </section>
 
-      <footer class="mono-copy mt-12 border-t border-white/10 pt-6 font-mono text-[0.75rem] leading-5 text-neutral-500">
+      <footer class="footer-social mt-12 flex items-center gap-3 border-t pt-6">
         <a
-          class="text-emerald-400 underline decoration-emerald-400/30 underline-offset-4 transition-colors hover:text-emerald-300"
+          class="footer-social-link"
           href="https://github.com/petekp/tw-fade"
+          aria-label="GitHub repository"
           rel="noreferrer"
         >
-          github.com/petekp/tw-fade
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z" />
+          </svg>
+        </a>
+        <a
+          class="footer-social-link"
+          href="https://x.com/petekp"
+          aria-label="Pete on X"
+          rel="noreferrer"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18.2 2.3h3.3l-7.2 8.3 8.5 11.2h-6.7L11 14.9l-6 6.8H1.7l7.7-8.8L1.3 2.3h6.8l4.7 6.2 5.4-6.2Zm-1.2 17.5h1.8L7.1 4.1H5.1l11.9 15.7Z" />
+          </svg>
         </a>
       </footer>
     </main>
@@ -1281,11 +1204,8 @@
     <script>
       const surfaceButtons = Array.from(document.querySelectorAll('[data-surface-option]'))
       const floatingSurfacePalette = document.querySelector('[data-floating-surface-palette]')
-      const popoverButton = document.querySelector('[data-popover-toggle]')
-      const popoverPanel = document.querySelector('[data-popover-panel]')
       const rail = document.querySelector('[data-demo="rail"]')
       const clearance = document.querySelector('[data-demo="clearance"]')
-      let popoverHideTimer
 
       function setSurface(nextSurface) {
         document.documentElement.dataset.surface = nextSurface
@@ -1324,33 +1244,27 @@
       document.body.addEventListener('scroll', syncFloatingPalette, { passive: true })
       syncFloatingPalette()
 
-      function setPopoverOpen(nextOpen) {
-        clearTimeout(popoverHideTimer)
-        popoverButton.setAttribute('aria-expanded', String(nextOpen))
-        popoverPanel.setAttribute('aria-hidden', String(!nextOpen))
-
-        if (nextOpen) {
-          popoverPanel.hidden = false
-          requestAnimationFrame(() => {
-            popoverPanel.dataset.state = 'open'
-          })
-          return
-        }
-
-        popoverPanel.dataset.state = 'closed'
-        popoverHideTimer = setTimeout(() => {
-          if (popoverPanel.dataset.state === 'closed') popoverPanel.hidden = true
-        }, 140)
-      }
-
-      popoverButton.addEventListener('click', () => {
-        setPopoverOpen(popoverPanel.hidden)
-      })
-
       requestAnimationFrame(() => {
         rail.scrollLeft = 190
         clearance.scrollTop = 32
       })
+    </script>
+    <script type="module">
+      import { scroll } from "https://cdn.jsdelivr.net/npm/motion@12.40.0/+esm"
+
+      const heroTitle = document.querySelector('[data-hero-title]')
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+      function syncHeroDepth() {
+        if (!heroTitle || reduceMotion.matches) return
+        const scrollProgress = Math.min(1, Math.max(0, document.body.scrollTop / 520))
+        heroTitle.style.setProperty('--hero-scroll', scrollProgress.toFixed(4))
+      }
+
+      if (heroTitle && !reduceMotion.matches) {
+        syncHeroDepth()
+        scroll(syncHeroDepth, { container: document.body })
+      }
     </script>
   </body>
 </html>

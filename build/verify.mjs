@@ -9,12 +9,6 @@ const browser = await chromium.launch()
 const page = await browser.newPage({ viewport: { width: 1200, height: 1400 }, deviceScaleFactor: 2 })
 await page.goto(demo, { waitUntil: 'networkidle' })
 await page.waitForTimeout(150)
-await page.locator('[data-popover-toggle]').click()
-await page.waitForFunction(() => {
-  const panel = document.querySelector('[data-popover-panel]')
-  return panel && !panel.hidden && panel.getAttribute('data-state') === 'open'
-})
-await page.waitForTimeout(150)
 
 async function probe(selector, { top, left } = {}) {
   return page.evaluate(
@@ -50,22 +44,15 @@ async function probe(selector, { top, left } = {}) {
 
 const results = {}
 
-// 1. Popover content: the most important shadcn/Base UI use case on the page.
-const popoverTop = await probe('[data-demo="popover"]', { top: 0 })
-const popoverMax = popoverTop.maxScrollTop
-results.popover_top = popoverTop
-results.popover_mid = await probe('[data-demo="popover"]', { top: Math.round(popoverMax / 2) })
-results.popover_bottom = await probe('[data-demo="popover"]', { top: popoverMax })
-results.popover_quarter = await probe('[data-demo="popover"]', { top: 25 })
-
-// 2. List surface.
+// 1. List surface.
 const listTop = await probe('[data-demo="list"]', { top: 0 })
 const listMax = listTop.maxScrollTop
 results.list_top = listTop
 results.list_mid = await probe('[data-demo="list"]', { top: Math.round(listMax / 2) })
 results.list_bottom = await probe('[data-demo="list"]', { top: listMax })
+results.list_quarter = await probe('[data-demo="list"]', { top: 25 })
 
-// 3. Horizontal tabs / chip rows.
+// 2. Horizontal tabs / chip rows.
 const railStart = await probe('[data-demo="rail"]', { left: 0 })
 const railMax = railStart.maxScrollLeft
 results.rail_start = railStart
@@ -81,17 +68,14 @@ const horizontalLayersOnly = (result) =>
   result.hasMaskL && result.hasMaskR && !result.hasMaskT && !result.hasMaskB
 
 const checks = [
-  ['popover is scrollable', results.popover_top.maxScrollTop > 0],
-  ['popover at top: no top fade (t≈0)', approx(results.popover_top.t, 0)],
-  ['popover at top: full bottom fade (b≈1)', approx(results.popover_top.b, 1)],
-  ['popover at 25px: top partially revealed', results.popover_quarter.t > 0 && results.popover_quarter.t < 1],
-  [
-    'popover mid: both vertical fades present (t≈1,b≈1)',
-    approx(results.popover_mid.t, 1) && approx(results.popover_mid.b, 1),
-  ],
-  ['popover at bottom: no bottom fade (b≈0)', approx(results.popover_bottom.b, 0)],
-  ['popover uses only vertical mask layers', verticalLayersOnly(results.popover_mid)],
   ['item list is scrollable', results.list_top.maxScrollTop > 0],
+  ['item list at top: no top fade (t≈0)', approx(results.list_top.t, 0)],
+  ['item list at top: full bottom fade (b≈1)', approx(results.list_top.b, 1)],
+  ['item list at 25px: top partially revealed', results.list_quarter.t > 0 && results.list_quarter.t < 1],
+  [
+    'item list mid: both vertical fades present (t≈1,b≈1)',
+    approx(results.list_mid.t, 1) && approx(results.list_mid.b, 1),
+  ],
   ['item list mid uses only vertical mask layers', verticalLayersOnly(results.list_mid)],
   ['item list bottom removes bottom fade', approx(results.list_bottom.b, 0)],
   ['tabs rail is horizontally scrollable', results.rail_start.maxScrollLeft > 0],
@@ -103,7 +87,7 @@ const checks = [
   ],
   ['tabs rail at end: no right fade (r≈0)', approx(results.rail_end.r, 0)],
   ['tabs rail only uses left/right mask layers', horizontalLayersOnly(results.rail_mid)],
-  ['mask-composite is intersect', /intersect/.test(results.popover_mid.maskComposite)],
+  ['mask-composite is intersect', /intersect/.test(results.list_mid.maskComposite)],
 ]
 
 console.log(JSON.stringify(results, null, 2))
