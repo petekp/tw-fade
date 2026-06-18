@@ -397,6 +397,29 @@
           border-color 180ms ease;
       }
 
+      .tuning-card {
+        border: 0;
+        background-color: color-mix(in srgb, var(--demo-page-bg) 86%, var(--demo-text-primary) 14%);
+        box-shadow: 0 18px 48px rgb(0 0 0 / 0.22);
+        transition:
+          background-color 180ms ease,
+          box-shadow 180ms ease;
+      }
+
+      .tuning-card-header {
+        border: 0;
+      }
+
+      .tuning-card-divider {
+        border-width: 0 !important;
+        border-color: transparent !important;
+      }
+
+      .tuning-card-sticky {
+        background-color: color-mix(in srgb, var(--demo-page-bg) 82%, var(--demo-text-primary) 18%) !important;
+        backdrop-filter: none;
+      }
+
       .floating-surface-palette {
         position: fixed;
         top: 50%;
@@ -566,7 +589,7 @@
       }
 
       .code-surface {
-        background-color: var(--demo-code-bg) !important;
+        background-color: transparent !important;
         scrollbar-width: thin;
         scrollbar-color: rgb(255 255 255 / 0.18) transparent;
         transition: background-color 180ms ease;
@@ -647,21 +670,33 @@
         position: relative;
         isolation: isolate;
         overflow: hidden;
-        border-color: var(--demo-border);
-        background: var(--demo-control-bg);
+        border: 0 !important;
+        background: color-mix(in srgb, var(--demo-page-bg) 74%, var(--demo-text-primary) 26%);
         color: var(--demo-text-primary);
-        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+        box-shadow: none;
       }
 
       .rail-card[aria-selected="true"] {
-        border-color: var(--demo-focus);
-        background: var(--demo-control-active);
+        background: color-mix(in srgb, var(--demo-page-bg) 62%, var(--demo-accent-text) 38%);
         color: var(--demo-accent-text-strong);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .rail-card.ui-button:hover {
+          border-color: transparent;
+          background: color-mix(in srgb, var(--demo-page-bg) 68%, var(--demo-text-primary) 32%);
+          color: var(--demo-text-strong);
+        }
+
+        .rail-card.ui-button[aria-selected="true"]:hover {
+          background: color-mix(in srgb, var(--demo-page-bg) 56%, var(--demo-accent-text) 44%);
+          color: var(--demo-accent-text-strong);
+        }
       }
 
       .rail-card-initial {
         position: absolute;
-        bottom: -0.28em;
+        bottom: calc(-0.28em + 18px);
         left: 0.35rem;
         z-index: -1;
         color: var(--demo-accent-text-strong);
@@ -908,7 +943,7 @@
 
           <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(21rem,0.82fr)]">
             <section class="min-w-0" aria-labelledby="list-title">
-              <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
+              <div class="tuning-card overflow-hidden rounded-lg">
                 <div
                   class="fade-y thin-scroll h-[18rem] overflow-y-auto divide-y divide-white/10"
                   data-demo="list"
@@ -1038,7 +1073,7 @@
             </section>
 
             <section class="min-w-0" aria-label="Item list code example">
-              <div class="surface-panel-soft overflow-hidden rounded-lg border border-white/10 bg-neutral-950/70 shadow-2xl shadow-black/30">
+              <div class="tuning-card overflow-hidden rounded-lg">
                 <pre class="code-surface mono-copy h-[18rem] overflow-auto p-4 text-[0.8125rem] leading-6 text-neutral-300"><code><span class="code-tag">&lt;div</span> <span class="code-attr">className</span>=<span class="code-string">"</span><span class="code-fade">fade-y</span><span class="code-string"> thin-scroll h-72 overflow-y-auto divide-y"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;article</span> <span class="code-attr">className</span>=<span class="code-string">"flex gap-4 px-6 py-4"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;Avatar</span> <span class="code-attr">initials</span>=<span class="code-string">"MP"</span> <span class="code-tag">/&gt;</span>
@@ -1060,7 +1095,7 @@
                 <h2 class="text-[1.875rem] font-medium leading-9 text-neutral-50">Horizontal</h2>
               </div>
             </div>
-            <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
+            <div class="tuning-card overflow-hidden rounded-lg">
               <div class="fade-x thin-scroll flex h-44 gap-4 overflow-x-auto p-4" data-demo="rail">
                 <button class="rail-card ui-button flex h-full aspect-[4/3] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" aria-selected="true">
                   <span class="rail-card-initial" aria-hidden="true">D</span>
@@ -1127,10 +1162,10 @@
           </h2>
 
           <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
-              <div class="border-b border-white/10 px-4 py-3">
+            <div class="tuning-card overflow-hidden rounded-lg">
+              <div class="tuning-card-header px-4 py-3">
                 <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Adjustable depth</p>
-                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label" data-fade-depth-label>fade-y fade-size-sm</code>
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label" data-fade-depth-label>fade-y fade-size-2xl</code>
                 <div class="mt-3 flex items-center gap-3">
                   <input
                     class="fade-depth-slider shrink-0"
@@ -1138,16 +1173,16 @@
                     min="0"
                     max="6"
                     step="1"
-                    value="0"
+                    value="4"
                     aria-label="Fade depth"
-                    aria-valuetext="small"
+                    aria-valuetext="double extra large"
                     data-fade-depth-slider
                     data-fade-size-options="fade-size-sm fade-size-md fade-size-lg fade-size-xl fade-size-2xl fade-size-3xl fade-size-4xl"
                   />
-                  <output class="mono-copy min-w-8 font-mono text-[0.6875rem] leading-4 text-neutral-500" data-fade-depth-value>sm</output>
+                  <output class="mono-copy min-w-8 font-mono text-[0.6875rem] leading-4 text-neutral-500" data-fade-depth-value>2xl</output>
                 </div>
               </div>
-              <div class="fade-y fade-size-sm thin-scroll h-64 overflow-x-hidden overflow-y-auto p-5 sm:h-72" data-demo="balanced-specimen">
+              <div class="fade-y fade-size-2xl thin-scroll h-64 overflow-x-hidden overflow-y-auto p-5 sm:h-72" data-demo="balanced-specimen">
                 <article class="space-y-6">
                   <section class="space-y-7">
                     <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
@@ -1205,7 +1240,7 @@
                       </p>
                     </div>
                   </section>
-                  <footer class="border-t border-white/10 pt-4">
+                  <footer class="tuning-card-divider border-t pt-4">
                     <p class="text-[0.875rem] leading-6 text-neutral-400">
                       Horizontal overflow is clipped, while vertical overflow keeps the top and bottom fades active.
                     </p>
@@ -1214,10 +1249,10 @@
               </div>
             </div>
 
-            <div class="surface-panel overflow-hidden rounded-lg border border-emerald-400/20 bg-neutral-950/75 shadow-2xl shadow-black/40">
-              <div class="border-b border-white/10 px-4 py-3">
+            <div class="tuning-card overflow-hidden rounded-lg">
+              <div class="tuning-card-header px-4 py-3">
                 <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">One-sided</p>
-                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label" data-fade-edge-label>fade-b fade-size-sm fade-size-b-lg</code>
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label" data-fade-edge-label>fade-b fade-size-2xl</code>
                 <div class="edge-toggle-group mono-copy mt-3 select-none font-mono text-[0.6875rem] uppercase tracking-[0.12em]" role="group" aria-label="Fade edges">
                   <button class="edge-toggle-button" type="button" aria-pressed="false" aria-label="Toggle top edge fade" data-fade-edge-toggle="t">t</button>
                   <button class="edge-toggle-button" type="button" aria-pressed="false" aria-label="Toggle right edge fade" data-fade-edge-toggle="r">r</button>
@@ -1225,7 +1260,7 @@
                   <button class="edge-toggle-button" type="button" aria-pressed="false" aria-label="Toggle left edge fade" data-fade-edge-toggle="l">l</button>
                 </div>
               </div>
-              <div class="fade-b fade-size-sm fade-size-b-lg thin-scroll h-64 overflow-x-hidden overflow-y-auto p-5 sm:h-72" data-demo="bottom-specimen">
+              <div class="fade-b fade-size-2xl thin-scroll h-64 overflow-x-hidden overflow-y-auto p-5 sm:h-72" data-demo="bottom-specimen">
                 <article class="space-y-6">
                   <section class="space-y-7">
                     <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
@@ -1287,13 +1322,13 @@
               </div>
             </div>
 
-            <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
-              <div class="border-b border-white/10 px-4 py-3">
+            <div class="tuning-card overflow-hidden rounded-lg">
+              <div class="tuning-card-header px-4 py-3">
                 <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Sticky clearance</p>
-                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">fade-y fade-clear-t-lg</code>
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">fade-y fade-clear-t-md</code>
               </div>
-              <div class="fade-y fade-clear-t-lg thin-scroll h-64 overflow-x-hidden overflow-y-auto sm:h-72" data-demo="clearance">
-                <div class="surface-panel-strong sticky-clearance-bar sticky top-0 z-10 flex h-12 items-center justify-between gap-3 border-b border-emerald-400/20 bg-neutral-950/95 px-4 backdrop-blur">
+              <div class="fade-y fade-clear-t-md thin-scroll h-64 overflow-x-hidden overflow-y-auto sm:h-72" data-demo="clearance">
+                <div class="surface-panel-strong sticky-clearance-bar tuning-card-sticky tuning-card-divider sticky top-0 z-10 flex h-12 items-center justify-between gap-3 border-b px-4">
                   <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Pinned filters</p>
                 </div>
                 <section class="space-y-7 p-5">
@@ -1362,22 +1397,22 @@
         <h2 id="details-title" class="text-[1.875rem] font-medium leading-9 text-neutral-50">
           Details
         </h2>
-        <div class="grid gap-4 md:grid-cols-3">
-          <article class="surface-panel rounded-lg border border-white/10 bg-neutral-950/60 p-5">
+        <div class="grid gap-8 md:grid-cols-3">
+          <article>
             <h3 class="text-base font-medium leading-6 text-neutral-100">Scroll gated</h3>
-            <p class="mt-3 text-[0.9375rem] leading-6 text-neutral-400">
+            <p class="mt-2 text-[0.9375rem] leading-6 text-neutral-400">
               Fades appear only when content can keep moving past that edge, using CSS scroll timelines instead of JavaScript listeners.
             </p>
           </article>
-          <article class="surface-panel rounded-lg border border-white/10 bg-neutral-950/60 p-5">
+          <article>
             <h3 class="text-base font-medium leading-6 text-neutral-100">Eased gradients</h3>
-            <p class="mt-3 text-[0.9375rem] leading-6 text-neutral-400">
+            <p class="mt-2 text-[0.9375rem] leading-6 text-neutral-400">
               Each edge uses an eased alpha ramp, so content dissolves into the surface instead of ending in a hard clipped line.
             </p>
           </article>
-          <article class="surface-panel rounded-lg border border-white/10 bg-neutral-950/60 p-5">
+          <article>
             <h3 class="text-base font-medium leading-6 text-neutral-100">Composable</h3>
-            <p class="mt-3 text-[0.9375rem] leading-6 text-neutral-400">
+            <p class="mt-2 text-[0.9375rem] leading-6 text-neutral-400">
               Edge, axis, size, range, and clear-zone utilities combine on the scroll container without wrapper elements or overlay gradients.
             </p>
           </article>
@@ -1483,13 +1518,16 @@
           return button?.getAttribute('aria-pressed') === 'true'
         })
         const activeEdgeClasses = activeEdges.map((edge) => `fade-${edge}`)
-        const utilityClasses = [...activeEdgeClasses, 'fade-size-sm']
+        const utilityClasses = [...activeEdgeClasses, 'fade-size-2xl']
 
-        if (activeEdges.includes('b')) {
-          utilityClasses.push('fade-size-b-lg')
-        }
-
-        fadeEdgeSpecimen.classList.remove(...fadeEdgeClassNames, 'fade-y', 'fade-x', 'fade-xy', 'fade-size-b-lg')
+        fadeEdgeSpecimen.classList.remove(
+          ...fadeEdgeClassNames,
+          'fade-y',
+          'fade-x',
+          'fade-xy',
+          ...fadeDepthSizes.map((size) => size.className),
+          'fade-size-b-lg',
+        )
         fadeEdgeSpecimen.classList.add(...utilityClasses)
         fadeEdgeLabel.textContent = utilityClasses.join(' ')
       }

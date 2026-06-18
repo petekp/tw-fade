@@ -68,13 +68,12 @@ into any page, with or without Tailwind:
 import 'tw-fade/css' // or via a bundler that handles CSS imports
 ```
 
-The precompiled CSS includes the full named size scale (`fade-size-sm` through
-`fade-size-4xl`, `fade-size-b-sm` through `fade-size-b-4xl`, etc.), the named
-range and clear-zone scales (`fade-range-sm/md/lg`, `fade-clear-t-sm/md/lg`,
-etc.), and the dynamic clear-zone utilities (`fade-clear-*-var`). Arbitrary values like
-`fade-size-[6rem]`, `fade-size-b-[6rem]`, and `fade-clear-t-[56px]` are
-generated on demand by Tailwind's JIT, so they're only available through the v4
-build path above - not the prebuilt drop-in.
+The precompiled CSS includes the full named scale (`xs` through `4xl`) for
+`fade-size-*`, `fade-range-*`, `fade-clear-*`, their edge/axis variants, and the
+dynamic clear-zone utilities (`fade-clear-*-var`). Arbitrary values like
+`fade-size-[6rem]`, `fade-size-b-[6rem]`, `fade-range-[12px]`, and
+`fade-clear-t-[56px]` are generated on demand by Tailwind's JIT, so they're only
+available through the v4 build path above - not the prebuilt drop-in.
 
 ## Usage
 
@@ -150,16 +149,21 @@ otherwise treat horizontal fades as LTR-only for now. Full RTL support for
 
 ### Tuning the fade
 
-Three knobs, each with a named scale and arbitrary-value support:
+Three knobs, each with an `xs` through `4xl` scale and arbitrary-value support.
+The named scale uses Tailwind's spacing unit (`--spacing`, falling back to
+`0.25rem`), and all three knobs share the same values:
+
+`xs` 1.5rem · `sm` 2rem · `md` 3rem · `lg` 4rem · `xl` 5rem · `2xl` 6rem ·
+`3xl` 8rem · `4xl` 10rem
 
 | Class                     | Sets                | Default scale                  |
 | ------------------------- | ------------------- | ------------------------------ |
-| `fade-size-*`       | the fade **length** for every active edge | `sm` 2.5rem · `md` 3.125rem · `lg` 4.375rem · `xl` 6rem · `2xl` 8rem · `3xl` 12rem · `4xl` 16rem |
-| `fade-size-t-*` / `fade-size-b-*` / `fade-size-l-*` / `fade-size-r-*` | the fade **length** for one edge | same as `fade-size-*` |
-| `fade-size-y-*` / `fade-size-x-*` | the fade **length** for an axis | same as `fade-size-*` |
-| `fade-range-*`      | the scroll **distance** over which an edge eases in/out | `sm` 24px · `md` 50px · `lg` 96px |
-| `fade-clear-t-*` / `fade-clear-b-*` / `fade-clear-l-*` / `fade-clear-r-*` | an unfaded **clear zone** before one edge's fade starts | `sm` 1.5rem · `md` 2rem · `lg` 3rem |
-| `fade-clear-y-*` / `fade-clear-x-*` / `fade-clear-xy-*` | an unfaded **clear zone** for an axis or all edges | same as `fade-clear-*` |
+| `fade-size-*`       | the fade **length** for every active edge | shared `xs`-`4xl` scale |
+| `fade-size-t-*` / `fade-size-b-*` / `fade-size-l-*` / `fade-size-r-*` | the fade **length** for one edge | shared `xs`-`4xl` scale |
+| `fade-size-y-*` / `fade-size-x-*` | the fade **length** for an axis | shared `xs`-`4xl` scale |
+| `fade-range-*`      | the scroll **distance** over which an edge eases in/out | shared `xs`-`4xl` scale |
+| `fade-clear-t-*` / `fade-clear-b-*` / `fade-clear-l-*` / `fade-clear-r-*` | an unfaded **clear zone** before one edge's fade starts | shared `xs`-`4xl` scale |
+| `fade-clear-y-*` / `fade-clear-x-*` / `fade-clear-xy-*` | an unfaded **clear zone** for an axis or all edges | shared `xs`-`4xl` scale |
 
 ```html
 <div class="fade-y fade-size-lg h-80 overflow-y-auto">…</div>
@@ -168,7 +172,7 @@ Three knobs, each with a named scale and arbitrary-value support:
 <div class="fade-y fade-size-b-lg h-80 overflow-y-auto">…</div>
 
 <!-- start from sm everywhere, then make only the bottom fade larger -->
-<div class="fade-y fade-size-sm fade-size-b-[6rem] h-80 overflow-y-auto">…</div>
+<div class="fade-y fade-size-sm fade-size-b-2xl h-80 overflow-y-auto">…</div>
 
 <!-- leave an unfaded zone before the top fade starts -->
 <div class="fade-y fade-clear-t-lg h-80 overflow-y-auto">…</div>
@@ -184,7 +188,7 @@ Three knobs, each with a named scale and arbitrary-value support:
   global wins over the default `md` length.
 - **range** is how far you scroll before an edge is fully revealed (leading
   edges) or fully hidden (trailing edges). A small range snaps the fade in
-  quickly; a large one eases it. Bare usage defaults to `50px`.
+  quickly; a large one eases it. Bare usage defaults to the `md` range.
 - **clear** is an opaque band before the fade ramp begins. It changes the mask
   only; it does not add padding, reserve layout space, or change sticky
   positioning.
@@ -248,9 +252,9 @@ no plugin config, no JavaScript:
 @import "tw-fade";
 
 @theme {
-  --fade-size-5xl: 24rem; /* enables fade-size-5xl, fade-size-b-5xl, etc. */
-  --fade-range-xl: 120px; /* enables fade-range-xl */
-  --fade-clear-xl: 4rem; /* enables fade-clear-t-xl, fade-clear-y-xl, etc. */
+  --fade-size-5xl: calc(var(--spacing, 0.25rem) * 48); /* enables fade-size-5xl, fade-size-b-5xl, etc. */
+  --fade-range-5xl: calc(var(--spacing, 0.25rem) * 48); /* enables fade-range-5xl */
+  --fade-clear-5xl: calc(var(--spacing, 0.25rem) * 48); /* enables fade-clear-t-5xl, fade-clear-y-5xl, etc. */
 }
 ```
 

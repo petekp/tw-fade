@@ -62,6 +62,19 @@ const ALL = ['.fade-t', '.fade-b', '.fade-l', '.fade-r', '.fade-y', '.fade-x', '
 const MASK_VARS = ['--sf-mask-t', '--sf-mask-b', '--sf-mask-l', '--sf-mask-r']
 const SIZE_VARS = ['--sf-size', '--sf-size-y', '--sf-size-x', '--sf-size-t', '--sf-size-b', '--sf-size-l', '--sf-size-r']
 const CLEAR_VARS = ['--sf-clear-t', '--sf-clear-b', '--sf-clear-l', '--sf-clear-r']
+const SCALE = [
+  ['xs', 6],
+  ['sm', 8],
+  ['md', 12],
+  ['lg', 16],
+  ['xl', 20],
+  ['2xl', 24],
+  ['3xl', 32],
+  ['4xl', 40],
+]
+const SPACING_UNIT = String.raw`var\(--spacing, 0\.25rem\)`
+const DEFAULT_SIZE = String.raw`var\(--sf-size, var\(--fade-size-md, calc\(${SPACING_UNIT} \* 12\)\)\)`
+const DEFAULT_RANGE = String.raw`var\(--sf-range, var\(--fade-range-md, calc\(${SPACING_UNIT} \* 12\)\)\)`
 const RAMP_MULTIPLIERS = [
   '0.983',
   '0.08333',
@@ -201,7 +214,7 @@ test('mask gradients point the right way and are driven by their amount', () => 
   assert.match(t, /calc\(1 - var\(--sf-t\)\)/)
   // Size is read with a fallback default (the md scale) so a panel WITHOUT a
   // fade-size-* utility still gets a real band — the bug was an unset --sf-size.
-  assert.match(t, /var\(--sf-size-t, var\(--sf-size-y, var\(--sf-size, 3\.125rem\)\)\) \* var\(--sf-t\)/)
+  assert.match(t, new RegExp(String.raw`var\(--sf-size-t, var\(--sf-size-y, ${DEFAULT_SIZE}\)\) \* var\(--sf-t\)`))
   // Clearance is an opaque edge band before the fade ramp. This lets sticky
   // headers/footers stay unmasked while rows beneath still dissolve at the edge.
   assert.match(t, /#000 0 var\(--sf-clear-t, 0px\)/)
@@ -225,7 +238,7 @@ test('the smoothstep ramp is the 13-stop sigmoid from the reference', () => {
   assert.match(t, /rgb\(0 0 0 \/ calc\(1 - var\(--sf-t\)\)\) var\(--sf-clear-t, 0px\),/)
   assert.match(
     t,
-    /rgb\(0 0 0 \/ 1\) calc\(var\(--sf-clear-t, 0px\) \+ var\(--sf-size-t, var\(--sf-size-y, var\(--sf-size, 3\.125rem\)\)\) \* var\(--sf-t\)\)\s*\)\s*$/,
+    new RegExp(String.raw`rgb\(0 0 0 \/ 1\) calc\(var\(--sf-clear-t, 0px\) \+ var\(--sf-size-t, var\(--sf-size-y, ${DEFAULT_SIZE}\)\) \* var\(--sf-t\)\)\s*\)\s*$`),
   )
 })
 
@@ -242,7 +255,9 @@ test('every public fade utility uses the shared four-edge reveal setup', () => {
     // read with a fallback default (same fix as --sf-size).
     assert.match(
       s,
-      /animation-range:\s*0 var\(--sf-range, 50px\), calc\(100% - var\(--sf-range, 50px\)\) 100%, 0 var\(--sf-range, 50px\), calc\(100% - var\(--sf-range, 50px\)\) 100%/,
+      new RegExp(
+        String.raw`animation-range:\s*0 ${DEFAULT_RANGE}, calc\(100% - ${DEFAULT_RANGE}\) 100%, 0 ${DEFAULT_RANGE}, calc\(100% - ${DEFAULT_RANGE}\) 100%`,
+      ),
     )
   }
 })
@@ -269,33 +284,23 @@ test('fade-static forces the fade on, order-independently, and disables the anim
 })
 
 test('exposes the size and range scales as theme-backed utilities', () => {
-  assert.equal(declValue(block('.fade-size-sm'), '--sf-size'), 'var(--fade-size-sm)')
-  assert.equal(declValue(block('.fade-size-lg'), '--sf-size'), 'var(--fade-size-lg)')
-  assert.equal(declValue(block('.fade-size-4xl'), '--sf-size'), 'var(--fade-size-4xl)')
-  assert.equal(declValue(block('.fade-size-t-sm'), '--sf-size-t'), 'var(--fade-size-sm)')
-  assert.equal(declValue(block('.fade-size-b-lg'), '--sf-size-b'), 'var(--fade-size-lg)')
-  assert.equal(declValue(block('.fade-size-b-4xl'), '--sf-size-b'), 'var(--fade-size-4xl)')
-  assert.equal(declValue(block('.fade-size-l-md'), '--sf-size-l'), 'var(--fade-size-md)')
-  assert.equal(declValue(block('.fade-size-r-sm'), '--sf-size-r'), 'var(--fade-size-sm)')
-
-  const y = block('.fade-size-y-md')
-  assert.equal(declValue(y, '--sf-size-y'), 'var(--fade-size-md)')
-  assert.equal(declValue(y, '--sf-size-x'), undefined)
-
-  const x = block('.fade-size-x-lg')
-  assert.equal(declValue(x, '--sf-size-x'), 'var(--fade-size-lg)')
-  assert.equal(declValue(x, '--sf-size-y'), undefined)
-
-  assert.equal(declValue(block('.fade-range-lg'), '--sf-range'), 'var(--fade-range-lg)')
+  for (const [name] of SCALE) {
+    assert.equal(declValue(block(`.fade-size-${name}`), '--sf-size'), `var(--fade-size-${name})`)
+    assert.equal(declValue(block(`.fade-size-t-${name}`), '--sf-size-t'), `var(--fade-size-${name})`)
+    assert.equal(declValue(block(`.fade-size-b-${name}`), '--sf-size-b'), `var(--fade-size-${name})`)
+    assert.equal(declValue(block(`.fade-size-l-${name}`), '--sf-size-l'), `var(--fade-size-${name})`)
+    assert.equal(declValue(block(`.fade-size-r-${name}`), '--sf-size-r'), `var(--fade-size-${name})`)
+    assert.equal(declValue(block(`.fade-size-y-${name}`), '--sf-size-y'), `var(--fade-size-${name})`)
+    assert.equal(declValue(block(`.fade-size-x-${name}`), '--sf-size-x'), `var(--fade-size-${name})`)
+    assert.equal(declValue(block(`.fade-range-${name}`), '--sf-range'), `var(--fade-range-${name})`)
+  }
   // The theme exposes the actual scale values for consumers to override/extend.
   const root = block(':root, :host')
-  assert.equal(declValue(root, '--fade-size-sm'), '2.5rem')
-  assert.equal(declValue(root, '--fade-size-lg'), '4.375rem')
-  assert.equal(declValue(root, '--fade-size-xl'), '6rem')
-  assert.equal(declValue(root, '--fade-size-2xl'), '8rem')
-  assert.equal(declValue(root, '--fade-size-3xl'), '12rem')
-  assert.equal(declValue(root, '--fade-size-4xl'), '16rem')
-  assert.equal(declValue(root, '--fade-range-lg'), '96px')
+  for (const [name, units] of SCALE) {
+    const expected = `calc(var(--spacing, 0.25rem) * ${units})`
+    assert.equal(declValue(root, `--fade-size-${name}`), expected)
+    assert.equal(declValue(root, `--fade-range-${name}`), expected)
+  }
   // No bare `.fade-size` / `.fade-range` no-op utility leaks out.
   assert.equal(block('.fade-size'), null)
   assert.equal(block('.fade-range'), null)
@@ -307,35 +312,37 @@ test('each edge resolves size as edge over axis over global over default', () =>
   const l = declValue(block('.fade-l'), '--sf-mask-l')
   const r = declValue(block('.fade-r'), '--sf-mask-r')
 
-  assert.match(t, /var\(--sf-size-t, var\(--sf-size-y, var\(--sf-size, 3\.125rem\)\)\) \* var\(--sf-t\)/)
-  assert.match(b, /var\(--sf-size-b, var\(--sf-size-y, var\(--sf-size, 3\.125rem\)\)\) \* var\(--sf-b\)/)
-  assert.match(l, /var\(--sf-size-l, var\(--sf-size-x, var\(--sf-size, 3\.125rem\)\)\) \* var\(--sf-l\)/)
-  assert.match(r, /var\(--sf-size-r, var\(--sf-size-x, var\(--sf-size, 3\.125rem\)\)\) \* var\(--sf-r\)/)
+  assert.match(t, new RegExp(String.raw`var\(--sf-size-t, var\(--sf-size-y, ${DEFAULT_SIZE}\)\) \* var\(--sf-t\)`))
+  assert.match(b, new RegExp(String.raw`var\(--sf-size-b, var\(--sf-size-y, ${DEFAULT_SIZE}\)\) \* var\(--sf-b\)`))
+  assert.match(l, new RegExp(String.raw`var\(--sf-size-l, var\(--sf-size-x, ${DEFAULT_SIZE}\)\) \* var\(--sf-l\)`))
+  assert.match(r, new RegExp(String.raw`var\(--sf-size-r, var\(--sf-size-x, ${DEFAULT_SIZE}\)\) \* var\(--sf-r\)`))
 })
 
 test('exposes edge-clearance utilities for sticky content', () => {
-  assert.equal(declValue(block('.fade-clear-t-sm'), '--sf-clear-t'), 'var(--fade-clear-sm)')
-  assert.equal(declValue(block('.fade-clear-b-md'), '--sf-clear-b'), 'var(--fade-clear-md)')
-  assert.equal(declValue(block('.fade-clear-l-lg'), '--sf-clear-l'), 'var(--fade-clear-lg)')
-  assert.equal(declValue(block('.fade-clear-r-sm'), '--sf-clear-r'), 'var(--fade-clear-sm)')
+  for (const [name] of SCALE) {
+    assert.equal(declValue(block(`.fade-clear-t-${name}`), '--sf-clear-t'), `var(--fade-clear-${name})`)
+    assert.equal(declValue(block(`.fade-clear-b-${name}`), '--sf-clear-b'), `var(--fade-clear-${name})`)
+    assert.equal(declValue(block(`.fade-clear-l-${name}`), '--sf-clear-l'), `var(--fade-clear-${name})`)
+    assert.equal(declValue(block(`.fade-clear-r-${name}`), '--sf-clear-r'), `var(--fade-clear-${name})`)
 
-  const y = block('.fade-clear-y-md')
-  assert.equal(declValue(y, '--sf-clear-t'), 'var(--fade-clear-md)')
-  assert.equal(declValue(y, '--sf-clear-b'), 'var(--fade-clear-md)')
-  assert.equal(declValue(y, '--sf-clear-l'), undefined)
+    const y = block(`.fade-clear-y-${name}`)
+    assert.equal(declValue(y, '--sf-clear-t'), `var(--fade-clear-${name})`)
+    assert.equal(declValue(y, '--sf-clear-b'), `var(--fade-clear-${name})`)
+    assert.equal(declValue(y, '--sf-clear-l'), undefined)
 
-  const x = block('.fade-clear-x-lg')
-  assert.equal(declValue(x, '--sf-clear-l'), 'var(--fade-clear-lg)')
-  assert.equal(declValue(x, '--sf-clear-r'), 'var(--fade-clear-lg)')
-  assert.equal(declValue(x, '--sf-clear-t'), undefined)
+    const x = block(`.fade-clear-x-${name}`)
+    assert.equal(declValue(x, '--sf-clear-l'), `var(--fade-clear-${name})`)
+    assert.equal(declValue(x, '--sf-clear-r'), `var(--fade-clear-${name})`)
+    assert.equal(declValue(x, '--sf-clear-t'), undefined)
 
-  const xy = block('.fade-clear-xy-sm')
-  for (const v of CLEAR_VARS) assert.equal(declValue(xy, v), 'var(--fade-clear-sm)', `xy must set ${v}`)
+    const xy = block(`.fade-clear-xy-${name}`)
+    for (const v of CLEAR_VARS) assert.equal(declValue(xy, v), `var(--fade-clear-${name})`, `xy must set ${v}`)
+  }
 
   const root = block(':root, :host')
-  assert.equal(declValue(root, '--fade-clear-sm'), '1.5rem')
-  assert.equal(declValue(root, '--fade-clear-md'), '2rem')
-  assert.equal(declValue(root, '--fade-clear-lg'), '3rem')
+  for (const [name, units] of SCALE) {
+    assert.equal(declValue(root, `--fade-clear-${name}`), `calc(var(--spacing, 0.25rem) * ${units})`)
+  }
   assert.equal(block('.fade-clear'), null)
 })
 

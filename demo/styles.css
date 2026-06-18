@@ -9,7 +9,6 @@
       "Courier New", monospace;
     --color-amber-100: oklch(96.2% 0.059 95.617);
     --color-amber-200: oklch(92.4% 0.12 95.746);
-    --color-emerald-400: oklch(76.5% 0.177 163.223);
     --color-neutral-50: oklch(98.5% 0 0);
     --color-neutral-100: oklch(97% 0 0);
     --color-neutral-200: oklch(92.2% 0 0);
@@ -17,7 +16,6 @@
     --color-neutral-400: oklch(70.8% 0 0);
     --color-neutral-500: oklch(55.6% 0 0);
     --color-neutral-950: oklch(14.5% 0 0);
-    --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
     --container-6xl: 72rem;
@@ -37,19 +35,30 @@
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
-    --fade-size-sm: 2.5rem;
-    --fade-size-md: 3.125rem;
-    --fade-size-lg: 4.375rem;
-    --fade-size-xl: 6rem;
-    --fade-size-2xl: 8rem;
-    --fade-size-3xl: 12rem;
-    --fade-size-4xl: 16rem;
-    --fade-range-sm: 24px;
-    --fade-range-md: 50px;
-    --fade-range-lg: 96px;
-    --fade-clear-sm: 1.5rem;
-    --fade-clear-md: 2rem;
-    --fade-clear-lg: 3rem;
+    --fade-size-xs: calc(var(--spacing, 0.25rem) * 6);
+    --fade-size-sm: calc(var(--spacing, 0.25rem) * 8);
+    --fade-size-md: calc(var(--spacing, 0.25rem) * 12);
+    --fade-size-lg: calc(var(--spacing, 0.25rem) * 16);
+    --fade-size-xl: calc(var(--spacing, 0.25rem) * 20);
+    --fade-size-2xl: calc(var(--spacing, 0.25rem) * 24);
+    --fade-size-3xl: calc(var(--spacing, 0.25rem) * 32);
+    --fade-size-4xl: calc(var(--spacing, 0.25rem) * 40);
+    --fade-range-xs: calc(var(--spacing, 0.25rem) * 6);
+    --fade-range-sm: calc(var(--spacing, 0.25rem) * 8);
+    --fade-range-md: calc(var(--spacing, 0.25rem) * 12);
+    --fade-range-lg: calc(var(--spacing, 0.25rem) * 16);
+    --fade-range-xl: calc(var(--spacing, 0.25rem) * 20);
+    --fade-range-2xl: calc(var(--spacing, 0.25rem) * 24);
+    --fade-range-3xl: calc(var(--spacing, 0.25rem) * 32);
+    --fade-range-4xl: calc(var(--spacing, 0.25rem) * 40);
+    --fade-clear-xs: calc(var(--spacing, 0.25rem) * 6);
+    --fade-clear-sm: calc(var(--spacing, 0.25rem) * 8);
+    --fade-clear-md: calc(var(--spacing, 0.25rem) * 12);
+    --fade-clear-lg: calc(var(--spacing, 0.25rem) * 16);
+    --fade-clear-xl: calc(var(--spacing, 0.25rem) * 20);
+    --fade-clear-2xl: calc(var(--spacing, 0.25rem) * 24);
+    --fade-clear-3xl: calc(var(--spacing, 0.25rem) * 32);
+    --fade-clear-4xl: calc(var(--spacing, 0.25rem) * 40);
   }
 }
 @layer base {
@@ -252,6 +261,9 @@
   .mt-1 {
     margin-top: var(--spacing);
   }
+  .mt-2 {
+    margin-top: calc(var(--spacing) * 2);
+  }
   .mt-3 {
     margin-top: calc(var(--spacing) * 3);
   }
@@ -357,7 +369,7 @@
     @supports (animation-timeline: scroll()) {
       animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
       animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
-      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+      animation-range: 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%, 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%;
     }
     @supports not (animation-timeline: scroll()) {
       --sf-t: 1;
@@ -370,112 +382,112 @@
         #000 0 var(--sf-clear-b, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-b))) var(--sf-clear-b, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.08333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.16667),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.25),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.33333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.41667),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.5),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.58333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.66667),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.75),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.83333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b))
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b))
     );
     --sf-mask-l: linear-gradient(
         to right,
         #000 0 var(--sf-clear-l, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-l))) var(--sf-clear-l, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.08333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.16667),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.25),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.33333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.41667),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.5),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.58333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.66667),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.75),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.83333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l))
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l))
     );
     --sf-mask-r: linear-gradient(
         to left,
         #000 0 var(--sf-clear-r, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-r))) var(--sf-clear-r, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.08333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.16667),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.25),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.33333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.41667),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.5),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.58333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.66667),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.75),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.83333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r))
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r))
     );
     --sf-mask-t: linear-gradient(
         to bottom,
         #000 0 var(--sf-clear-t, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-t))) var(--sf-clear-t, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.08333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.16667),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.25),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.33333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.41667),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.5),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.58333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.66667),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.75),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.83333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t))
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t))
     );
   }
   .fade-x {
@@ -486,7 +498,7 @@
     @supports (animation-timeline: scroll()) {
       animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
       animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
-      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+      animation-range: 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%, 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%;
     }
     @supports not (animation-timeline: scroll()) {
       --sf-t: 1;
@@ -499,56 +511,56 @@
         #000 0 var(--sf-clear-l, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-l))) var(--sf-clear-l, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.08333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.16667),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.25),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.33333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.41667),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.5),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.58333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.66667),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.75),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.83333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l))
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l))
     );
     --sf-mask-r: linear-gradient(
         to left,
         #000 0 var(--sf-clear-r, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-r))) var(--sf-clear-r, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.08333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.16667),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.25),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.33333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.41667),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.5),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.58333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.66667),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.75),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.83333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r))
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r))
     );
   }
   .fade-y {
@@ -559,7 +571,7 @@
     @supports (animation-timeline: scroll()) {
       animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
       animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
-      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+      animation-range: 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%, 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%;
     }
     @supports not (animation-timeline: scroll()) {
       --sf-t: 1;
@@ -572,56 +584,56 @@
         #000 0 var(--sf-clear-b, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-b))) var(--sf-clear-b, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.08333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.16667),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.25),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.33333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.41667),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.5),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.58333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.66667),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.75),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.83333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b))
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b))
     );
     --sf-mask-t: linear-gradient(
         to bottom,
         #000 0 var(--sf-clear-t, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-t))) var(--sf-clear-t, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.08333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.16667),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.25),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.33333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.41667),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.5),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.58333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.66667),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.75),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.83333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t))
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t))
     );
   }
   .fade-b {
@@ -632,7 +644,7 @@
     @supports (animation-timeline: scroll()) {
       animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
       animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
-      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+      animation-range: 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%, 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%;
     }
     @supports not (animation-timeline: scroll()) {
       --sf-t: 1;
@@ -645,28 +657,28 @@
         #000 0 var(--sf-clear-b, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-b))) var(--sf-clear-b, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.08333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.16667),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.25),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.33333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.41667),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.5),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.58333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.66667),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.75),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.83333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b))
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-b))
     );
   }
   .fade-l {
@@ -677,7 +689,7 @@
     @supports (animation-timeline: scroll()) {
       animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
       animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
-      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+      animation-range: 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%, 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%;
     }
     @supports not (animation-timeline: scroll()) {
       --sf-t: 1;
@@ -690,28 +702,28 @@
         #000 0 var(--sf-clear-l, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-l))) var(--sf-clear-l, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.08333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.16667),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.25),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.33333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.41667),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.5),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.58333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.66667),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.75),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.83333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l))
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-l))
     );
   }
   .fade-r {
@@ -722,7 +734,7 @@
     @supports (animation-timeline: scroll()) {
       animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
       animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
-      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+      animation-range: 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%, 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%;
     }
     @supports not (animation-timeline: scroll()) {
       --sf-t: 1;
@@ -735,28 +747,28 @@
         #000 0 var(--sf-clear-r, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-r))) var(--sf-clear-r, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.08333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.16667),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.25),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.33333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.41667),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.5),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.58333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.66667),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.75),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.83333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r))
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-r))
     );
   }
   .fade-t {
@@ -767,7 +779,7 @@
     @supports (animation-timeline: scroll()) {
       animation: sf-reveal-t auto linear both, sf-reveal-b auto linear both, sf-reveal-l auto linear both, sf-reveal-r auto linear both;
       animation-timeline: scroll(self y), scroll(self y), scroll(self x), scroll(self x);
-      animation-range: 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%, 0 var(--sf-range, 50px), calc(100% - var(--sf-range, 50px)) 100%;
+      animation-range: 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%, 0 var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))), calc(100% - var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)))) 100%;
     }
     @supports not (animation-timeline: scroll()) {
       --sf-t: 1;
@@ -780,28 +792,28 @@
         #000 0 var(--sf-clear-t, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-t))) var(--sf-clear-t, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.08333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.16667),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.25),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.33333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.41667),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.5),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.58333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.66667),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.75),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.83333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t))
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))))) * var(--sf-t))
     );
   }
   .grid-cols-\[1\.5rem_minmax\(0\,1fr\)\] {
@@ -839,6 +851,9 @@
   }
   .gap-4 {
     gap: calc(var(--spacing) * 4);
+  }
+  .gap-8 {
+    gap: calc(var(--spacing) * 8);
   }
   .space-y-3 {
     :where(& > :not(:last-child)) {
@@ -927,12 +942,6 @@
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 1px;
   }
-  .border-emerald-400\/20 {
-    border-color: color-mix(in srgb, oklch(76.5% 0.177 163.223) 20%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, var(--color-emerald-400) 20%, transparent);
-    }
-  }
   .border-white\/10 {
     border-color: color-mix(in srgb, #fff 10%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
@@ -941,30 +950,6 @@
   }
   .bg-neutral-950 {
     background-color: var(--color-neutral-950);
-  }
-  .bg-neutral-950\/60 {
-    background-color: color-mix(in srgb, oklch(14.5% 0 0) 60%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-neutral-950) 60%, transparent);
-    }
-  }
-  .bg-neutral-950\/70 {
-    background-color: color-mix(in srgb, oklch(14.5% 0 0) 70%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-neutral-950) 70%, transparent);
-    }
-  }
-  .bg-neutral-950\/75 {
-    background-color: color-mix(in srgb, oklch(14.5% 0 0) 75%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-neutral-950) 75%, transparent);
-    }
-  }
-  .bg-neutral-950\/95 {
-    background-color: color-mix(in srgb, oklch(14.5% 0 0) 95%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-neutral-950) 95%, transparent);
-    }
   }
   .bg-transparent {
     background-color: transparent;
@@ -1162,30 +1147,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  .shadow-2xl {
-    --tw-shadow: 0 25px 50px -12px var(--tw-shadow-color, rgb(0 0 0 / 0.25));
-    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
-  }
-  .shadow-black\/30 {
-    --tw-shadow-color: color-mix(in srgb, #000 30%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-black) 30%, transparent) var(--tw-shadow-alpha), transparent);
-    }
-  }
-  .shadow-black\/40 {
-    --tw-shadow-color: color-mix(in srgb, #000 40%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-black) 40%, transparent) var(--tw-shadow-alpha), transparent);
-    }
-  }
   .outline {
     outline-style: var(--tw-outline-style);
     outline-width: 1px;
-  }
-  .backdrop-blur {
-    --tw-backdrop-blur: blur(8px);
-    -webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
-    backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
   }
   .backdrop-filter {
     -webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
@@ -1203,29 +1167,15 @@
     --sf-r: 1 !important;
     animation-name: none;
   }
-  .fade-clear-xy-sm {
-    --sf-clear-t: var(--fade-clear-sm);
-    --sf-clear-b: var(--fade-clear-sm);
-    --sf-clear-l: var(--fade-clear-sm);
-    --sf-clear-r: var(--fade-clear-sm);
-  }
   .fade-clear-xy-var {
     --sf-clear-t: var(--fade-clear-t, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
     --sf-clear-b: var(--fade-clear-b, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
     --sf-clear-l: var(--fade-clear-l, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
     --sf-clear-r: var(--fade-clear-r, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
   }
-  .fade-clear-x-lg {
-    --sf-clear-l: var(--fade-clear-lg);
-    --sf-clear-r: var(--fade-clear-lg);
-  }
   .fade-clear-x-var {
     --sf-clear-l: var(--fade-clear-l, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
     --sf-clear-r: var(--fade-clear-r, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
-  }
-  .fade-clear-y-md {
-    --sf-clear-t: var(--fade-clear-md);
-    --sf-clear-b: var(--fade-clear-md);
   }
   .fade-clear-y-var {
     --sf-clear-t: var(--fade-clear-t, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
@@ -1235,20 +1185,11 @@
     -webkit-user-select: none;
     user-select: none;
   }
-  .fade-clear-b-md {
-    --sf-clear-b: var(--fade-clear-md);
-  }
   .fade-clear-b-var {
     --sf-clear-b: var(--fade-clear-b, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
   }
-  .fade-clear-l-lg {
-    --sf-clear-l: var(--fade-clear-lg);
-  }
   .fade-clear-l-var {
     --sf-clear-l: var(--fade-clear-l, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
-  }
-  .fade-clear-r-sm {
-    --sf-clear-r: var(--fade-clear-sm);
   }
   .fade-clear-r-var {
     --sf-clear-r: var(--fade-clear-r, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
@@ -1259,17 +1200,17 @@
   .fade-clear-t-lg {
     --sf-clear-t: var(--fade-clear-lg);
   }
-  .fade-clear-t-sm {
-    --sf-clear-t: var(--fade-clear-sm);
+  .fade-clear-t-md {
+    --sf-clear-t: var(--fade-clear-md);
   }
   .fade-clear-t-var {
     --sf-clear-t: var(--fade-clear-t, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
   }
+  .fade-range-\[12px\] {
+    --sf-range: 12px;
+  }
   .fade-range-\[80px\] {
     --sf-range: 80px;
-  }
-  .fade-range-lg {
-    --sf-range: var(--fade-range-lg);
   }
   .fade-size-2xl {
     --sf-size: var(--fade-size-2xl);
@@ -1289,8 +1230,8 @@
   .fade-size-\[120px\] {
     --sf-size: 120px;
   }
-  .fade-size-b-4xl {
-    --sf-size-b: var(--fade-size-4xl);
+  .fade-size-b-2xl {
+    --sf-size-b: var(--fade-size-2xl);
   }
   .fade-size-b-\[6rem\] {
     --sf-size-b: 6rem;
@@ -1298,35 +1239,17 @@
   .fade-size-b-lg {
     --sf-size-b: var(--fade-size-lg);
   }
-  .fade-size-b-sm {
-    --sf-size-b: var(--fade-size-sm);
-  }
-  .fade-size-l-md {
-    --sf-size-l: var(--fade-size-md);
-  }
   .fade-size-lg {
     --sf-size: var(--fade-size-lg);
   }
   .fade-size-md {
     --sf-size: var(--fade-size-md);
   }
-  .fade-size-r-sm {
-    --sf-size-r: var(--fade-size-sm);
-  }
   .fade-size-sm {
     --sf-size: var(--fade-size-sm);
   }
-  .fade-size-t-sm {
-    --sf-size-t: var(--fade-size-sm);
-  }
-  .fade-size-x-lg {
-    --sf-size-x: var(--fade-size-lg);
-  }
   .fade-size-xl {
     --sf-size: var(--fade-size-xl);
-  }
-  .fade-size-y-md {
-    --sf-size-y: var(--fade-size-md);
   }
   .sm\:h-72 {
     @media (width >= 40rem) {
@@ -1563,71 +1486,6 @@
   syntax: "*";
   inherits: false;
 }
-@property --tw-shadow {
-  syntax: "*";
-  inherits: false;
-  initial-value: 0 0 #0000;
-}
-@property --tw-shadow-color {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-shadow-alpha {
-  syntax: "<percentage>";
-  inherits: false;
-  initial-value: 100%;
-}
-@property --tw-inset-shadow {
-  syntax: "*";
-  inherits: false;
-  initial-value: 0 0 #0000;
-}
-@property --tw-inset-shadow-color {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-inset-shadow-alpha {
-  syntax: "<percentage>";
-  inherits: false;
-  initial-value: 100%;
-}
-@property --tw-ring-color {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-ring-shadow {
-  syntax: "*";
-  inherits: false;
-  initial-value: 0 0 #0000;
-}
-@property --tw-inset-ring-color {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-inset-ring-shadow {
-  syntax: "*";
-  inherits: false;
-  initial-value: 0 0 #0000;
-}
-@property --tw-ring-inset {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-ring-offset-width {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-@property --tw-ring-offset-color {
-  syntax: "*";
-  inherits: false;
-  initial-value: #fff;
-}
-@property --tw-ring-offset-shadow {
-  syntax: "*";
-  inherits: false;
-  initial-value: 0 0 #0000;
-}
 @property --tw-outline-style {
   syntax: "*";
   inherits: false;
@@ -1688,20 +1546,6 @@
       --tw-numeric-figure: initial;
       --tw-numeric-spacing: initial;
       --tw-numeric-fraction: initial;
-      --tw-shadow: 0 0 #0000;
-      --tw-shadow-color: initial;
-      --tw-shadow-alpha: 100%;
-      --tw-inset-shadow: 0 0 #0000;
-      --tw-inset-shadow-color: initial;
-      --tw-inset-shadow-alpha: 100%;
-      --tw-ring-color: initial;
-      --tw-ring-shadow: 0 0 #0000;
-      --tw-inset-ring-color: initial;
-      --tw-inset-ring-shadow: 0 0 #0000;
-      --tw-ring-inset: initial;
-      --tw-ring-offset-width: 0px;
-      --tw-ring-offset-color: #fff;
-      --tw-ring-offset-shadow: 0 0 #0000;
       --tw-outline-style: solid;
       --tw-backdrop-blur: initial;
       --tw-backdrop-brightness: initial;

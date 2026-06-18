@@ -40,8 +40,9 @@ const outFile = path.join(root, 'dist', 'tw-fade.css')
 // (fade-size-[6rem], fade-size-b-[6rem]) are intentionally absent — those
 // require Tailwind's JIT and belong to the v4 source path, not the prebuilt
 // drop-in.
+const SCALE = 'xs,sm,md,lg,xl,2xl,3xl,4xl'
 const CLASSES =
-  'fade-{t,b,l,r,x,y,xy} fade-static fade-size-{sm,md,lg,xl,2xl,3xl,4xl} fade-size-{t,b,l,r,x,y}-{sm,md,lg,xl,2xl,3xl,4xl} fade-range-{sm,md,lg} fade-clear-{t,b,l,r,x,y,xy}-{sm,md,lg,var}'
+  `fade-{t,b,l,r,x,y,xy} fade-static fade-size-{${SCALE}} fade-size-{t,b,l,r,x,y}-{${SCALE}} fade-range-{${SCALE}} fade-clear-{t,b,l,r,x,y,xy}-{${SCALE},var}`
 
 const BANNER =
   '/*! tw-fade — framework-free build for plain HTML / CDN.\n' +
