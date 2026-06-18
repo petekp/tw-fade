@@ -1238,6 +1238,9 @@
   .text-wrap {
     text-wrap: wrap;
   }
+  .text-amber-100 {
+    color: var(--color-amber-100);
+  }
   .text-amber-100\/90 {
     color: color-mix(in srgb, oklch(96.2% 0.059 95.617) 90%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
