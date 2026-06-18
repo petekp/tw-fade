@@ -29,6 +29,7 @@
         --demo-code-string: rgb(253 230 138);
         --demo-code-comment: rgb(142 142 142);
         --demo-code-class: rgb(134 239 172);
+        --demo-code-fade: rgb(167 243 208);
         --demo-code-var: rgb(196 181 253);
       }
 
@@ -55,6 +56,7 @@
         --demo-code-string: rgb(253 230 138);
         --demo-code-comment: rgb(130 161 207);
         --demo-code-class: rgb(147 197 253);
+        --demo-code-fade: rgb(186 230 253);
         --demo-code-var: rgb(244 114 182);
       }
 
@@ -81,6 +83,7 @@
         --demo-code-string: rgb(253 230 138);
         --demo-code-comment: rgb(119 170 145);
         --demo-code-class: rgb(187 247 208);
+        --demo-code-fade: rgb(167 243 208);
         --demo-code-var: rgb(216 180 254);
       }
 
@@ -107,6 +110,7 @@
         --demo-code-string: rgb(253 230 138);
         --demo-code-comment: rgb(204 122 153);
         --demo-code-class: rgb(244 114 182);
+        --demo-code-fade: rgb(254 205 211);
         --demo-code-var: rgb(196 181 253);
       }
 
@@ -424,6 +428,11 @@
         color: var(--demo-code-class);
       }
 
+      .code-fade {
+        color: var(--demo-code-fade);
+        font-weight: 650;
+      }
+
       .code-var {
         color: var(--demo-code-var);
       }
@@ -679,7 +688,7 @@
               </div>
 
               <div class="surface-panel-soft overflow-hidden rounded-lg border border-white/10 bg-neutral-950/70 shadow-2xl shadow-black/30">
-                <pre class="code-surface mono-copy h-[18rem] overflow-auto p-4 text-[0.8125rem] leading-6 text-neutral-300"><code><span class="code-tag">&lt;div</span> <span class="code-attr">className</span>=<span class="code-string">"fade-y thin-scroll h-72 overflow-y-auto divide-y"</span><span class="code-tag">&gt;</span>
+                <pre class="code-surface mono-copy h-[18rem] overflow-auto p-4 text-[0.8125rem] leading-6 text-neutral-300"><code><span class="code-tag">&lt;div</span> <span class="code-attr">className</span>=<span class="code-string">"</span><span class="code-fade">fade-y</span><span class="code-string"> thin-scroll h-72 overflow-y-auto divide-y"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;article</span> <span class="code-attr">className</span>=<span class="code-string">"flex gap-4 px-6 py-4"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;Avatar</span> <span class="code-attr">initials</span>=<span class="code-string">"MP"</span> <span class="code-tag">/&gt;</span>
     <span class="code-tag">&lt;div</span> <span class="code-attr">className</span>=<span class="code-string">"min-w-0 flex-1"</span><span class="code-tag">&gt;</span>
@@ -940,7 +949,7 @@
               base ui
             </p>
             <pre class="code-surface mono-copy mt-3 overflow-x-auto rounded-md bg-black/40 p-4 text-[0.8125rem] leading-6 text-neutral-300"><code><span class="code-tag">&lt;PopoverContent&gt;</span>
-  <span class="code-tag">&lt;ScrollArea</span> <span class="code-attr">className</span>=<span class="code-string">"fade-y overflow-auto"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;ScrollArea</span> <span class="code-attr">className</span>=<span class="code-string">"</span><span class="code-fade">fade-y</span><span class="code-string"> overflow-auto"</span><span class="code-tag">&gt;</span>
     <span class="code-comment">...</span>
   <span class="code-tag">&lt;/ScrollArea&gt;</span>
 <span class="code-tag">&lt;/PopoverContent&gt;</span></code></pre>
@@ -1030,17 +1039,17 @@
             <p class="mono-copy font-mono text-[0.6875rem] uppercase leading-4 tracking-[0.18em] text-neutral-500">
               tune
             </p>
-            <pre class="code-surface mono-copy mt-3 overflow-x-auto rounded-md bg-black/40 p-4 text-[0.8125rem] leading-6 text-neutral-300"><code><span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"fade-y fade-size-sm fade-size-b-lg overflow-y-auto"</span><span class="code-tag">&gt;</span>
+            <pre class="code-surface mono-copy mt-3 overflow-x-auto rounded-md bg-black/40 p-4 text-[0.8125rem] leading-6 text-neutral-300"><code><span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"</span><span class="code-fade">fade-y</span> <span class="code-fade">fade-size-sm</span> <span class="code-fade">fade-size-b-lg</span><span class="code-string"> overflow-y-auto"</span><span class="code-tag">&gt;</span>
   <span class="code-comment">...</span>
 <span class="code-tag">&lt;/div&gt;</span>
 
 <span class="code-comment">edge &gt; axis &gt; shared</span>
-<span class="code-class">fade-size-y-lg</span>
-<span class="code-class">fade-size-b-[6rem]</span>
+<span class="code-fade">fade-size-y-lg</span>
+<span class="code-fade">fade-size-b-[6rem]</span>
 
 <span class="code-comment">clear zones</span>
-<span class="code-class">fade-clear-t-lg</span>
-<span class="code-class">fade-clear-t-var</span>
+<span class="code-fade">fade-clear-t-lg</span>
+<span class="code-fade">fade-clear-t-var</span>
 <span class="code-var">--fade-clear-t</span>: <span class="code-string">56px</span></code></pre>
           </div>
           <div class="rounded-lg border border-amber-300/15 bg-amber-300/[0.06] p-4">
