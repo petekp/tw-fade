@@ -60,6 +60,7 @@ function declValue(body, prop) {
 const EDGES = { '.fade-t': 't', '.fade-b': 'b', '.fade-l': 'l', '.fade-r': 'r' }
 const ALL = ['.fade-t', '.fade-b', '.fade-l', '.fade-r', '.fade-y', '.fade-x', '.fade-xy']
 const MASK_VARS = ['--sf-mask-t', '--sf-mask-b', '--sf-mask-l', '--sf-mask-r']
+const SIZE_VARS = ['--sf-size', '--sf-size-y', '--sf-size-x', '--sf-size-t', '--sf-size-b', '--sf-size-l', '--sf-size-r']
 const CLEAR_VARS = ['--sf-clear-t', '--sf-clear-b', '--sf-clear-l', '--sf-clear-r']
 const RAMP_MULTIPLIERS = [
   '0.983',
@@ -97,7 +98,7 @@ test('registers the amounts as typed <number> and config/mask layers as universa
     // Initial 0 = no fade: the correct base state when the timeline is inactive.
     assert.equal(prop['initial-value'], '0')
   }
-  // --sf-size / --sf-range / --sf-clear-* / --sf-mask-* ARE registered, but with the UNIVERSAL
+  // --sf-size* / --sf-range / --sf-clear-* / --sf-mask-* ARE registered, but with the UNIVERSAL
   // syntax and NO initial-value. A typed <length> @property would reject the
   // font-relative (rem) default and silently drop the registration — the "only
   // large fades" bug. The universal syntax sidesteps that rule; the omitted
@@ -105,7 +106,7 @@ test('registers the amounts as typed <number> and config/mask layers as universa
   // <rem>)` still falls back to the default. The point of registering at all is
   // `inherits: false`, which stops a nested fade from leaking its parent's
   // size/range/clearance or mask layers.
-  for (const v of ['--sf-size', '--sf-range', ...CLEAR_VARS, ...MASK_VARS]) {
+  for (const v of [...SIZE_VARS, '--sf-range', ...CLEAR_VARS, ...MASK_VARS]) {
     const prop = property(v)
     assert.ok(prop, `missing @property ${v}`)
     assert.equal(prop.syntax, '"*"')
@@ -200,7 +201,7 @@ test('mask gradients point the right way and are driven by their amount', () => 
   assert.match(t, /calc\(1 - var\(--sf-t\)\)/)
   // Size is read with a fallback default (the md scale) so a panel WITHOUT a
   // fade-size-* utility still gets a real band — the bug was an unset --sf-size.
-  assert.match(t, /var\(--sf-size, 3\.125rem\) \* var\(--sf-t\)/)
+  assert.match(t, /var\(--sf-size-t, var\(--sf-size-y, var\(--sf-size, 3\.125rem\)\)\) \* var\(--sf-t\)/)
   // Clearance is an opaque edge band before the fade ramp. This lets sticky
   // headers/footers stay unmasked while rows beneath still dissolve at the edge.
   assert.match(t, /#000 0 var\(--sf-clear-t, 0px\)/)
@@ -222,7 +223,10 @@ test('the smoothstep ramp is the 13-stop sigmoid from the reference', () => {
   // sticky-item clearance band.
   const t = declValue(block('.fade-t'), '--sf-mask-t')
   assert.match(t, /rgb\(0 0 0 \/ calc\(1 - var\(--sf-t\)\)\) var\(--sf-clear-t, 0px\),/)
-  assert.match(t, /rgb\(0 0 0 \/ 1\) calc\(var\(--sf-clear-t, 0px\) \+ var\(--sf-size, 3\.125rem\) \* var\(--sf-t\)\)\s*\)\s*$/)
+  assert.match(
+    t,
+    /rgb\(0 0 0 \/ 1\) calc\(var\(--sf-clear-t, 0px\) \+ var\(--sf-size-t, var\(--sf-size-y, var\(--sf-size, 3\.125rem\)\)\) \* var\(--sf-t\)\)\s*\)\s*$/,
+  )
 })
 
 test('every public fade utility uses the shared four-edge reveal setup', () => {
@@ -267,6 +271,19 @@ test('fade-static forces the fade on, order-independently, and disables the anim
 test('exposes the size and range scales as theme-backed utilities', () => {
   assert.equal(declValue(block('.fade-size-sm'), '--sf-size'), 'var(--fade-size-sm)')
   assert.equal(declValue(block('.fade-size-lg'), '--sf-size'), 'var(--fade-size-lg)')
+  assert.equal(declValue(block('.fade-size-t-sm'), '--sf-size-t'), 'var(--fade-size-sm)')
+  assert.equal(declValue(block('.fade-size-b-lg'), '--sf-size-b'), 'var(--fade-size-lg)')
+  assert.equal(declValue(block('.fade-size-l-md'), '--sf-size-l'), 'var(--fade-size-md)')
+  assert.equal(declValue(block('.fade-size-r-sm'), '--sf-size-r'), 'var(--fade-size-sm)')
+
+  const y = block('.fade-size-y-md')
+  assert.equal(declValue(y, '--sf-size-y'), 'var(--fade-size-md)')
+  assert.equal(declValue(y, '--sf-size-x'), undefined)
+
+  const x = block('.fade-size-x-lg')
+  assert.equal(declValue(x, '--sf-size-x'), 'var(--fade-size-lg)')
+  assert.equal(declValue(x, '--sf-size-y'), undefined)
+
   assert.equal(declValue(block('.fade-range-lg'), '--sf-range'), 'var(--fade-range-lg)')
   // The theme exposes the actual scale values for consumers to override/extend.
   const root = block(':root, :host')
@@ -276,6 +293,18 @@ test('exposes the size and range scales as theme-backed utilities', () => {
   // No bare `.fade-size` / `.fade-range` no-op utility leaks out.
   assert.equal(block('.fade-size'), null)
   assert.equal(block('.fade-range'), null)
+})
+
+test('each edge resolves size as edge over axis over global over default', () => {
+  const t = declValue(block('.fade-t'), '--sf-mask-t')
+  const b = declValue(block('.fade-b'), '--sf-mask-b')
+  const l = declValue(block('.fade-l'), '--sf-mask-l')
+  const r = declValue(block('.fade-r'), '--sf-mask-r')
+
+  assert.match(t, /var\(--sf-size-t, var\(--sf-size-y, var\(--sf-size, 3\.125rem\)\)\) \* var\(--sf-t\)/)
+  assert.match(b, /var\(--sf-size-b, var\(--sf-size-y, var\(--sf-size, 3\.125rem\)\)\) \* var\(--sf-b\)/)
+  assert.match(l, /var\(--sf-size-l, var\(--sf-size-x, var\(--sf-size, 3\.125rem\)\)\) \* var\(--sf-l\)/)
+  assert.match(r, /var\(--sf-size-r, var\(--sf-size-x, var\(--sf-size, 3\.125rem\)\)\) \* var\(--sf-r\)/)
 })
 
 test('exposes edge-clearance utilities for sticky content', () => {

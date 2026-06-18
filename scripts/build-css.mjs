@@ -37,10 +37,11 @@ const src = path.join(root, 'src', 'tw-fade.css')
 const outFile = path.join(root, 'dist', 'tw-fade.css')
 
 // Every class the framework-free build should contain. Arbitrary values
-// (fade-size-[6rem]) are intentionally absent — those require Tailwind's JIT and
-// belong to the v4 source path, not the prebuilt drop-in.
+// (fade-size-[6rem], fade-size-b-[6rem]) are intentionally absent — those
+// require Tailwind's JIT and belong to the v4 source path, not the prebuilt
+// drop-in.
 const CLASSES =
-  'fade-{t,b,l,r,x,y,xy} fade-static fade-size-{sm,md,lg} fade-range-{sm,md,lg} fade-clear-{t,b,l,r,x,y,xy}-{sm,md,lg,var}'
+  'fade-{t,b,l,r,x,y,xy} fade-static fade-size-{sm,md,lg} fade-size-{t,b,l,r,x,y}-{sm,md,lg} fade-range-{sm,md,lg} fade-clear-{t,b,l,r,x,y,xy}-{sm,md,lg,var}'
 
 const BANNER =
   '/*! tw-fade — framework-free build for plain HTML / CDN.\n' +

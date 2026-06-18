@@ -11,11 +11,13 @@
  *   2. horizontal (fade-x), default size — left & right melt to background
  *   3. an overridden size (inline `--sf-size`, exactly what `fade-size-[120px]`
  *      JIT-emits) — the fade band SCALES to the larger size, not the default
- *   4. nested isolation — a DEFAULT fade under an ancestor that sets a larger
+ *   4. a scoped edge size (`fade-size-b-lg`) — the bottom band scales without
+ *      changing the top band
+ *   5. nested isolation — a DEFAULT fade under an ancestor that sets a larger
  *      `--sf-size` still renders the DEFAULT band, proving the `@property`
  *      `inherits: false` registration stops size/range leaking down (the cascade fix)
- *   5. mixed individual edges (fade-t fade-r) — arbitrary edge utilities compose
- *   6. nested single edge under a faded ancestor — mask layers do not leak down
+ *   6. mixed individual edges (fade-t fade-r) — arbitrary edge utilities compose
+ *   7. nested single edge under a faded ancestor — mask layers do not leak down
  *
  * Usage: node build/verify-fade.mjs [path-to-css]   (defaults to the shipped dist)
  */
@@ -186,7 +188,16 @@ const bigLum = await profileLine({
 })
 const bigCross = crossing(bigLum)
 
-// 4. Nested isolation. An ancestor sets a larger --sf-size (as a fade-size-*
+// 4. Scoped edge size. Bottom should grow while top stays at the default size.
+const scopedLum = await profileLine({
+  axis: 'y',
+  innerSelector: '#scoped',
+  body: `<div id="scoped" data-scroll class="fade-y fade-size-b-lg panel-v">${blocks('vb', 40)}</div>`,
+})
+const scopedTopCross = crossing(scopedLum)
+const scopedBottomCross = crossing([...scopedLum].reverse())
+
+// 5. Nested isolation. An ancestor sets a larger --sf-size (as a fade-size-*
 //    ancestor would); the inner DEFAULT fade must render the DEFAULT band. If
 //    --sf-size still inherited, the inner band would balloon to ~120px. The
 //    @property `inherits: false` registration is what prevents the leak.
@@ -197,14 +208,14 @@ const nestLum = await profileLine({
 })
 const nestCross = crossing(nestLum)
 
-// 5. Mixed individual edges. This catches the cascade failure where one utility's
+// 6. Mixed individual edges. This catches the cascade failure where one utility's
 //    animation shorthand used to overwrite the other edge's reveal animation.
 const combo = await samplePanel({
   innerSelector: '#combo',
   body: `<div id="combo" data-scroll class="fade-t fade-r panel-xy"><div class="xy-plane"></div></div>`,
 })
 
-// 6. A page-level/body-level fade used to leak its mask layer variables into
+// 7. A page-level/body-level fade used to leak its mask layer variables into
 //    nested single-edge examples. The child should fade only at the top.
 const nestedSingle = await samplePanel({
   innerSelector: '#nested-single',
@@ -230,6 +241,17 @@ const checks = [
   ],
 
   [
+    'scoped bottom size: top keeps the default band',
+    Math.abs(scopedTopCross - vCross) <= 4,
+    `top≈${scopedTopCross}px vs default≈${vCross}px`,
+  ],
+  [
+    'scoped bottom size: bottom band is wider than top',
+    scopedBottomCross > scopedTopCross + 6,
+    `bottom≈${scopedBottomCross}px vs top≈${scopedTopCross}px`,
+  ],
+
+  [
     'nested isolation: inner keeps the DEFAULT band (inherits:false)',
     nestCross < (vCross + bigCross) / 2,
     `inner≈${nestCross}px (default≈${vCross}px, leaked≈${bigCross}px)`,
@@ -247,7 +269,7 @@ console.log(`CSS: ${path.relative(path.resolve(__dirname, '..'), cssPath)}`)
 console.log(
   `vertical — top:${vTop.toFixed(0)} mid:${vMid.toFixed(0)} bot:${vBot.toFixed(0)} | ` +
     `horizontal — left:${hLeft.toFixed(0)} mid:${hMid.toFixed(0)} right:${hRight.toFixed(0)} | ` +
-    `crossings — default:${vCross} big:${bigCross} nested:${nestCross} | ` +
+    `crossings — default:${vCross} big:${bigCross} scoped-top:${scopedTopCross} scoped-bottom:${scopedBottomCross} nested:${nestCross} | ` +
     `combo — top:${combo.top.toFixed(0)} right:${combo.right.toFixed(0)} mid:${combo.mid.toFixed(0)} | ` +
     `nested fade-t — top:${nestedSingle.top.toFixed(0)} bottom:${nestedSingle.bottom.toFixed(0)} mid:${nestedSingle.mid.toFixed(0)}`,
 )
