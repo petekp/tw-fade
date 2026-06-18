@@ -4,6 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>tw-fade — CSS-driven scroll edge masking for Tailwind</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Charm:wght@700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
     <style>
       html[data-surface="graphite"] {
@@ -182,6 +185,9 @@
       }
 
       .hero-title {
+        font-family: "Charm", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+        font-weight: 700;
+        letter-spacing: 0;
         line-height: 0.92;
       }
 
@@ -577,10 +583,10 @@
         <p class="mb-4 font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.22em] api-label">
           Tailwind v4 Plugin
         </p>
-        <h1 class="hero-title text-5xl font-semibold text-neutral-50 sm:text-6xl lg:text-7xl">
+        <h1 class="hero-title text-[5.5rem] font-semibold text-neutral-50 sm:text-[6.75rem] lg:text-[8rem]">
           tw-fade
         </h1>
-        <p class="mt-5 max-w-[43rem] text-balance text-[1.0625rem] leading-8 text-neutral-300/85 sm:text-lg">
+        <p class="mt-9 max-w-[43rem] text-balance text-[1.0625rem] leading-8 text-neutral-300/85 sm:text-lg">
           Elegant, CSS-driven scroll-edge masking. Add a single class to any scroll
           container; its content dissolves into the surface at the edges. Zero JavaScript.
         </p>
