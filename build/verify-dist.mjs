@@ -23,11 +23,14 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><style>
   ${css}
 </style></head><body>
   <div class="panel fade-y" id="tall"></div>
+  <div class="panel fade-y fade-range-2xl" id="range"></div>
   <div class="panel fade-y" id="short"></div>
   <div class="panel-both fade-t fade-r" id="combo"><div class="plane"></div></div>
   <script>
     const tall = document.getElementById('tall')
     for (let i = 0; i < 30; i++) { const p = document.createElement('p'); p.textContent = 'Row ' + (i+1); tall.appendChild(p) }
+    const range = document.getElementById('range')
+    for (let i = 0; i < 30; i++) { const p = document.createElement('p'); p.textContent = 'Range row ' + (i+1); range.appendChild(p) }
     const short = document.getElementById('short')
     for (let i = 0; i < 2; i++) { const p = document.createElement('p'); p.textContent = 'Row ' + (i+1); short.appendChild(p) }
   </script>
@@ -51,6 +54,10 @@ async function probe(sel, top) {
         maxScroll: el.scrollHeight - el.clientHeight,
         t: num('--sf-t'),
         b: num('--sf-b'),
+        range: cs.getPropertyValue('--sf-range').trim(),
+        rangeActive: cs.getPropertyValue('--sf-range-active').trim(),
+        animationRangeStart: cs.animationRangeStart,
+        animationRangeEnd: cs.animationRangeEnd,
         maskComposite: cs.maskComposite,
         maskImage: cs.maskImage.slice(0, 40),
       }
@@ -87,6 +94,7 @@ const r = {
   top: await probe('#tall', 0),
   mid: await probe('#tall', Math.round(tallMax / 2)),
   bottom: await probe('#tall', tallMax),
+  range: await probe('#range', 0),
   short: await probe('#short', 0),
   combo: await probeBoth('#combo', 100, 100),
 }
@@ -99,6 +107,7 @@ const checks = [
   ['dist: mid → both fades (t≈1,b≈1)', approx(r.mid.t, 1) && approx(r.mid.b, 1)],
   ['dist: bottom → full top fade (t≈1)', approx(r.bottom.t, 1)],
   ['dist: bottom → no bottom fade (b≈0)', approx(r.bottom.b, 0)],
+  ['dist: fade-range-2xl resolves into the scroll animation range', /^96px, 100%, 96px, 100%$/.test(r.range.animationRangeEnd)],
   ['dist: not scrollable → no fade (t≈0,b≈0)', approx(r.short.t, 0) && approx(r.short.b, 0)],
   ['dist: mixed fade-t fade-r composes (t≈1,r≈1)', approx(r.combo.t, 1) && approx(r.combo.r, 1)],
   ['dist: mixed fade-t fade-r keeps four reveal animations', r.combo.animationNames.length === 4],

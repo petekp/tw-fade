@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
 @import "../src/tw-fade.css";
 
 /* Scan the demo markup for utility classes. */

@@ -37,9 +37,9 @@ const src = path.join(root, 'src', 'tw-fade.css')
 const outFile = path.join(root, 'dist', 'tw-fade.css')
 
 // Every class the framework-free build should contain. Arbitrary values
-// (fade-size-[6rem], fade-size-b-[6rem]) are intentionally absent — those
-// require Tailwind's JIT and belong to the v4 source path, not the prebuilt
-// drop-in.
+// (fade-size-[6rem], fade-range-[80px], fade-clear-t-[56px]) are intentionally
+// absent — those require Tailwind's JIT and belong to the v4 source path, not
+// the prebuilt drop-in.
 const SCALE = 'xs,sm,md,lg,xl,2xl,3xl,4xl'
 const CLASSES =
   `fade-{t,b,l,r,x,y,xy} fade-static fade-size-{${SCALE}} fade-size-{t,b,l,r,x,y}-{${SCALE}} fade-range-{${SCALE}} fade-clear-{t,b,l,r,x,y,xy}-{${SCALE},var}`
@@ -51,15 +51,16 @@ const BANNER =
 /**
  * Compile src/tw-fade.css to a self-contained stylesheet and return it as a
  * string. No files are written — callers (the CLI block below, the test suite)
- * decide what to do with it.
+ * decide what to do with it. Tests can pass a custom class list to cover
+ * source-path-only utilities that the prebuilt CSS intentionally omits.
  */
-export function compileCss() {
+export function compileCss({ classes = CLASSES } = {}) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'tw-fade-build-'))
   try {
     const entry = path.join(tmp, 'entry.css')
     fs.writeFileSync(
       entry,
-      `@import "${utilities}";\n@import "${src}";\n@source inline("${CLASSES}");\n`,
+      `@import "${utilities}";\n@import "${src}";\n@source inline("${classes}");\n`,
     )
     const tmpOut = path.join(tmp, 'out.css')
     execFileSync(process.execPath, [cli, '-i', entry, '-o', tmpOut], {

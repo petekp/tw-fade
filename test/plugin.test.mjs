@@ -22,6 +22,9 @@ import assert from 'node:assert/strict'
 import { compileCss } from '../scripts/build-css.mjs'
 
 const css = compileCss()
+const integerClearCss = compileCss({
+  classes: 'fade-clear-t-14 fade-clear-b-14 fade-clear-l-14 fade-clear-r-14 fade-clear-y-14 fade-clear-x-14 fade-clear-xy-14',
+})
 
 /**
  * Return the balanced-brace body of the first `<selector> {` block — including any
@@ -62,6 +65,7 @@ const ALL = ['.fade-t', '.fade-b', '.fade-l', '.fade-r', '.fade-y', '.fade-x', '
 const MASK_VARS = ['--sf-mask-t', '--sf-mask-b', '--sf-mask-l', '--sf-mask-r']
 const SIZE_VARS = ['--sf-size', '--sf-size-y', '--sf-size-x', '--sf-size-t', '--sf-size-b', '--sf-size-l', '--sf-size-r']
 const CLEAR_VARS = ['--sf-clear-t', '--sf-clear-b', '--sf-clear-l', '--sf-clear-r']
+const SHARED_DEFAULTS_SELECTOR = '.fade-t, .fade-b, .fade-l, .fade-r, .fade-y, .fade-x, .fade-xy'
 const SCALE = [
   ['xs', 6],
   ['sm', 8],
@@ -72,31 +76,39 @@ const SCALE = [
   ['3xl', 32],
   ['4xl', 40],
 ]
-const SPACING_UNIT = String.raw`var\(--spacing, 0\.25rem\)`
-const DEFAULT_SIZE = String.raw`var\(--sf-size, var\(--fade-size-md, calc\(${SPACING_UNIT} \* 12\)\)\)`
-const DEFAULT_RANGE = String.raw`var\(--sf-range, var\(--fade-range-md, calc\(${SPACING_UNIT} \* 12\)\)\)`
-const RAMP_MULTIPLIERS = [
+const DEFAULT_SIZE_DECL = 'var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12))'
+const DEFAULT_RANGE_DECL = 'var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12))'
+const RANGE_ACTIVE_DECL = `var(--sf-range, ${DEFAULT_RANGE_DECL})`
+const EDGE_SIZE_DECLS = {
+  t: 'var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--sf-size-default))))',
+  b: 'var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--sf-size-default))))',
+  l: 'var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--sf-size-default))))',
+  r: 'var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--sf-size-default))))',
+}
+const ALPHA_MULTIPLIERS = [
   '0.983',
-  '0.08333',
   '0.933',
-  '0.16667',
   '0.854',
-  '0.25',
   '0.75',
-  '0.33333',
   '0.629',
-  '0.41667',
-  '0.5',
   '0.5',
   '0.371',
-  '0.58333',
   '0.25',
-  '0.66667',
   '0.146',
-  '0.75',
   '0.067',
-  '0.83333',
   '0.017',
+]
+const POSITION_MULTIPLIERS = [
+  '0.08333',
+  '0.16667',
+  '0.25',
+  '0.33333',
+  '0.41667',
+  '0.5',
+  '0.58333',
+  '0.66667',
+  '0.75',
+  '0.83333',
   '0.91667',
 ]
 
@@ -210,15 +222,20 @@ test('mask gradients point the right way and are driven by their amount', () => 
   assert.match(declValue(block('.fade-r'), '--sf-mask-r'), /^linear-gradient\(\s*to left/)
   // The amount scales both the gradient alpha (1 - amount * …) and its length
   // (size * amount), so at amount 0 the layer collapses to fully opaque.
-  const t = declValue(block('.fade-t'), '--sf-mask-t')
+  const tBlock = block('.fade-t')
+  const t = declValue(tBlock, '--sf-mask-t')
   assert.match(t, /calc\(1 - var\(--sf-t\)\)/)
-  // Size is read with a fallback default (the md scale) so a panel WITHOUT a
-  // fade-size-* utility still gets a real band — the bug was an unset --sf-size.
-  assert.match(t, new RegExp(String.raw`var\(--sf-size-t, var\(--sf-size-y, ${DEFAULT_SIZE}\)\) \* var\(--sf-t\)`))
+  // Size is resolved through a shared default alias, then multiplied by the
+  // scroll-gated amount. This keeps the gradient readable without weakening the
+  // "no size utility still fades" invariant.
+  assert.equal(declValue(block(SHARED_DEFAULTS_SELECTOR), '--sf-size-default'), DEFAULT_SIZE_DECL)
+  assert.equal(declValue(tBlock, '--sf-edge-size-t'), EDGE_SIZE_DECLS.t)
+  assert.equal(declValue(tBlock, '--sf-edge-band-t'), 'calc(var(--sf-edge-size-t) * var(--sf-t))')
   // Clearance is an opaque edge band before the fade ramp. This lets sticky
   // headers/footers stay unmasked while rows beneath still dissolve at the edge.
-  assert.match(t, /#000 0 var\(--sf-clear-t, 0px\)/)
-  assert.match(t, /rgb\(0 0 0 \/ calc\(1 - var\(--sf-t\)\)\) var\(--sf-clear-t, 0px\)/)
+  assert.equal(declValue(tBlock, '--sf-edge-clear-t'), 'var(--sf-clear-t, 0px)')
+  assert.match(t, /#000 0 var\(--sf-edge-clear-t\)/)
+  assert.match(t, /rgb\(0 0 0 \/ calc\(1 - var\(--sf-t\)\)\) var\(--sf-edge-clear-t\)/)
 })
 
 test('the smoothstep ramp is the 13-stop sigmoid from the reference', () => {
@@ -226,19 +243,23 @@ test('the smoothstep ramp is the 13-stop sigmoid from the reference', () => {
     const grad = declValue(block(cls), `--sf-mask-${edge}`)
     const stops = (grad.match(/rgb\(0 0 0 \//g) || []).length
     assert.equal(stops, 13, `${cls} gradient should have 13 colour stops`)
-    const multipliers = [
+    const alphaMultipliers = [
       ...grad.matchAll(new RegExp(`var\\(--sf-${edge}\\)\\s*\\*\\s*([0-9.]+)`, 'g')),
     ].map((m) => m[1])
-    assert.deepEqual(multipliers, RAMP_MULTIPLIERS, `${cls} ramp coefficients must stay exact`)
+    assert.deepEqual(alphaMultipliers, ALPHA_MULTIPLIERS, `${cls} alpha ramp coefficients must stay exact`)
+    const positionMultipliers = [
+      ...grad.matchAll(new RegExp(`var\\(--sf-edge-band-${edge}\\)\\s*\\*\\s*([0-9.]+)`, 'g')),
+    ].map((m) => m[1])
+    assert.deepEqual(positionMultipliers, POSITION_MULTIPLIERS, `${cls} position ramp coefficients must stay exact`)
   }
   // The curve endpoints: first stop fully transparent-capable (1 - amount), last
   // stop fully opaque (rgb(0 0 0 / 1)) at the band's far edge, offset after any
   // sticky-item clearance band.
   const t = declValue(block('.fade-t'), '--sf-mask-t')
-  assert.match(t, /rgb\(0 0 0 \/ calc\(1 - var\(--sf-t\)\)\) var\(--sf-clear-t, 0px\),/)
+  assert.match(t, /rgb\(0 0 0 \/ calc\(1 - var\(--sf-t\)\)\) var\(--sf-edge-clear-t\),/)
   assert.match(
     t,
-    new RegExp(String.raw`rgb\(0 0 0 \/ 1\) calc\(var\(--sf-clear-t, 0px\) \+ var\(--sf-size-t, var\(--sf-size-y, ${DEFAULT_SIZE}\)\) \* var\(--sf-t\)\)\s*\)\s*$`),
+    new RegExp(String.raw`rgb\(0 0 0 \/ 1\) calc\(var\(--sf-edge-clear-t\) \+ var\(--sf-edge-band-t\)\)\s*\)\s*$`),
   )
 })
 
@@ -246,17 +267,22 @@ test('every public fade utility uses the shared four-edge reveal setup', () => {
   // Public utilities need the same animation shorthand/longhands so arbitrary
   // combinations like `fade-t fade-r` compose instead of last-declaration-wins.
   // Physical axes (scroll(self y) / scroll(self x)) match the mask gradients.
+  const defaults = block(SHARED_DEFAULTS_SELECTOR)
+  assert.equal(declValue(defaults, '--sf-range-active'), RANGE_ACTIVE_DECL)
+  assert.ok(!css.includes('--sf-range-default'), 'range default should be folded into --sf-range-active')
   for (const cls of ALL) {
+    const u = block(cls)
     const s = block('@supports (animation-timeline: scroll())', block(cls))
     assert.ok(s, `${cls} must include the scroll-timeline support block`)
     assert.equal(declValue(s, 'animation').split(',').length, 4, `${cls} must animate all four amounts`)
     assert.match(s, /animation-timeline:\s*scroll\(self y\), scroll\(self y\), scroll\(self x\), scroll\(self x\)/)
-    // Leading reveals over the first range; trailing hides over the last. Range is
-    // read with a fallback default (same fix as --sf-size).
+    // Leading reveals over the first range; trailing hides over the last. Range
+    // is resolved once by the shared defaults rule (same fix as --sf-size).
+    assert.equal(declValue(u, '--sf-range-active'), undefined)
     assert.match(
       s,
       new RegExp(
-        String.raw`animation-range:\s*0 ${DEFAULT_RANGE}, calc\(100% - ${DEFAULT_RANGE}\) 100%, 0 ${DEFAULT_RANGE}, calc\(100% - ${DEFAULT_RANGE}\) 100%`,
+        String.raw`animation-range:\s*0 var\(--sf-range-active\), calc\(100% - var\(--sf-range-active\)\) 100%, 0 var\(--sf-range-active\), calc\(100% - var\(--sf-range-active\)\) 100%`,
       ),
     )
   }
@@ -307,15 +333,14 @@ test('exposes the size and range scales as theme-backed utilities', () => {
 })
 
 test('each edge resolves size as edge over axis over global over default', () => {
-  const t = declValue(block('.fade-t'), '--sf-mask-t')
-  const b = declValue(block('.fade-b'), '--sf-mask-b')
-  const l = declValue(block('.fade-l'), '--sf-mask-l')
-  const r = declValue(block('.fade-r'), '--sf-mask-r')
-
-  assert.match(t, new RegExp(String.raw`var\(--sf-size-t, var\(--sf-size-y, ${DEFAULT_SIZE}\)\) \* var\(--sf-t\)`))
-  assert.match(b, new RegExp(String.raw`var\(--sf-size-b, var\(--sf-size-y, ${DEFAULT_SIZE}\)\) \* var\(--sf-b\)`))
-  assert.match(l, new RegExp(String.raw`var\(--sf-size-l, var\(--sf-size-x, ${DEFAULT_SIZE}\)\) \* var\(--sf-l\)`))
-  assert.match(r, new RegExp(String.raw`var\(--sf-size-r, var\(--sf-size-x, ${DEFAULT_SIZE}\)\) \* var\(--sf-r\)`))
+  const defaults = block(SHARED_DEFAULTS_SELECTOR)
+  assert.equal(declValue(defaults, '--sf-size-default'), DEFAULT_SIZE_DECL)
+  for (const [cls, edge] of Object.entries(EDGES)) {
+    const u = block(cls)
+    assert.equal(declValue(u, '--sf-size-default'), undefined)
+    assert.equal(declValue(u, `--sf-edge-size-${edge}`), EDGE_SIZE_DECLS[edge])
+    assert.equal(declValue(u, `--sf-edge-band-${edge}`), `calc(var(--sf-edge-size-${edge}) * var(--sf-${edge}))`)
+  }
 })
 
 test('exposes edge-clearance utilities for sticky content', () => {
@@ -344,6 +369,27 @@ test('exposes edge-clearance utilities for sticky content', () => {
     assert.equal(declValue(root, `--fade-clear-${name}`), `calc(var(--spacing, 0.25rem) * ${units})`)
   }
   assert.equal(block('.fade-clear'), null)
+})
+
+test('supports integer spacing values for edge clearance in the Tailwind source path', () => {
+  const expected = 'calc(var(--spacing, 0.25rem) * 14)'
+  assert.equal(declValue(block('.fade-clear-t-14', integerClearCss), '--sf-clear-t'), expected)
+  assert.equal(declValue(block('.fade-clear-b-14', integerClearCss), '--sf-clear-b'), expected)
+  assert.equal(declValue(block('.fade-clear-l-14', integerClearCss), '--sf-clear-l'), expected)
+  assert.equal(declValue(block('.fade-clear-r-14', integerClearCss), '--sf-clear-r'), expected)
+
+  const y = block('.fade-clear-y-14', integerClearCss)
+  assert.equal(declValue(y, '--sf-clear-t'), expected)
+  assert.equal(declValue(y, '--sf-clear-b'), expected)
+  assert.equal(declValue(y, '--sf-clear-l'), undefined)
+
+  const x = block('.fade-clear-x-14', integerClearCss)
+  assert.equal(declValue(x, '--sf-clear-l'), expected)
+  assert.equal(declValue(x, '--sf-clear-r'), expected)
+  assert.equal(declValue(x, '--sf-clear-t'), undefined)
+
+  const xy = block('.fade-clear-xy-14', integerClearCss)
+  for (const v of CLEAR_VARS) assert.equal(declValue(xy, v), expected, `integer xy must set ${v}`)
 })
 
 test('exposes public variable utilities for dynamic edge clearance', () => {
@@ -413,4 +459,5 @@ test('the framework-free build is real CSS, self-contained, with no Tailwind noi
   // No Preflight / theme-dump leakage from the utilities-only, isolated build.
   assert.ok(!/--tw-/.test(css), 'no --tw-* variables should leak in')
   assert.ok(!/\.flex\s*\{|\.grid\s*\{|\.border\s*\{/.test(css), 'no built-in utilities should leak in')
+  assert.equal(block('.sf-mask'), null, 'private sf-mask utility should not be emitted as a public class')
 })
