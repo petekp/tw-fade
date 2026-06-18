@@ -247,14 +247,11 @@
   .top-0 {
     top: 0;
   }
-  .top-16 {
-    top: calc(var(--spacing) * 16);
+  .top-14 {
+    top: calc(var(--spacing) * 14);
   }
-  .right-5 {
-    right: calc(var(--spacing) * 5);
-  }
-  .left-5 {
-    left: calc(var(--spacing) * 5);
+  .left-0 {
+    left: 0;
   }
   .z-10 {
     z-index: 10;
@@ -339,6 +336,9 @@
   }
   .h-9 {
     height: calc(var(--spacing) * 9);
+  }
+  .h-10 {
+    height: calc(var(--spacing) * 10);
   }
   .h-12 {
     height: calc(var(--spacing) * 12);
@@ -1137,9 +1137,6 @@
   }
   .p-4 {
     padding: calc(var(--spacing) * 4);
-  }
-  .p-5 {
-    padding: calc(var(--spacing) * 5);
   }
   .px-2 {
     padding-inline: calc(var(--spacing) * 2);
