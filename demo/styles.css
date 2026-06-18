@@ -976,12 +976,6 @@
       border-color: color-mix(in oklab, var(--color-emerald-400) 20%, transparent);
     }
   }
-  .border-emerald-400\/40 {
-    border-color: color-mix(in srgb, oklch(76.5% 0.177 163.223) 40%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, var(--color-emerald-400) 40%, transparent);
-    }
-  }
   .border-white\/10 {
     border-color: color-mix(in srgb, #fff 10%, transparent);
     @supports (color: color-mix(in lab, red, red)) {

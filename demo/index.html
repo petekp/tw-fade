@@ -451,6 +451,7 @@
       }
 
       .ui-button {
+        outline: none;
         transition:
           transform 140ms cubic-bezier(0.23, 1, 0.32, 1),
           border-color 160ms ease,
@@ -462,10 +463,27 @@
       }
       @media (hover: hover) and (pointer: fine) {
         .ui-button:hover {
-          border-color: rgb(255 255 255 / 0.22);
-          background: rgb(255 255 255 / 0.08);
+          border-color: var(--demo-border-strong);
+          background: var(--demo-control-active);
           color: var(--demo-text-strong);
         }
+      }
+
+      .ui-button:focus-visible {
+        border-color: var(--demo-focus);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--demo-focus) 24%, transparent);
+      }
+
+      .rail-tab {
+        border-color: var(--demo-border);
+        background: var(--demo-control-bg);
+        color: var(--demo-text-primary);
+      }
+
+      .rail-tab[aria-selected="true"] {
+        border-color: var(--demo-focus);
+        background: var(--demo-control-active);
+        color: var(--demo-accent-text-strong);
       }
 
       .ui-input {
@@ -473,7 +491,7 @@
       }
       .ui-input:focus {
         border-color: var(--demo-focus);
-        box-shadow: 0 0 0 3px rgb(255 255 255 / 0.08);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--demo-focus) 24%, transparent);
       }
 
       .ui-row {
@@ -703,19 +721,19 @@
                 class="fade-x thin-scroll flex gap-3 overflow-x-auto p-3"
                 data-demo="rail"
               >
-                <button class="ui-button shrink-0 rounded-md border border-emerald-400/40 bg-emerald-400/10 px-5 py-3 text-[0.9375rem] font-medium leading-5 text-emerald-100">Overview</button>
-                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Deployments</button>
-                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Observability</button>
-                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Functions</button>
-                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Storage</button>
-                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Domains</button>
-                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Settings</button>
-                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Audit log</button>
-                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Cron jobs</button>
-                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Feature flags</button>
-                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Queues</button>
-                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Firewall</button>
-                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Cache</button>
+                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="true">Overview</button>
+                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Deployments</button>
+                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Observability</button>
+                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Functions</button>
+                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Storage</button>
+                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Domains</button>
+                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Settings</button>
+                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Audit log</button>
+                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Cron jobs</button>
+                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Feature flags</button>
+                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Queues</button>
+                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Firewall</button>
+                <button class="rail-tab ui-button shrink-0 rounded-md border px-5 py-3 text-[0.9375rem] font-medium leading-5" type="button" aria-selected="false">Cache</button>
               </div>
             </div>
           </section>
