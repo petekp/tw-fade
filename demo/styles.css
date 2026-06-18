@@ -1460,6 +1460,9 @@
   .fade-size-\[6rem\] {
     --sf-size: 6rem;
   }
+  .fade-size-\[8\.75rem\] {
+    --sf-size: 8.75rem;
+  }
   .fade-size-\[120px\] {
     --sf-size: 120px;
   }

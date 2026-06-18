@@ -76,7 +76,7 @@ const checks = [
   ['bottom of page: no bottom fade (b≈0)', approx(bot.b, 0), `b≈${bot.b.toFixed(2)}`],
 ]
 
-console.log('Demo page: <body class="fade-y fade-size-lg …">')
+console.log('Demo page: <body class="fade-y fade-size-[8.75rem] …">')
 console.log(
   `structure — scroller:${structure.bodyIsScroller} htmlBg:${structure.htmlBg} bodyBg:${structure.bodyBg} composite:${structure.maskComposite}`,
 )
