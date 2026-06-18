@@ -1517,11 +1517,6 @@
       }
     }
   }
-  .sm\:block {
-    @media (width >= 40rem) {
-      display: block;
-    }
-  }
   .sm\:flex-row {
     @media (width >= 40rem) {
       flex-direction: row;
