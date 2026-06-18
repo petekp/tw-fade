@@ -69,9 +69,11 @@ import 'tw-fade/css' // or via a bundler that handles CSS imports
 ```
 
 The precompiled CSS includes the full named scale (`fade-size-sm/md/lg`,
-`fade-range-sm/md/lg`). Arbitrary values like `fade-size-[6rem]` are generated on
-demand by Tailwind's JIT, so they're only available through the v4 build path
-above — not the prebuilt drop-in.
+`fade-size-b-sm/md/lg`, `fade-range-sm/md/lg`, `fade-clear-t-sm/md/lg`, etc.)
+and the dynamic clear-zone utilities (`fade-clear-*-var`). Arbitrary values like
+`fade-size-[6rem]`, `fade-size-b-[6rem]`, and `fade-clear-t-[56px]` are
+generated on demand by Tailwind's JIT, so they're only available through the v4
+build path above - not the prebuilt drop-in.
 
 ## Usage
 
@@ -147,25 +149,93 @@ otherwise treat horizontal fades as LTR-only for now. Full RTL support for
 
 ### Tuning the fade
 
-Two knobs, each with an `sm` / `md` / `lg` scale and arbitrary-value support:
+Three knobs, each with an `sm` / `md` / `lg` scale and arbitrary-value support:
 
 | Class                     | Sets                | Default scale                  |
 | ------------------------- | ------------------- | ------------------------------ |
-| `fade-size-*`       | the fade **length** | `sm` 2.5rem · `md` 3.125rem · `lg` 4.375rem |
+| `fade-size-*`       | the fade **length** for every active edge | `sm` 2.5rem · `md` 3.125rem · `lg` 4.375rem |
+| `fade-size-t-*` / `fade-size-b-*` / `fade-size-l-*` / `fade-size-r-*` | the fade **length** for one edge | same as `fade-size-*` |
+| `fade-size-y-*` / `fade-size-x-*` | the fade **length** for an axis | same as `fade-size-*` |
 | `fade-range-*`      | the scroll **distance** over which an edge eases in/out | `sm` 24px · `md` 50px · `lg` 96px |
+| `fade-clear-t-*` / `fade-clear-b-*` / `fade-clear-l-*` / `fade-clear-r-*` | an unfaded **clear zone** before one edge's fade starts | `sm` 1.5rem · `md` 2rem · `lg` 3rem |
+| `fade-clear-y-*` / `fade-clear-x-*` / `fade-clear-xy-*` | an unfaded **clear zone** for an axis or all edges | same as `fade-clear-*` |
 
 ```html
 <div class="fade-y fade-size-lg h-80 overflow-y-auto">…</div>
 
+<!-- top uses the default md size; bottom uses lg -->
+<div class="fade-y fade-size-b-lg h-80 overflow-y-auto">…</div>
+
+<!-- start from sm everywhere, then make only the bottom fade larger -->
+<div class="fade-y fade-size-sm fade-size-b-[6rem] h-80 overflow-y-auto">…</div>
+
+<!-- leave an unfaded zone before the top fade starts -->
+<div class="fade-y fade-clear-t-lg h-80 overflow-y-auto">…</div>
+
 <!-- arbitrary values (v4 build only; not in the precompiled CSS) -->
-<div class="fade-y fade-size-[6rem] fade-range-[80px] …">…</div>
+<div class="fade-y fade-size-[6rem] fade-range-[80px] fade-clear-t-[56px] …">…</div>
 ```
 
 - **size** is how tall/wide the faded band is. A bare `fade-y` with no
   `fade-size-*` uses the `md` length.
+- Scoped sizes resolve from most specific to least specific: edge (`fade-size-b-*`)
+  wins over axis (`fade-size-y-*`), axis wins over global (`fade-size-*`), and
+  global wins over the default `md` length.
 - **range** is how far you scroll before an edge is fully revealed (leading
   edges) or fully hidden (trailing edges). A small range snaps the fade in
   quickly; a large one eases it. Bare usage defaults to `50px`.
+- **clear** is an opaque band before the fade ramp begins. It changes the mask
+  only; it does not add padding, reserve layout space, or change sticky
+  positioning.
+
+#### Dynamic clear zones
+
+If you intentionally keep a fade on an edge with measured sticky chrome, use a
+`fade-clear-*-var` utility and set a public custom property on the scroll
+container:
+
+```html
+<div id="orders" class="fade-y fade-clear-t-var h-80 overflow-y-auto">
+  <header data-sticky-header class="sticky top-0">...</header>
+  ...
+</div>
+
+<script>
+  const scroller = document.querySelector('#orders')
+  const header = scroller.querySelector('[data-sticky-header]')
+
+  const syncClearance = () => {
+    scroller.style.setProperty('--fade-clear-t', `${header.getBoundingClientRect().height}px`)
+  }
+
+  new ResizeObserver(syncClearance).observe(header)
+  syncClearance()
+</script>
+```
+
+The public dynamic variables are `--fade-clear-t`, `--fade-clear-b`,
+`--fade-clear-l`, `--fade-clear-r`, `--fade-clear-y`, `--fade-clear-x`, and
+`--fade-clear-xy`. Edge variables win over axis variables, axis variables win
+over `--fade-clear-xy`, and missing values fall back to `0px`.
+
+#### Sticky edges and rubber-band overscroll
+
+If a sticky element sits on an edge, avoid fading that same edge when possible.
+On macOS rubber-band overscroll, the sticky element can visually move with the
+scrolling content while the mask stays fixed to the scroll container. That can
+create a temporary gap that `fade-clear-*` cannot track.
+
+For sticky headers, prefer fading only the bottom edge:
+
+```html
+<div class="fade-b h-80 overflow-y-auto">
+  <header class="sticky top-0">...</header>
+  ...
+</div>
+```
+
+Use `fade-clear-t-*` or `fade-clear-t-var` only when that tradeoff is acceptable,
+or when the sticky chrome lives outside the masked scroll container.
 
 ### Extending the scale
 
@@ -177,13 +247,14 @@ no plugin config, no JavaScript:
 @import "tw-fade";
 
 @theme {
-  --fade-size-xl: 6rem; /* enables fade-size-xl */
+  --fade-size-xl: 6rem; /* enables fade-size-xl, fade-size-b-xl, etc. */
   --fade-range-xl: 120px; /* enables fade-range-xl */
+  --fade-clear-xl: 4rem; /* enables fade-clear-t-xl, fade-clear-y-xl, etc. */
 }
 ```
 
-Each `--fade-size-*` / `--fade-range-*` theme key automatically becomes a
-matching `fade-size-*` / `fade-range-*` utility.
+Each `--fade-size-*`, `--fade-range-*`, and `--fade-clear-*` theme key
+automatically becomes a matching utility.
 
 ## How it works
 
@@ -217,9 +288,11 @@ regardless of where Tailwind sorts it relative to the reveal animation.
 
 | Engine            | Behaviour                                            |
 | ----------------- | ---------------------------------------------------- |
-| Chrome/Edge 120+  | Full scroll-gated fade                               |
-| Safari 26+        | Full scroll-gated fade                               |
-| Firefox           | Static always-on fade (via `@supports not (…)`)      |
+| Chrome/Edge 120+  | Full scroll-gated fade on desktop and Android        |
+| Safari 26+        | Full scroll-gated fade on macOS, iOS, and iPadOS     |
+| Firefox 128+      | Static always-on fade (via `@supports not (…)`)      |
+| Opera 106+        | Full scroll-gated fade                               |
+| Samsung Internet 25+ | Full scroll-gated fade                            |
 
 The scroll-driven behaviour is wrapped in
 `@supports (animation-timeline: scroll())`; the `@supports not (…)` branch pins
@@ -228,7 +301,12 @@ than disappearing. The plugin emits **unprefixed** mask properties only, so the
 floor is the first engine with unprefixed CSS masking: Chrome/Edge **120** (Dec
 2023) — note scroll-driven animations shipped earlier, in 115, but 115–119 still
 needed `-webkit-` masking, so 120 is the real lower bound for the full effect.
-Add an autoprefixer if you need to reach those older versions.
+Safari needs **26+** for scroll-driven animation support, including Mobile
+Safari on iOS/iPadOS; older Safari versions support the mask layer but not the
+scroll-gated reveal. Firefox currently supports the mask layer and `@property`,
+but not scroll-driven animations by default, so it intentionally receives the
+static fallback. Add an autoprefixer if you need to reach older Chromium,
+Safari, or Samsung Internet versions that only accepted `-webkit-` masking.
 
 ## Development
 

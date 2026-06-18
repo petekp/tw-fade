@@ -26,6 +26,30 @@
     syntax: "*";
     inherits: false;
 }
+@property --sf-size-y {
+    syntax: "*";
+    inherits: false;
+}
+@property --sf-size-x {
+    syntax: "*";
+    inherits: false;
+}
+@property --sf-size-t {
+    syntax: "*";
+    inherits: false;
+}
+@property --sf-size-b {
+    syntax: "*";
+    inherits: false;
+}
+@property --sf-size-l {
+    syntax: "*";
+    inherits: false;
+}
+@property --sf-size-r {
+    syntax: "*";
+    inherits: false;
+}
 @property --sf-range {
     syntax: "*";
     inherits: false;
@@ -110,6 +134,24 @@
 
 @utility fade-size-* {
     --sf-size: --value(--fade-size-*, [length], [percentage]);
+}
+@utility fade-size-t-* {
+    --sf-size-t: --value(--fade-size-*, [length], [percentage]);
+}
+@utility fade-size-b-* {
+    --sf-size-b: --value(--fade-size-*, [length], [percentage]);
+}
+@utility fade-size-l-* {
+    --sf-size-l: --value(--fade-size-*, [length], [percentage]);
+}
+@utility fade-size-r-* {
+    --sf-size-r: --value(--fade-size-*, [length], [percentage]);
+}
+@utility fade-size-y-* {
+    --sf-size-y: --value(--fade-size-*, [length], [percentage]);
+}
+@utility fade-size-x-* {
+    --sf-size-x: --value(--fade-size-*, [length], [percentage]);
 }
 @utility fade-range-* {
     --sf-range: --value(--fade-range-*, [length], [percentage]);
@@ -216,28 +258,28 @@
         #000 0 var(--sf-clear-t, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-t))) var(--sf-clear-t, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size, 3.125rem) * var(--sf-t) * 0.08333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size, 3.125rem) * var(--sf-t) * 0.16667),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size, 3.125rem) * var(--sf-t) * 0.25),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size, 3.125rem) * var(--sf-t) * 0.33333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size, 3.125rem) * var(--sf-t) * 0.41667),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size, 3.125rem) * var(--sf-t) * 0.5),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size, 3.125rem) * var(--sf-t) * 0.58333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size, 3.125rem) * var(--sf-t) * 0.66667),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size, 3.125rem) * var(--sf-t) * 0.75),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size, 3.125rem) * var(--sf-t) * 0.83333),
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017))
-            calc(var(--sf-clear-t, 0px) + var(--sf-size, 3.125rem) * var(--sf-t) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-t, 0px) + var(--sf-size, 3.125rem) * var(--sf-t))
+            calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-t, 0px) + var(--sf-size-t, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-t))
     );
 }
 @utility sf-edge-b {
@@ -246,28 +288,28 @@
         #000 0 var(--sf-clear-b, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-b))) var(--sf-clear-b, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size, 3.125rem) * var(--sf-b) * 0.08333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size, 3.125rem) * var(--sf-b) * 0.16667),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size, 3.125rem) * var(--sf-b) * 0.25),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size, 3.125rem) * var(--sf-b) * 0.33333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size, 3.125rem) * var(--sf-b) * 0.41667),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size, 3.125rem) * var(--sf-b) * 0.5),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size, 3.125rem) * var(--sf-b) * 0.58333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size, 3.125rem) * var(--sf-b) * 0.66667),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size, 3.125rem) * var(--sf-b) * 0.75),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size, 3.125rem) * var(--sf-b) * 0.83333),
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017))
-            calc(var(--sf-clear-b, 0px) + var(--sf-size, 3.125rem) * var(--sf-b) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-b, 0px) + var(--sf-size, 3.125rem) * var(--sf-b))
+            calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-b, 0px) + var(--sf-size-b, var(--sf-size-y, var(--sf-size, 3.125rem))) * var(--sf-b))
     );
 }
 @utility sf-edge-l {
@@ -276,28 +318,28 @@
         #000 0 var(--sf-clear-l, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-l))) var(--sf-clear-l, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size, 3.125rem) * var(--sf-l) * 0.08333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size, 3.125rem) * var(--sf-l) * 0.16667),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size, 3.125rem) * var(--sf-l) * 0.25),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size, 3.125rem) * var(--sf-l) * 0.33333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size, 3.125rem) * var(--sf-l) * 0.41667),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size, 3.125rem) * var(--sf-l) * 0.5),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size, 3.125rem) * var(--sf-l) * 0.58333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size, 3.125rem) * var(--sf-l) * 0.66667),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size, 3.125rem) * var(--sf-l) * 0.75),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size, 3.125rem) * var(--sf-l) * 0.83333),
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017))
-            calc(var(--sf-clear-l, 0px) + var(--sf-size, 3.125rem) * var(--sf-l) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-l, 0px) + var(--sf-size, 3.125rem) * var(--sf-l))
+            calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-l, 0px) + var(--sf-size-l, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-l))
     );
 }
 @utility sf-edge-r {
@@ -306,28 +348,28 @@
         #000 0 var(--sf-clear-r, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-r))) var(--sf-clear-r, 0px),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size, 3.125rem) * var(--sf-r) * 0.08333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.08333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size, 3.125rem) * var(--sf-r) * 0.16667),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.16667),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size, 3.125rem) * var(--sf-r) * 0.25),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.25),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size, 3.125rem) * var(--sf-r) * 0.33333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.33333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size, 3.125rem) * var(--sf-r) * 0.41667),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.41667),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size, 3.125rem) * var(--sf-r) * 0.5),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.5),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size, 3.125rem) * var(--sf-r) * 0.58333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.58333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size, 3.125rem) * var(--sf-r) * 0.66667),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.66667),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size, 3.125rem) * var(--sf-r) * 0.75),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.75),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size, 3.125rem) * var(--sf-r) * 0.83333),
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.83333),
         rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017))
-            calc(var(--sf-clear-r, 0px) + var(--sf-size, 3.125rem) * var(--sf-r) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-clear-r, 0px) + var(--sf-size, 3.125rem) * var(--sf-r))
+            calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--sf-clear-r, 0px) + var(--sf-size-r, var(--sf-size-x, var(--sf-size, 3.125rem))) * var(--sf-r))
     );
 }
 

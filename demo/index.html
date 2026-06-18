@@ -1,16 +1,65 @@
 <!doctype html>
-<html lang="en" class="dark h-full overflow-hidden bg-neutral-950">
+<html lang="en" class="dark h-full overflow-hidden bg-neutral-950" data-surface="graphite">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>tw-fade — CSS-driven scroll edge masking for Tailwind</title>
     <link rel="stylesheet" href="./styles.css" />
     <style>
-      html {
-        background-color: rgb(10 10 10);
+      html[data-surface="graphite"] {
+        --demo-page-bg: rgb(10 10 10);
+        --demo-panel-bg: rgb(10 10 10 / 0.75);
+        --demo-panel-strong: rgb(10 10 10 / 0.95);
+        --demo-panel-soft: rgb(10 10 10 / 0.62);
+        --demo-control-bg: rgb(255 255 255 / 0.03);
+        --demo-control-active: rgb(16 185 129 / 0.11);
+        --demo-border: rgb(255 255 255 / 0.1);
+        --demo-border-strong: rgb(255 255 255 / 0.14);
+        --demo-focus: rgb(16 185 129 / 0.55);
+      }
+
+      html[data-surface="cobalt"] {
+        --demo-page-bg: rgb(7 16 38);
+        --demo-panel-bg: rgb(13 28 62 / 0.8);
+        --demo-panel-strong: rgb(9 20 48 / 0.96);
+        --demo-panel-soft: rgb(21 42 83 / 0.58);
+        --demo-control-bg: rgb(125 211 252 / 0.07);
+        --demo-control-active: rgb(125 211 252 / 0.15);
+        --demo-border: rgb(125 211 252 / 0.18);
+        --demo-border-strong: rgb(125 211 252 / 0.28);
+        --demo-focus: rgb(125 211 252 / 0.6);
+      }
+
+      html[data-surface="pine"] {
+        --demo-page-bg: rgb(7 24 18);
+        --demo-panel-bg: rgb(13 43 32 / 0.78);
+        --demo-panel-strong: rgb(8 31 24 / 0.96);
+        --demo-panel-soft: rgb(20 63 48 / 0.52);
+        --demo-control-bg: rgb(110 231 183 / 0.07);
+        --demo-control-active: rgb(110 231 183 / 0.14);
+        --demo-border: rgb(110 231 183 / 0.16);
+        --demo-border-strong: rgb(110 231 183 / 0.26);
+        --demo-focus: rgb(52 211 153 / 0.6);
+      }
+
+      html[data-surface="berry"] {
+        --demo-page-bg: rgb(35 12 24);
+        --demo-panel-bg: rgb(63 20 42 / 0.78);
+        --demo-panel-strong: rgb(45 15 32 / 0.96);
+        --demo-panel-soft: rgb(84 29 55 / 0.54);
+        --demo-control-bg: rgb(251 113 133 / 0.07);
+        --demo-control-active: rgb(251 113 133 / 0.14);
+        --demo-border: rgb(251 113 133 / 0.17);
+        --demo-border-strong: rgb(251 113 133 / 0.28);
+        --demo-focus: rgb(251 113 133 / 0.58);
+      }
+
+      html[data-surface] {
+        background-color: var(--demo-page-bg);
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='68' height='540' viewBox='0 0 68 540'%3E%3Cpath d='M34 0 C42 22.5 42 67.5 34 90 C26 112.5 26 157.5 34 180 C42 202.5 42 247.5 34 270 C26 292.5 26 337.5 34 360 C42 382.5 42 427.5 34 450 C26 472.5 26 517.5 34 540' fill='none' stroke='%23ffffff' stroke-opacity='0.075' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");
         background-repeat: repeat;
         background-size: 68px 540px;
+        transition: background-color 180ms ease;
       }
 
       body {
@@ -32,6 +81,253 @@
 
       .mono-copy {
         font-variant-numeric: tabular-nums slashed-zero;
+      }
+
+      .surface-panel {
+        border-color: var(--demo-border) !important;
+        background-color: var(--demo-panel-bg) !important;
+        transition:
+          background-color 180ms ease,
+          border-color 180ms ease;
+      }
+
+      .surface-panel-strong {
+        border-color: var(--demo-border-strong) !important;
+        background-color: var(--demo-panel-strong) !important;
+        transition:
+          background-color 180ms ease,
+          border-color 180ms ease;
+      }
+
+      .surface-panel-soft {
+        border-color: var(--demo-border) !important;
+        background-color: var(--demo-panel-soft) !important;
+        transition:
+          background-color 180ms ease,
+          border-color 180ms ease;
+      }
+
+      .surface-option {
+        display: inline-flex;
+        height: 2rem;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 9999px;
+        border: 1px solid var(--demo-border);
+        background: var(--demo-control-bg);
+        color: rgb(212 212 212);
+        padding: 0 0.625rem;
+        font-size: 0.75rem;
+        line-height: 1;
+        outline: none;
+        transition:
+          background-color 160ms ease,
+          border-color 160ms ease,
+          color 160ms ease;
+      }
+
+      .surface-option[aria-checked="true"] {
+        border-color: var(--demo-focus);
+        background: var(--demo-control-active);
+        color: rgb(245 245 245);
+      }
+
+      .surface-option:focus-visible {
+        border-color: var(--demo-focus);
+        box-shadow: 0 0 0 3px rgb(255 255 255 / 0.08);
+      }
+
+      .floating-surface-palette {
+        position: fixed;
+        top: 50%;
+        right: 0.75rem;
+        z-index: 40;
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+        border-radius: 9999px;
+        border: 1px solid var(--demo-border);
+        background: var(--demo-panel-strong);
+        padding: 0.375rem;
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(125%, -50%);
+        transition:
+          opacity 180ms ease,
+          transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+          background-color 180ms ease,
+          border-color 180ms ease;
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+      }
+
+      .floating-surface-palette[data-visible="true"] {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translate(0, -50%);
+      }
+
+      .surface-float-button {
+        display: grid;
+        width: 2rem;
+        height: 2rem;
+        place-items: center;
+        border-radius: 9999px;
+        border: 1px solid transparent;
+        background: var(--demo-control-bg);
+        outline: none;
+        transition:
+          background-color 160ms ease,
+          border-color 160ms ease,
+          transform 160ms ease;
+      }
+
+      .surface-float-button[aria-checked="true"] {
+        border-color: var(--demo-focus);
+        background: var(--demo-control-active);
+      }
+
+      .surface-float-button:focus-visible {
+        border-color: var(--demo-focus);
+        box-shadow: 0 0 0 3px rgb(255 255 255 / 0.08);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .surface-float-button:hover {
+          transform: scale(1.04);
+        }
+      }
+
+      .surface-swatch {
+        width: 0.75rem;
+        height: 0.75rem;
+        flex: 0 0 auto;
+        border-radius: 9999px;
+        background: var(--surface-swatch);
+      }
+
+      .surface-float-button .surface-swatch {
+        width: 0.875rem;
+        height: 0.875rem;
+      }
+
+      @media (max-width: 640px) {
+        .floating-surface-palette {
+          right: 0.5rem;
+        }
+      }
+
+      .support-chip {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        border-radius: 9999px;
+        border: 1px solid rgb(255 255 255 / 0.1);
+        background: rgb(255 255 255 / 0.03);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+        padding: 0.25rem 0.625rem;
+        color: rgb(212 212 212);
+        font-size: 0.75rem;
+        line-height: 1.25rem;
+        outline: none;
+      }
+
+      .support-chip:focus-visible {
+        border-color: rgb(16 185 129 / 0.55);
+        box-shadow: 0 0 0 3px rgb(16 185 129 / 0.14);
+      }
+
+      .support-indicator {
+        width: 0.55rem;
+        height: 0.55rem;
+        flex: 0 0 auto;
+        border-radius: 9999px;
+      }
+
+      .support-indicator-full {
+        background: rgb(52 211 153);
+      }
+
+      .support-indicator-partial {
+        border: 1px solid rgb(251 191 36 / 0.65);
+        background: linear-gradient(90deg, rgb(251 191 36) 0 50%, rgb(251 191 36 / 0.12) 50% 100%);
+      }
+
+      .support-tooltip {
+        position: absolute;
+        bottom: calc(100% + 0.5rem);
+        left: 0;
+        z-index: 30;
+        width: min(13rem, calc(100vw - 2rem));
+        pointer-events: none;
+        border-radius: 0.375rem;
+        border: 1px solid rgb(255 255 255 / 0.12);
+        background: rgb(10 10 10 / 0.96);
+        padding: 0.625rem 0.75rem;
+        color: rgb(212 212 212);
+        font-size: 0.75rem;
+        line-height: 1.25rem;
+        opacity: 0;
+        transform: translateY(0.25rem);
+        transition:
+          opacity 120ms ease,
+          transform 120ms ease;
+        visibility: hidden;
+      }
+
+      .support-chip:hover .support-tooltip,
+      .support-chip:focus-visible .support-tooltip {
+        opacity: 1;
+        transform: translateY(0);
+        visibility: visible;
+      }
+
+      .support-tooltip-right {
+        right: 0;
+        left: auto;
+      }
+
+      @media (max-width: 360px) {
+        .support-tooltip-left-compact {
+          right: auto;
+          left: 0;
+        }
+
+        .support-tooltip-right-compact {
+          right: 0;
+          left: auto;
+        }
+      }
+
+      .code-surface {
+        scrollbar-width: thin;
+        scrollbar-color: rgb(255 255 255 / 0.18) transparent;
+      }
+
+      .code-tag {
+        color: rgb(110 231 183);
+      }
+
+      .code-attr {
+        color: rgb(125 211 252);
+      }
+
+      .code-string {
+        color: rgb(253 230 138);
+      }
+
+      .code-comment {
+        color: rgb(115 115 115);
+      }
+
+      .code-class {
+        color: rgb(134 239 172);
+      }
+
+      .code-var {
+        color: rgb(196 181 253);
       }
 
       .thin-scroll {
@@ -142,13 +438,218 @@
           Elegant, CSS-driven scroll-edge masking. Add a single class to any scroll
           container; its content dissolves into the surface at the edges. Zero JavaScript.
         </p>
+        <div class="mt-6 flex max-w-[43rem] flex-wrap gap-2" aria-label="Browser support">
+          <span class="support-chip" tabindex="0" aria-describedby="support-chrome">
+            <span class="support-indicator support-indicator-full" aria-hidden="true"></span>
+            Chrome
+            <span id="support-chrome" class="support-tooltip" role="tooltip">Full scroll-gated fades in Chrome 120+ on desktop and Android.</span>
+          </span>
+          <span class="support-chip" tabindex="0" aria-describedby="support-edge">
+            <span class="support-indicator support-indicator-full" aria-hidden="true"></span>
+            Edge
+            <span id="support-edge" class="support-tooltip" role="tooltip">Full scroll-gated fades in Edge 120+ on desktop and Android.</span>
+          </span>
+          <span class="support-chip" tabindex="0" aria-describedby="support-safari">
+            <span class="support-indicator support-indicator-full" aria-hidden="true"></span>
+            Safari
+            <span id="support-safari" class="support-tooltip support-tooltip-right" role="tooltip">Full scroll-gated fades in Safari 26+ on macOS.</span>
+          </span>
+          <span class="support-chip" tabindex="0" aria-describedby="support-mobile-safari">
+            <span class="support-indicator support-indicator-full" aria-hidden="true"></span>
+            Mobile Safari
+            <span id="support-mobile-safari" class="support-tooltip support-tooltip-right support-tooltip-left-compact" role="tooltip">Full scroll-gated fades in Safari 26+ on iOS and iPadOS.</span>
+          </span>
+          <span class="support-chip" tabindex="0" aria-describedby="support-firefox">
+            <span class="support-indicator support-indicator-partial" aria-hidden="true"></span>
+            Firefox
+            <span id="support-firefox" class="support-tooltip support-tooltip-right-compact" role="tooltip">Partial support in stable Firefox: the mask renders, but scroll-gating falls back to a static always-on fade.</span>
+          </span>
+          <span class="support-chip" tabindex="0" aria-describedby="support-firefox-nightly">
+            <span class="support-indicator support-indicator-full" aria-hidden="true"></span>
+            Firefox Nightly
+            <span id="support-firefox-nightly" class="support-tooltip" role="tooltip">Full scroll-gated fades in Firefox Nightly, where scroll-driven animations are enabled by default.</span>
+          </span>
+          <span class="support-chip" tabindex="0" aria-describedby="support-opera">
+            <span class="support-indicator support-indicator-full" aria-hidden="true"></span>
+            Opera
+            <span id="support-opera" class="support-tooltip" role="tooltip">Full scroll-gated fades in Opera 106+.</span>
+          </span>
+        </div>
+        <div class="mt-5 flex max-w-[43rem] flex-col gap-2 sm:flex-row sm:items-center" data-surface-switcher>
+          <p class="mono-copy font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.18em] text-neutral-500">
+            Surface
+          </p>
+          <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Component surface" data-surface-group>
+            <button class="surface-option" type="button" role="radio" aria-checked="true" data-surface-option="graphite">
+              <span class="surface-swatch" style="--surface-swatch: rgb(64 64 64)" aria-hidden="true"></span>
+              Graphite
+            </button>
+            <button class="surface-option" type="button" role="radio" aria-checked="false" data-surface-option="cobalt">
+              <span class="surface-swatch" style="--surface-swatch: rgb(37 99 235)" aria-hidden="true"></span>
+              Cobalt
+            </button>
+            <button class="surface-option" type="button" role="radio" aria-checked="false" data-surface-option="pine">
+              <span class="surface-swatch" style="--surface-swatch: rgb(5 150 105)" aria-hidden="true"></span>
+              Pine
+            </button>
+            <button class="surface-option" type="button" role="radio" aria-checked="false" data-surface-option="berry">
+              <span class="surface-swatch" style="--surface-swatch: rgb(225 29 72)" aria-hidden="true"></span>
+              Berry
+            </button>
+          </div>
+        </div>
       </header>
 
       <section
-        class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]"
-        aria-label="shadcn Base UI examples"
+        class="space-y-6"
+        aria-label="Scroll fade examples"
       >
         <div class="min-w-0 space-y-6">
+          <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(21rem,0.82fr)]">
+            <section class="min-w-0" aria-labelledby="list-title">
+              <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h2 id="list-title" class="text-[0.9375rem] font-medium leading-5 text-neutral-50">
+                    Item list
+                  </h2>
+                  <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">
+                    fade-y
+                  </code>
+                </div>
+                <div class="flex gap-2">
+                  <span class="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.75rem] leading-5 text-neutral-400">Badge</span>
+                  <span class="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.75rem] leading-5 text-neutral-400">Avatar</span>
+                  <span class="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.75rem] leading-5 text-neutral-400">Separator</span>
+                </div>
+              </div>
+
+              <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
+                <div
+                  class="fade-y thin-scroll h-[18rem] overflow-y-auto divide-y divide-white/10"
+                  data-demo="list"
+                >
+                  <article class="flex gap-4 px-5 py-4 sm:px-6">
+                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-emerald-400/10 text-[0.8125rem] font-medium text-emerald-200">MP</span>
+                    <div class="min-w-0 flex-1">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Merge popover polish</h3>
+                        <span class="rounded-md border border-emerald-400/20 bg-emerald-400/10 px-2 py-1 text-[0.75rem] leading-none text-emerald-200">ready</span>
+                      </div>
+                      <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">A long row still fades as one surface, including badges and metadata.</p>
+                    </div>
+                    <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#241</span>
+                  </article>
+                  <article class="flex gap-4 px-5 py-4 sm:px-6">
+                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-cyan-400/10 text-[0.8125rem] font-medium text-cyan-200">QA</span>
+                    <div class="min-w-0 flex-1">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Audit command density</h3>
+                        <span class="rounded-md border border-white/10 px-2 py-1 text-[0.75rem] leading-none text-neutral-400">review</span>
+                      </div>
+                      <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">The mask belongs on the scrolling list, not on a pseudo-element overlay.</p>
+                    </div>
+                    <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#240</span>
+                  </article>
+                  <article class="flex gap-4 px-5 py-4 sm:px-6">
+                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-violet-400/10 text-[0.8125rem] font-medium text-violet-200">DS</span>
+                    <div class="min-w-0 flex-1">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Document Base UI variant</h3>
+                        <span class="rounded-md border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[0.75rem] leading-none text-amber-200">docs</span>
+                      </div>
+                      <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">The example maps cleanly to PopoverContent, CommandList, and ScrollArea.</p>
+                    </div>
+                    <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#239</span>
+                  </article>
+                  <article class="flex gap-4 px-5 py-4 sm:px-6">
+                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-rose-400/10 text-[0.8125rem] font-medium text-rose-200">FE</span>
+                    <div class="min-w-0 flex-1">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Remove extra edge overlays</h3>
+                        <span class="rounded-md border border-emerald-400/20 bg-emerald-400/10 px-2 py-1 text-[0.75rem] leading-none text-emerald-200">done</span>
+                      </div>
+                      <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">CSS masks fade text, icons, focus rings, and row backgrounds together.</p>
+                    </div>
+                    <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#238</span>
+                  </article>
+                  <article class="flex gap-4 px-5 py-4 sm:px-6">
+                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-blue-400/10 text-[0.8125rem] font-medium text-blue-200">UI</span>
+                    <div class="min-w-0 flex-1">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Check keyboard surfaces</h3>
+                        <span class="rounded-md border border-white/10 px-2 py-1 text-[0.75rem] leading-none text-neutral-400">next</span>
+                      </div>
+                      <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">Nothing about the utility assumes a card, feed, or media-heavy layout.</p>
+                    </div>
+                    <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#237</span>
+                  </article>
+                </div>
+              </div>
+            </section>
+
+            <section class="min-w-0" aria-labelledby="list-code-title">
+              <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h2 id="list-code-title" class="text-[0.9375rem] font-medium leading-5 text-neutral-50">
+                    Item list code
+                  </h2>
+                  <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">
+                    fade-y + overflow-y-auto
+                  </code>
+                </div>
+                <span class="mono-copy hidden font-mono text-[0.75rem] leading-5 text-neutral-500 sm:block">
+                  same scroller
+                </span>
+              </div>
+
+              <div class="surface-panel-soft overflow-hidden rounded-lg border border-white/10 bg-neutral-950/70 shadow-2xl shadow-black/30">
+                <pre class="code-surface mono-copy h-[18rem] overflow-auto p-4 text-[0.8125rem] leading-6 text-neutral-300"><code><span class="code-tag">&lt;div</span> <span class="code-attr">className</span>=<span class="code-string">"fade-y thin-scroll h-72 overflow-y-auto divide-y"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;article</span> <span class="code-attr">className</span>=<span class="code-string">"flex gap-4 px-6 py-4"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;Avatar</span> <span class="code-attr">initials</span>=<span class="code-string">"MP"</span> <span class="code-tag">/&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">className</span>=<span class="code-string">"min-w-0 flex-1"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;h3&gt;</span>Merge popover polish<span class="code-tag">&lt;/h3&gt;</span>
+      <span class="code-tag">&lt;p&gt;</span>Every child fades together.<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;/article&gt;</span>
+
+  <span class="code-comment">{/* more rows */}</span>
+<span class="code-tag">&lt;/div&gt;</span></code></pre>
+              </div>
+            </section>
+          </div>
+
+          <section class="space-y-3" aria-label="Horizontal item list demo">
+            <div class="flex items-baseline justify-between gap-4">
+              <div>
+                <h2 class="text-[0.9375rem] font-medium leading-5 text-neutral-50">Horizontal item list</h2>
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">
+                  fade-x
+                </code>
+              </div>
+              <p class="hidden text-[0.875rem] leading-5 text-neutral-500 sm:block">TabsList, chip rows, media rails</p>
+            </div>
+            <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
+              <div
+                class="fade-x thin-scroll flex gap-3 overflow-x-auto p-3"
+                data-demo="rail"
+              >
+                <button class="ui-button shrink-0 rounded-md border border-emerald-400/40 bg-emerald-400/10 px-5 py-3 text-[0.9375rem] font-medium leading-5 text-emerald-100">Overview</button>
+                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Deployments</button>
+                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Observability</button>
+                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Functions</button>
+                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Storage</button>
+                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Domains</button>
+                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Settings</button>
+                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Audit log</button>
+                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Cron jobs</button>
+                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Feature flags</button>
+                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Queues</button>
+                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Firewall</button>
+                <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-5 py-3 text-[0.9375rem] font-medium leading-5 text-neutral-300">Cache</button>
+              </div>
+            </div>
+          </section>
+
           <div class="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(20rem,0.95fr)]">
             <section class="min-w-0" aria-labelledby="popover-title">
               <div class="mb-4 flex items-end justify-between gap-4">
@@ -165,7 +666,7 @@
                 </span>
               </div>
 
-              <div class="relative min-h-[34rem] rounded-lg border border-white/10 bg-neutral-950/75 p-5 shadow-2xl shadow-black/40">
+              <div class="surface-panel relative min-h-[34rem] rounded-lg border border-white/10 bg-neutral-950/75 p-5 shadow-2xl shadow-black/40">
                 <button
                   class="ui-button inline-flex h-9 items-center rounded-md border border-white/10 bg-white/[0.03] px-3 text-[0.875rem] font-medium leading-none text-neutral-100"
                   type="button"
@@ -178,7 +679,7 @@
 
                 <div
                   id="token-popover"
-                  class="popover-panel absolute left-5 right-5 top-16 z-10 max-w-[28rem] rounded-lg border border-white/12 bg-neutral-950/95 p-1 shadow-2xl shadow-black/50 backdrop-blur"
+                  class="surface-panel-strong popover-panel absolute left-5 right-5 top-16 z-10 max-w-[28rem] rounded-lg border border-white/12 bg-neutral-950/95 p-1 shadow-2xl shadow-black/50 backdrop-blur"
                   role="dialog"
                   aria-labelledby="token-popover-title"
                   aria-hidden="false"
@@ -286,7 +787,7 @@
                 </code>
               </div>
 
-              <div class="overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
+              <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
                 <div class="border-b border-white/10 p-3">
                   <input
                     class="ui-input h-9 w-full rounded-md border border-white/10 bg-white/[0.03] px-3 text-[0.875rem] leading-5 text-neutral-100 placeholder:text-neutral-500"
@@ -362,129 +863,126 @@
             </section>
           </div>
 
-          <section class="min-w-0" aria-labelledby="list-title">
-            <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h2 id="list-title" class="text-[0.9375rem] font-medium leading-5 text-neutral-50">
-                  Item list
-                </h2>
-                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">
-                  fade-y
-                </code>
-              </div>
-              <div class="flex gap-2">
-                <span class="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.75rem] leading-5 text-neutral-400">Badge</span>
-                <span class="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.75rem] leading-5 text-neutral-400">Avatar</span>
-                <span class="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.75rem] leading-5 text-neutral-400">Separator</span>
-              </div>
-            </div>
-
-            <div class="overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
-              <div
-                class="fade-y thin-scroll h-[18rem] overflow-y-auto divide-y divide-white/10"
-                data-demo="list"
-              >
-                <article class="flex gap-4 px-5 py-4 sm:px-6">
-                  <span class="grid size-9 shrink-0 place-items-center rounded-full bg-emerald-400/10 text-[0.8125rem] font-medium text-emerald-200">MP</span>
-                  <div class="min-w-0 flex-1">
-                    <div class="flex flex-wrap items-center gap-2">
-                      <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Merge popover polish</h3>
-                      <span class="rounded-md border border-emerald-400/20 bg-emerald-400/10 px-2 py-1 text-[0.75rem] leading-none text-emerald-200">ready</span>
-                    </div>
-                    <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">A long row still fades as one surface, including badges and metadata.</p>
-                  </div>
-                  <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#241</span>
-                </article>
-                <article class="flex gap-4 px-5 py-4 sm:px-6">
-                  <span class="grid size-9 shrink-0 place-items-center rounded-full bg-cyan-400/10 text-[0.8125rem] font-medium text-cyan-200">QA</span>
-                  <div class="min-w-0 flex-1">
-                    <div class="flex flex-wrap items-center gap-2">
-                      <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Audit command density</h3>
-                      <span class="rounded-md border border-white/10 px-2 py-1 text-[0.75rem] leading-none text-neutral-400">review</span>
-                    </div>
-                    <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">The mask belongs on the scrolling list, not on a pseudo-element overlay.</p>
-                  </div>
-                  <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#240</span>
-                </article>
-                <article class="flex gap-4 px-5 py-4 sm:px-6">
-                  <span class="grid size-9 shrink-0 place-items-center rounded-full bg-violet-400/10 text-[0.8125rem] font-medium text-violet-200">DS</span>
-                  <div class="min-w-0 flex-1">
-                    <div class="flex flex-wrap items-center gap-2">
-                      <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Document Base UI variant</h3>
-                      <span class="rounded-md border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[0.75rem] leading-none text-amber-200">docs</span>
-                    </div>
-                    <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">The example maps cleanly to PopoverContent, CommandList, and ScrollArea.</p>
-                  </div>
-                  <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#239</span>
-                </article>
-                <article class="flex gap-4 px-5 py-4 sm:px-6">
-                  <span class="grid size-9 shrink-0 place-items-center rounded-full bg-rose-400/10 text-[0.8125rem] font-medium text-rose-200">FE</span>
-                  <div class="min-w-0 flex-1">
-                    <div class="flex flex-wrap items-center gap-2">
-                      <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Remove extra edge overlays</h3>
-                      <span class="rounded-md border border-emerald-400/20 bg-emerald-400/10 px-2 py-1 text-[0.75rem] leading-none text-emerald-200">done</span>
-                    </div>
-                    <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">CSS masks fade text, icons, focus rings, and row backgrounds together.</p>
-                  </div>
-                  <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#238</span>
-                </article>
-                <article class="flex gap-4 px-5 py-4 sm:px-6">
-                  <span class="grid size-9 shrink-0 place-items-center rounded-full bg-blue-400/10 text-[0.8125rem] font-medium text-blue-200">UI</span>
-                  <div class="min-w-0 flex-1">
-                    <div class="flex flex-wrap items-center gap-2">
-                      <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Check keyboard surfaces</h3>
-                      <span class="rounded-md border border-white/10 px-2 py-1 text-[0.75rem] leading-none text-neutral-400">next</span>
-                    </div>
-                    <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">Nothing about the utility assumes a card, feed, or media-heavy layout.</p>
-                  </div>
-                  <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#237</span>
-                </article>
-              </div>
-            </div>
-          </section>
         </div>
 
-        <aside class="space-y-5 lg:pt-10">
-          <div class="rounded-lg border border-white/10 bg-neutral-950/70 p-4">
+        <section class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.42fr)]" aria-label="Base UI code example">
+          <div class="surface-panel-soft min-w-0 rounded-lg border border-white/10 bg-neutral-950/70 p-4">
             <p class="mono-copy font-mono text-[0.6875rem] uppercase leading-4 tracking-[0.18em] text-neutral-500">
-              use
+              base ui
             </p>
-            <pre class="mono-copy mt-3 whitespace-pre-wrap break-words rounded-md bg-black/40 p-3 text-[0.75rem] leading-6 text-neutral-300"><code>&lt;PopoverContent&gt;
-  &lt;ScrollArea className="fade-y overflow-auto"&gt;
-    ...
-  &lt;/ScrollArea&gt;
-&lt;/PopoverContent&gt;</code></pre>
+            <pre class="code-surface mono-copy mt-3 overflow-x-auto rounded-md bg-black/40 p-4 text-[0.8125rem] leading-6 text-neutral-300"><code><span class="code-tag">&lt;PopoverContent&gt;</span>
+  <span class="code-tag">&lt;ScrollArea</span> <span class="code-attr">className</span>=<span class="code-string">"fade-y overflow-auto"</span><span class="code-tag">&gt;</span>
+    <span class="code-comment">...</span>
+  <span class="code-tag">&lt;/ScrollArea&gt;</span>
+<span class="code-tag">&lt;/PopoverContent&gt;</span></code></pre>
           </div>
-        </aside>
+          <div class="surface-panel-soft rounded-lg border border-white/10 bg-neutral-950/60 p-4">
+            <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">The class stays on the scroller</p>
+            <p class="mt-2 text-[0.875rem] leading-6 text-neutral-500">
+              Put the mask on the element that owns overflow. Keep frames, borders, and popover shells outside it when they should stay crisp.
+            </p>
+          </div>
+        </section>
       </section>
 
-      <section class="mt-10 space-y-3" aria-label="Horizontal tabs demo">
-        <div class="flex items-baseline justify-between gap-4">
-          <div>
-            <h2 class="text-[0.9375rem] font-medium leading-5 text-neutral-50">Overflow tabs</h2>
-            <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">
-              fade-x
-            </code>
+      <section class="mt-10 space-y-6" aria-labelledby="tuning-title">
+        <div class="min-w-0">
+          <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 id="tuning-title" class="text-[0.9375rem] font-medium leading-5 text-neutral-50">
+                Tune one edge at a time
+              </h2>
+              <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">
+                fade-size-b-lg
+              </code>
+            </div>
+            <p class="max-w-md text-[0.875rem] leading-5 text-neutral-500">
+              Edge sizes override axis sizes. Clear zones keep chrome readable before the fade ramp starts.
+            </p>
           </div>
-          <p class="hidden text-[0.875rem] leading-5 text-neutral-500 sm:block">TabsList, chip rows, media rails</p>
+
+          <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
+              <div class="border-b border-white/10 px-4 py-3">
+                <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Balanced</p>
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-neutral-500">fade-y fade-size-sm</code>
+              </div>
+              <div class="fade-y fade-size-sm thin-scroll h-52 overflow-y-auto p-4">
+                <div class="space-y-3">
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">Top and bottom use the same short fade.</p>
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">Good for compact menus and dense lists.</p>
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">The mask stays on the scroll container.</p>
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">No overlays, wrappers, or scroll listeners.</p>
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">Both edges resolve through fade-size-sm.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="surface-panel overflow-hidden rounded-lg border border-emerald-400/20 bg-neutral-950/75 shadow-2xl shadow-black/40">
+              <div class="border-b border-emerald-400/20 px-4 py-3">
+                <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Bottom emphasis</p>
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">fade-y fade-size-sm fade-size-b-lg</code>
+              </div>
+              <div class="fade-y fade-size-sm fade-size-b-lg thin-scroll h-52 overflow-y-auto p-4">
+                <div class="space-y-3">
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">Top keeps the short shared size.</p>
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">Bottom gets a longer fade for stronger affordance.</p>
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">Use it for drawers, sheets, and scrollable previews.</p>
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">Arbitrary values work too: fade-size-b-[6rem].</p>
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">The override is per edge, not class-order dependent.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
+              <div class="border-b border-white/10 px-4 py-3">
+                <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Sticky clearance</p>
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">fade-y fade-clear-t-lg</code>
+              </div>
+              <div class="fade-y fade-clear-t-lg thin-scroll h-52 overflow-y-auto" data-demo="clearance">
+                <div class="surface-panel-strong sticky top-0 z-10 flex h-12 items-center justify-between gap-3 border-b border-emerald-400/20 bg-neutral-950/95 px-4 backdrop-blur">
+                  <p class="text-[0.875rem] font-medium leading-5 text-emerald-100">Pinned filters</p>
+                  <span class="mono-copy rounded-md border border-emerald-400/20 bg-emerald-400/10 px-2 py-1 font-mono text-[0.6875rem] leading-none text-emerald-200">3rem clear</span>
+                </div>
+                <div class="space-y-3 p-4">
+                  <p class="rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-[0.875rem] leading-5 text-emerald-100">The fade starts below the sticky chrome.</p>
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">Use it only when the sticky-edge tradeoff is acceptable.</p>
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">Static scale: sm, md, lg.</p>
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">Dynamic API: fade-clear-t-var.</p>
+                  <p class="rounded-md bg-white/[0.04] px-3 py-2 text-[0.875rem] leading-5 text-neutral-300">The clear zone affects only the mask.</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div
-          class="fade-x thin-scroll flex gap-2 overflow-x-auto rounded-lg border border-white/10 bg-neutral-950/75 p-2 shadow-2xl shadow-black/40"
-          data-demo="rail"
-        >
-          <button class="ui-button shrink-0 rounded-md border border-emerald-400/40 bg-emerald-400/10 px-4 py-2 text-[0.875rem] font-medium leading-5 text-emerald-100">Overview</button>
-          <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-[0.875rem] font-medium leading-5 text-neutral-300">Deployments</button>
-          <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-[0.875rem] font-medium leading-5 text-neutral-300">Observability</button>
-          <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-[0.875rem] font-medium leading-5 text-neutral-300">Functions</button>
-          <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-[0.875rem] font-medium leading-5 text-neutral-300">Storage</button>
-          <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-[0.875rem] font-medium leading-5 text-neutral-300">Domains</button>
-          <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-[0.875rem] font-medium leading-5 text-neutral-300">Settings</button>
-          <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-[0.875rem] font-medium leading-5 text-neutral-300">Audit log</button>
-          <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-[0.875rem] font-medium leading-5 text-neutral-300">Cron jobs</button>
-          <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-[0.875rem] font-medium leading-5 text-neutral-300">Feature flags</button>
-          <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-[0.875rem] font-medium leading-5 text-neutral-300">Queues</button>
-          <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-[0.875rem] font-medium leading-5 text-neutral-300">Firewall</button>
-          <button class="ui-button shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-[0.875rem] font-medium leading-5 text-neutral-300">Cache</button>
+
+        <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.42fr)]">
+          <div class="surface-panel-soft min-w-0 rounded-lg border border-white/10 bg-neutral-950/70 p-4">
+            <p class="mono-copy font-mono text-[0.6875rem] uppercase leading-4 tracking-[0.18em] text-neutral-500">
+              tune
+            </p>
+            <pre class="code-surface mono-copy mt-3 overflow-x-auto rounded-md bg-black/40 p-4 text-[0.8125rem] leading-6 text-neutral-300"><code><span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"fade-y fade-size-sm fade-size-b-lg overflow-y-auto"</span><span class="code-tag">&gt;</span>
+  <span class="code-comment">...</span>
+<span class="code-tag">&lt;/div&gt;</span>
+
+<span class="code-comment">edge &gt; axis &gt; shared</span>
+<span class="code-class">fade-size-y-lg</span>
+<span class="code-class">fade-size-b-[6rem]</span>
+
+<span class="code-comment">clear zones</span>
+<span class="code-class">fade-clear-t-lg</span>
+<span class="code-class">fade-clear-t-var</span>
+<span class="code-var">--fade-clear-t</span>: <span class="code-string">56px</span></code></pre>
+          </div>
+          <div class="rounded-lg border border-amber-300/15 bg-amber-300/[0.06] p-4">
+            <p class="mono-copy font-mono text-[0.6875rem] uppercase leading-4 tracking-[0.18em] text-amber-200/80">
+              sticky edges
+            </p>
+            <p class="text-[0.8125rem] leading-5 text-amber-100/90">
+              Sticky elements can rubber-band past a fixed mask on macOS. For sticky headers, prefer fading only the bottom edge.
+            </p>
+            <code class="mono-copy mt-2 block font-mono text-[0.75rem] leading-5 text-amber-200">fade-b</code>
+          </div>
         </div>
       </section>
 
@@ -499,11 +997,82 @@
       </footer>
     </main>
 
+    <div
+      class="floating-surface-palette"
+      data-floating-surface-palette
+      data-visible="false"
+      role="radiogroup"
+      aria-label="Component surface"
+      aria-hidden="true"
+      data-surface-group
+    >
+      <button class="surface-float-button" type="button" role="radio" aria-checked="true" aria-label="Graphite surface" data-surface-option="graphite" tabindex="-1">
+        <span class="surface-swatch" style="--surface-swatch: rgb(64 64 64)" aria-hidden="true"></span>
+      </button>
+      <button class="surface-float-button" type="button" role="radio" aria-checked="false" aria-label="Cobalt surface" data-surface-option="cobalt" tabindex="-1">
+        <span class="surface-swatch" style="--surface-swatch: rgb(37 99 235)" aria-hidden="true"></span>
+      </button>
+      <button class="surface-float-button" type="button" role="radio" aria-checked="false" aria-label="Pine surface" data-surface-option="pine" tabindex="-1">
+        <span class="surface-swatch" style="--surface-swatch: rgb(5 150 105)" aria-hidden="true"></span>
+      </button>
+      <button class="surface-float-button" type="button" role="radio" aria-checked="false" aria-label="Berry surface" data-surface-option="berry" tabindex="-1">
+        <span class="surface-swatch" style="--surface-swatch: rgb(225 29 72)" aria-hidden="true"></span>
+      </button>
+    </div>
+
     <script>
+      const surfaceButtons = Array.from(document.querySelectorAll('[data-surface-option]'))
+      const surfaceSwitcher = document.querySelector('[data-surface-switcher]')
+      const floatingSurfacePalette = document.querySelector('[data-floating-surface-palette]')
       const popoverButton = document.querySelector('[data-popover-toggle]')
       const popoverPanel = document.querySelector('[data-popover-panel]')
       const rail = document.querySelector('[data-demo="rail"]')
+      const clearance = document.querySelector('[data-demo="clearance"]')
       let popoverHideTimer
+
+      function setSurface(nextSurface) {
+        document.documentElement.dataset.surface = nextSurface
+        for (const button of surfaceButtons) {
+          button.setAttribute('aria-checked', String(button.dataset.surfaceOption === nextSurface))
+        }
+      }
+
+      function setFloatingPaletteVisible(nextVisible) {
+        floatingSurfacePalette.dataset.visible = String(nextVisible)
+        floatingSurfacePalette.setAttribute('aria-hidden', String(!nextVisible))
+        for (const button of floatingSurfacePalette.querySelectorAll('[data-surface-option]')) {
+          button.tabIndex = nextVisible ? 0 : -1
+        }
+      }
+
+      for (const button of surfaceButtons) {
+        button.addEventListener('click', () => {
+          setSurface(button.dataset.surfaceOption)
+        })
+        button.addEventListener('keydown', (event) => {
+          const direction = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 0
+          if (!direction) return
+          event.preventDefault()
+          const groupButtons = Array.from(button.closest('[data-surface-group]').querySelectorAll('[data-surface-option]'))
+          const nextIndex = (groupButtons.indexOf(button) + direction + groupButtons.length) % groupButtons.length
+          groupButtons[nextIndex].focus()
+          setSurface(groupButtons[nextIndex].dataset.surfaceOption)
+        })
+      }
+
+      if ('IntersectionObserver' in window) {
+        const switcherObserver = new IntersectionObserver(
+          ([entry]) => {
+            setFloatingPaletteVisible(!entry.isIntersecting)
+          },
+          {
+            root: document.body,
+            threshold: 0,
+          },
+        )
+
+        switcherObserver.observe(surfaceSwitcher)
+      }
 
       function setPopoverOpen(nextOpen) {
         clearTimeout(popoverHideTimer)
@@ -530,6 +1099,7 @@
 
       requestAnimationFrame(() => {
         rail.scrollLeft = 190
+        clearance.scrollTop = 32
       })
     </script>
   </body>
