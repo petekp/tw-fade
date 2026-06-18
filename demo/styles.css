@@ -334,9 +334,6 @@
     width: calc(var(--spacing) * 9);
     height: calc(var(--spacing) * 9);
   }
-  .h-9 {
-    height: calc(var(--spacing) * 9);
-  }
   .h-10 {
     height: calc(var(--spacing) * 10);
   }
@@ -357,9 +354,6 @@
   }
   .h-\[18rem\] {
     height: 18rem;
-  }
-  .h-\[28rem\] {
-    height: 28rem;
   }
   .h-full {
     height: 100%;
@@ -885,9 +879,6 @@
   .gap-4 {
     gap: calc(var(--spacing) * 4);
   }
-  .gap-6 {
-    gap: calc(var(--spacing) * 6);
-  }
   .space-y-1 {
     :where(& > :not(:last-child)) {
       --tw-space-y-reverse: 0;
@@ -1122,9 +1113,6 @@
   }
   .p-1 {
     padding: var(--spacing);
-  }
-  .p-2 {
-    padding: calc(var(--spacing) * 2);
   }
   .p-3 {
     padding: calc(var(--spacing) * 3);
@@ -1502,11 +1490,6 @@
   .fade-size-y-md {
     --sf-size-y: var(--fade-size-md);
   }
-  .placeholder\:text-neutral-500 {
-    &::placeholder {
-      color: var(--color-neutral-500);
-    }
-  }
   .hover\:text-emerald-300 {
     &:hover {
       @media (hover: hover) {
@@ -1585,11 +1568,6 @@
   .xl\:grid-cols-3 {
     @media (width >= 80rem) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-  .xl\:grid-cols-\[minmax\(0\,1\.05fr\)_minmax\(20rem\,0\.95fr\)\] {
-    @media (width >= 80rem) {
-      grid-template-columns: minmax(0,1.05fr) minmax(20rem,0.95fr);
     }
   }
 }

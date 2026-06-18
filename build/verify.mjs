@@ -52,13 +52,7 @@ results.popover_mid = await probe('[data-demo="popover"]', { top: Math.round(pop
 results.popover_bottom = await probe('[data-demo="popover"]', { top: popoverMax })
 results.popover_quarter = await probe('[data-demo="popover"]', { top: 25 })
 
-// 2. Command/list surfaces.
-const commandTop = await probe('[data-demo="command"]', { top: 0 })
-const commandMax = commandTop.maxScrollTop
-results.command_top = commandTop
-results.command_mid = await probe('[data-demo="command"]', { top: Math.round(commandMax / 2) })
-results.command_bottom = await probe('[data-demo="command"]', { top: commandMax })
-
+// 2. List surface.
 const listTop = await probe('[data-demo="list"]', { top: 0 })
 const listMax = listTop.maxScrollTop
 results.list_top = listTop
@@ -91,9 +85,6 @@ const checks = [
   ],
   ['popover at bottom: no bottom fade (b≈0)', approx(results.popover_bottom.b, 0)],
   ['popover uses only vertical mask layers', verticalLayersOnly(results.popover_mid)],
-  ['command list is scrollable', results.command_top.maxScrollTop > 0],
-  ['command mid uses only vertical mask layers', verticalLayersOnly(results.command_mid)],
-  ['command bottom removes bottom fade', approx(results.command_bottom.b, 0)],
   ['item list is scrollable', results.list_top.maxScrollTop > 0],
   ['item list mid uses only vertical mask layers', verticalLayersOnly(results.list_mid)],
   ['item list bottom removes bottom fade', approx(results.list_bottom.b, 0)],

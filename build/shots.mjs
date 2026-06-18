@@ -34,7 +34,7 @@ async function setRail(left) {
 
 await page.screenshot({ path: path.join(shots, 'overview.png'), fullPage: true })
 
-const examplesSection = page.locator('[aria-label="shadcn Base UI examples"]')
+const examplesSection = page.locator('[aria-label="Scroll fade examples"]')
 await setScroll('[data-demo="popover"]', 0)
 await examplesSection.screenshot({ path: path.join(shots, 'y-top.png') })
 await setScroll('[data-demo="popover"]', 120)
@@ -42,11 +42,10 @@ await examplesSection.screenshot({ path: path.join(shots, 'y-mid.png') })
 await setScroll('[data-demo="popover"]', 9999)
 await examplesSection.screenshot({ path: path.join(shots, 'y-bottom.png') })
 
-await setScroll('[data-demo="command"]', 180)
 await setScroll('[data-demo="list"]', 120)
 await examplesSection.screenshot({ path: path.join(shots, 'grid.png') })
 
-const railSection = page.locator('[aria-label="Horizontal tabs demo"]')
+const railSection = page.locator('[aria-label="Horizontal item list demo"]')
 await setRail(280)
 await railSection.screenshot({ path: path.join(shots, 'x-mid.png') })
 
