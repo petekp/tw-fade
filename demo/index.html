@@ -3,11 +3,104 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>tw-fade — CSS-driven scroll edge masking for Tailwind</title>
+    <title>tw-fade - Tailwind CSS scroll-edge fading with CSS masks</title>
+    <meta
+      name="description"
+      content="tw-fade is a Tailwind CSS v4 plugin for scroll-edge fading with CSS masks. Add fade-y or fade-x so content dissolves into any surface with zero JavaScript."
+    />
+    <meta name="author" content="Pete Petrash" />
+    <meta name="application-name" content="tw-fade" />
+    <meta name="apple-mobile-web-app-title" content="tw-fade" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#020617" />
+    <link rel="canonical" href="https://pete.design/tw-fade" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Pete Design" />
+    <meta property="og:title" content="tw-fade - Tailwind CSS scroll-edge fading" />
+    <meta
+      property="og:description"
+      content="A Tailwind CSS v4 plugin for CSS mask fades on scroll containers. Add one class and content edges dissolve into any surface."
+    />
+    <meta property="og:url" content="https://pete.design/tw-fade" />
+    <meta property="og:image" content="https://pete.design/tw-fade/og-image.png" />
+    <meta property="og:image:secure_url" content="https://pete.design/tw-fade/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="tw-fade wordmark with scroll-edge fade utility classes on a dark waved surface."
+    />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@petekp" />
+    <meta name="twitter:creator" content="@petekp" />
+    <meta name="twitter:title" content="tw-fade - Tailwind CSS scroll-edge fading" />
+    <meta
+      name="twitter:description"
+      content="CSS mask fades for Tailwind scroll containers. Content edges dissolve into any surface with zero JavaScript."
+    />
+    <meta name="twitter:image" content="https://pete.design/tw-fade/og-image.png" />
+    <meta
+      name="twitter:image:alt"
+      content="tw-fade wordmark with scroll-edge fade utility classes on a dark waved surface."
+    />
+    <link rel="icon" href="./favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./site.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Climate+Crisis&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://pete.design/tw-fade#webpage",
+            "url": "https://pete.design/tw-fade",
+            "name": "tw-fade - Tailwind CSS scroll-edge fading",
+            "description": "tw-fade is a Tailwind CSS v4 plugin for scroll-edge fading with CSS masks. Add fade-y or fade-x so content dissolves into any surface with zero JavaScript.",
+            "isPartOf": {
+              "@type": "WebSite",
+              "name": "Pete Design",
+              "url": "https://pete.design"
+            },
+            "primaryImageOfPage": {
+              "@type": "ImageObject",
+              "url": "https://pete.design/tw-fade/og-image.png",
+              "width": 1200,
+              "height": 630
+            },
+            "mainEntity": {
+              "@id": "https://pete.design/tw-fade#software"
+            }
+          },
+          {
+            "@type": "SoftwareSourceCode",
+            "@id": "https://pete.design/tw-fade#software",
+            "name": "tw-fade",
+            "description": "Tailwind CSS v4 utilities for scroll-edge fading with CSS masks and zero JavaScript.",
+            "url": "https://pete.design/tw-fade",
+            "codeRepository": "https://github.com/petekp/tw-fade",
+            "programmingLanguage": ["CSS", "HTML"],
+            "runtimePlatform": "Tailwind CSS v4",
+            "license": "https://github.com/petekp/tw-fade/blob/main/LICENSE",
+            "author": {
+              "@type": "Person",
+              "name": "Pete Petrash",
+              "url": "https://pete.design",
+              "sameAs": ["https://github.com/petekp", "https://x.com/petekp"]
+            }
+          }
+        ]
+      }
+    </script>
     <style>
       html[data-surface="graphite"] {
         --demo-page-bg: rgb(10 10 10);

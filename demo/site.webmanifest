@@ -1,0 +1,21 @@
+{
+  "name": "tw-fade",
+  "short_name": "tw-fade",
+  "description": "Tailwind CSS scroll-edge fading with CSS masks and zero JavaScript.",
+  "start_url": "/tw-fade",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "icons": [
+    {
+      "src": "./favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "./apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
