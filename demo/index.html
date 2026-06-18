@@ -690,6 +690,96 @@
         box-shadow: 0 0 0 3px color-mix(in srgb, var(--demo-focus) 24%, transparent);
       }
 
+      .fade-depth-slider {
+        width: min(11rem, 100%);
+        height: 1.5rem;
+        margin: 0;
+        appearance: none;
+        background: transparent;
+        cursor: pointer;
+      }
+
+      .fade-depth-slider:focus-visible {
+        outline: none;
+      }
+
+      .fade-depth-slider::-webkit-slider-runnable-track {
+        height: 0.25rem;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--demo-border-strong) 72%, transparent);
+      }
+
+      .fade-depth-slider::-webkit-slider-thumb {
+        width: 1rem;
+        height: 1rem;
+        margin-top: -0.375rem;
+        appearance: none;
+        border: 1px solid color-mix(in srgb, var(--demo-text-strong) 14%, transparent);
+        border-radius: 999px;
+        background: var(--demo-focus);
+        box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--demo-focus) 16%, transparent);
+      }
+
+      .fade-depth-slider:focus-visible::-webkit-slider-thumb {
+        box-shadow:
+          0 0 0 0.25rem color-mix(in srgb, var(--demo-focus) 22%, transparent),
+          0 0 0 0.375rem color-mix(in srgb, var(--demo-text-strong) 14%, transparent);
+      }
+
+      .fade-depth-slider::-moz-range-track {
+        height: 0.25rem;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--demo-border-strong) 72%, transparent);
+      }
+
+      .fade-depth-slider::-moz-range-thumb {
+        width: 1rem;
+        height: 1rem;
+        border: 1px solid color-mix(in srgb, var(--demo-text-strong) 14%, transparent);
+        border-radius: 999px;
+        background: var(--demo-focus);
+        box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--demo-focus) 16%, transparent);
+      }
+
+      .edge-toggle-group {
+        display: inline-flex;
+        gap: 0.25rem;
+        width: fit-content;
+        padding: 0.25rem;
+        border: 1px solid color-mix(in srgb, var(--demo-border-strong) 64%, transparent);
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--demo-surface-strong) 78%, transparent);
+      }
+
+      .edge-toggle-button {
+        display: inline-grid;
+        width: 1.875rem;
+        height: 1.875rem;
+        place-items: center;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        color: var(--demo-text-muted);
+        font: inherit;
+        line-height: 1;
+        background: transparent;
+        cursor: pointer;
+        transition:
+          background-color 160ms ease,
+          border-color 160ms ease,
+          color 160ms ease;
+      }
+
+      .edge-toggle-button[aria-pressed="true"] {
+        border-color: color-mix(in srgb, var(--demo-focus) 48%, transparent);
+        color: var(--demo-text-strong);
+        background: color-mix(in srgb, var(--demo-focus) 20%, transparent);
+      }
+
+      .edge-toggle-button:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--demo-focus) 24%, transparent);
+      }
+
       .ui-row {
         transition:
           background-color 160ms ease,
@@ -812,7 +902,7 @@
         <div class="min-w-0 space-y-6">
           <div>
             <h2 id="list-title" class="text-[1.875rem] font-medium leading-9 text-neutral-50">
-              Item list
+              Vertical
             </h2>
           </div>
 
@@ -967,7 +1057,7 @@
           <section class="space-y-3" aria-label="Horizontal item list demo">
             <div class="flex items-baseline justify-between gap-4">
               <div>
-                <h2 class="text-[1.875rem] font-medium leading-9 text-neutral-50">Horizontal item list</h2>
+                <h2 class="text-[1.875rem] font-medium leading-9 text-neutral-50">Horizontal</h2>
               </div>
             </div>
             <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
@@ -1033,14 +1123,29 @@
       <section class="mt-10 space-y-6" aria-labelledby="tuning-title">
         <div class="min-w-0">
           <h2 id="tuning-title" class="mb-4 text-[1.875rem] font-medium leading-9 text-neutral-50">
-            Tune one edge at a time
+            Options
           </h2>
 
           <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
               <div class="border-b border-white/10 px-4 py-3">
-                <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Balanced</p>
-                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">fade-y fade-size-sm</code>
+                <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Adjustable depth</p>
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label" data-fade-depth-label>fade-y fade-size-sm</code>
+                <div class="mt-3 flex items-center gap-3">
+                  <input
+                    class="fade-depth-slider shrink-0"
+                    type="range"
+                    min="0"
+                    max="6"
+                    step="1"
+                    value="0"
+                    aria-label="Fade depth"
+                    aria-valuetext="small"
+                    data-fade-depth-slider
+                    data-fade-size-options="fade-size-sm fade-size-md fade-size-lg fade-size-xl fade-size-2xl fade-size-3xl fade-size-4xl"
+                  />
+                  <output class="mono-copy min-w-8 font-mono text-[0.6875rem] leading-4 text-neutral-500" data-fade-depth-value>sm</output>
+                </div>
               </div>
               <div class="fade-y fade-size-sm thin-scroll h-64 overflow-x-hidden overflow-y-auto p-5 sm:h-72" data-demo="balanced-specimen">
                 <article class="space-y-6">
@@ -1111,10 +1216,16 @@
 
             <div class="surface-panel overflow-hidden rounded-lg border border-emerald-400/20 bg-neutral-950/75 shadow-2xl shadow-black/40">
               <div class="border-b border-white/10 px-4 py-3">
-                <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Bottom emphasis</p>
-                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">fade-y fade-size-sm fade-size-b-lg</code>
+                <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">One-sided</p>
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label" data-fade-edge-label>fade-b fade-size-sm fade-size-b-lg</code>
+                <div class="edge-toggle-group mono-copy mt-3 select-none font-mono text-[0.6875rem] uppercase tracking-[0.12em]" role="group" aria-label="Fade edges">
+                  <button class="edge-toggle-button" type="button" aria-pressed="false" aria-label="Toggle top edge fade" data-fade-edge-toggle="t">t</button>
+                  <button class="edge-toggle-button" type="button" aria-pressed="false" aria-label="Toggle right edge fade" data-fade-edge-toggle="r">r</button>
+                  <button class="edge-toggle-button" type="button" aria-pressed="true" aria-label="Toggle bottom edge fade" data-fade-edge-toggle="b">b</button>
+                  <button class="edge-toggle-button" type="button" aria-pressed="false" aria-label="Toggle left edge fade" data-fade-edge-toggle="l">l</button>
+                </div>
               </div>
-              <div class="fade-y fade-size-sm fade-size-b-lg thin-scroll h-64 overflow-x-hidden overflow-y-auto p-5 sm:h-72" data-demo="bottom-specimen">
+              <div class="fade-b fade-size-sm fade-size-b-lg thin-scroll h-64 overflow-x-hidden overflow-y-auto p-5 sm:h-72" data-demo="bottom-specimen">
                 <article class="space-y-6">
                   <section class="space-y-7">
                     <div class="grid grid-cols-[1.5rem_minmax(0,1fr)] items-baseline gap-4">
@@ -1247,6 +1358,32 @@
         </div>
       </section>
 
+      <section class="mt-12 space-y-5 border-t border-white/10 pt-8" aria-labelledby="details-title">
+        <h2 id="details-title" class="text-[1.875rem] font-medium leading-9 text-neutral-50">
+          Details
+        </h2>
+        <div class="grid gap-4 md:grid-cols-3">
+          <article class="surface-panel rounded-lg border border-white/10 bg-neutral-950/60 p-5">
+            <h3 class="text-base font-medium leading-6 text-neutral-100">Scroll gated</h3>
+            <p class="mt-3 text-[0.9375rem] leading-6 text-neutral-400">
+              Fades appear only when content can keep moving past that edge, using CSS scroll timelines instead of JavaScript listeners.
+            </p>
+          </article>
+          <article class="surface-panel rounded-lg border border-white/10 bg-neutral-950/60 p-5">
+            <h3 class="text-base font-medium leading-6 text-neutral-100">Eased gradients</h3>
+            <p class="mt-3 text-[0.9375rem] leading-6 text-neutral-400">
+              Each edge uses an eased alpha ramp, so content dissolves into the surface instead of ending in a hard clipped line.
+            </p>
+          </article>
+          <article class="surface-panel rounded-lg border border-white/10 bg-neutral-950/60 p-5">
+            <h3 class="text-base font-medium leading-6 text-neutral-100">Composable</h3>
+            <p class="mt-3 text-[0.9375rem] leading-6 text-neutral-400">
+              Edge, axis, size, range, and clear-zone utilities combine on the scroll container without wrapper elements or overlay gradients.
+            </p>
+          </article>
+        </div>
+      </section>
+
       <footer class="footer-social mt-12 flex items-center gap-3 border-t pt-6">
         <a
           class="footer-social-link"
@@ -1299,12 +1436,62 @@
       const floatingSurfacePalette = document.querySelector('[data-floating-surface-palette]')
       const rail = document.querySelector('[data-demo="rail"]')
       const clearance = document.querySelector('[data-demo="clearance"]')
+      const fadeDepthSlider = document.querySelector('[data-fade-depth-slider]')
+      const fadeDepthLabel = document.querySelector('[data-fade-depth-label]')
+      const fadeDepthValue = document.querySelector('[data-fade-depth-value]')
+      const fadeDepthSpecimen = document.querySelector('[data-demo="balanced-specimen"]')
+      const fadeEdgeButtons = Array.from(document.querySelectorAll('[data-fade-edge-toggle]'))
+      const fadeEdgeLabel = document.querySelector('[data-fade-edge-label]')
+      const fadeEdgeSpecimen = document.querySelector('[data-demo="bottom-specimen"]')
+      const fadeDepthSizes = [
+        { className: 'fade-size-sm', label: 'fade-y fade-size-sm', value: 'sm', aria: 'small' },
+        { className: 'fade-size-md', label: 'fade-y fade-size-md', value: 'md', aria: 'medium' },
+        { className: 'fade-size-lg', label: 'fade-y fade-size-lg', value: 'lg', aria: 'large' },
+        { className: 'fade-size-xl', label: 'fade-y fade-size-xl', value: 'xl', aria: 'extra large' },
+        { className: 'fade-size-2xl', label: 'fade-y fade-size-2xl', value: '2xl', aria: 'double extra large' },
+        { className: 'fade-size-3xl', label: 'fade-y fade-size-3xl', value: '3xl', aria: 'triple extra large' },
+        { className: 'fade-size-4xl', label: 'fade-y fade-size-4xl', value: '4xl', aria: 'quadruple extra large' },
+      ]
+      const fadeEdgeOrder = ['t', 'r', 'b', 'l']
+      const fadeEdgeClassNames = fadeEdgeOrder.map((edge) => `fade-${edge}`)
 
       function setSurface(nextSurface) {
         document.documentElement.dataset.surface = nextSurface
         for (const button of surfaceButtons) {
           button.setAttribute('aria-checked', String(button.dataset.surfaceOption === nextSurface))
         }
+      }
+
+      function setFadeDepth(nextIndex) {
+        if (!fadeDepthSlider || !fadeDepthLabel || !fadeDepthValue || !fadeDepthSpecimen) return
+
+        const index = Math.min(fadeDepthSizes.length - 1, Math.max(0, Number(nextIndex)))
+        const nextSize = fadeDepthSizes[index]
+
+        fadeDepthSpecimen.classList.remove(...fadeDepthSizes.map((size) => size.className))
+        fadeDepthSpecimen.classList.add(nextSize.className)
+        fadeDepthLabel.textContent = nextSize.label
+        fadeDepthValue.textContent = nextSize.value
+        fadeDepthSlider.setAttribute('aria-valuetext', nextSize.aria)
+      }
+
+      function setFadeEdges() {
+        if (!fadeEdgeLabel || !fadeEdgeSpecimen) return
+
+        const activeEdges = fadeEdgeOrder.filter((edge) => {
+          const button = fadeEdgeButtons.find((candidate) => candidate.dataset.fadeEdgeToggle === edge)
+          return button?.getAttribute('aria-pressed') === 'true'
+        })
+        const activeEdgeClasses = activeEdges.map((edge) => `fade-${edge}`)
+        const utilityClasses = [...activeEdgeClasses, 'fade-size-sm']
+
+        if (activeEdges.includes('b')) {
+          utilityClasses.push('fade-size-b-lg')
+        }
+
+        fadeEdgeSpecimen.classList.remove(...fadeEdgeClassNames, 'fade-y', 'fade-x', 'fade-xy', 'fade-size-b-lg')
+        fadeEdgeSpecimen.classList.add(...utilityClasses)
+        fadeEdgeLabel.textContent = utilityClasses.join(' ')
       }
 
       function setFloatingPaletteVisible(nextVisible) {
@@ -1329,6 +1516,21 @@
           setSurface(groupButtons[nextIndex].dataset.surfaceOption)
         })
       }
+
+      fadeDepthSlider?.addEventListener('input', (event) => {
+        setFadeDepth(event.currentTarget.value)
+      })
+
+      for (const button of fadeEdgeButtons) {
+        button.addEventListener('click', () => {
+          const isPressed = button.getAttribute('aria-pressed') === 'true'
+          button.setAttribute('aria-pressed', String(!isPressed))
+          setFadeEdges()
+        })
+      }
+
+      setFadeDepth(fadeDepthSlider?.value ?? 0)
+      setFadeEdges()
 
       function syncFloatingPalette() {
         setFloatingPaletteVisible(document.body.scrollTop > 24)

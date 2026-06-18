@@ -68,9 +68,10 @@ into any page, with or without Tailwind:
 import 'tw-fade/css' // or via a bundler that handles CSS imports
 ```
 
-The precompiled CSS includes the full named scale (`fade-size-sm/md/lg`,
-`fade-size-b-sm/md/lg`, `fade-range-sm/md/lg`, `fade-clear-t-sm/md/lg`, etc.)
-and the dynamic clear-zone utilities (`fade-clear-*-var`). Arbitrary values like
+The precompiled CSS includes the full named size scale (`fade-size-sm` through
+`fade-size-4xl`, `fade-size-b-sm` through `fade-size-b-4xl`, etc.), the named
+range and clear-zone scales (`fade-range-sm/md/lg`, `fade-clear-t-sm/md/lg`,
+etc.), and the dynamic clear-zone utilities (`fade-clear-*-var`). Arbitrary values like
 `fade-size-[6rem]`, `fade-size-b-[6rem]`, and `fade-clear-t-[56px]` are
 generated on demand by Tailwind's JIT, so they're only available through the v4
 build path above - not the prebuilt drop-in.
@@ -149,11 +150,11 @@ otherwise treat horizontal fades as LTR-only for now. Full RTL support for
 
 ### Tuning the fade
 
-Three knobs, each with an `sm` / `md` / `lg` scale and arbitrary-value support:
+Three knobs, each with a named scale and arbitrary-value support:
 
 | Class                     | Sets                | Default scale                  |
 | ------------------------- | ------------------- | ------------------------------ |
-| `fade-size-*`       | the fade **length** for every active edge | `sm` 2.5rem · `md` 3.125rem · `lg` 4.375rem |
+| `fade-size-*`       | the fade **length** for every active edge | `sm` 2.5rem · `md` 3.125rem · `lg` 4.375rem · `xl` 6rem · `2xl` 8rem · `3xl` 12rem · `4xl` 16rem |
 | `fade-size-t-*` / `fade-size-b-*` / `fade-size-l-*` / `fade-size-r-*` | the fade **length** for one edge | same as `fade-size-*` |
 | `fade-size-y-*` / `fade-size-x-*` | the fade **length** for an axis | same as `fade-size-*` |
 | `fade-range-*`      | the scroll **distance** over which an edge eases in/out | `sm` 24px · `md` 50px · `lg` 96px |
@@ -247,7 +248,7 @@ no plugin config, no JavaScript:
 @import "tw-fade";
 
 @theme {
-  --fade-size-xl: 6rem; /* enables fade-size-xl, fade-size-b-xl, etc. */
+  --fade-size-5xl: 24rem; /* enables fade-size-5xl, fade-size-b-5xl, etc. */
   --fade-range-xl: 120px; /* enables fade-range-xl */
   --fade-clear-xl: 4rem; /* enables fade-clear-t-xl, fade-clear-y-xl, etc. */
 }

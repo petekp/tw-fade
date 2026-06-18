@@ -271,8 +271,10 @@ test('fade-static forces the fade on, order-independently, and disables the anim
 test('exposes the size and range scales as theme-backed utilities', () => {
   assert.equal(declValue(block('.fade-size-sm'), '--sf-size'), 'var(--fade-size-sm)')
   assert.equal(declValue(block('.fade-size-lg'), '--sf-size'), 'var(--fade-size-lg)')
+  assert.equal(declValue(block('.fade-size-4xl'), '--sf-size'), 'var(--fade-size-4xl)')
   assert.equal(declValue(block('.fade-size-t-sm'), '--sf-size-t'), 'var(--fade-size-sm)')
   assert.equal(declValue(block('.fade-size-b-lg'), '--sf-size-b'), 'var(--fade-size-lg)')
+  assert.equal(declValue(block('.fade-size-b-4xl'), '--sf-size-b'), 'var(--fade-size-4xl)')
   assert.equal(declValue(block('.fade-size-l-md'), '--sf-size-l'), 'var(--fade-size-md)')
   assert.equal(declValue(block('.fade-size-r-sm'), '--sf-size-r'), 'var(--fade-size-sm)')
 
@@ -289,6 +291,10 @@ test('exposes the size and range scales as theme-backed utilities', () => {
   const root = block(':root, :host')
   assert.equal(declValue(root, '--fade-size-sm'), '2.5rem')
   assert.equal(declValue(root, '--fade-size-lg'), '4.375rem')
+  assert.equal(declValue(root, '--fade-size-xl'), '6rem')
+  assert.equal(declValue(root, '--fade-size-2xl'), '8rem')
+  assert.equal(declValue(root, '--fade-size-3xl'), '12rem')
+  assert.equal(declValue(root, '--fade-size-4xl'), '16rem')
   assert.equal(declValue(root, '--fade-range-lg'), '96px')
   // No bare `.fade-size` / `.fade-range` no-op utility leaks out.
   assert.equal(block('.fade-size'), null)

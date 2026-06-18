@@ -91,6 +91,10 @@
     --fade-size-sm: 2.5rem;
     --fade-size-md: 3.125rem;
     --fade-size-lg: 4.375rem;
+    --fade-size-xl: 6rem;
+    --fade-size-2xl: 8rem;
+    --fade-size-3xl: 12rem;
+    --fade-size-4xl: 16rem;
     --fade-range-sm: 24px;
     --fade-range-md: 50px;
     --fade-range-lg: 96px;
