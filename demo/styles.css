@@ -1549,9 +1549,6 @@
   .fade-size-x-lg {
     --sf-size-x: var(--fade-size-lg);
   }
-  .fade-size-y-lg {
-    --sf-size-y: var(--fade-size-lg);
-  }
   .fade-size-y-md {
     --sf-size-y: var(--fade-size-md);
   }
