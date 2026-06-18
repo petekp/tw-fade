@@ -211,6 +211,10 @@
           border-color 180ms ease;
       }
 
+      .sticky-clearance-bar {
+        border-bottom-color: color-mix(in srgb, var(--demo-border) 48%, transparent) !important;
+      }
+
       .surface-panel-soft {
         border-color: var(--demo-border) !important;
         background-color: var(--demo-panel-soft) !important;
@@ -1138,7 +1142,7 @@
                 <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">fade-y fade-clear-t-lg</code>
               </div>
               <div class="fade-y fade-clear-t-lg thin-scroll h-64 overflow-y-auto sm:h-72" data-demo="clearance">
-                <div class="surface-panel-strong sticky top-0 z-10 flex h-12 items-center justify-between gap-3 border-b border-emerald-400/20 bg-neutral-950/95 px-4 backdrop-blur">
+                <div class="surface-panel-strong sticky-clearance-bar sticky top-0 z-10 flex h-12 items-center justify-between gap-3 border-b border-emerald-400/20 bg-neutral-950/95 px-4 backdrop-blur">
                   <p class="text-[0.875rem] font-medium leading-5 text-emerald-100">Pinned filters</p>
                   <span class="mono-copy font-mono text-[0.6875rem] leading-none text-neutral-500">3rem clear</span>
                 </div>
