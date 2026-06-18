@@ -533,8 +533,11 @@
       }
 
       .popover-panel {
+        background-color: color-mix(in srgb, var(--demo-panel-strong) 68%, transparent) !important;
         transform-origin: top left;
         will-change: opacity, transform;
+        -webkit-backdrop-filter: blur(18px);
+        backdrop-filter: blur(18px);
       }
 
       .popover-panel[data-state="open"] {
@@ -866,7 +869,7 @@
 
                 <div
                   id="token-popover"
-                  class="surface-panel-strong popover-panel absolute left-0 top-14 z-10 w-full max-w-[28rem] rounded-lg border border-white/12 bg-neutral-950/95 p-1 shadow-2xl shadow-black/50 backdrop-blur"
+                  class="surface-panel-strong popover-panel absolute left-0 top-14 z-10 w-full max-w-[28rem] rounded-lg border border-white/12 bg-neutral-950/95 p-1 shadow-2xl shadow-black/50"
                   role="dialog"
                   aria-labelledby="token-popover-title"
                   aria-hidden="false"
