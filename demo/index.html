@@ -34,6 +34,7 @@
         --demo-code-class: rgb(142 142 142);
         --demo-code-fade: rgb(236 253 245);
         --demo-code-var: rgb(196 181 253);
+        --demo-code-bg: rgb(0 0 0 / 0.82);
       }
 
       html[data-surface="cobalt"] {
@@ -61,6 +62,7 @@
         --demo-code-class: rgb(130 161 207);
         --demo-code-fade: rgb(239 246 255);
         --demo-code-var: rgb(244 114 182);
+        --demo-code-bg: rgb(1 8 28 / 0.9);
       }
 
       html[data-surface="pine"] {
@@ -88,6 +90,7 @@
         --demo-code-class: rgb(119 170 145);
         --demo-code-fade: rgb(240 253 244);
         --demo-code-var: rgb(216 180 254);
+        --demo-code-bg: rgb(0 14 9 / 0.9);
       }
 
       html[data-surface="berry"] {
@@ -115,6 +118,7 @@
         --demo-code-class: rgb(204 122 153);
         --demo-code-fade: rgb(255 245 247);
         --demo-code-var: rgb(196 181 253);
+        --demo-code-bg: rgb(28 3 17 / 0.9);
       }
 
       html[data-surface] {
@@ -462,8 +466,10 @@
       }
 
       .code-surface {
+        background-color: var(--demo-code-bg) !important;
         scrollbar-width: thin;
         scrollbar-color: rgb(255 255 255 / 0.18) transparent;
+        transition: background-color 180ms ease;
       }
 
       .code-tag {
