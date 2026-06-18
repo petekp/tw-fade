@@ -1217,6 +1217,9 @@
   .text-\[1\.0625rem\] {
     font-size: 1.0625rem;
   }
+  .text-\[1\.875rem\] {
+    font-size: 1.875rem;
+  }
   .text-\[2rem\] {
     font-size: 2rem;
   }
@@ -1251,6 +1254,10 @@
   .leading-8 {
     --tw-leading: calc(var(--spacing) * 8);
     line-height: calc(var(--spacing) * 8);
+  }
+  .leading-9 {
+    --tw-leading: calc(var(--spacing) * 9);
+    line-height: calc(var(--spacing) * 9);
   }
   .leading-none {
     --tw-leading: 1;
