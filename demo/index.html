@@ -191,6 +191,29 @@
         line-height: 0.92;
       }
 
+      .hero-title-stack {
+        display: inline-grid;
+        max-width: 100%;
+        transform-style: preserve-3d;
+      }
+
+      .hero-title-stack > span {
+        grid-area: 1 / 1;
+        white-space: nowrap;
+      }
+
+      .hero-title-depth {
+        color: var(--demo-text-strong);
+        opacity: var(--depth-opacity);
+        pointer-events: none;
+        transform: translate3d(0, var(--depth-y), 0) scale(var(--depth-scale));
+        transform-origin: left center;
+      }
+
+      .hero-title-main {
+        position: relative;
+      }
+
       .mono-copy {
         font-variant-numeric: tabular-nums slashed-zero;
       }
@@ -590,8 +613,18 @@
         <p class="mb-4 font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.22em] api-label">
           Tailwind v4 Plugin
         </p>
-        <h1 class="hero-title text-[5.5rem] text-neutral-50 sm:text-[6.75rem] lg:text-[8rem]">
-          tw-fade
+        <h1 class="hero-title hero-title-stack text-[5.5rem] text-neutral-50 sm:text-[6.75rem] lg:text-[8rem]" aria-label="tw-fade">
+          <span class="hero-title-depth" style="--depth-y: 0.18em; --depth-scale: 0.92; --depth-opacity: 0.025" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.162em; --depth-scale: 0.928; --depth-opacity: 0.04" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.144em; --depth-scale: 0.936; --depth-opacity: 0.055" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.126em; --depth-scale: 0.944; --depth-opacity: 0.07" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.108em; --depth-scale: 0.952; --depth-opacity: 0.085" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.09em; --depth-scale: 0.96; --depth-opacity: 0.1" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.072em; --depth-scale: 0.968; --depth-opacity: 0.115" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.054em; --depth-scale: 0.976; --depth-opacity: 0.13" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.036em; --depth-scale: 0.984; --depth-opacity: 0.145" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.018em; --depth-scale: 0.992; --depth-opacity: 0.16" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-main" aria-hidden="true">tw-fade</span>
         </h1>
         <p class="mt-9 max-w-[43rem] text-balance text-[1.0625rem] leading-8 text-neutral-300/85 sm:text-lg">
           Elegant, scroll-driven edge masking. Add a single class and content edges dissolve
