@@ -18,10 +18,12 @@
  */
 import { chromium } from 'playwright'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import fs from 'node:fs'
 import path from 'node:path'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const demoUrl = pathToFileURL(path.resolve(__dirname, '../demo/index.html')).href
+const demoCss = fs.readFileSync(path.resolve(__dirname, '../demo/styles.css'), 'utf8')
 
 const browser = await chromium.launch()
 const page = await browser.newPage({ viewport: { width: 900, height: 700 }, deviceScaleFactor: 1 })
@@ -65,6 +67,7 @@ const approx = (v, target, tol = 0.2) => Math.abs(v - target) <= tol
 const transparent = (c) => c === 'rgba(0, 0, 0, 0)' || c === 'transparent'
 
 const checks = [
+  ['demo build does not emit private .sf-mask utility', !/\.sf-mask\s*\{/.test(demoCss), '.sf-mask absent'],
   ['body is the real scroll container', structure.bodyIsScroller, String(structure.bodyIsScroller)],
   ['surface is on <html> (non-transparent)', !transparent(structure.htmlBg), structure.htmlBg],
   ['body is transparent (mask reveals the surface)', transparent(structure.bodyBg), structure.bodyBg],
