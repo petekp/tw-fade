@@ -368,8 +368,18 @@
         }
       }
 
-      .support-chip {
+      .support-tooltip-root,
+      .support-tooltip-trigger {
         position: relative;
+        display: inline-flex;
+      }
+
+      .support-tooltip-trigger {
+        border-radius: 9999px;
+        outline: none;
+      }
+
+      .support-chip {
         display: inline-flex;
         align-items: center;
         gap: 0.45rem;
@@ -382,10 +392,9 @@
         color: var(--demo-text-primary);
         font-size: 0.75rem;
         line-height: 1.25rem;
-        outline: none;
       }
 
-      .support-chip:focus-visible {
+      .support-tooltip-trigger:focus-visible .support-chip {
         border-color: var(--demo-focus);
         box-shadow: 0 0 0 3px rgb(255 255 255 / 0.08);
       }
@@ -428,8 +437,8 @@
         visibility: hidden;
       }
 
-      .support-chip:hover .support-tooltip,
-      .support-chip:focus-visible .support-tooltip {
+      .support-tooltip-root:hover .support-tooltip,
+      .support-tooltip-root:focus-within .support-tooltip {
         opacity: 1;
         transform: translateY(0);
         visibility: visible;
@@ -631,40 +640,68 @@
           into the surface. Zero JavaScript.
         </p>
         <div class="mt-6 flex max-w-[43rem] select-none flex-wrap gap-2" aria-label="Browser support">
-          <span class="support-chip" tabindex="0" aria-describedby="support-chrome">
-            <span class="support-indicator support-indicator-full" aria-hidden="true"></span>
-            Chrome
-            <span id="support-chrome" class="support-tooltip" role="tooltip">Full scroll-gated fades in Chrome 120+ on desktop and Android.</span>
+          <span class="support-tooltip-root" data-slot="tooltip">
+            <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-chrome">
+              <span class="support-chip" data-slot="badge" data-variant="outline">
+                <span class="support-indicator support-indicator-full" data-icon="inline-start" aria-hidden="true"></span>
+                Chrome
+              </span>
+            </span>
+            <span id="support-chrome" class="support-tooltip" data-slot="tooltip-content" data-side="top" role="tooltip">Full scroll-gated fades in Chrome 120+ on desktop and Android.</span>
           </span>
-          <span class="support-chip" tabindex="0" aria-describedby="support-edge">
-            <span class="support-indicator support-indicator-full" aria-hidden="true"></span>
-            Edge
-            <span id="support-edge" class="support-tooltip" role="tooltip">Full scroll-gated fades in Edge 120+ on desktop and Android.</span>
+          <span class="support-tooltip-root" data-slot="tooltip">
+            <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-edge">
+              <span class="support-chip" data-slot="badge" data-variant="outline">
+                <span class="support-indicator support-indicator-full" data-icon="inline-start" aria-hidden="true"></span>
+                Edge
+              </span>
+            </span>
+            <span id="support-edge" class="support-tooltip" data-slot="tooltip-content" data-side="top" role="tooltip">Full scroll-gated fades in Edge 120+ on desktop and Android.</span>
           </span>
-          <span class="support-chip" tabindex="0" aria-describedby="support-safari">
-            <span class="support-indicator support-indicator-full" aria-hidden="true"></span>
-            Safari
-            <span id="support-safari" class="support-tooltip support-tooltip-right" role="tooltip">Full scroll-gated fades in Safari 26+ on macOS.</span>
+          <span class="support-tooltip-root" data-slot="tooltip">
+            <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-safari">
+              <span class="support-chip" data-slot="badge" data-variant="outline">
+                <span class="support-indicator support-indicator-full" data-icon="inline-start" aria-hidden="true"></span>
+                Safari
+              </span>
+            </span>
+            <span id="support-safari" class="support-tooltip support-tooltip-right" data-slot="tooltip-content" data-side="top" role="tooltip">Full scroll-gated fades in Safari 26+ on macOS.</span>
           </span>
-          <span class="support-chip" tabindex="0" aria-describedby="support-mobile-safari">
-            <span class="support-indicator support-indicator-full" aria-hidden="true"></span>
-            Mobile Safari
-            <span id="support-mobile-safari" class="support-tooltip support-tooltip-right support-tooltip-left-compact" role="tooltip">Full scroll-gated fades in Safari 26+ on iOS and iPadOS.</span>
+          <span class="support-tooltip-root" data-slot="tooltip">
+            <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-mobile-safari">
+              <span class="support-chip" data-slot="badge" data-variant="outline">
+                <span class="support-indicator support-indicator-full" data-icon="inline-start" aria-hidden="true"></span>
+                Mobile Safari
+              </span>
+            </span>
+            <span id="support-mobile-safari" class="support-tooltip support-tooltip-right support-tooltip-left-compact" data-slot="tooltip-content" data-side="top" role="tooltip">Full scroll-gated fades in Safari 26+ on iOS and iPadOS.</span>
           </span>
-          <span class="support-chip" tabindex="0" aria-describedby="support-firefox">
-            <span class="support-indicator support-indicator-partial" aria-hidden="true"></span>
-            Firefox
-            <span id="support-firefox" class="support-tooltip support-tooltip-right-compact" role="tooltip">Partial support in stable Firefox: the mask renders, but scroll-gating falls back to a static always-on fade.</span>
+          <span class="support-tooltip-root" data-slot="tooltip">
+            <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-firefox">
+              <span class="support-chip" data-slot="badge" data-variant="outline">
+                <span class="support-indicator support-indicator-partial" data-icon="inline-start" aria-hidden="true"></span>
+                Firefox
+              </span>
+            </span>
+            <span id="support-firefox" class="support-tooltip support-tooltip-right-compact" data-slot="tooltip-content" data-side="top" role="tooltip">Partial support in stable Firefox: the mask renders, but scroll-gating falls back to a static always-on fade.</span>
           </span>
-          <span class="support-chip" tabindex="0" aria-describedby="support-firefox-nightly">
-            <span class="support-indicator support-indicator-full" aria-hidden="true"></span>
-            Firefox Nightly
-            <span id="support-firefox-nightly" class="support-tooltip" role="tooltip">Full scroll-gated fades in Firefox Nightly, where scroll-driven animations are enabled by default.</span>
+          <span class="support-tooltip-root" data-slot="tooltip">
+            <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-firefox-nightly">
+              <span class="support-chip" data-slot="badge" data-variant="outline">
+                <span class="support-indicator support-indicator-full" data-icon="inline-start" aria-hidden="true"></span>
+                Firefox Nightly
+              </span>
+            </span>
+            <span id="support-firefox-nightly" class="support-tooltip" data-slot="tooltip-content" data-side="top" role="tooltip">Full scroll-gated fades in Firefox Nightly, where scroll-driven animations are enabled by default.</span>
           </span>
-          <span class="support-chip" tabindex="0" aria-describedby="support-opera">
-            <span class="support-indicator support-indicator-full" aria-hidden="true"></span>
-            Opera
-            <span id="support-opera" class="support-tooltip" role="tooltip">Full scroll-gated fades in Opera 106+.</span>
+          <span class="support-tooltip-root" data-slot="tooltip">
+            <span class="support-tooltip-trigger" data-slot="tooltip-trigger" tabindex="0" aria-describedby="support-opera">
+              <span class="support-chip" data-slot="badge" data-variant="outline">
+                <span class="support-indicator support-indicator-full" data-icon="inline-start" aria-hidden="true"></span>
+                Opera
+              </span>
+            </span>
+            <span id="support-opera" class="support-tooltip" data-slot="tooltip-content" data-side="top" role="tooltip">Full scroll-gated fades in Opera 106+.</span>
           </span>
         </div>
         <div class="mt-5 flex max-w-[43rem] flex-col gap-2 sm:flex-row sm:items-center" data-surface-switcher>
