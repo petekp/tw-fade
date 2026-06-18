@@ -1229,6 +1229,9 @@
     --tw-tracking: 0.22em;
     letter-spacing: 0.22em;
   }
+  .text-balance {
+    text-wrap: balance;
+  }
   .text-wrap {
     text-wrap: wrap;
   }
