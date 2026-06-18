@@ -1473,6 +1473,10 @@
     --sf-clear-t: var(--fade-clear-t, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
     --sf-clear-b: var(--fade-clear-b, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
   }
+  .select-none {
+    -webkit-user-select: none;
+    user-select: none;
+  }
   .fade-clear-b-md {
     --sf-clear-b: var(--fade-clear-md);
   }
