@@ -210,33 +210,43 @@
       }
 
       .surface-option {
-        display: inline-flex;
+        display: grid;
+        width: 2rem;
         height: 2rem;
-        align-items: center;
-        gap: 0.5rem;
+        place-items: center;
         border-radius: 9999px;
-        border: 1px solid var(--demo-border);
+        border: 1px solid transparent;
         background: var(--demo-control-bg);
-        color: var(--demo-text-primary);
-        padding: 0 0.625rem;
-        font-size: 0.75rem;
-        line-height: 1;
+        padding: 0;
         outline: none;
         transition:
           background-color 160ms ease,
           border-color 160ms ease,
-          color 160ms ease;
+          transform 160ms ease;
       }
 
       .surface-option[aria-checked="true"] {
         border-color: var(--demo-focus);
         background: var(--demo-control-active);
-        color: var(--demo-text-strong);
       }
 
       .surface-option:focus-visible {
         border-color: var(--demo-focus);
         box-shadow: 0 0 0 3px rgb(255 255 255 / 0.08);
+      }
+
+      .surface-option-group {
+        display: inline-flex;
+        gap: 0.375rem;
+        border-radius: 9999px;
+        border: 1px solid var(--demo-border);
+        background: var(--demo-panel-strong);
+        padding: 0.375rem;
+        transition:
+          background-color 180ms ease,
+          border-color 180ms ease;
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
       }
 
       .floating-surface-palette {
@@ -295,6 +305,7 @@
       }
 
       @media (hover: hover) and (pointer: fine) {
+        .surface-option:hover,
         .surface-float-button:hover {
           transform: scale(1.04);
         }
@@ -308,6 +319,7 @@
         background: var(--surface-swatch);
       }
 
+      .surface-option .surface-swatch,
       .surface-float-button .surface-swatch {
         width: 0.875rem;
         height: 0.875rem;
@@ -609,22 +621,18 @@
           <p class="mono-copy font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.18em] text-neutral-500">
             Surface
           </p>
-          <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Component surface" data-surface-group>
-            <button class="surface-option" type="button" role="radio" aria-checked="true" data-surface-option="graphite">
+          <div class="surface-option-group" role="radiogroup" aria-label="Component surface" data-surface-group>
+            <button class="surface-option" type="button" role="radio" aria-checked="true" aria-label="Graphite surface" title="Graphite" data-surface-option="graphite">
               <span class="surface-swatch" style="--surface-swatch: rgb(64 64 64)" aria-hidden="true"></span>
-              Graphite
             </button>
-            <button class="surface-option" type="button" role="radio" aria-checked="false" data-surface-option="cobalt">
+            <button class="surface-option" type="button" role="radio" aria-checked="false" aria-label="Cobalt surface" title="Cobalt" data-surface-option="cobalt">
               <span class="surface-swatch" style="--surface-swatch: rgb(37 99 235)" aria-hidden="true"></span>
-              Cobalt
             </button>
-            <button class="surface-option" type="button" role="radio" aria-checked="false" data-surface-option="pine">
+            <button class="surface-option" type="button" role="radio" aria-checked="false" aria-label="Pine surface" title="Pine" data-surface-option="pine">
               <span class="surface-swatch" style="--surface-swatch: rgb(5 150 105)" aria-hidden="true"></span>
-              Pine
             </button>
-            <button class="surface-option" type="button" role="radio" aria-checked="false" data-surface-option="berry">
+            <button class="surface-option" type="button" role="radio" aria-checked="false" aria-label="Berry surface" title="Berry" data-surface-option="berry">
               <span class="surface-swatch" style="--surface-swatch: rgb(225 29 72)" aria-hidden="true"></span>
-              Berry
             </button>
           </div>
         </div>
