@@ -163,6 +163,31 @@ function npmPublishArgs({ distTag, dryRun, otp }) {
   return args
 }
 
+function assertCanPublish(packageName) {
+  let username = null
+  try {
+    username = run(npmBin, ['whoami'], { capture: true })
+  } catch {
+    fail(`npm is not authenticated. Run "npm login --auth-type=web", then retry the publish.`)
+  }
+
+  let owners = ''
+  try {
+    owners = run(npmBin, ['owner', 'ls', packageName], { capture: true })
+  } catch {
+    fail(`could not read npm owners for ${packageName}. Check npm auth and package permissions.`)
+  }
+
+  const ownerNames = owners
+    .split('\n')
+    .map((line) => line.trim().split(/\s+/)[0])
+    .filter(Boolean)
+
+  if (!ownerNames.includes(username)) {
+    fail(`npm user "${username}" is not an owner of ${packageName}. Owners: ${ownerNames.join(', ') || 'none'}`)
+  }
+}
+
 const options = parseArgs(process.argv.slice(2))
 const pkg = readJson(packagePath)
 const targetVersion = options.noBump ? pkg.version : nextVersion(pkg.version, options.bump)
@@ -180,6 +205,10 @@ try {
 
 if (publishedVersion && compareVersions(targetVersion, publishedVersion) <= 0) {
   fail(`target version ${targetVersion} must be greater than published version ${publishedVersion}`)
+}
+
+if (options.publish) {
+  assertCanPublish(pkg.name)
 }
 
 if (!options.noBump) {

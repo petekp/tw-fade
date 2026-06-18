@@ -1,6 +1,6 @@
 {
   "name": "tw-fade",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "description": "Elegant, CSS-driven scroll-edge fade masking for Tailwind CSS v4. Add fade-t/b/l/r (or -x/-y/-xy) to any scroll container to fade content into its surface at the edges — scroll-gated with zero JavaScript.",
   "keywords": [
     "tailwindcss",
