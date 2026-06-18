@@ -930,11 +930,11 @@
                 </div>
               </div>
 
-              <div class="relative min-h-[34rem]">
+              <div class="relative">
                 <button
                   class="surface-panel ui-button inline-flex h-10 items-center rounded-md border border-white/10 bg-white/[0.03] px-3 text-[0.875rem] font-medium leading-none text-neutral-100 shadow-2xl shadow-black/30"
                   type="button"
-                  aria-expanded="true"
+                  aria-expanded="false"
                   aria-controls="token-popover"
                   data-popover-toggle
                 >
@@ -946,9 +946,10 @@
                   class="surface-panel-strong popover-panel absolute left-0 top-14 z-10 w-full max-w-[28rem] rounded-lg border border-white/12 bg-neutral-950/95 p-1 shadow-2xl shadow-black/50"
                   role="dialog"
                   aria-labelledby="token-popover-title"
-                  aria-hidden="false"
-                  data-state="open"
+                  aria-hidden="true"
+                  data-state="closed"
                   data-popover-panel
+                  hidden
                 >
                   <div class="px-3 py-3">
                     <h3 id="token-popover-title" class="text-[0.875rem] font-medium leading-5 text-neutral-50">

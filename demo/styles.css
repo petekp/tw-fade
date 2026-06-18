@@ -361,9 +361,6 @@
   .max-h-80 {
     max-height: calc(var(--spacing) * 80);
   }
-  .min-h-\[34rem\] {
-    min-height: 34rem;
-  }
   .w-full {
     width: 100%;
   }

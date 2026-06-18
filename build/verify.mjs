@@ -9,6 +9,12 @@ const browser = await chromium.launch()
 const page = await browser.newPage({ viewport: { width: 1200, height: 1400 }, deviceScaleFactor: 2 })
 await page.goto(demo, { waitUntil: 'networkidle' })
 await page.waitForTimeout(150)
+await page.locator('[data-popover-toggle]').click()
+await page.waitForFunction(() => {
+  const panel = document.querySelector('[data-popover-panel]')
+  return panel && !panel.hidden && panel.getAttribute('data-state') === 'open'
+})
+await page.waitForTimeout(150)
 
 async function probe(selector, { top, left } = {}) {
   return page.evaluate(
