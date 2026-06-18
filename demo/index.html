@@ -147,7 +147,7 @@
         color: var(--demo-accent-text-strong) !important;
       }
 
-      html[data-surface] :where(.text-emerald-300, .text-emerald-400, .hover\:text-emerald-300:hover) {
+      html[data-surface] :where(.api-label, .text-emerald-300, .text-emerald-400, .hover\:text-emerald-300:hover) {
         color: var(--demo-accent-text) !important;
       }
 
@@ -433,6 +433,11 @@
         font-weight: 650;
       }
 
+      .api-label {
+        color: var(--demo-accent-text);
+        transition: color 180ms ease;
+      }
+
       .code-var {
         color: var(--demo-code-var);
       }
@@ -553,7 +558,7 @@
   >
     <main class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:py-16">
       <header class="mb-10 max-w-[45rem] lg:mb-12">
-        <p class="mb-4 font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.22em] text-emerald-300">
+        <p class="mb-4 font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.22em] api-label">
           Tailwind v4 Plugin
         </p>
         <h1 class="hero-title text-5xl font-semibold text-neutral-50 sm:text-6xl lg:text-7xl">
@@ -636,7 +641,7 @@
                 <h2 id="list-title" class="text-[0.9375rem] font-medium leading-5 text-neutral-50">
                   Item list
                 </h2>
-                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">
                   fade-y
                 </code>
               </div>
@@ -711,7 +716,7 @@
             <div class="flex items-baseline justify-between gap-4">
               <div>
                 <h2 class="text-[0.9375rem] font-medium leading-5 text-neutral-50">Horizontal item list</h2>
-                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">
                   fade-x
                 </code>
               </div>
@@ -745,7 +750,7 @@
                   <h2 id="popover-title" class="text-[0.9375rem] font-medium leading-5 text-neutral-50">
                     Scrollable popover
                   </h2>
-                  <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">
+                  <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">
                     fade-y
                   </code>
                 </div>
@@ -867,7 +872,7 @@
                 <h2 id="command-title" class="text-[0.9375rem] font-medium leading-5 text-neutral-50">
                   Command list
                 </h2>
-                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">
                   fade-y
                 </code>
               </div>
@@ -974,7 +979,7 @@
               <h2 id="tuning-title" class="text-[0.9375rem] font-medium leading-5 text-neutral-50">
                 Tune one edge at a time
               </h2>
-              <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">
+              <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">
                 fade-size-b-lg
               </code>
             </div>
@@ -987,7 +992,7 @@
             <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
               <div class="border-b border-white/10 px-4 py-3">
                 <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Balanced</p>
-                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-neutral-500">fade-y fade-size-sm</code>
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">fade-y fade-size-sm</code>
               </div>
               <div class="fade-y fade-size-sm thin-scroll h-52 overflow-y-auto p-4">
                 <div class="space-y-3">
@@ -1003,7 +1008,7 @@
             <div class="surface-panel overflow-hidden rounded-lg border border-emerald-400/20 bg-neutral-950/75 shadow-2xl shadow-black/40">
               <div class="border-b border-emerald-400/20 px-4 py-3">
                 <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Bottom emphasis</p>
-                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">fade-y fade-size-sm fade-size-b-lg</code>
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">fade-y fade-size-sm fade-size-b-lg</code>
               </div>
               <div class="fade-y fade-size-sm fade-size-b-lg thin-scroll h-52 overflow-y-auto p-4">
                 <div class="space-y-3">
@@ -1019,7 +1024,7 @@
             <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
               <div class="border-b border-white/10 px-4 py-3">
                 <p class="text-[0.875rem] font-medium leading-5 text-neutral-100">Sticky clearance</p>
-                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">fade-y fade-clear-t-lg</code>
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 api-label">fade-y fade-clear-t-lg</code>
               </div>
               <div class="fade-y fade-clear-t-lg thin-scroll h-52 overflow-y-auto" data-demo="clearance">
                 <div class="surface-panel-strong sticky top-0 z-10 flex h-12 items-center justify-between gap-3 border-b border-emerald-400/20 bg-neutral-950/95 px-4 backdrop-blur">
