@@ -988,10 +988,10 @@
       border-color: color-mix(in oklab, var(--color-white) 12%, transparent);
     }
   }
-  .bg-amber-300\/\[0\.06\] {
-    background-color: color-mix(in srgb, oklch(87.9% 0.169 91.605) 6%, transparent);
+  .bg-amber-300\/\[0\.08\] {
+    background-color: color-mix(in srgb, oklch(87.9% 0.169 91.605) 8%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-amber-300) 6%, transparent);
+      background-color: color-mix(in oklab, var(--color-amber-300) 8%, transparent);
     }
   }
   .bg-amber-400\/10 {
