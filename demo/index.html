@@ -507,20 +507,13 @@
         <div class="min-w-0 space-y-6">
           <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(21rem,0.82fr)]">
             <section class="min-w-0" aria-labelledby="list-title">
-              <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <h2 id="list-title" class="text-[0.9375rem] font-medium leading-5 text-neutral-50">
-                    Item list
-                  </h2>
-                  <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">
-                    fade-y
-                  </code>
-                </div>
-                <div class="flex gap-2">
-                  <span class="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.75rem] leading-5 text-neutral-400">Badge</span>
-                  <span class="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.75rem] leading-5 text-neutral-400">Avatar</span>
-                  <span class="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.75rem] leading-5 text-neutral-400">Separator</span>
-                </div>
+              <div class="mb-4">
+                <h2 id="list-title" class="text-[0.9375rem] font-medium leading-5 text-neutral-50">
+                  Item list
+                </h2>
+                <code class="mono-copy mt-1 block font-mono text-[0.75rem] leading-5 text-emerald-300">
+                  fade-y
+                </code>
               </div>
 
               <div class="surface-panel overflow-hidden rounded-lg border border-white/10 bg-neutral-950/75 shadow-2xl shadow-black/40">
@@ -529,56 +522,41 @@
                   data-demo="list"
                 >
                   <article class="flex gap-4 px-5 py-4 sm:px-6">
-                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-emerald-400/10 text-[0.8125rem] font-medium text-emerald-200">MP</span>
+                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-white/[0.04] text-[0.8125rem] font-medium text-neutral-400">MP</span>
                     <div class="min-w-0 flex-1">
-                      <div class="flex flex-wrap items-center gap-2">
-                        <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Merge popover polish</h3>
-                        <span class="rounded-md border border-emerald-400/20 bg-emerald-400/10 px-2 py-1 text-[0.75rem] leading-none text-emerald-200">ready</span>
-                      </div>
-                      <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">A long row still fades as one surface, including badges and metadata.</p>
+                      <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Merge popover polish</h3>
+                      <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">A long row still fades as one surface, including row content and metadata.</p>
                     </div>
                     <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#241</span>
                   </article>
                   <article class="flex gap-4 px-5 py-4 sm:px-6">
-                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-cyan-400/10 text-[0.8125rem] font-medium text-cyan-200">QA</span>
+                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-white/[0.04] text-[0.8125rem] font-medium text-neutral-400">QA</span>
                     <div class="min-w-0 flex-1">
-                      <div class="flex flex-wrap items-center gap-2">
-                        <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Audit command density</h3>
-                        <span class="rounded-md border border-white/10 px-2 py-1 text-[0.75rem] leading-none text-neutral-400">review</span>
-                      </div>
+                      <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Audit command density</h3>
                       <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">The mask belongs on the scrolling list, not on a pseudo-element overlay.</p>
                     </div>
                     <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#240</span>
                   </article>
                   <article class="flex gap-4 px-5 py-4 sm:px-6">
-                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-violet-400/10 text-[0.8125rem] font-medium text-violet-200">DS</span>
+                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-white/[0.04] text-[0.8125rem] font-medium text-neutral-400">DS</span>
                     <div class="min-w-0 flex-1">
-                      <div class="flex flex-wrap items-center gap-2">
-                        <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Document Base UI variant</h3>
-                        <span class="rounded-md border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[0.75rem] leading-none text-amber-200">docs</span>
-                      </div>
+                      <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Document Base UI variant</h3>
                       <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">The example maps cleanly to PopoverContent, CommandList, and ScrollArea.</p>
                     </div>
                     <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#239</span>
                   </article>
                   <article class="flex gap-4 px-5 py-4 sm:px-6">
-                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-rose-400/10 text-[0.8125rem] font-medium text-rose-200">FE</span>
+                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-white/[0.04] text-[0.8125rem] font-medium text-neutral-400">FE</span>
                     <div class="min-w-0 flex-1">
-                      <div class="flex flex-wrap items-center gap-2">
-                        <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Remove extra edge overlays</h3>
-                        <span class="rounded-md border border-emerald-400/20 bg-emerald-400/10 px-2 py-1 text-[0.75rem] leading-none text-emerald-200">done</span>
-                      </div>
+                      <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Remove extra edge overlays</h3>
                       <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">CSS masks fade text, icons, focus rings, and row backgrounds together.</p>
                     </div>
                     <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#238</span>
                   </article>
                   <article class="flex gap-4 px-5 py-4 sm:px-6">
-                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-blue-400/10 text-[0.8125rem] font-medium text-blue-200">UI</span>
+                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-white/[0.04] text-[0.8125rem] font-medium text-neutral-400">UI</span>
                     <div class="min-w-0 flex-1">
-                      <div class="flex flex-wrap items-center gap-2">
-                        <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Check keyboard surfaces</h3>
-                        <span class="rounded-md border border-white/10 px-2 py-1 text-[0.75rem] leading-none text-neutral-400">next</span>
-                      </div>
+                      <h3 class="text-[0.9375rem] font-medium leading-6 text-neutral-50">Check keyboard surfaces</h3>
                       <p class="mt-1 text-[0.875rem] leading-5 text-neutral-400">Nothing about the utility assumes a card, feed, or media-heavy layout.</p>
                     </div>
                     <span class="mono-copy shrink-0 font-mono text-[0.75rem] leading-6 text-neutral-500">#237</span>
@@ -799,26 +777,23 @@
                   <div class="px-2 py-2 font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.18em] text-neutral-500">
                     Components
                   </div>
-                  <button class="ui-row flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left">
+                  <button class="ui-row flex w-full items-center rounded-md px-3 py-2.5 text-left">
                     <span>
                       <span class="block text-[0.875rem] font-medium leading-5 text-neutral-100">Popover</span>
                       <span class="block text-[0.8125rem] leading-5 text-neutral-500">Floating panel with overflow</span>
                     </span>
-                    <span class="rounded-md border border-emerald-400/20 bg-emerald-400/10 px-2 py-1 text-[0.75rem] leading-none text-emerald-200">fade-y</span>
                   </button>
-                  <button class="ui-row flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left">
+                  <button class="ui-row flex w-full items-center rounded-md px-3 py-2.5 text-left">
                     <span>
                       <span class="block text-[0.875rem] font-medium leading-5 text-neutral-100">Command</span>
                       <span class="block text-[0.8125rem] leading-5 text-neutral-500">Dense keyboard-first results</span>
                     </span>
-                    <span class="rounded-md border border-emerald-400/20 bg-emerald-400/10 px-2 py-1 text-[0.75rem] leading-none text-emerald-200">fade-y</span>
                   </button>
-                  <button class="ui-row flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left">
+                  <button class="ui-row flex w-full items-center rounded-md px-3 py-2.5 text-left">
                     <span>
                       <span class="block text-[0.875rem] font-medium leading-5 text-neutral-100">ScrollArea</span>
                       <span class="block text-[0.8125rem] leading-5 text-neutral-500">Native overflow, softened edges</span>
                     </span>
-                    <span class="rounded-md border border-white/10 px-2 py-1 text-[0.75rem] leading-none text-neutral-400">mask</span>
                   </button>
                   <div class="mt-2 px-2 py-2 font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.18em] text-neutral-500">
                     Recent surfaces
@@ -942,7 +917,7 @@
               <div class="fade-y fade-clear-t-lg thin-scroll h-52 overflow-y-auto" data-demo="clearance">
                 <div class="surface-panel-strong sticky top-0 z-10 flex h-12 items-center justify-between gap-3 border-b border-emerald-400/20 bg-neutral-950/95 px-4 backdrop-blur">
                   <p class="text-[0.875rem] font-medium leading-5 text-emerald-100">Pinned filters</p>
-                  <span class="mono-copy rounded-md border border-emerald-400/20 bg-emerald-400/10 px-2 py-1 font-mono text-[0.6875rem] leading-none text-emerald-200">3rem clear</span>
+                  <span class="mono-copy font-mono text-[0.6875rem] leading-none text-neutral-500">3rem clear</span>
                 </div>
                 <div class="space-y-3 p-4">
                   <p class="rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-[0.875rem] leading-5 text-emerald-100">The fade starts below the sticky chrome.</p>
