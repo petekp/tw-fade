@@ -216,9 +216,13 @@
 
       html[data-surface] {
         background-color: var(--demo-page-bg);
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='1215' viewBox='0 0 128 1215'%3E%3Cpath d='M64 0 C124 50.625 124 151.875 64 202.5 S4 354.375 64 405 S124 556.875 64 607.5 S4 759.375 64 810 S124 961.875 64 1012.5 S4 1164.375 64 1215' fill='none' stroke='%23ffffff' stroke-opacity='0.075' stroke-width='1' stroke-linecap='round' stroke-linejoin='round' shape-rendering='geometricPrecision'/%3E%3C/svg%3E");
+        /* Static fallback = the scroll-0 wave (amp 26 / wl 386). The script at
+           the end of <body> overrides background-image/-size on scroll to morph
+           amplitude + wavelength; this rule is what shows pre-JS and under
+           prefers-reduced-motion. */
+        background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'128'%20height%3D'1158'%20viewBox%3D'0%200%20128%201158'%3E%3Cpath%20d%3D'M64%200C90%2048.25%2090%20144.75%2064%20193S38%20337.75%2064%20386S90%20530.75%2064%20579S38%20723.75%2064%20772S90%20916.75%2064%20965S38%201109.75%2064%201158'%20fill%3D'none'%20stroke%3D'%23ffffff'%20stroke-opacity%3D'0.065'%20stroke-width%3D'1.25'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%20shape-rendering%3D'geometricPrecision'%2F%3E%3C%2Fsvg%3E");
         background-repeat: repeat;
-        background-size: 128px 1215px;
+        background-size: 128px 1158px;
         transition: background-color 180ms ease;
       }
 
@@ -290,6 +294,13 @@
         text-wrap: nowrap;
       }
 
+      /* Registered so it can be interpolated by a scroll-driven keyframe animation. */
+      @property --hero-scroll {
+        syntax: "<number>";
+        inherits: true;
+        initial-value: 0;
+      }
+
       .hero-title {
         font-family: "Climate Crisis", "Arial Black", Impact, ui-sans-serif, system-ui, sans-serif;
         font-weight: 400;
@@ -300,8 +311,10 @@
       .hero-title-stack {
         display: inline-grid;
         max-width: 100%;
-        transform-style: preserve-3d;
         --hero-scroll: 0;
+        /* No explicit layer promotion: the flattened stack costs zero dedicated
+           compositor layers (the old per-clone translate3d + will-change forced
+           ~21). The browser promotes on demand during the scroll morph. */
       }
 
       .hero-title-stack > span {
@@ -313,14 +326,12 @@
         color: var(--demo-text-strong);
         opacity: calc(var(--depth-opacity) + var(--hero-scroll) * var(--depth-scroll-opacity));
         pointer-events: none;
-        transform: translate3d(
+        transform: translate(
             calc(var(--hero-scroll) * var(--depth-scroll-x)),
-            calc(var(--depth-y) + var(--hero-scroll) * var(--depth-scroll-y)),
-            0
+            calc(var(--depth-y) + var(--hero-scroll) * var(--depth-scroll-y))
           )
           scale(calc(var(--depth-scale) - var(--hero-scroll) * var(--depth-scroll-scale)));
         transform-origin: left center;
-        will-change: opacity, transform;
       }
 
       .hero-title-main {
@@ -330,6 +341,26 @@
       @media (prefers-reduced-motion: reduce) {
         .hero-title-stack {
           --hero-scroll: 0 !important;
+        }
+      }
+
+      /* Drive the depth morph straight off the page scroll position — no JS.
+         Maps the first 520px of scroll to --hero-scroll 0 → 1 (matching the
+         old document.body.scrollTop / 520 clamp). Browsers without
+         scroll-driven animation support just get the static extrusion. */
+      @keyframes hero-depth-scroll {
+        to {
+          --hero-scroll: 1;
+        }
+      }
+
+      @supports (animation-timeline: scroll()) {
+        @media (prefers-reduced-motion: no-preference) {
+          .hero-title-stack {
+            animation: hero-depth-scroll linear both;
+            animation-timeline: scroll(nearest block);
+            animation-range: 0 520px;
+          }
         }
       }
 
@@ -836,27 +867,21 @@
         <p class="mb-4 font-mono text-[0.6875rem] font-medium uppercase leading-4 tracking-[0.16em] api-label">
           Tailwind v4 Plugin
         </p>
-        <h1 class="hero-title hero-title-stack text-[5.5rem] text-neutral-50 sm:text-[6.75rem] lg:text-[8rem]" aria-label="tw-fade" data-hero-title>
-          <span class="hero-title-depth" style="--depth-y: 0.19em; --depth-scale: 0.91; --depth-opacity: 0.01; --depth-scroll-x: -0.014em; --depth-scroll-y: 0.22em; --depth-scroll-scale: 0.03; --depth-scroll-opacity: 0.04" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.1805em; --depth-scale: 0.9145; --depth-opacity: 0.017; --depth-scroll-x: -0.0133em; --depth-scroll-y: 0.209em; --depth-scroll-scale: 0.0285; --depth-scroll-opacity: 0.038" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.171em; --depth-scale: 0.919; --depth-opacity: 0.024; --depth-scroll-x: -0.0126em; --depth-scroll-y: 0.198em; --depth-scroll-scale: 0.027; --depth-scroll-opacity: 0.036" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.1615em; --depth-scale: 0.9235; --depth-opacity: 0.031; --depth-scroll-x: -0.0119em; --depth-scroll-y: 0.187em; --depth-scroll-scale: 0.0255; --depth-scroll-opacity: 0.034" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.152em; --depth-scale: 0.928; --depth-opacity: 0.038; --depth-scroll-x: -0.0112em; --depth-scroll-y: 0.176em; --depth-scroll-scale: 0.024; --depth-scroll-opacity: 0.032" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.1425em; --depth-scale: 0.9325; --depth-opacity: 0.045; --depth-scroll-x: -0.0105em; --depth-scroll-y: 0.165em; --depth-scroll-scale: 0.0225; --depth-scroll-opacity: 0.03" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.133em; --depth-scale: 0.937; --depth-opacity: 0.052; --depth-scroll-x: -0.0098em; --depth-scroll-y: 0.154em; --depth-scroll-scale: 0.021; --depth-scroll-opacity: 0.028" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.1235em; --depth-scale: 0.9415; --depth-opacity: 0.059; --depth-scroll-x: -0.0091em; --depth-scroll-y: 0.143em; --depth-scroll-scale: 0.0195; --depth-scroll-opacity: 0.026" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.114em; --depth-scale: 0.946; --depth-opacity: 0.066; --depth-scroll-x: -0.0084em; --depth-scroll-y: 0.132em; --depth-scroll-scale: 0.018; --depth-scroll-opacity: 0.024" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.1045em; --depth-scale: 0.9505; --depth-opacity: 0.073; --depth-scroll-x: -0.0077em; --depth-scroll-y: 0.121em; --depth-scroll-scale: 0.0165; --depth-scroll-opacity: 0.022" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.095em; --depth-scale: 0.955; --depth-opacity: 0.08; --depth-scroll-x: -0.007em; --depth-scroll-y: 0.11em; --depth-scroll-scale: 0.015; --depth-scroll-opacity: 0.02" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.0855em; --depth-scale: 0.9595; --depth-opacity: 0.087; --depth-scroll-x: -0.0063em; --depth-scroll-y: 0.099em; --depth-scroll-scale: 0.0135; --depth-scroll-opacity: 0.018" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.076em; --depth-scale: 0.964; --depth-opacity: 0.094; --depth-scroll-x: -0.0056em; --depth-scroll-y: 0.088em; --depth-scroll-scale: 0.012; --depth-scroll-opacity: 0.016" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.0665em; --depth-scale: 0.9685; --depth-opacity: 0.101; --depth-scroll-x: -0.0049em; --depth-scroll-y: 0.077em; --depth-scroll-scale: 0.0105; --depth-scroll-opacity: 0.014" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.057em; --depth-scale: 0.973; --depth-opacity: 0.108; --depth-scroll-x: -0.0042em; --depth-scroll-y: 0.066em; --depth-scroll-scale: 0.009; --depth-scroll-opacity: 0.012" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.0475em; --depth-scale: 0.9775; --depth-opacity: 0.115; --depth-scroll-x: -0.0035em; --depth-scroll-y: 0.055em; --depth-scroll-scale: 0.0075; --depth-scroll-opacity: 0.01" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.038em; --depth-scale: 0.982; --depth-opacity: 0.122; --depth-scroll-x: -0.0028em; --depth-scroll-y: 0.044em; --depth-scroll-scale: 0.006; --depth-scroll-opacity: 0.008" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.0285em; --depth-scale: 0.9865; --depth-opacity: 0.129; --depth-scroll-x: -0.0021em; --depth-scroll-y: 0.033em; --depth-scroll-scale: 0.0045; --depth-scroll-opacity: 0.006" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.019em; --depth-scale: 0.991; --depth-opacity: 0.136; --depth-scroll-x: -0.0014em; --depth-scroll-y: 0.022em; --depth-scroll-scale: 0.003; --depth-scroll-opacity: 0.004" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.0095em; --depth-scale: 0.9955; --depth-opacity: 0.143; --depth-scroll-x: -0.0007em; --depth-scroll-y: 0.011em; --depth-scroll-scale: 0.0015; --depth-scroll-opacity: 0.002" aria-hidden="true">tw-fade</span>
+        <h1 class="hero-title hero-title-stack text-[5.5rem] text-neutral-50 sm:text-[6.75rem] lg:text-[8rem]" aria-label="tw-fade">
+          <span class="hero-title-depth" style="--depth-y: 0.292em; --depth-scale: 0.91; --depth-opacity: 0.01; --depth-scroll-x: -0.014em; --depth-scroll-y: 0.22em; --depth-scroll-scale: 0.034; --depth-scroll-opacity: 0.04; filter: blur(0.017em);" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.26954em; --depth-scale: 0.91658; --depth-opacity: 0.02023; --depth-scroll-x: -0.01298em; --depth-scroll-y: 0.20392em; --depth-scroll-scale: 0.0315; --depth-scroll-opacity: 0.03708; filter: blur(0.01715em);" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.24708em; --depth-scale: 0.92315; --depth-opacity: 0.03046; --depth-scroll-x: -0.01195em; --depth-scroll-y: 0.18785em; --depth-scroll-scale: 0.029; --depth-scroll-opacity: 0.03415; filter: blur(0.01731em);" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.22462em; --depth-scale: 0.92973; --depth-opacity: 0.04069; --depth-scroll-x: -0.01093em; --depth-scroll-y: 0.17177em; --depth-scroll-scale: 0.0265; --depth-scroll-opacity: 0.03123; filter: blur(0.01746em);" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.20215em; --depth-scale: 0.93631; --depth-opacity: 0.05092; --depth-scroll-x: -0.00991em; --depth-scroll-y: 0.15569em; --depth-scroll-scale: 0.024; --depth-scroll-opacity: 0.02831; filter: blur(0.01762em);" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.17969em; --depth-scale: 0.94288; --depth-opacity: 0.06115; --depth-scroll-x: -0.00888em; --depth-scroll-y: 0.13962em; --depth-scroll-scale: 0.0215; --depth-scroll-opacity: 0.02538; filter: blur(0.01777em);" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.15723em; --depth-scale: 0.94946; --depth-opacity: 0.07138; --depth-scroll-x: -0.00786em; --depth-scroll-y: 0.12354em; --depth-scroll-scale: 0.019; --depth-scroll-opacity: 0.02246; filter: blur(0.01792em);" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.13477em; --depth-scale: 0.95604; --depth-opacity: 0.08162; --depth-scroll-x: -0.00684em; --depth-scroll-y: 0.10746em; --depth-scroll-scale: 0.0165; --depth-scroll-opacity: 0.01954; filter: blur(0.01808em);" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.11231em; --depth-scale: 0.96262; --depth-opacity: 0.09185; --depth-scroll-x: -0.00582em; --depth-scroll-y: 0.09138em; --depth-scroll-scale: 0.014; --depth-scroll-opacity: 0.01662; filter: blur(0.01823em);" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.08985em; --depth-scale: 0.96919; --depth-opacity: 0.10208; --depth-scroll-x: -0.00479em; --depth-scroll-y: 0.07531em; --depth-scroll-scale: 0.0115; --depth-scroll-opacity: 0.01369; filter: blur(0.01838em);" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.06738em; --depth-scale: 0.97577; --depth-opacity: 0.11231; --depth-scroll-x: -0.00377em; --depth-scroll-y: 0.05923em; --depth-scroll-scale: 0.009; --depth-scroll-opacity: 0.01077; filter: blur(0.01854em);" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.04492em; --depth-scale: 0.98235; --depth-opacity: 0.12254; --depth-scroll-x: -0.00275em; --depth-scroll-y: 0.04315em; --depth-scroll-scale: 0.0065; --depth-scroll-opacity: 0.00785; filter: blur(0.01869em);" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0.02246em; --depth-scale: 0.98892; --depth-opacity: 0.13277; --depth-scroll-x: -0.00172em; --depth-scroll-y: 0.02708em; --depth-scroll-scale: 0.004; --depth-scroll-opacity: 0.00492; filter: blur(0.01885em);" aria-hidden="true">tw-fade</span>
+          <span class="hero-title-depth" style="--depth-y: 0em; --depth-scale: 0.9955; --depth-opacity: 0.143; --depth-scroll-x: -0.0007em; --depth-scroll-y: 0.011em; --depth-scroll-scale: 0.0015; --depth-scroll-opacity: 0.002; filter: blur(0.019em);" aria-hidden="true">tw-fade</span>
           <span class="hero-title-main" aria-hidden="true">tw-fade</span>
         </h1>
         <p class="mt-9 max-w-[40rem] text-balance text-[1.0625rem] leading-7 text-neutral-300/85 sm:text-lg">
@@ -1582,22 +1607,84 @@
         clearance.scrollTop = 32
       })
     </script>
-    <script type="module">
-      import { scroll } from "https://cdn.jsdelivr.net/npm/motion@12.40.0/+esm"
+    <script>
+      // Wave background morph: amplitude + wavelength shift with scroll position.
+      // The page scrolls inside <body> (overflow-y-auto); the wave lives on
+      // <html data-surface> behind it. So we read body scroll and repaint the
+      // <html> background each frame. The html[data-surface] CSS rule is the
+      // static pre-JS / reduced-motion fallback (the scroll-0 state).
+      ;(() => {
+        const P = {
+          amplitudeTop: 26,
+          amplitudeBottom: 74,
+          wavelengthTop: 386,
+          wavelengthBottom: 160,
+          cycles: 3,
+          spacing: 128,
+          columns: 1,
+          stagger: false,
+          strokeWidth: 1.25,
+          strokeOpacity: 0.065,
+          strokeColor: '#ffffff',
+        }
+        const scroller = document.body
+        const target = document.documentElement
+        const r = (v) => Number(Number(v).toFixed(3))
+        const lerp = (a, b, t) => a + (b - a) * t
 
-      const heroTitle = document.querySelector('[data-hero-title]')
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+        // wl is pre-rounded to an int so cycles*wl === the viewBox height — the
+        // tile keeps repeating seamlessly at every scroll position.
+        const wave = (amp, wl) => {
+          const h = wl / 2
+          const segs = 2 * Math.round(P.cycles)
+          const cols = Math.round(P.columns)
+          const tileW = Math.round(P.spacing) * cols
+          const H = Math.round(P.cycles) * wl
+          let d = ''
+          for (let c = 0; c < cols; c++) {
+            const cx = P.spacing * c + P.spacing / 2
+            const s0 = P.stagger && c % 2 === 1 ? -1 : 1
+            d += `M${r(cx)} 0C${r(cx + s0 * amp)} ${r(0.25 * h)} ${r(cx + s0 * amp)} ${r(0.75 * h)} ${r(cx)} ${r(h)}`
+            for (let i = 1; i < segs; i++) {
+              const sign = s0 * (i % 2 === 0 ? 1 : -1)
+              d += `S${r(cx + sign * amp)} ${r(i * h + 0.75 * h)} ${r(cx)} ${r((i + 1) * h)}`
+            }
+          }
+          const svg =
+            `<svg xmlns='http://www.w3.org/2000/svg' width='${tileW}' height='${H}' viewBox='0 0 ${tileW} ${H}'>` +
+            `<path d='${d}' fill='none' stroke='${P.strokeColor}' stroke-opacity='${P.strokeOpacity}' ` +
+            `stroke-width='${P.strokeWidth}' stroke-linecap='round' stroke-linejoin='round' shape-rendering='geometricPrecision'/></svg>`
+          return { uri: `data:image/svg+xml,${encodeURIComponent(svg)}`, tileW, H }
+        }
 
-      function syncHeroDepth() {
-        if (!heroTitle || reduceMotion.matches) return
-        const scrollProgress = Math.min(1, Math.max(0, document.body.scrollTop / 520))
-        heroTitle.style.setProperty('--hero-scroll', scrollProgress.toFixed(4))
-      }
+        let lastUri = ''
+        let pending = false
+        const frame = () => {
+          pending = false
+          const max = scroller.scrollHeight - scroller.clientHeight
+          const p = max > 0 ? Math.min(1, Math.max(0, scroller.scrollTop / max)) : 0
+          const amp = lerp(P.amplitudeTop, P.amplitudeBottom, p)
+          const wl = Math.round(lerp(P.wavelengthTop, P.wavelengthBottom, p))
+          const w = wave(amp, wl)
+          if (w.uri === lastUri) return // skip frames where the rounded geometry didn't move
+          lastUri = w.uri
+          target.style.backgroundImage = `url("${w.uri}")`
+          target.style.backgroundSize = `${w.tileW}px ${w.H}px`
+        }
 
-      if (heroTitle && !reduceMotion.matches) {
-        syncHeroDepth()
-        scroll(syncHeroDepth, { container: document.body })
-      }
+        if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return
+        scroller.addEventListener(
+          'scroll',
+          () => {
+            if (pending) return
+            pending = true
+            requestAnimationFrame(frame)
+          },
+          { passive: true },
+        )
+        window.addEventListener('resize', frame)
+        frame()
+      })()
     </script>
   </body>
 </html>

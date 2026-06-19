@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>tw-fade · hero depth lab</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Climate+Crisis&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --lab-bg: rgb(10 10 10);
+        --lab-ink: rgb(250 250 250);
+      }
+
+      html {
+        scrollbar-width: thin;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100%;
+        color: var(--lab-ink);
+        background-color: var(--lab-bg);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='1215' viewBox='0 0 128 1215'%3E%3Cpath d='M64 0 C124 50.625 124 151.875 64 202.5 S4 354.375 64 405 S124 556.875 64 607.5 S4 759.375 64 810 S124 961.875 64 1012.5 S4 1164.375 64 1215' fill='none' stroke='%23ffffff' stroke-opacity='0.075' stroke-width='1' stroke-linecap='round' stroke-linejoin='round' shape-rendering='geometricPrecision'/%3E%3C/svg%3E");
+        background-repeat: repeat;
+        background-size: 128px 1215px;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+      }
+
+      /* ----- the effect under test (mirrors demo/index.html) ----- */
+      @property --hero-scroll {
+        syntax: "<number>";
+        inherits: true;
+        initial-value: 0;
+      }
+
+      .stage {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 8vh 6vw;
+      }
+
+      .hero-title {
+        font-family: "Climate Crisis", "Arial Black", Impact, ui-sans-serif, system-ui, sans-serif;
+        font-weight: 400;
+        letter-spacing: 0;
+        line-height: 0.92;
+        font-size: clamp(3.5rem, 11vw, 9rem);
+        color: var(--lab-ink);
+      }
+
+      .hero-title-stack {
+        display: inline-grid;
+        max-width: 100%;
+        --hero-scroll: 0;
+        animation: hero-depth-scroll linear both;
+        animation-timeline: scroll(root block);
+        animation-range: 0 520px;
+      }
+
+      .hero-title-stack.is-locked {
+        animation: none;
+      }
+
+      .hero-title-stack > span {
+        grid-area: 1 / 1;
+        white-space: nowrap;
+      }
+
+      .hero-title-depth {
+        color: var(--lab-ink);
+        opacity: calc(var(--depth-opacity) + var(--hero-scroll) * var(--depth-scroll-opacity));
+        pointer-events: none;
+        transform: translate(
+            calc(var(--hero-scroll) * var(--depth-scroll-x)),
+            calc(var(--depth-y) + var(--hero-scroll) * var(--depth-scroll-y))
+          )
+          scale(calc(var(--depth-scale) - var(--hero-scroll) * var(--depth-scroll-scale)));
+        transform-origin: left center;
+      }
+
+      .hero-title-main {
+        position: relative;
+      }
+
+      @keyframes hero-depth-scroll {
+        to {
+          --hero-scroll: 1;
+        }
+      }
+
+      .spacer {
+        height: 140vh;
+      }
+
+      /* ----- control panel ----- */
+      #panel {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        width: 332px;
+        max-height: calc(100vh - 24px);
+        overflow-y: auto;
+        padding: 14px 14px 18px;
+        border: 1px solid rgb(255 255 255 / 0.14);
+        border-radius: 12px;
+        background: rgb(10 10 10 / 0.86);
+        backdrop-filter: blur(8px);
+        color: rgb(229 229 229);
+        font:
+          12px/1.45 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+        z-index: 10;
+        box-shadow: 0 12px 40px rgb(0 0 0 / 0.5);
+      }
+
+      #panel.is-hidden {
+        transform: translateX(calc(100% + 16px));
+      }
+
+      #panel h1 {
+        margin: 0 0 2px;
+        font-size: 13px;
+        letter-spacing: 0.02em;
+        color: rgb(250 250 250);
+      }
+
+      #panel .sub {
+        margin: 0 0 12px;
+        color: rgb(140 140 140);
+      }
+
+      .group {
+        margin: 0 0 14px;
+        padding: 10px 10px 12px;
+        border: 1px solid rgb(255 255 255 / 0.08);
+        border-radius: 9px;
+        background: rgb(255 255 255 / 0.02);
+      }
+
+      .group > .group-title {
+        margin: 0 0 9px;
+        color: rgb(110 231 183);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .ctrl {
+        margin: 0 0 9px;
+      }
+
+      .ctrl:last-child {
+        margin-bottom: 0;
+      }
+
+      .ctrl-label {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 3px;
+        color: rgb(200 200 200);
+      }
+
+      .ctrl-label .val {
+        color: rgb(250 250 250);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .pair {
+        display: grid;
+        grid-template-columns: 26px 1fr 56px;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 4px;
+      }
+
+      .pair .tag {
+        color: rgb(140 140 140);
+      }
+
+      .pair .val {
+        text-align: right;
+        color: rgb(245 245 245);
+        font-variant-numeric: tabular-nums;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: rgb(16 185 129);
+        margin: 0;
+      }
+
+      input[type="color"] {
+        width: 100%;
+        height: 26px;
+        padding: 0;
+        border: 1px solid rgb(255 255 255 / 0.14);
+        border-radius: 6px;
+        background: transparent;
+      }
+
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .readout {
+        margin: 2px 0 0;
+        color: rgb(150 150 150);
+        font-size: 11px;
+      }
+
+      .readout b {
+        color: rgb(250 250 250);
+        font-weight: 600;
+      }
+
+      button {
+        appearance: none;
+        cursor: pointer;
+        border: 1px solid rgb(255 255 255 / 0.16);
+        border-radius: 7px;
+        background: rgb(255 255 255 / 0.04);
+        color: rgb(235 235 235);
+        padding: 6px 9px;
+        font: inherit;
+        font-size: 11px;
+      }
+
+      button:hover {
+        background: rgb(255 255 255 / 0.09);
+        border-color: rgb(255 255 255 / 0.26);
+      }
+
+      button.primary {
+        border-color: rgb(16 185 129 / 0.5);
+        background: rgb(16 185 129 / 0.16);
+        color: rgb(209 250 229);
+      }
+
+      label.check {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: rgb(200 200 200);
+        cursor: pointer;
+      }
+
+      #export {
+        width: 100%;
+        height: 150px;
+        margin-top: 8px;
+        resize: vertical;
+        border: 1px solid rgb(255 255 255 / 0.14);
+        border-radius: 7px;
+        background: rgb(0 0 0 / 0.5);
+        color: rgb(190 220 205);
+        font:
+          11px/1.4 ui-monospace,
+          monospace;
+        padding: 8px;
+        display: none;
+      }
+
+      #showPanel {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        z-index: 9;
+        display: none;
+      }
+
+      .hint {
+        margin-top: 10px;
+        color: rgb(120 120 120);
+        font-size: 10.5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <h1 class="hero-title hero-title-stack" aria-label="tw-fade"></h1>
+    </div>
+    <div class="spacer" aria-hidden="true"></div>
+
+    <button id="showPanel">params ▸</button>
+    <aside id="panel" aria-label="Hero depth controls">
+      <h1>hero depth lab</h1>
+      <p class="sub">Live-tune the masthead extrusion. Scroll the page to preview the morph, or lock progress below.</p>
+      <div id="groups"></div>
+      <div class="row" style="margin-top: 4px">
+        <button class="primary" id="btnExport">Export</button>
+        <button id="btnReset">Reset</button>
+        <button id="presetOrig">Original (20)</button>
+        <button id="presetLean">Lean (8)</button>
+        <button id="btnHide">Hide</button>
+      </div>
+      <textarea id="export" readonly spellcheck="false"></textarea>
+      <p class="hint">Press <b>h</b> to hide/show this panel. Export copies a params JSON + paste-ready spans to your clipboard.</p>
+    </aside>
+
+    <script>
+      // ---- model ----------------------------------------------------------
+      const ENV_META = {
+        y: { label: "translate Y (em)", min: 0, max: 0.4, step: 0.001, unit: "em", css: "--depth-y" },
+        scale: { label: "scale", min: 0.8, max: 1, step: 0.001, unit: "", css: "--depth-scale" },
+        opacity: { label: "opacity", min: 0, max: 0.3, step: 0.001, unit: "", css: "--depth-opacity" },
+        blur: { label: "blur (em)", min: 0, max: 0.12, step: 0.001, unit: "em", css: "" },
+        sx: { label: "scroll → X (em)", min: -0.06, max: 0.02, step: 0.0005, unit: "em", css: "--depth-scroll-x" },
+        sy: { label: "scroll → Y (em)", min: -0.05, max: 2, step: 0.001, unit: "em", css: "--depth-scroll-y" },
+        sscale: { label: "scroll → scale", min: -0.02, max: 0.08, step: 0.0005, unit: "", css: "--depth-scroll-scale" },
+        sopacity: { label: "scroll → opacity", min: -0.02, max: 0.1, step: 0.001, unit: "", css: "--depth-scroll-opacity" },
+      };
+      const ORDER = ["y", "scale", "opacity", "sx", "sy", "sscale", "sopacity"];
+
+      // defaults = current production values (demo/index.html)
+      const DEFAULTS = {
+        count: 14,
+        scrollPx: 520,
+        locked: false,
+        progress: 0,
+        ink: "#fafafa",
+        bg: "#0a0a0a",
+        env: {
+          y: { far: 0.19, near: 0.0095 },
+          scale: { far: 0.91, near: 0.9955 },
+          opacity: { far: 0.01, near: 0.143 },
+          blur: { far: 0, near: 0 },
+          sx: { far: -0.014, near: -0.0007 },
+          sy: { far: 0.22, near: 0.011 },
+          sscale: { far: 0.03, near: 0.0015 },
+          sopacity: { far: 0.04, near: 0.002 },
+        },
+      };
+
+      const clone = (o) => JSON.parse(JSON.stringify(o));
+      let params = clone(DEFAULTS);
+
+      const round = (v) => Number(Number(v).toFixed(5));
+      const stack = document.querySelector(".hero-title-stack");
+
+      // ---- build the depth stack from params -----------------------------
+      function buildStack() {
+        const N = Math.round(params.count);
+        stack.textContent = "";
+        for (let j = 0; j < N; j++) {
+          const t = N === 1 ? 0 : j / (N - 1);
+          const span = document.createElement("span");
+          span.className = "hero-title-depth";
+          span.setAttribute("aria-hidden", "true");
+          span.textContent = "tw-fade";
+          let css = "";
+          for (const k of ORDER) {
+            const { far, near } = params.env[k];
+            css += `${ENV_META[k].css}: ${round(far + (near - far) * t)}${ENV_META[k].unit}; `;
+          }
+          // blur is a direct inline filter (only when > 0) so the no-blur default
+          // stays filter-free and keeps the flattened zero-layer profile.
+          const blur = round(params.env.blur.far + (params.env.blur.near - params.env.blur.far) * t);
+          if (blur > 0) css += `filter: blur(${blur}em); `;
+          span.style.cssText = css.trim();
+          stack.appendChild(span);
+        }
+        const main = document.createElement("span");
+        main.className = "hero-title-main";
+        main.setAttribute("aria-hidden", "true");
+        main.textContent = "tw-fade";
+        stack.appendChild(main);
+        updateReadout();
+      }
+
+      // ---- apply non-structural params -----------------------------------
+      function applyScrollRange() {
+        stack.style.animationRange = `0 ${Math.round(params.scrollPx)}px`;
+      }
+      function applyLock() {
+        if (params.locked) {
+          stack.classList.add("is-locked");
+          stack.style.setProperty("--hero-scroll", String(params.progress));
+        } else {
+          stack.classList.remove("is-locked");
+          stack.style.removeProperty("--hero-scroll");
+        }
+      }
+      function applyColors() {
+        document.documentElement.style.setProperty("--lab-ink", params.ink);
+        document.documentElement.style.setProperty("--lab-bg", params.bg);
+      }
+
+      function updateReadout() {
+        const N = Math.round(params.count);
+        const opStep = N > 1 ? (params.env.opacity.near - params.env.opacity.far) / (N - 1) : 0;
+        const yStep = N > 1 ? Math.abs(params.env.y.near - params.env.y.far) / (N - 1) : 0;
+        readout.innerHTML =
+          `clones: <b>${N}</b> · opacity step: <b>${opStep.toFixed(4)}</b> · y step: <b>${yStep.toFixed(4)}em</b>` +
+          `<br/>per-frame raster cost scales with clone count; banding rises as steps grow.`;
+      }
+
+      // ---- panel rendering -----------------------------------------------
+      const groupsEl = document.getElementById("groups");
+      let readout;
+
+      function makeSlider(labelText, value, meta, onInput) {
+        const wrap = document.createElement("div");
+        wrap.className = "ctrl";
+        const lab = document.createElement("div");
+        lab.className = "ctrl-label";
+        const name = document.createElement("span");
+        name.textContent = labelText;
+        const val = document.createElement("span");
+        val.className = "val";
+        val.textContent = fmt(value, meta.step);
+        lab.append(name, val);
+        const input = document.createElement("input");
+        input.type = "range";
+        input.min = meta.min;
+        input.max = meta.max;
+        input.step = meta.step;
+        input.value = value;
+        input.addEventListener("input", () => {
+          const v = parseFloat(input.value);
+          val.textContent = fmt(v, meta.step);
+          onInput(v);
+        });
+        wrap.append(lab, input);
+        wrap._set = (v) => {
+          input.value = v;
+          val.textContent = fmt(v, meta.step);
+        };
+        return wrap;
+      }
+
+      function fmt(v, step) {
+        const dec = step >= 1 ? 0 : String(step).split(".")[1]?.length ?? 3;
+        return Number(v).toFixed(dec);
+      }
+
+      function makeEnvRow(key) {
+        const meta = ENV_META[key];
+        const wrap = document.createElement("div");
+        wrap.className = "ctrl";
+        const title = document.createElement("div");
+        title.className = "ctrl-label";
+        title.innerHTML = `<span>${meta.label}</span>`;
+        wrap.appendChild(title);
+        for (const edge of ["far", "near"]) {
+          const row = document.createElement("div");
+          row.className = "pair";
+          const tag = document.createElement("span");
+          tag.className = "tag";
+          tag.textContent = edge;
+          const input = document.createElement("input");
+          input.type = "range";
+          input.min = meta.min;
+          input.max = meta.max;
+          input.step = meta.step;
+          input.value = params.env[key][edge];
+          const val = document.createElement("span");
+          val.className = "val";
+          val.textContent = fmt(params.env[key][edge], meta.step);
+          input.addEventListener("input", () => {
+            const v = parseFloat(input.value);
+            params.env[key][edge] = v;
+            val.textContent = fmt(v, meta.step);
+            buildStack();
+          });
+          row.append(tag, input, val);
+          wrap.appendChild(row);
+          input._edge = edge;
+          (wrap._inputs ||= {})[edge] = { input, val };
+        }
+        envRows[key] = wrap;
+        return wrap;
+      }
+
+      const envRows = {};
+      const sliderRefs = {};
+
+      function renderPanel() {
+        groupsEl.textContent = "";
+
+        // Stack group
+        const gStack = group("Stack");
+        const countMeta = { min: 4, max: 28, step: 1 };
+        sliderRefs.count = makeSlider("clone count", params.count, countMeta, (v) => {
+          params.count = v;
+          buildStack();
+        });
+        gStack.appendChild(sliderRefs.count);
+        readout = document.createElement("p");
+        readout.className = "readout";
+        gStack.appendChild(readout);
+
+        // Static envelope
+        const gRest = group("At rest (far → near)");
+        for (const k of ["y", "scale", "opacity", "blur"]) gRest.appendChild(makeEnvRow(k));
+
+        // Scroll deltas
+        const gScroll = group("Scroll morph deltas (far → near)");
+        for (const k of ["sx", "sy", "sscale", "sopacity"]) gScroll.appendChild(makeEnvRow(k));
+
+        // Preview
+        const gPrev = group("Preview");
+        sliderRefs.scrollPx = makeSlider("scroll distance (px)", params.scrollPx, { min: 100, max: 1200, step: 10 }, (v) => {
+          params.scrollPx = v;
+          applyScrollRange();
+        });
+        gPrev.appendChild(sliderRefs.scrollPx);
+
+        const lockWrap = document.createElement("div");
+        lockWrap.className = "ctrl";
+        const lockLabel = document.createElement("label");
+        lockLabel.className = "check";
+        const lockBox = document.createElement("input");
+        lockBox.type = "checkbox";
+        lockBox.checked = params.locked;
+        lockLabel.append(lockBox, document.createTextNode("lock progress (freeze-frame the morph)"));
+        lockBox.addEventListener("change", () => {
+          params.locked = lockBox.checked;
+          applyLock();
+        });
+        lockWrap.appendChild(lockLabel);
+        gPrev.appendChild(lockWrap);
+
+        sliderRefs.progress = makeSlider("progress (--hero-scroll)", params.progress, { min: 0, max: 1, step: 0.01 }, (v) => {
+          params.progress = v;
+          if (!params.locked) {
+            params.locked = true;
+            lockBox.checked = true;
+          }
+          applyLock();
+        });
+        gPrev.appendChild(sliderRefs.progress);
+
+        const colorRow = document.createElement("div");
+        colorRow.className = "ctrl";
+        colorRow.innerHTML = `<div class="ctrl-label"><span>ink</span></div>`;
+        const ink = document.createElement("input");
+        ink.type = "color";
+        ink.value = params.ink;
+        ink.addEventListener("input", () => {
+          params.ink = ink.value;
+          applyColors();
+        });
+        colorRow.appendChild(ink);
+        gPrev.appendChild(colorRow);
+
+        const bgRow = document.createElement("div");
+        bgRow.className = "ctrl";
+        bgRow.innerHTML = `<div class="ctrl-label"><span>surface</span></div>`;
+        const bg = document.createElement("input");
+        bg.type = "color";
+        bg.value = params.bg;
+        bg.addEventListener("input", () => {
+          params.bg = bg.value;
+          applyColors();
+        });
+        bgRow.appendChild(bg);
+        gPrev.appendChild(bgRow);
+      }
+
+      function group(title) {
+        const g = document.createElement("div");
+        g.className = "group";
+        const t = document.createElement("div");
+        t.className = "group-title";
+        t.textContent = title;
+        g.appendChild(t);
+        groupsEl.appendChild(g);
+        return g;
+      }
+
+      // sync every control widget back from params (after preset/reset)
+      function syncControls() {
+        sliderRefs.count._set(params.count);
+        sliderRefs.scrollPx._set(params.scrollPx);
+        sliderRefs.progress._set(params.progress);
+        for (const k of [...ORDER, "blur"]) {
+          const refs = envRows[k]._inputs;
+          for (const edge of ["far", "near"]) {
+            refs[edge].input.value = params.env[k][edge];
+            refs[edge].val.textContent = fmt(params.env[k][edge], ENV_META[k].step);
+          }
+        }
+      }
+
+      // ---- export ---------------------------------------------------------
+      function exportSpans() {
+        const N = Math.round(params.count);
+        const lines = [];
+        for (let j = 0; j < N; j++) {
+          const t = N === 1 ? 0 : j / (N - 1);
+          let css = "";
+          for (const k of ORDER) {
+            const { far, near } = params.env[k];
+            css += `${ENV_META[k].css}: ${round(far + (near - far) * t)}${ENV_META[k].unit}; `;
+          }
+          const blur = round(params.env.blur.far + (params.env.blur.near - params.env.blur.far) * t);
+          if (blur > 0) css += `filter: blur(${blur}em); `;
+          lines.push(`          <span class="hero-title-depth" style="${css.trim()}" aria-hidden="true">tw-fade</span>`);
+        }
+        const payload = {
+          count: N,
+          scrollPx: Math.round(params.scrollPx),
+          env: params.env,
+        };
+        const text =
+          `/* params — hand back to bake into demo/index.html */\n` +
+          JSON.stringify(payload, null, 2) +
+          `\n\n/* animation-range: 0 ${Math.round(params.scrollPx)}px */\n\n` +
+          `<!-- ${N} depth spans -->\n` +
+          lines.join("\n");
+        const ta = document.getElementById("export");
+        ta.style.display = "block";
+        ta.value = text;
+        ta.focus();
+        ta.select();
+        navigator.clipboard?.writeText(text).catch(() => {});
+      }
+
+      // ---- wiring ---------------------------------------------------------
+      function applyAll() {
+        buildStack();
+        applyScrollRange();
+        applyLock();
+        applyColors();
+      }
+
+      renderPanel();
+      applyAll();
+
+      document.getElementById("btnExport").addEventListener("click", exportSpans);
+      document.getElementById("btnReset").addEventListener("click", () => {
+        params = clone(DEFAULTS);
+        syncControls();
+        document.querySelector("#panel label.check input").checked = false;
+        applyAll();
+      });
+      document.getElementById("presetOrig").addEventListener("click", () => {
+        params.count = 20;
+        applyAll();
+        syncControls();
+      });
+      document.getElementById("presetLean").addEventListener("click", () => {
+        params.count = 8;
+        applyAll();
+        syncControls();
+      });
+
+      const panel = document.getElementById("panel");
+      const showBtn = document.getElementById("showPanel");
+      function setPanel(hidden) {
+        panel.classList.toggle("is-hidden", hidden);
+        showBtn.style.display = hidden ? "block" : "none";
+      }
+      document.getElementById("btnHide").addEventListener("click", () => setPanel(true));
+      showBtn.addEventListener("click", () => setPanel(false));
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "h" && !/input|textarea/i.test(e.target.tagName)) {
+          setPanel(!panel.classList.contains("is-hidden"));
+        }
+      });
+    </script>
+  </body>
+</html>
