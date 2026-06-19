@@ -102,6 +102,14 @@
       }
     </script>
     <style>
+      :root {
+        --demo-radius-sm: 0.625rem;
+        --demo-radius-md: 0.75rem;
+        --demo-radius-lg: 0.875rem;
+        --demo-radius-xl: 1.625rem;
+        --demo-corner-shape: superellipse(1.35);
+      }
+
       html[data-surface="graphite"] {
         --demo-page-bg: rgb(10 10 10);
         --demo-panel-bg: rgb(10 10 10 / 0.75);
@@ -283,6 +291,11 @@
         transition: color 180ms ease;
       }
 
+      html[data-surface] ::selection {
+        background-color: color-mix(in oklab, var(--demo-accent-text) 36%, transparent);
+        color: var(--demo-text-strong);
+      }
+
       html[data-surface] :where(.text-neutral-50, .text-neutral-100) {
         color: var(--demo-text-strong) !important;
       }
@@ -318,6 +331,24 @@
 
       html[data-surface] .placeholder\:text-neutral-500::placeholder {
         color: var(--demo-text-subtle) !important;
+      }
+
+      .rounded {
+        border-radius: var(--demo-radius-sm);
+      }
+
+      .rounded-md {
+        border-radius: var(--demo-radius-md);
+      }
+
+      .rounded-lg {
+        border-radius: var(--demo-radius-lg);
+      }
+
+      @supports (corner-shape: superellipse(1)) {
+        :where(.rounded, .rounded-md, .rounded-lg, .install-snippet, .install-copy-button, .support-tooltip, .edge-toggle-group, .feature-column) {
+          corner-shape: var(--demo-corner-shape);
+        }
       }
 
       body {
@@ -438,21 +469,22 @@
         width: fit-content;
         max-width: 100%;
         align-items: stretch;
-        gap: 0.25rem;
+        gap: 0.375rem;
         margin-top: 1.5rem;
         padding: 0.25rem;
         overflow: hidden;
         border: 0;
-        border-radius: 0.5rem;
-        background-color: color-mix(in oklab, var(--demo-page-bg) 74%, var(--demo-text-primary) 26%);
+        border-radius: var(--demo-radius-md);
+        background-color: color-mix(in oklab, color-mix(in oklab, var(--demo-page-bg) 86%, var(--demo-text-primary) 14%) 95%, transparent);
         box-shadow: none;
+        transition: background-color 180ms ease;
       }
 
       .install-command {
         display: flex;
         min-width: 0;
         align-items: center;
-        padding: 0.5rem 0.625rem;
+        padding: 0.625rem 0.75rem;
         color: var(--demo-text-strong);
         font-size: 0.875rem;
         line-height: 1.25rem;
@@ -460,13 +492,12 @@
       }
 
       .install-copy-button {
-        display: inline-flex;
-        min-width: 4.75rem;
-        align-items: center;
-        justify-content: center;
-        gap: 0.375rem;
+        display: inline-grid;
+        width: 2.75rem;
+        min-width: 2.75rem;
+        place-items: center;
         border: 0;
-        border-radius: 0.375rem;
+        border-radius: var(--demo-radius-sm);
         color: var(--demo-text-muted);
         background: transparent;
         font: inherit;
@@ -480,8 +511,8 @@
       }
 
       .install-copy-button svg {
-        width: 0.9375rem;
-        height: 0.9375rem;
+        width: 1.125rem;
+        height: 1.125rem;
         fill: none;
         stroke: currentColor;
         stroke-linecap: round;
@@ -515,7 +546,14 @@
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
+        width: 100%;
         margin-bottom: 1rem;
+      }
+
+      .masthead-lockup {
+        align-self: flex-start;
+        width: fit-content;
+        max-width: 100%;
       }
 
       .masthead-plugin-label {
@@ -789,7 +827,7 @@
         z-index: 30;
         width: min(13rem, calc(100vw - 2rem));
         pointer-events: none;
-        border-radius: 0.375rem;
+        border-radius: var(--demo-radius-sm);
         border: 1px solid var(--demo-border);
         background: var(--demo-panel-strong);
         padding: 0.625rem 0.75rem;
@@ -1038,7 +1076,7 @@
         height: 5.75rem;
         overflow: hidden;
         border: 1px solid color-mix(in oklab, var(--demo-border-strong) 64%, transparent);
-        border-radius: 1.35rem;
+        border-radius: var(--demo-radius-xl);
         background: color-mix(in oklab, var(--demo-border) 64%, transparent);
         box-shadow:
           inset 0 1px 0 rgb(255 255 255 / 0.04),
@@ -1170,7 +1208,7 @@
         flex-direction: column;
         min-width: 0;
         padding: 1rem;
-        border-radius: 0.5rem;
+        border-radius: var(--demo-radius-lg);
         background-color: var(--feature-card-bg);
         box-shadow: 0 18px 48px rgb(0 0 0 / 0.22);
         transition:
@@ -1547,59 +1585,61 @@
   >
     <main class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:py-16">
       <header class="flex min-h-[75vh] max-w-[45rem] flex-col justify-center pb-12">
-        <div class="masthead-top-row">
-          <p class="masthead-plugin-label">
-            <svg width="26" height="16" viewBox="0 0 54 33" aria-hidden="true">
-              <path
-                fill="currentColor"
-                fill-rule="evenodd"
-                d="M27 0c-7.2 0-11.7 3.6-13.5 10.8 2.7-3.6 5.85-4.95 9.45-4.05 2.054.514 3.522 2.005 5.147 3.653C30.744 13.09 33.809 16.2 40.5 16.2c7.2 0 11.7-3.6 13.5-10.8-2.7 3.6-5.85 4.95-9.45 4.05-2.054-.514-3.522-2.005-5.147-3.653C36.756 3.11 33.691 0 27 0ZM13.5 16.2C6.3 16.2 1.8 19.8 0 27c2.7-3.6 5.85-4.95 9.45-4.05 2.054.514 3.522 2.005 5.147 3.653C17.244 29.29 20.309 32.4 27 32.4c7.2 0 11.7-3.6 13.5-10.8-2.7 3.6-5.85 4.95-9.45 4.05-2.054-.514-3.522-2.005-5.147-3.653C23.256 19.31 20.191 16.2 13.5 16.2Z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            <span>Tailwind v4</span>
-          </p>
-          <div class="masthead-social-links" aria-label="Social links">
-            <a
-              class="social-icon-link"
-              href="https://github.com/petekp/tw-fade"
-              aria-label="GitHub repository"
-              rel="noreferrer"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z" />
+        <div class="masthead-lockup">
+          <div class="masthead-top-row">
+            <p class="masthead-plugin-label">
+              <svg width="26" height="16" viewBox="0 0 54 33" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  fill-rule="evenodd"
+                  d="M27 0c-7.2 0-11.7 3.6-13.5 10.8 2.7-3.6 5.85-4.95 9.45-4.05 2.054.514 3.522 2.005 5.147 3.653C30.744 13.09 33.809 16.2 40.5 16.2c7.2 0 11.7-3.6 13.5-10.8-2.7 3.6-5.85 4.95-9.45 4.05-2.054-.514-3.522-2.005-5.147-3.653C36.756 3.11 33.691 0 27 0ZM13.5 16.2C6.3 16.2 1.8 19.8 0 27c2.7-3.6 5.85-4.95 9.45-4.05 2.054.514 3.522 2.005 5.147 3.653C17.244 29.29 20.309 32.4 27 32.4c7.2 0 11.7-3.6 13.5-10.8-2.7 3.6-5.85 4.95-9.45 4.05-2.054-.514-3.522-2.005-5.147-3.653C23.256 19.31 20.191 16.2 13.5 16.2Z"
+                  clip-rule="evenodd"
+                />
               </svg>
-            </a>
-            <a
-              class="social-icon-link"
-              href="https://x.com/petekp"
-              aria-label="Pete on X"
-              rel="noreferrer"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M18.2 2.3h3.3l-7.2 8.3 8.5 11.2h-6.7L11 14.9l-6 6.8H1.7l7.7-8.8L1.3 2.3h6.8l4.7 6.2 5.4-6.2Zm-1.2 17.5h1.8L7.1 4.1H5.1l11.9 15.7Z" />
-              </svg>
-            </a>
+              <span>Tailwind v4</span>
+            </p>
+            <div class="masthead-social-links" aria-label="Social links">
+              <a
+                class="social-icon-link"
+                href="https://github.com/petekp/tw-fade"
+                aria-label="GitHub repository"
+                rel="noreferrer"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z" />
+                </svg>
+              </a>
+              <a
+                class="social-icon-link"
+                href="https://x.com/petekp"
+                aria-label="Pete on X"
+                rel="noreferrer"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M18.2 2.3h3.3l-7.2 8.3 8.5 11.2h-6.7L11 14.9l-6 6.8H1.7l7.7-8.8L1.3 2.3h6.8l4.7 6.2 5.4-6.2Zm-1.2 17.5h1.8L7.1 4.1H5.1l11.9 15.7Z" />
+                </svg>
+              </a>
+            </div>
           </div>
+          <h1 class="hero-title hero-title-stack text-[5.5rem] text-neutral-50 sm:text-[6.75rem] lg:text-[8rem]" aria-label="tw-fade">
+            <span class="hero-title-depth" style="--depth-y: 0.292em; --depth-scale: 0.91; --depth-opacity: 0.01; --depth-scroll-x: -0.014em; --depth-scroll-y: 0.22em; --depth-scroll-scale: 0.034; --depth-scroll-opacity: 0.04; filter: blur(0.017em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-depth" style="--depth-y: 0.26954em; --depth-scale: 0.91658; --depth-opacity: 0.02023; --depth-scroll-x: -0.01298em; --depth-scroll-y: 0.20392em; --depth-scroll-scale: 0.0315; --depth-scroll-opacity: 0.03708; filter: blur(0.01715em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-depth" style="--depth-y: 0.24708em; --depth-scale: 0.92315; --depth-opacity: 0.03046; --depth-scroll-x: -0.01195em; --depth-scroll-y: 0.18785em; --depth-scroll-scale: 0.029; --depth-scroll-opacity: 0.03415; filter: blur(0.01731em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-depth" style="--depth-y: 0.22462em; --depth-scale: 0.92973; --depth-opacity: 0.04069; --depth-scroll-x: -0.01093em; --depth-scroll-y: 0.17177em; --depth-scroll-scale: 0.0265; --depth-scroll-opacity: 0.03123; filter: blur(0.01746em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-depth" style="--depth-y: 0.20215em; --depth-scale: 0.93631; --depth-opacity: 0.05092; --depth-scroll-x: -0.00991em; --depth-scroll-y: 0.15569em; --depth-scroll-scale: 0.024; --depth-scroll-opacity: 0.02831; filter: blur(0.01762em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-depth" style="--depth-y: 0.17969em; --depth-scale: 0.94288; --depth-opacity: 0.06115; --depth-scroll-x: -0.00888em; --depth-scroll-y: 0.13962em; --depth-scroll-scale: 0.0215; --depth-scroll-opacity: 0.02538; filter: blur(0.01777em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-depth" style="--depth-y: 0.15723em; --depth-scale: 0.94946; --depth-opacity: 0.07138; --depth-scroll-x: -0.00786em; --depth-scroll-y: 0.12354em; --depth-scroll-scale: 0.019; --depth-scroll-opacity: 0.02246; filter: blur(0.01792em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-depth" style="--depth-y: 0.13477em; --depth-scale: 0.95604; --depth-opacity: 0.08162; --depth-scroll-x: -0.00684em; --depth-scroll-y: 0.10746em; --depth-scroll-scale: 0.0165; --depth-scroll-opacity: 0.01954; filter: blur(0.01808em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-depth" style="--depth-y: 0.11231em; --depth-scale: 0.96262; --depth-opacity: 0.09185; --depth-scroll-x: -0.00582em; --depth-scroll-y: 0.09138em; --depth-scroll-scale: 0.014; --depth-scroll-opacity: 0.01662; filter: blur(0.01823em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-depth" style="--depth-y: 0.08985em; --depth-scale: 0.96919; --depth-opacity: 0.10208; --depth-scroll-x: -0.00479em; --depth-scroll-y: 0.07531em; --depth-scroll-scale: 0.0115; --depth-scroll-opacity: 0.01369; filter: blur(0.01838em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-depth" style="--depth-y: 0.06738em; --depth-scale: 0.97577; --depth-opacity: 0.11231; --depth-scroll-x: -0.00377em; --depth-scroll-y: 0.05923em; --depth-scroll-scale: 0.009; --depth-scroll-opacity: 0.01077; filter: blur(0.01854em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-depth" style="--depth-y: 0.04492em; --depth-scale: 0.98235; --depth-opacity: 0.12254; --depth-scroll-x: -0.00275em; --depth-scroll-y: 0.04315em; --depth-scroll-scale: 0.0065; --depth-scroll-opacity: 0.00785; filter: blur(0.01869em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-depth" style="--depth-y: 0.02246em; --depth-scale: 0.98892; --depth-opacity: 0.13277; --depth-scroll-x: -0.00172em; --depth-scroll-y: 0.02708em; --depth-scroll-scale: 0.004; --depth-scroll-opacity: 0.00492; filter: blur(0.01885em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-depth" style="--depth-y: 0em; --depth-scale: 0.9955; --depth-opacity: 0.143; --depth-scroll-x: -0.0007em; --depth-scroll-y: 0.011em; --depth-scroll-scale: 0.0015; --depth-scroll-opacity: 0.002; filter: blur(0.019em);" aria-hidden="true">tw-fade</span>
+            <span class="hero-title-main" aria-hidden="true">tw-fade</span>
+          </h1>
         </div>
-        <h1 class="hero-title hero-title-stack text-[5.5rem] text-neutral-50 sm:text-[6.75rem] lg:text-[8rem]" aria-label="tw-fade">
-          <span class="hero-title-depth" style="--depth-y: 0.292em; --depth-scale: 0.91; --depth-opacity: 0.01; --depth-scroll-x: -0.014em; --depth-scroll-y: 0.22em; --depth-scroll-scale: 0.034; --depth-scroll-opacity: 0.04; filter: blur(0.017em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.26954em; --depth-scale: 0.91658; --depth-opacity: 0.02023; --depth-scroll-x: -0.01298em; --depth-scroll-y: 0.20392em; --depth-scroll-scale: 0.0315; --depth-scroll-opacity: 0.03708; filter: blur(0.01715em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.24708em; --depth-scale: 0.92315; --depth-opacity: 0.03046; --depth-scroll-x: -0.01195em; --depth-scroll-y: 0.18785em; --depth-scroll-scale: 0.029; --depth-scroll-opacity: 0.03415; filter: blur(0.01731em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.22462em; --depth-scale: 0.92973; --depth-opacity: 0.04069; --depth-scroll-x: -0.01093em; --depth-scroll-y: 0.17177em; --depth-scroll-scale: 0.0265; --depth-scroll-opacity: 0.03123; filter: blur(0.01746em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.20215em; --depth-scale: 0.93631; --depth-opacity: 0.05092; --depth-scroll-x: -0.00991em; --depth-scroll-y: 0.15569em; --depth-scroll-scale: 0.024; --depth-scroll-opacity: 0.02831; filter: blur(0.01762em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.17969em; --depth-scale: 0.94288; --depth-opacity: 0.06115; --depth-scroll-x: -0.00888em; --depth-scroll-y: 0.13962em; --depth-scroll-scale: 0.0215; --depth-scroll-opacity: 0.02538; filter: blur(0.01777em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.15723em; --depth-scale: 0.94946; --depth-opacity: 0.07138; --depth-scroll-x: -0.00786em; --depth-scroll-y: 0.12354em; --depth-scroll-scale: 0.019; --depth-scroll-opacity: 0.02246; filter: blur(0.01792em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.13477em; --depth-scale: 0.95604; --depth-opacity: 0.08162; --depth-scroll-x: -0.00684em; --depth-scroll-y: 0.10746em; --depth-scroll-scale: 0.0165; --depth-scroll-opacity: 0.01954; filter: blur(0.01808em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.11231em; --depth-scale: 0.96262; --depth-opacity: 0.09185; --depth-scroll-x: -0.00582em; --depth-scroll-y: 0.09138em; --depth-scroll-scale: 0.014; --depth-scroll-opacity: 0.01662; filter: blur(0.01823em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.08985em; --depth-scale: 0.96919; --depth-opacity: 0.10208; --depth-scroll-x: -0.00479em; --depth-scroll-y: 0.07531em; --depth-scroll-scale: 0.0115; --depth-scroll-opacity: 0.01369; filter: blur(0.01838em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.06738em; --depth-scale: 0.97577; --depth-opacity: 0.11231; --depth-scroll-x: -0.00377em; --depth-scroll-y: 0.05923em; --depth-scroll-scale: 0.009; --depth-scroll-opacity: 0.01077; filter: blur(0.01854em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.04492em; --depth-scale: 0.98235; --depth-opacity: 0.12254; --depth-scroll-x: -0.00275em; --depth-scroll-y: 0.04315em; --depth-scroll-scale: 0.0065; --depth-scroll-opacity: 0.00785; filter: blur(0.01869em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0.02246em; --depth-scale: 0.98892; --depth-opacity: 0.13277; --depth-scroll-x: -0.00172em; --depth-scroll-y: 0.02708em; --depth-scroll-scale: 0.004; --depth-scroll-opacity: 0.00492; filter: blur(0.01885em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-depth" style="--depth-y: 0em; --depth-scale: 0.9955; --depth-opacity: 0.143; --depth-scroll-x: -0.0007em; --depth-scroll-y: 0.011em; --depth-scroll-scale: 0.0015; --depth-scroll-opacity: 0.002; filter: blur(0.019em);" aria-hidden="true">tw-fade</span>
-          <span class="hero-title-main" aria-hidden="true">tw-fade</span>
-        </h1>
-        <p class="mt-9 max-w-[40rem] text-balance text-lg leading-8 text-neutral-300/85 sm:text-xl">
+        <p class="mt-11 max-w-[40rem] text-balance text-lg leading-8 text-neutral-300/85 sm:text-xl">
           Elegant, scroll-driven edge masking. One class. Zero JavaScript.
         </p>
         <div class="install-snippet" data-install-snippet>
@@ -1609,7 +1649,6 @@
               <rect x="8" y="8" width="10" height="10" rx="2" />
               <path d="M6 14H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" />
             </svg>
-            <span data-copy-install-label>Copy</span>
           </button>
         </div>
         <p class="visually-hidden" aria-live="polite" data-copy-install-status></p>
@@ -1769,56 +1808,40 @@
             <div class="tuning-card overflow-hidden rounded-lg">
               <div class="fade-x thin-scroll flex h-72 gap-4 overflow-x-auto p-4" data-demo="rail" role="listbox" aria-label="Horizontal fade examples">
                 <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="true">
+                  <span class="rail-card-initial" aria-hidden="true">E</span>
+                  <span class="rail-card-label">Evanesce</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
                   <span class="rail-card-initial" aria-hidden="true">D</span>
-                  <span class="rail-card-label">Dissolve</span>
+                  <span class="rail-card-label">Deliquescence</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">P</span>
+                  <span class="rail-card-label">Penumbra</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">C</span>
+                  <span class="rail-card-label">Crepuscular</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">I</span>
+                  <span class="rail-card-label">Involution</span>
+                </button>
+                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
+                  <span class="rail-card-initial" aria-hidden="true">A</span>
+                  <span class="rail-card-label">Adumbrate</span>
                 </button>
                 <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
                   <span class="rail-card-initial" aria-hidden="true">S</span>
-                  <span class="rail-card-label">Soften</span>
+                  <span class="rail-card-label">Shadow</span>
                 </button>
                 <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
-                  <span class="rail-card-initial" aria-hidden="true">D</span>
-                  <span class="rail-card-label">Dim</span>
-                </button>
-                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
-                  <span class="rail-card-initial" aria-hidden="true">W</span>
-                  <span class="rail-card-label">Wane</span>
-                </button>
-                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
-                  <span class="rail-card-initial" aria-hidden="true">R</span>
-                  <span class="rail-card-label">Recede</span>
-                </button>
-                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
-                  <span class="rail-card-initial" aria-hidden="true">T</span>
-                  <span class="rail-card-label">Taper</span>
-                </button>
-                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
-                  <span class="rail-card-initial" aria-hidden="true">B</span>
-                  <span class="rail-card-label">Blur</span>
-                </button>
-                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
-                  <span class="rail-card-initial" aria-hidden="true">M</span>
-                  <span class="rail-card-label">Melt</span>
-                </button>
-                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
-                  <span class="rail-card-initial" aria-hidden="true">G</span>
-                  <span class="rail-card-label">Ghost</span>
+                  <span class="rail-card-initial" aria-hidden="true">S</span>
+                  <span class="rail-card-label">Silhouette</span>
                 </button>
                 <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
                   <span class="rail-card-initial" aria-hidden="true">V</span>
-                  <span class="rail-card-label">Vanish</span>
-                </button>
-                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
-                  <span class="rail-card-initial" aria-hidden="true">E</span>
-                  <span class="rail-card-label">Evaporate</span>
-                </button>
-                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
-                  <span class="rail-card-initial" aria-hidden="true">D</span>
-                  <span class="rail-card-label">Dissipate</span>
-                </button>
-                <button class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5" type="button" role="option" aria-selected="false">
-                  <span class="rail-card-initial" aria-hidden="true">H</span>
-                  <span class="rail-card-label">Haze</span>
+                  <span class="rail-card-label">Veil</span>
                 </button>
               </div>
             </div>
@@ -2175,7 +2198,6 @@
       const railCards = rail ? Array.from(rail.querySelectorAll('.rail-card')) : []
       const installCommand = document.querySelector('[data-install-command]')
       const installCopyButton = document.querySelector('[data-copy-install]')
-      const installCopyLabel = document.querySelector('[data-copy-install-label]')
       const installCopyStatus = document.querySelector('[data-copy-install-status]')
       const fadeDepthSlider = document.querySelector('[data-fade-depth-slider]')
       const fadeRangeSlider = document.querySelector('[data-fade-range-slider]')
@@ -2318,17 +2340,17 @@
         try {
           await copyText(command)
           installCopyButton.dataset.copied = 'true'
-          installCopyLabel.textContent = 'Copied'
+          installCopyButton.setAttribute('aria-label', 'Copied npm install command')
           installCopyStatus.textContent = `Copied ${command}`
         } catch {
           installCopyButton.dataset.copied = 'false'
-          installCopyLabel.textContent = 'Copy'
+          installCopyButton.setAttribute('aria-label', 'Copy npm install command')
           installCopyStatus.textContent = 'Copy failed'
         }
 
         const resetTimer = window.setTimeout(() => {
           installCopyButton.dataset.copied = 'false'
-          installCopyLabel.textContent = 'Copy'
+          installCopyButton.setAttribute('aria-label', 'Copy npm install command')
         }, 1600)
         installCopyButton.dataset.resetTimer = String(resetTimer)
       })
