@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>tw-fade · wave background lab</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --lab-bg: #0a0a0a;
+      }
+
+      html {
+        scrollbar-width: thin;
+      }
+
+      /* the surface under test — background-image is set by JS */
+      body {
+        margin: 0;
+        min-height: 320vh; /* generous runway so the morph plays out over scroll */
+        background-color: var(--lab-bg);
+        background-repeat: repeat;
+        color: rgb(229 229 229);
+        font-family: ui-sans-serif, system-ui, sans-serif;
+      }
+
+      .sample {
+        position: relative;
+        z-index: 1;
+        max-width: 640px;
+        margin: 14vh auto 0;
+        padding: 0 24px;
+        text-align: center;
+      }
+
+      .sample h2 {
+        font-size: clamp(2rem, 6vw, 3.5rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0 0 10px;
+        color: rgb(250 250 250);
+      }
+
+      .sample p {
+        color: rgb(160 160 160);
+        line-height: 1.6;
+        margin: 0 auto;
+        max-width: 46ch;
+      }
+
+      .sample .card {
+        margin-top: 28px;
+        padding: 20px 22px;
+        border: 1px solid rgb(255 255 255 / 0.1);
+        border-radius: 14px;
+        background: rgb(10 10 10 / 0.55);
+        backdrop-filter: blur(10px);
+        text-align: left;
+      }
+
+      .sample .card span {
+        display: block;
+        color: rgb(125 125 125);
+        font:
+          12px/1.7 ui-monospace,
+          monospace;
+      }
+
+      /* ----- control panel (shared look with hero-lab) ----- */
+      #panel {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        width: 332px;
+        max-height: calc(100vh - 24px);
+        overflow-y: auto;
+        padding: 14px 14px 18px;
+        border: 1px solid rgb(255 255 255 / 0.14);
+        border-radius: 12px;
+        background: rgb(10 10 10 / 0.86);
+        backdrop-filter: blur(8px);
+        color: rgb(229 229 229);
+        font:
+          12px/1.45 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+        z-index: 10;
+        box-shadow: 0 12px 40px rgb(0 0 0 / 0.5);
+      }
+
+      #panel.is-hidden {
+        transform: translateX(calc(100% + 16px));
+      }
+
+      #panel h1 {
+        margin: 0 0 2px;
+        font-size: 13px;
+        color: rgb(250 250 250);
+      }
+
+      #panel .sub {
+        margin: 0 0 12px;
+        color: rgb(140 140 140);
+      }
+
+      .group {
+        margin: 0 0 14px;
+        padding: 10px 10px 12px;
+        border: 1px solid rgb(255 255 255 / 0.08);
+        border-radius: 9px;
+        background: rgb(255 255 255 / 0.02);
+      }
+
+      .group > .group-title {
+        margin: 0 0 9px;
+        color: rgb(110 231 183);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .ctrl {
+        margin: 0 0 10px;
+      }
+
+      .ctrl:last-child {
+        margin-bottom: 0;
+      }
+
+      .ctrl-label {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 3px;
+        color: rgb(200 200 200);
+      }
+
+      .ctrl-label .val {
+        color: rgb(250 250 250);
+        font-variant-numeric: tabular-nums;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: rgb(16 185 129);
+        margin: 0;
+      }
+
+      input[type="color"] {
+        width: 100%;
+        height: 26px;
+        padding: 0;
+        border: 1px solid rgb(255 255 255 / 0.14);
+        border-radius: 6px;
+        background: transparent;
+      }
+
+      label.check {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: rgb(200 200 200);
+        cursor: pointer;
+      }
+
+      .readout {
+        margin: 0 0 12px;
+        color: rgb(150 150 150);
+        font-size: 11px;
+      }
+
+      .readout b {
+        color: rgb(250 250 250);
+        font-weight: 600;
+      }
+
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      button {
+        appearance: none;
+        cursor: pointer;
+        border: 1px solid rgb(255 255 255 / 0.16);
+        border-radius: 7px;
+        background: rgb(255 255 255 / 0.04);
+        color: rgb(235 235 235);
+        padding: 6px 9px;
+        font: inherit;
+        font-size: 11px;
+      }
+
+      button:hover {
+        background: rgb(255 255 255 / 0.09);
+        border-color: rgb(255 255 255 / 0.26);
+      }
+
+      button.primary {
+        border-color: rgb(16 185 129 / 0.5);
+        background: rgb(16 185 129 / 0.16);
+        color: rgb(209 250 229);
+      }
+
+      #export {
+        width: 100%;
+        height: 168px;
+        margin-top: 8px;
+        resize: vertical;
+        border: 1px solid rgb(255 255 255 / 0.14);
+        border-radius: 7px;
+        background: rgb(0 0 0 / 0.5);
+        color: rgb(190 220 205);
+        font:
+          11px/1.4 ui-monospace,
+          monospace;
+        padding: 8px;
+        display: none;
+      }
+
+      #showPanel {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        z-index: 9;
+        display: none;
+      }
+
+      .hint {
+        margin-top: 10px;
+        color: rgb(120 120 120);
+        font-size: 10.5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sample">
+      <h2>wave background lab</h2>
+      <p>
+        Amplitude &amp; wavelength morph from a <b>top</b> value (scroll 0) to a <b>bottom</b> value (scroll 1) as you
+        scroll. Tune the endpoints, then scroll to preview — or lock progress to inspect a single frame.
+      </p>
+      <div class="card">
+        <span>// content sits on the surface — judge contrast &amp; density here</span>
+      </div>
+    </div>
+
+    <div class="sample" style="margin-top: 200vh">
+      <h2 style="font-size: clamp(1.4rem, 4vw, 2.2rem)">↓ bottom of page</h2>
+      <p>You’re at scroll progress ≈ 1 — the wave here uses the <b>bottom</b> end of the amplitude / wavelength envelope.</p>
+    </div>
+
+    <button id="showPanel">params ▸</button>
+    <aside id="panel" aria-label="Wave background controls">
+      <h1>wave background lab</h1>
+      <p class="sub">
+        Amplitude &amp; wavelength morph with scroll. Defaults keep top === bottom, so a fresh load reproduces the
+        shipped static wave exactly.
+      </p>
+      <p class="readout" id="readout"></p>
+      <div id="groups"></div>
+      <div class="row" style="margin-top: 4px">
+        <button class="primary" id="btnExport">Export</button>
+        <button id="btnReset">Reset</button>
+        <button id="btnHide">Hide</button>
+      </div>
+      <textarea id="export" readonly spellcheck="false"></textarea>
+      <p class="hint">
+        Press <b>h</b> to hide/show. Scroll the page (or <b>lock progress</b>) to preview the morph. Export copies a
+        params JSON, a static fallback, and a paste-ready morph script to your clipboard.
+      </p>
+    </aside>
+
+    <script>
+      // ---- model ----------------------------------------------------------
+      // amplitude & wavelength now MORPH with scroll progress (0 = page top,
+      // 1 = page bottom). Every other knob stays constant. Defaults keep each
+      // top === bottom, so a fresh load reproduces the shipped static wave.
+      const DEFAULTS = {
+        amplitudeTop: 60, // horizontal bulge at the very top of the page (px)
+        amplitudeBottom: 60, // …and at the very bottom (px)
+        wavelengthTop: 405, // vertical period of one S-curve at the top (px)
+        wavelengthBottom: 405, // …and at the bottom (px)
+        cycles: 3, // number of full periods drawn down the tile
+        spacing: 128, // horizontal distance between wave columns (px)
+        columns: 1, // wave columns per repeating tile
+        stagger: false, // offset alternate columns by half a wavelength
+        strokeWidth: 1,
+        strokeOpacity: 0.075,
+        strokeColor: "#ffffff",
+        bg: "#0a0a0a",
+        lockProgress: false, // freeze the morph at `progress` instead of scrolling
+        progress: 0, // 0..1, only used while locked
+      };
+
+      const CONTROLS = [
+        {
+          title: "Scroll morph",
+          items: [
+            { key: "amplitudeTop", label: "amplitude · top (px)", min: 0, max: 160, step: 1 },
+            { key: "amplitudeBottom", label: "amplitude · bottom (px)", min: 0, max: 160, step: 1 },
+            { key: "wavelengthTop", label: "wavelength · top (px)", min: 80, max: 1000, step: 1 },
+            { key: "wavelengthBottom", label: "wavelength · bottom (px)", min: 80, max: 1000, step: 1 },
+            { key: "lockProgress", label: "lock progress (ignore scroll)", type: "check" },
+            { key: "progress", label: "→ locked progress", min: 0, max: 1, step: 0.01 },
+          ],
+        },
+        {
+          title: "Geometry",
+          items: [
+            { key: "cycles", label: "cycles (vertical periods)", min: 1, max: 8, step: 1 },
+            { key: "spacing", label: "column spacing (px)", min: 32, max: 400, step: 1 },
+            { key: "columns", label: "columns per tile", min: 1, max: 4, step: 1 },
+            { key: "stagger", label: "stagger alternate columns", type: "check" },
+          ],
+        },
+        {
+          title: "Stroke & surface",
+          items: [
+            { key: "strokeWidth", label: "stroke width (px)", min: 0.25, max: 8, step: 0.25 },
+            { key: "strokeOpacity", label: "stroke opacity", min: 0, max: 0.5, step: 0.005 },
+            { key: "strokeColor", label: "stroke color", type: "color" },
+            { key: "bg", label: "surface color (preview)", type: "color" },
+          ],
+        },
+      ];
+
+      const clone = (o) => JSON.parse(JSON.stringify(o));
+      let params = clone(DEFAULTS);
+      const r = (v) => Number(Number(v).toFixed(3));
+      const lerp = (a, b, t) => a + (b - a) * t;
+      const clamp01 = (t) => (t < 0 ? 0 : t > 1 ? 1 : t);
+
+      // ---- procedural wave path ------------------------------------------
+      // `amp`/`wl` are the interpolated values for the current scroll
+      // progress. `wl` is pre-rounded to an int so cycles*wl === the viewBox
+      // height — the tile keeps repeating seamlessly at every progress value.
+      function buildWave(amp, wl) {
+        const a = amp;
+        const h = wl / 2;
+        const segs = 2 * Math.round(params.cycles);
+        const cols = Math.round(params.columns);
+        const tileW = Math.round(params.spacing) * cols;
+        const H = Math.round(params.cycles) * wl;
+        let d = "";
+        for (let c = 0; c < cols; c++) {
+          const cx = params.spacing * c + params.spacing / 2;
+          const s0 = params.stagger && c % 2 === 1 ? -1 : 1;
+          d += `M${r(cx)} 0`;
+          d += `C${r(cx + s0 * a)} ${r(0.25 * h)} ${r(cx + s0 * a)} ${r(0.75 * h)} ${r(cx)} ${r(h)}`;
+          for (let i = 1; i < segs; i++) {
+            const sign = s0 * (i % 2 === 0 ? 1 : -1);
+            d += `S${r(cx + sign * a)} ${r(i * h + 0.75 * h)} ${r(cx)} ${r((i + 1) * h)}`;
+          }
+        }
+        return { d, tileW, H };
+      }
+
+      function svgString({ d, tileW, H }) {
+        return (
+          `<svg xmlns='http://www.w3.org/2000/svg' width='${tileW}' height='${H}' viewBox='0 0 ${tileW} ${H}'>` +
+          `<path d='${d}' fill='none' stroke='${params.strokeColor}' stroke-opacity='${params.strokeOpacity}' ` +
+          `stroke-width='${params.strokeWidth}' stroke-linecap='round' stroke-linejoin='round' shape-rendering='geometricPrecision'/></svg>`
+        );
+      }
+
+      const ampAt = (p) => lerp(params.amplitudeTop, params.amplitudeBottom, p);
+      const wlAt = (p) => Math.round(lerp(params.wavelengthTop, params.wavelengthBottom, p));
+
+      // ---- scroll-driven render ------------------------------------------
+      const readout = document.getElementById("readout");
+      const surface = document.body;
+      let lastP = -1;
+      let lastUri = "";
+
+      function scrollProgress() {
+        if (params.lockProgress) return clamp01(params.progress);
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        return max > 0 ? clamp01(window.scrollY / max) : 0;
+      }
+
+      function render(p, force) {
+        if (!force && Math.abs(p - lastP) < 0.001) return;
+        lastP = p;
+        const amp = ampAt(p);
+        const wl = wlAt(p);
+        const wave = buildWave(amp, wl);
+        const uri = `data:image/svg+xml,${encodeURIComponent(svgString(wave))}`;
+        // only touch the DOM (and force a re-raster) when the tile actually changed
+        if (uri !== lastUri) {
+          surface.style.backgroundImage = `url("${uri}")`;
+          surface.style.backgroundSize = `${wave.tileW}px ${wave.H}px`;
+          lastUri = uri;
+        }
+        document.documentElement.style.setProperty("--lab-bg", params.bg);
+        readout.innerHTML =
+          `progress <b>${p.toFixed(2)}</b> · amp <b>${amp.toFixed(1)}</b> · wl <b>${wl}</b><br/>` +
+          `tile <b>${wave.tileW}×${wave.H}px</b> · <b>${Math.round(params.columns)}</b> col(s) · URI <b>${uri.length}</b> chars`;
+      }
+
+      // re-render at the live progress; used whenever a control changes
+      function apply() {
+        render(scrollProgress(), true);
+      }
+
+      // coalesce scroll bursts to one regen per frame; render() then dedupes
+      // away frames where the rounded geometry didn't move.
+      let rafPending = false;
+      function onScroll() {
+        if (rafPending) return;
+        rafPending = true;
+        requestAnimationFrame(() => {
+          rafPending = false;
+          render(scrollProgress(), false);
+        });
+      }
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", () => render(scrollProgress(), true));
+
+      // ---- panel ----------------------------------------------------------
+      const groupsEl = document.getElementById("groups");
+      const refs = {};
+
+      function fmt(v, step) {
+        const dec = step >= 1 ? 0 : String(step).split(".")[1]?.length ?? 3;
+        return Number(v).toFixed(dec);
+      }
+
+      function renderPanel() {
+        groupsEl.textContent = "";
+        for (const g of CONTROLS) {
+          const grp = document.createElement("div");
+          grp.className = "group";
+          const t = document.createElement("div");
+          t.className = "group-title";
+          t.textContent = g.title;
+          grp.appendChild(t);
+          for (const item of g.items) grp.appendChild(makeControl(item));
+          groupsEl.appendChild(grp);
+        }
+      }
+
+      function makeControl(item) {
+        const wrap = document.createElement("div");
+        wrap.className = "ctrl";
+
+        if (item.type === "check") {
+          const lab = document.createElement("label");
+          lab.className = "check";
+          const box = document.createElement("input");
+          box.type = "checkbox";
+          box.checked = params[item.key];
+          box.addEventListener("change", () => {
+            params[item.key] = box.checked;
+            apply();
+          });
+          lab.append(box, document.createTextNode(item.label));
+          wrap.appendChild(lab);
+          refs[item.key] = { set: (v) => (box.checked = v) };
+          return wrap;
+        }
+
+        if (item.type === "color") {
+          const lab = document.createElement("div");
+          lab.className = "ctrl-label";
+          lab.innerHTML = `<span>${item.label}</span>`;
+          const input = document.createElement("input");
+          input.type = "color";
+          input.value = params[item.key];
+          input.addEventListener("input", () => {
+            params[item.key] = input.value;
+            apply();
+          });
+          wrap.append(lab, input);
+          refs[item.key] = { set: (v) => (input.value = v) };
+          return wrap;
+        }
+
+        const lab = document.createElement("div");
+        lab.className = "ctrl-label";
+        const name = document.createElement("span");
+        name.textContent = item.label;
+        const val = document.createElement("span");
+        val.className = "val";
+        val.textContent = fmt(params[item.key], item.step);
+        lab.append(name, val);
+        const input = document.createElement("input");
+        input.type = "range";
+        input.min = item.min;
+        input.max = item.max;
+        input.step = item.step;
+        input.value = params[item.key];
+        input.addEventListener("input", () => {
+          const v = parseFloat(input.value);
+          params[item.key] = v;
+          val.textContent = fmt(v, item.step);
+          apply();
+        });
+        wrap.append(lab, input);
+        refs[item.key] = {
+          set: (v) => {
+            input.value = v;
+            val.textContent = fmt(v, item.step);
+          },
+        };
+        return wrap;
+      }
+
+      function syncControls() {
+        for (const g of CONTROLS) for (const item of g.items) refs[item.key].set(params[item.key]);
+      }
+
+      // ---- export ---------------------------------------------------------
+      function exportArtifact() {
+        const out = clone(params);
+        delete out.lockProgress; // lab-only tuning aids, not part of the wave
+        delete out.progress;
+
+        // static fallback = the top-of-page (progress 0) state, for the initial
+        // paint before JS runs and for reduced-motion users.
+        const fb = buildWave(out.amplitudeTop, Math.round(out.wavelengthTop));
+        const fbUri = `data:image/svg+xml,${encodeURIComponent(svgString(fb))}`;
+
+        // self-contained morph script (concatenation, no template literals, so
+        // it embeds cleanly anywhere). Only the closing tag is escaped.
+        const runtime =
+          `<script>\n` +
+          `  // tw-fade wave background — amplitude + wavelength morph with scroll.\n` +
+          `  // Paste before </body>. Targets <html>; set T / the scroller to taste.\n` +
+          `  (function () {\n` +
+          `    var P = ${JSON.stringify(out)};\n` +
+          `    var T = document.documentElement;\n` +
+          `    var r = function (v) { return Number(Number(v).toFixed(3)); };\n` +
+          `    var lerp = function (a, b, t) { return a + (b - a) * t; };\n` +
+          `    function wave(amp, wl) {\n` +
+          `      var h = wl / 2, segs = 2 * Math.round(P.cycles), cols = Math.round(P.columns);\n` +
+          `      var tileW = Math.round(P.spacing) * cols, H = Math.round(P.cycles) * wl, d = "";\n` +
+          `      for (var c = 0; c < cols; c++) {\n` +
+          `        var cx = P.spacing * c + P.spacing / 2, s0 = P.stagger && c % 2 === 1 ? -1 : 1;\n` +
+          `        d += "M" + r(cx) + " 0C" + r(cx + s0 * amp) + " " + r(0.25 * h) + " " + r(cx + s0 * amp) + " " + r(0.75 * h) + " " + r(cx) + " " + r(h);\n` +
+          `        for (var i = 1; i < segs; i++) {\n` +
+          `          var sign = s0 * (i % 2 === 0 ? 1 : -1);\n` +
+          `          d += "S" + r(cx + sign * amp) + " " + r(i * h + 0.75 * h) + " " + r(cx) + " " + r((i + 1) * h);\n` +
+          `        }\n` +
+          `      }\n` +
+          `      var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='" + tileW + "' height='" + H + "' viewBox='0 0 " + tileW + " " + H + "'><path d='" + d + "' fill='none' stroke='" + P.strokeColor + "' stroke-opacity='" + P.strokeOpacity + "' stroke-width='" + P.strokeWidth + "' stroke-linecap='round' stroke-linejoin='round' shape-rendering='geometricPrecision'/></svg>";\n` +
+          `      return { uri: "data:image/svg+xml," + encodeURIComponent(svg), tileW: tileW, H: H };\n` +
+          `    }\n` +
+          `    var lastUri = "", pending = false;\n` +
+          `    function frame() {\n` +
+          `      pending = false;\n` +
+          `      var max = document.documentElement.scrollHeight - window.innerHeight;\n` +
+          `      var p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;\n` +
+          `      var amp = lerp(P.amplitudeTop, P.amplitudeBottom, p);\n` +
+          `      var wl = Math.round(lerp(P.wavelengthTop, P.wavelengthBottom, p));\n` +
+          `      var w = wave(amp, wl);\n` +
+          `      if (w.uri === lastUri) return;\n` +
+          `      lastUri = w.uri;\n` +
+          `      T.style.backgroundImage = "url('" + w.uri + "')";\n` +
+          `      T.style.backgroundSize = w.tileW + "px " + w.H + "px";\n` +
+          `    }\n` +
+          `    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;\n` +
+          `    addEventListener("scroll", function () { if (!pending) { pending = true; requestAnimationFrame(frame); } }, { passive: true });\n` +
+          `    addEventListener("resize", frame);\n` +
+          `    frame();\n` +
+          `  })();\n` +
+          `<\/script>`;
+
+        const text =
+          `/* tw-fade wave — scroll-morphing params */\n` +
+          JSON.stringify(out, null, 2) +
+          `\n\n/* 1) static fallback on html[data-surface] — initial paint & reduced-motion. */\n` +
+          `/*    background-color stays themeable: keep var(--demo-page-bg) in production. */\n` +
+          `        background-image: url("${fbUri}");\n` +
+          `        background-repeat: repeat;\n` +
+          `        background-size: ${fb.tileW}px ${fb.H}px;\n\n` +
+          `/* 2) paste this before </body> to morph amplitude + wavelength on scroll: */\n` +
+          runtime;
+
+        const ta = document.getElementById("export");
+        ta.style.display = "block";
+        ta.value = text;
+        ta.focus();
+        ta.select();
+        navigator.clipboard?.writeText(text).catch(() => {});
+      }
+
+      // ---- wiring ---------------------------------------------------------
+      renderPanel();
+      apply();
+
+      document.getElementById("btnExport").addEventListener("click", exportArtifact);
+      document.getElementById("btnReset").addEventListener("click", () => {
+        params = clone(DEFAULTS);
+        syncControls();
+        apply();
+      });
+
+      const panel = document.getElementById("panel");
+      const showBtn = document.getElementById("showPanel");
+      function setPanel(hidden) {
+        panel.classList.toggle("is-hidden", hidden);
+        showBtn.style.display = hidden ? "block" : "none";
+      }
+      document.getElementById("btnHide").addEventListener("click", () => setPanel(true));
+      showBtn.addEventListener("click", () => setPanel(false));
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "h" && !/input|textarea/i.test(e.target.tagName)) {
+          setPanel(!panel.classList.contains("is-hidden"));
+        }
+      });
+    </script>
+  </body>
+</html>
