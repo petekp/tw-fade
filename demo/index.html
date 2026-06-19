@@ -2494,10 +2494,6 @@
 
       document.body.addEventListener('scroll', syncFloatingPalette, { passive: true })
       syncFloatingPalette()
-
-      requestAnimationFrame(() => {
-        if (rail) rail.scrollLeft = 190
-      })
     </script>
     <script>
       // Wave background morph: amplitude + wavelength shift with scroll position.
