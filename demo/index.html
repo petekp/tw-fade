@@ -116,16 +116,16 @@
         --demo-panel-strong: rgb(10 10 10 / 0.95);
         --demo-panel-soft: rgb(10 10 10 / 0.62);
         --demo-control-bg: rgb(255 255 255 / 0.03);
-        --demo-control-active: rgb(16 185 129 / 0.11);
+        --demo-control-active: rgb(249 128 18 / 0.14);
         --demo-border: rgb(255 255 255 / 0.1);
         --demo-border-strong: rgb(255 255 255 / 0.14);
-        --demo-focus: rgb(16 185 129 / 0.55);
+        --demo-focus: rgb(249 128 18 / 0.62);
         --demo-text-strong: rgb(250 250 250);
         --demo-text-primary: rgb(212 212 212);
         --demo-text-muted: rgb(163 163 163);
         --demo-text-subtle: rgb(125 125 125);
-        --demo-accent-text: rgb(110 231 183);
-        --demo-accent-text-strong: rgb(209 250 229);
+        --demo-accent-text: rgb(251 171 42);
+        --demo-accent-text-strong: rgb(254 229 187);
         --demo-warning-text: rgb(253 230 138);
         --demo-warning-text-strong: rgb(254 243 199);
       }
@@ -199,16 +199,16 @@
           --demo-panel-strong: oklch(14.479% 0 0 / 0.95);
           --demo-panel-soft: oklch(14.479% 0 0 / 0.62);
           --demo-control-bg: oklch(100% 0 0 / 0.03);
-          --demo-control-active: oklch(69.587% 0.1491 162.48 / 0.11);
+          --demo-control-active: oklch(73.8% 0.192 56.2 / 0.14);
           --demo-border: oklch(100% 0 0 / 0.1);
           --demo-border-strong: oklch(100% 0 0 / 0.14);
-          --demo-focus: oklch(69.587% 0.1491 162.48 / 0.55);
+          --demo-focus: oklch(73.8% 0.192 56.2 / 0.62);
           --demo-text-strong: oklch(98.51% 0 0);
           --demo-text-primary: oklch(86.994% 0 0);
           --demo-text-muted: oklch(71.547% 0 0);
           --demo-text-subtle: oklch(58.971% 0 0);
-          --demo-accent-text: oklch(84.519% 0.1299 164.98);
-          --demo-accent-text-strong: oklch(95.046% 0.0507 163.05);
+          --demo-accent-text: oklch(80.6% 0.186 74.4);
+          --demo-accent-text-strong: oklch(93.8% 0.066 77.2);
           --demo-warning-text: oklch(92.428% 0.1151 95.75);
           --demo-warning-text-strong: oklch(96.19% 0.058 95.62);
         }
@@ -464,6 +464,7 @@
       }
 
       .install-snippet {
+        position: relative;
         display: inline-flex;
         align-self: flex-start;
         width: fit-content;
@@ -477,10 +478,57 @@
         border-radius: var(--demo-radius-md);
         background-color: color-mix(in oklab, color-mix(in oklab, var(--demo-page-bg) 86%, var(--demo-text-primary) 14%) 95%, transparent);
         box-shadow: none;
+        isolation: isolate;
         transition: background-color 180ms ease;
       }
 
+      .install-snippet::before {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        content: "";
+        pointer-events: none;
+        opacity: 0;
+        background: linear-gradient(
+          105deg,
+          transparent 0%,
+          transparent 24%,
+          color-mix(in oklab, var(--demo-accent-text) 18%, transparent) 42%,
+          color-mix(in oklab, var(--demo-accent-text-strong) 28%, transparent) 50%,
+          color-mix(in oklab, var(--demo-accent-text) 16%, transparent) 58%,
+          transparent 76%,
+          transparent 100%
+        );
+        transform: translateX(-120%);
+      }
+
+      .install-snippet[data-copy-state="copied"]::before {
+        animation: install-snippet-sweep 820ms cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      @keyframes install-snippet-sweep {
+        0% {
+          opacity: 0;
+          transform: translateX(-120%);
+        }
+
+        16% {
+          opacity: 1;
+        }
+
+        72% {
+          opacity: 1;
+        }
+
+        100% {
+          opacity: 0;
+          transform: translateX(120%);
+        }
+      }
+
       .install-command {
+        position: relative;
+        z-index: 1;
         display: flex;
         min-width: 0;
         align-items: center;
@@ -492,6 +540,8 @@
       }
 
       .install-copy-button {
+        position: relative;
+        z-index: 1;
         display: inline-grid;
         width: 2.75rem;
         min-width: 2.75rem;
@@ -510,7 +560,16 @@
           background-color 160ms ease;
       }
 
+      .install-copy-icon-stack {
+        position: relative;
+        display: grid;
+        width: 1.125rem;
+        height: 1.125rem;
+        place-items: center;
+      }
+
       .install-copy-button svg {
+        grid-area: 1 / 1;
         width: 1.125rem;
         height: 1.125rem;
         fill: none;
@@ -518,6 +577,24 @@
         stroke-linecap: round;
         stroke-linejoin: round;
         stroke-width: 1.8;
+        transition:
+          opacity 160ms ease,
+          transform 180ms cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      .install-copy-check-icon {
+        opacity: 0;
+        transform: translateY(0.125rem) scale(0.82);
+      }
+
+      .install-copy-button[data-copied="true"] .install-copy-icon {
+        opacity: 0;
+        transform: translateY(-0.125rem) scale(0.88);
+      }
+
+      .install-copy-button[data-copied="true"] .install-copy-check-icon {
+        opacity: 1;
+        transform: translateY(0) scale(1);
       }
 
       .install-copy-button:active {
@@ -538,6 +615,16 @@
         .install-copy-button:hover {
           color: var(--demo-text-strong);
           background: var(--demo-control-active);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .install-snippet[data-copy-state="copied"]::before {
+          animation: none;
+        }
+
+        .install-copy-button svg {
+          transition: none;
         }
       }
 
@@ -1204,6 +1291,15 @@
       .feature-column {
         --feature-card-bg: color-mix(in oklab, color-mix(in oklab, var(--demo-page-bg) 86%, var(--demo-text-primary) 14%) 95%, transparent);
 
+        /* Shared feature-graphic palette — one neutral ramp + one accent, theme-aware.
+           Every graphic (scroll-aware, eased, composable) draws only from these. */
+        --feature-ink-1: color-mix(in oklab, var(--demo-text-primary) 68%, transparent);
+        --feature-ink-2: color-mix(in oklab, var(--demo-text-primary) 46%, transparent);
+        --feature-ink-3: color-mix(in oklab, var(--demo-text-primary) 30%, transparent);
+        --feature-ink-4: color-mix(in oklab, var(--demo-text-primary) 15%, transparent);
+        --feature-accent: var(--demo-accent-text);
+        --feature-accent-soft: color-mix(in oklab, var(--demo-accent-text) 50%, transparent);
+
         display: flex;
         flex-direction: column;
         min-width: 0;
@@ -1250,82 +1346,72 @@
       }
 
       .feature-muted-fill {
-        fill: color-mix(in oklab, var(--demo-page-bg) 58%, var(--demo-text-primary) 42%);
+        fill: var(--feature-ink-2);
       }
 
       .feature-accent-fill {
-        fill: color-mix(in oklab, var(--demo-accent-text) 74%, var(--demo-page-bg) 26%);
+        fill: var(--feature-accent);
       }
 
       .feature-line-muted {
-        stroke: color-mix(in oklab, var(--demo-text-primary) 34%, transparent);
-      }
-
-      .feature-line-soft {
-        stroke: color-mix(in oklab, var(--demo-text-primary) 18%, transparent);
+        stroke: var(--feature-ink-3);
       }
 
       .feature-line-accent {
-        stroke: var(--demo-accent-text);
+        stroke: var(--feature-accent);
       }
 
       .feature-line-accent-soft {
-        stroke: color-mix(in oklab, var(--demo-accent-text) 48%, transparent);
+        stroke: var(--feature-accent-soft);
       }
 
       .scroll-aware-rows,
-      .scroll-aware-top-fade,
-      .scroll-aware-bottom-fade,
       .scroll-aware-thumb,
-      .eased-curve-active,
-      .compose-module,
-      .compose-token-group {
+      .eased-curve-active {
         transform-box: fill-box;
         transform-origin: center;
       }
 
-      .scroll-aware-rows {
-        animation: feature-scroll-rows 7.5s cubic-bezier(0.77, 0, 0.175, 1) infinite;
-        animation-delay: -2.8s;
+      .scroll-aware-frame {
+        fill: none;
+        stroke: var(--feature-ink-3);
+        stroke-width: 2;
       }
 
-      .scroll-aware-frame,
       .scroll-aware-scrollbar-track {
         fill: none;
-        stroke: color-mix(in oklab, var(--demo-page-bg) 58%, var(--demo-text-primary) 42%);
-      }
-
-      .scroll-aware-scrollbar-track {
+        stroke: var(--feature-ink-4);
+        stroke-width: 2;
         stroke-linecap: round;
       }
 
-      .scroll-aware-shape {
-        fill: color-mix(in oklab, var(--demo-page-bg) 58%, var(--demo-text-primary) 42%);
+      .scroll-aware-block {
+        fill: var(--feature-ink-2);
       }
 
-      .compose-core,
-      .compose-token {
-        fill: color-mix(in oklab, var(--demo-page-bg) 58%, var(--demo-text-primary) 42%);
+      .scroll-aware-block-head {
+        fill: var(--feature-ink-1);
       }
 
-      .compose-module-piece {
-        fill: color-mix(in oklab, var(--demo-accent-text) 58%, var(--demo-page-bg) 42%);
+      .scroll-aware-rows {
+        animation: feature-scroll-rows 7.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+        animation-delay: -2.8s;
       }
 
       .scroll-aware-top-fade {
         opacity: 0;
-        animation: feature-scroll-top-fade 7.5s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+        animation: feature-scroll-top-fade 7.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
         animation-delay: -2.8s;
       }
 
       .scroll-aware-bottom-fade {
-        opacity: 0.82;
-        animation: feature-scroll-bottom-fade 7.5s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+        opacity: 1;
+        animation: feature-scroll-bottom-fade 7.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
         animation-delay: -2.8s;
       }
 
       .scroll-aware-thumb {
-        animation: feature-scroll-thumb 7.5s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+        animation: feature-scroll-thumb 7.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
         animation-delay: -2.8s;
       }
 
@@ -1355,166 +1441,109 @@
         opacity: 0.72;
       }
 
-      .compose-module {
+      /* Composable graphic — a class string that recomposes itself.
+         Each "fade-" is a static anchor; the amber suffix odometer-rolls
+         (old rolls up & out, new rolls up from below), and the second
+         class drawers up from below when composed / drops away when removed. */
+      .kin-line {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 24px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+
+      .kin-mut {
+        fill: var(--feature-ink-2);
+      }
+
+      .kin-amb {
+        fill: var(--feature-accent);
+      }
+
+      .kin-tok {
         opacity: 0;
-        animation-duration: 6.4s;
-        animation-delay: -3.9s;
-        animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
+        will-change: transform, opacity;
+        animation-duration: 7.5s;
+        animation-timing-function: cubic-bezier(0.6, 0, 0.2, 1);
         animation-iteration-count: infinite;
       }
 
-      .compose-module-top {
-        animation-name: feature-compose-top;
-      }
+      .kin-s-y { animation-name: kf-compose-y; }
+      .kin-s-xy { animation-name: kf-compose-xy; }
+      .kin-s-t { animation-name: kf-compose-t; }
+      .kin-s-x { animation-name: kf-compose-x; }
+      .kin-l2p { animation-name: kf-compose-l2p; }
+      .kin-s-r { animation-name: kf-compose-r; }
+      .kin-s-range { animation-name: kf-compose-range; }
+      .kin-s-size { animation-name: kf-compose-size; }
 
-      .compose-module-right {
-        animation-name: feature-compose-right;
-      }
-
-      .compose-module-bottom {
-        animation-name: feature-compose-bottom;
-      }
-
-      .compose-module-left {
-        animation-name: feature-compose-left;
-      }
-
-      .compose-token-group {
-        opacity: 0;
-        animation: feature-compose-tokens 6.4s cubic-bezier(0.23, 1, 0.32, 1) infinite;
-        animation-delay: -3.9s;
-      }
+      /* line-1 suffix odometer (translateY -11 = roll up & out, +11 = roll up from below) */
+      @keyframes kf-compose-y { 0% { opacity: 1; transform: translateY(0); } 16% { opacity: 1; transform: translateY(0); } 22% { opacity: 0; transform: translateY(-11px); } 23% { opacity: 0; transform: translateY(11px); } 96% { opacity: 0; transform: translateY(11px); } 100% { opacity: 1; transform: translateY(0); } }
+      @keyframes kf-compose-xy { 0% { opacity: 0; transform: translateY(11px); } 16% { opacity: 0; transform: translateY(11px); } 22% { opacity: 1; transform: translateY(0); } 36% { opacity: 1; transform: translateY(0); } 42% { opacity: 0; transform: translateY(-11px); } 100% { opacity: 0; transform: translateY(-11px); } }
+      @keyframes kf-compose-t { 0% { opacity: 0; transform: translateY(11px); } 36% { opacity: 0; transform: translateY(11px); } 42% { opacity: 1; transform: translateY(0); } 76% { opacity: 1; transform: translateY(0); } 82% { opacity: 0; transform: translateY(-11px); } 100% { opacity: 0; transform: translateY(-11px); } }
+      @keyframes kf-compose-x { 0% { opacity: 0; transform: translateY(11px); } 76% { opacity: 0; transform: translateY(11px); } 82% { opacity: 1; transform: translateY(0); } 96% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-11px); } }
+      /* line-2 "fade-" prefix drawers up with the second class / drops away (translateY +14) */
+      @keyframes kf-compose-l2p { 0% { opacity: 0; transform: translateY(14px); } 36% { opacity: 0; transform: translateY(14px); } 42% { opacity: 1; transform: translateY(0); } 96% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(14px); } }
+      /* line-2 suffixes: r arrives with the line then odometers out; size leaves with the line */
+      @keyframes kf-compose-r { 0% { opacity: 0; transform: translateY(14px); } 36% { opacity: 0; transform: translateY(14px); } 42% { opacity: 1; transform: translateY(0); } 56% { opacity: 1; transform: translateY(0); } 62% { opacity: 0; transform: translateY(-11px); } 100% { opacity: 0; transform: translateY(-11px); } }
+      @keyframes kf-compose-range { 0% { opacity: 0; transform: translateY(11px); } 56% { opacity: 0; transform: translateY(11px); } 62% { opacity: 1; transform: translateY(0); } 76% { opacity: 1; transform: translateY(0); } 82% { opacity: 0; transform: translateY(-11px); } 100% { opacity: 0; transform: translateY(-11px); } }
+      @keyframes kf-compose-size { 0% { opacity: 0; transform: translateY(11px); } 76% { opacity: 0; transform: translateY(11px); } 82% { opacity: 1; transform: translateY(0); } 96% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(14px); } }
 
       @keyframes feature-scroll-rows {
         0%,
-        16%,
+        6%,
         100% {
           transform: translateY(0);
         }
 
-        46%,
-        66% {
-          transform: translateY(-66px);
+        50%,
+        56% {
+          transform: translateY(-78px);
         }
       }
 
       @keyframes feature-scroll-top-fade {
         0%,
-        16%,
+        6%,
         100% {
           opacity: 0;
         }
 
-        46%,
-        66% {
-          opacity: 0.84;
+        50%,
+        56% {
+          opacity: 1;
         }
       }
 
       @keyframes feature-scroll-bottom-fade {
         0%,
-        16%,
+        6%,
         100% {
-          opacity: 0.82;
+          opacity: 1;
         }
 
-        46%,
-        66% {
-          opacity: 0.28;
+        50%,
+        56% {
+          opacity: 0.25;
         }
       }
 
       @keyframes feature-scroll-thumb {
         0%,
-        16%,
+        6%,
         100% {
           transform: translateY(0);
         }
 
-        46%,
-        66% {
-          transform: translateY(82px);
+        50%,
+        56% {
+          transform: translateY(84px);
         }
       }
 
       @keyframes feature-curve-trace {
         to {
           stroke-dashoffset: -506;
-        }
-      }
-
-      @keyframes feature-compose-top {
-        0%,
-        10%,
-        100% {
-          opacity: 0;
-          transform: translateY(-20px);
-        }
-
-        24%,
-        78% {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      @keyframes feature-compose-right {
-        0%,
-        16%,
-        100% {
-          opacity: 0;
-          transform: translateX(20px);
-        }
-
-        30%,
-        78% {
-          opacity: 1;
-          transform: translateX(0);
-        }
-      }
-
-      @keyframes feature-compose-bottom {
-        0%,
-        22%,
-        100% {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-
-        36%,
-        78% {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      @keyframes feature-compose-left {
-        0%,
-        28%,
-        100% {
-          opacity: 0;
-          transform: translateX(-20px);
-        }
-
-        42%,
-        78% {
-          opacity: 1;
-          transform: translateX(0);
-        }
-      }
-
-      @keyframes feature-compose-tokens {
-        0%,
-        38%,
-        100% {
-          opacity: 0;
-          transform: translateY(8px) scale(0.96);
-        }
-
-        52%,
-        78% {
-          opacity: 1;
-          transform: translateY(0) scale(1);
         }
       }
 
@@ -1538,32 +1567,39 @@
         .scroll-aware-bottom-fade,
         .scroll-aware-thumb,
         .eased-curve-active,
-        .compose-module,
-        .compose-token-group {
+        .kin-tok {
           animation: none !important;
         }
 
         .scroll-aware-rows {
-          transform: translateY(-28px);
+          transform: translateY(-40px);
         }
 
-        .scroll-aware-top-fade,
+        .scroll-aware-top-fade {
+          opacity: 0.7;
+        }
+
         .scroll-aware-bottom-fade {
-          opacity: 0.62;
+          opacity: 0.5;
         }
 
         .scroll-aware-thumb {
-          transform: translateY(36px);
+          transform: translateY(50px);
         }
 
         .eased-curve-active {
           stroke-dasharray: none;
         }
 
-        .compose-module,
-        .compose-token-group {
-          opacity: 1;
+        .kin-tok {
+          opacity: 0;
           transform: none;
+        }
+
+        .kin-s-t,
+        .kin-l2p,
+        .kin-s-range {
+          opacity: 1;
         }
       }
 
@@ -1645,10 +1681,15 @@
         <div class="install-snippet" data-install-snippet>
           <code class="install-command mono-copy font-mono" data-install-command>npm i tw-fade</code>
           <button class="install-copy-button" type="button" aria-label="Copy npm install command" data-copy-install>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <rect x="8" y="8" width="10" height="10" rx="2" />
-              <path d="M6 14H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" />
-            </svg>
+            <span class="install-copy-icon-stack" aria-hidden="true">
+              <svg class="install-copy-icon" viewBox="0 0 24 24">
+                <rect x="8" y="8" width="10" height="10" rx="2" />
+                <path d="M6 14H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" />
+              </svg>
+              <svg class="install-copy-check-icon" viewBox="0 0 24 24">
+                <path d="m5 12 4 4 10-10" />
+              </svg>
+            </span>
           </button>
         </div>
         <p class="visually-hidden" aria-live="polite" data-copy-install-status></p>
@@ -1916,6 +1957,11 @@
                     <article class="type-scale-content space-y-6">
                       <section class="space-y-7">
                         <div class="type-scale-row">
+                          <p class="type-scale-word font-normal leading-none text-neutral-50" style="--type-min: 5rem; --type-max: 10.75rem; --type-fluid: 9.5">
+                            ephemeral edges
+                          </p>
+                        </div>
+                        <div class="type-scale-row">
                           <p class="type-scale-word font-normal leading-none text-neutral-50" style="--type-min: 4rem; --type-max: 8.5rem; --type-fluid: 7.5">
                             ephemeral edges
                           </p>
@@ -2030,37 +2076,35 @@
         <div class="grid gap-4 md:grid-cols-3">
           <article class="feature-column">
             <div class="feature-graphic feature-graphic-scroll" aria-hidden="true">
-              <svg viewBox="0 0 320 240" preserveAspectRatio="xMinYMid meet" focusable="false">
+              <svg viewBox="21 33 250 172" preserveAspectRatio="xMidYMid meet" focusable="false">
                 <defs>
                   <clipPath id="scroll-aware-clip">
-                    <rect x="27" y="39" width="238" height="160" rx="15" />
+                    <rect x="27" y="39" width="238" height="160" rx="8" />
                   </clipPath>
-                  <linearGradient id="scroll-aware-top-gradient" x1="0" y1="39" x2="0" y2="98" gradientUnits="userSpaceOnUse">
+                  <linearGradient id="scroll-aware-top-gradient" x1="0" y1="39" x2="0" y2="83" gradientUnits="userSpaceOnUse">
                     <stop offset="0" style="stop-color: var(--feature-card-bg)" />
                     <stop offset="1" style="stop-color: var(--feature-card-bg); stop-opacity: 0" />
                   </linearGradient>
-                  <linearGradient id="scroll-aware-bottom-gradient" x1="0" y1="140" x2="0" y2="199" gradientUnits="userSpaceOnUse">
+                  <linearGradient id="scroll-aware-bottom-gradient" x1="0" y1="155" x2="0" y2="199" gradientUnits="userSpaceOnUse">
                     <stop offset="0" style="stop-color: var(--feature-card-bg); stop-opacity: 0" />
                     <stop offset="1" style="stop-color: var(--feature-card-bg)" />
                   </linearGradient>
                 </defs>
                 <g clip-path="url(#scroll-aware-clip)">
                   <g class="scroll-aware-rows">
-                    <rect class="scroll-aware-shape" x="50" y="58" width="80" height="36" rx="8" />
-                    <rect class="scroll-aware-shape" x="144" y="58" width="90" height="36" rx="8" />
-                    <rect class="scroll-aware-shape" x="50" y="112" width="184" height="36" rx="8" />
-                    <rect class="scroll-aware-shape" x="50" y="166" width="54" height="42" rx="8" />
-                    <rect class="scroll-aware-shape" x="116" y="166" width="54" height="42" rx="8" />
-                    <rect class="scroll-aware-shape" x="182" y="166" width="52" height="42" rx="8" />
-                    <rect class="scroll-aware-shape" x="50" y="226" width="84" height="36" rx="8" />
-                    <rect class="scroll-aware-shape" x="150" y="226" width="84" height="36" rx="8" />
+                    <rect class="scroll-aware-block-head" x="48" y="50" width="120" height="26" rx="4" />
+                    <rect class="scroll-aware-block" x="48" y="90" width="190" height="26" rx="4" />
+                    <rect class="scroll-aware-block" x="48" y="130" width="190" height="26" rx="4" />
+                    <rect class="scroll-aware-block" x="48" y="170" width="172" height="26" rx="4" />
+                    <rect class="scroll-aware-block" x="48" y="210" width="190" height="26" rx="4" />
+                    <rect class="scroll-aware-block" x="48" y="250" width="140" height="26" rx="4" />
                   </g>
-                  <rect class="scroll-aware-top-fade" x="27" y="39" width="238" height="59" fill="url(#scroll-aware-top-gradient)" />
-                  <rect class="scroll-aware-bottom-fade" x="27" y="140" width="238" height="59" fill="url(#scroll-aware-bottom-gradient)" />
+                  <rect class="scroll-aware-top-fade" x="27" y="39" width="238" height="44" fill="url(#scroll-aware-top-gradient)" />
+                  <rect class="scroll-aware-bottom-fade" x="27" y="155" width="238" height="44" fill="url(#scroll-aware-bottom-gradient)" />
                 </g>
-                <rect class="scroll-aware-frame" x="24" y="36" width="244" height="166" rx="18" stroke-width="2" />
-                <line class="scroll-aware-scrollbar-track" x1="250.5" y1="62" x2="250.5" y2="176" stroke-width="3" />
-                <rect class="scroll-aware-thumb feature-accent-fill" x="249" y="62" width="3" height="32" rx="1.5" />
+                <rect class="scroll-aware-frame" x="24" y="36" width="244" height="166" rx="10" />
+                <line class="scroll-aware-scrollbar-track" x1="252" y1="60" x2="252" y2="178" />
+                <rect class="scroll-aware-thumb feature-accent-fill" x="250.5" y="60" width="3" height="34" rx="1.5" />
               </svg>
             </div>
             <h3 class="text-lg font-medium leading-7 text-neutral-100">Scroll aware</h3>
@@ -2070,7 +2114,7 @@
           </article>
           <article class="feature-column">
             <div class="feature-graphic feature-graphic-eased" aria-hidden="true">
-              <svg viewBox="0 0 320 240" preserveAspectRatio="xMinYMid meet" focusable="false">
+              <svg viewBox="27 36 268 160" preserveAspectRatio="xMidYMid meet" focusable="false">
                 <defs>
                   <linearGradient id="eased-curve-illumination" x1="34" y1="116" x2="288" y2="116" gradientUnits="userSpaceOnUse">
                     <stop offset="0" style="stop-color: var(--demo-accent-text); stop-opacity: 0" />
@@ -2097,26 +2141,18 @@
           </article>
           <article class="feature-column">
             <div class="feature-graphic feature-graphic-compose" aria-hidden="true">
-              <svg viewBox="0 0 320 240" preserveAspectRatio="xMinYMid meet" focusable="false">
-                <rect class="compose-core" x="108" y="88" width="84" height="56" rx="14" />
-                <g class="compose-module compose-module-top">
-                  <rect class="compose-module-piece" x="96" y="48" width="108" height="24" rx="12" />
-                </g>
-                <g class="compose-module compose-module-right">
-                  <rect class="compose-module-piece" x="212" y="84" width="28" height="64" rx="14" />
-                </g>
-                <g class="compose-module compose-module-bottom">
-                  <rect class="compose-module-piece" x="96" y="160" width="108" height="24" rx="12" />
-                </g>
-                <g class="compose-module compose-module-left">
-                  <rect class="compose-module-piece" x="60" y="84" width="28" height="64" rx="14" />
-                </g>
-                <g class="compose-token-group">
-                  <rect class="compose-token" x="58" y="206" width="42" height="12" rx="6" />
-                  <rect class="compose-token" x="112" y="206" width="42" height="12" rx="6" />
-                  <rect class="compose-token" x="166" y="206" width="42" height="12" rx="6" />
-                  <rect class="compose-token" x="220" y="206" width="42" height="12" rx="6" />
-                </g>
+              <svg viewBox="0 0 250 172" preserveAspectRatio="xMidYMid meet" focusable="false">
+                <!-- line 1: persistent "fade-" anchor + rolling suffix -->
+                <text class="kin-line kin-mut" x="20" y="84">fade-</text>
+                <text class="kin-line kin-amb kin-tok kin-s-y" x="91" y="84">y</text>
+                <text class="kin-line kin-amb kin-tok kin-s-xy" x="91" y="84">xy</text>
+                <text class="kin-line kin-amb kin-tok kin-s-t" x="91" y="84">t</text>
+                <text class="kin-line kin-amb kin-tok kin-s-x" x="91" y="84">x</text>
+                <!-- line 2: drawers in/out as a unit when the 2nd class joins/leaves -->
+                <text class="kin-line kin-mut kin-tok kin-l2p" x="20" y="118">fade-</text>
+                <text class="kin-line kin-amb kin-tok kin-s-r" x="91" y="118">r</text>
+                <text class="kin-line kin-amb kin-tok kin-s-range" x="91" y="118">range-2xl</text>
+                <text class="kin-line kin-amb kin-tok kin-s-size" x="91" y="118">size-lg</text>
               </svg>
             </div>
             <h3 class="text-lg font-medium leading-7 text-neutral-100">Composable</h3>
@@ -2248,6 +2284,7 @@
       const floatingSurfacePalette = document.querySelector('[data-floating-surface-palette]')
       const rail = document.querySelector('[data-demo="rail"]')
       const railCards = rail ? Array.from(rail.querySelectorAll('.rail-card')) : []
+      const installSnippet = document.querySelector('[data-install-snippet]')
       const installCommand = document.querySelector('[data-install-command]')
       const installCopyButton = document.querySelector('[data-copy-install]')
       const installCopyStatus = document.querySelector('[data-copy-install-status]')
@@ -2278,6 +2315,7 @@
       ]
       const fadeEdgeOrder = ['t', 'r', 'b', 'l']
       const fadeEdgeClassNames = fadeEdgeOrder.map((edge) => `fade-${edge}`)
+      let installCopyResetTimer = 0
 
       function setSurface(nextSurface) {
         document.documentElement.dataset.surface = nextSurface
@@ -2387,24 +2425,31 @@
 
       installCopyButton?.addEventListener('click', async () => {
         const command = installCommand?.textContent.trim() || 'npm i tw-fade'
-        window.clearTimeout(installCopyButton.dataset.resetTimer)
+        window.clearTimeout(installCopyResetTimer)
 
         try {
           await copyText(command)
+          if (installSnippet) {
+            installSnippet.removeAttribute('data-copy-state')
+            void installSnippet.offsetWidth
+            installSnippet.dataset.copyState = 'copied'
+          }
           installCopyButton.dataset.copied = 'true'
           installCopyButton.setAttribute('aria-label', 'Copied npm install command')
           installCopyStatus.textContent = `Copied ${command}`
         } catch {
+          installSnippet?.removeAttribute('data-copy-state')
           installCopyButton.dataset.copied = 'false'
           installCopyButton.setAttribute('aria-label', 'Copy npm install command')
           installCopyStatus.textContent = 'Copy failed'
+          return
         }
 
-        const resetTimer = window.setTimeout(() => {
+        installCopyResetTimer = window.setTimeout(() => {
+          installSnippet?.removeAttribute('data-copy-state')
           installCopyButton.dataset.copied = 'false'
           installCopyButton.setAttribute('aria-label', 'Copy npm install command')
-        }, 1600)
-        installCopyButton.dataset.resetTimer = String(resetTimer)
+        }, 2000)
       })
 
       fadeDepthSlider?.addEventListener('input', (event) => {
