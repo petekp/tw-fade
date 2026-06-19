@@ -24,7 +24,8 @@ function ditherSvg(size = 256, cells = 32) {
 
   for (let y = 0; y < cells; y++) {
     for (let x = 0; x < cells; x++) {
-      const value = (x + y) / (2 * (cells - 1))
+      const diagonal = (x + y) / (2 * (cells - 1))
+      const value = Math.max(0, Math.min(1, (diagonal - 0.22) / 0.52))
       const threshold = (bayer8[y % 8][x % 8] + 0.5) / 64
       const color = value >= threshold ? '#f8fafc' : '#020617'
       rects.push(
