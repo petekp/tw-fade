@@ -15,8 +15,13 @@ const demoDir = path.join(root, 'demo')
 // stack, eyebrow, tokens, and wave background render byte-identically to the
 // real hero — no hand-maintained approximation to drift out of sync.
 const indexHtml = await fs.readFile(path.join(demoDir, 'index.html'), 'utf8')
-const inlineStyle = indexHtml.match(/<style>([\s\S]*?)<\/style>/)[1]
+const inlineStyleRaw = indexHtml.match(/<style>([\s\S]*?)<\/style>/)[1]
 const stylesCss = await fs.readFile(path.join(demoDir, 'styles.css'), 'utf8')
+
+// The OG card shows the wave background statically (the scroll-driven morph JS
+// never runs here), so bump the wave stroke opacity +15% (0.065 -> 0.075) for a
+// touch more presence. OG-only — the live page's inline style is untouched.
+const inlineStyle = inlineStyleRaw.replace("stroke-opacity%3D'0.065'", "stroke-opacity%3D'0.075'")
 
 const bayer8 = [
   [0, 48, 12, 60, 3, 51, 15, 63],
@@ -141,14 +146,15 @@ function ogDocument() {
       .og-frame .masthead-lockup { align-self: flex-start; }
       .og-frame .masthead-plugin-label {
         margin-bottom: 1.5rem;
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         letter-spacing: 0.01em;
       }
-      .og-frame .masthead-plugin-label svg { width: 36px; height: 22px; }
+      .og-frame .masthead-plugin-label svg { width: 44px; height: 27px; }
       .og-frame .hero-title { font-size: 150px; }
       .og-frame .og-tagline {
         margin: 2.4rem 0 0;
-        max-width: 760px;
+        max-width: none;
+        white-space: nowrap;
         font-size: 31px;
         line-height: 1.34;
         font-weight: 400;
