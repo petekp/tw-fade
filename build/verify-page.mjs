@@ -61,6 +61,45 @@ const top = await amounts('top')
 const mid = await amounts('mid')
 const bot = await amounts('max')
 
+const demoEdgeUtilities = ['fade-t', 'fade-b', 'fade-l', 'fade-r']
+const missingDemoEdgeUtilities = demoEdgeUtilities.filter((className) => {
+  return !new RegExp(`\\.${className}\\s*\\{`).test(demoCss)
+})
+const singleEdgeSpecimen = await page.evaluate(async () => {
+  const specimen = document.querySelector('[data-demo="type-specimen"]')
+  if (!specimen) return null
+
+  specimen.className = 'fade-t fade-size-2xl fade-range-md thin-scroll type-scale-sample h-64 overflow-auto p-5 sm:h-72'
+  specimen.scrollTop = 96
+  specimen.scrollLeft = 96
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
+
+  const cs = getComputedStyle(specimen)
+  return {
+    maskComposite: cs.maskComposite || cs.webkitMaskComposite,
+    hasMaskT: cs.getPropertyValue('--sf-mask-t').trim() !== '',
+    hasMaskB: cs.getPropertyValue('--sf-mask-b').trim() !== '',
+    hasMaskL: cs.getPropertyValue('--sf-mask-l').trim() !== '',
+    hasMaskR: cs.getPropertyValue('--sf-mask-r').trim() !== '',
+  }
+})
+
+const railSelection = await page.evaluate(() => {
+  const cards = Array.from(document.querySelectorAll('[data-demo="rail"] .rail-card'))
+  if (!cards.length) return null
+
+  const readSelection = () => cards.map((card) => card.getAttribute('aria-selected') === 'true')
+  const before = readSelection()
+  cards[2]?.click()
+
+  return {
+    count: cards.length,
+    before,
+    after: readSelection(),
+    selectedLabel: cards.find((card) => card.getAttribute('aria-selected') === 'true')?.textContent.trim().replace(/\s+/g, ' ') || '',
+  }
+})
+
 await browser.close()
 
 const approx = (v, target, tol = 0.2) => Math.abs(v - target) <= tol
@@ -68,10 +107,34 @@ const transparent = (c) => c === 'rgba(0, 0, 0, 0)' || c === 'transparent'
 
 const checks = [
   ['demo build does not emit private .sf-mask utility', !/\.sf-mask\s*\{/.test(demoCss), '.sf-mask absent'],
+  [
+    'demo build emits runtime single-edge utilities',
+    missingDemoEdgeUtilities.length === 0,
+    missingDemoEdgeUtilities.length ? `missing: ${missingDemoEdgeUtilities.join(', ')}` : demoEdgeUtilities.join(', '),
+  ],
   ['body is the real scroll container', structure.bodyIsScroller, String(structure.bodyIsScroller)],
   ['surface is on <html> (non-transparent)', !transparent(structure.htmlBg), structure.htmlBg],
   ['body is transparent (mask reveals the surface)', transparent(structure.bodyBg), structure.bodyBg],
   ['mask applied to body (composite: intersect)', /intersect/.test(structure.maskComposite || ''), structure.maskComposite],
+  [
+    'advanced demo supports a single top fade',
+    singleEdgeSpecimen?.hasMaskT === true &&
+      singleEdgeSpecimen.hasMaskB === false &&
+      singleEdgeSpecimen.hasMaskL === false &&
+      singleEdgeSpecimen.hasMaskR === false &&
+      /intersect/.test(singleEdgeSpecimen.maskComposite || ''),
+    singleEdgeSpecimen
+      ? `t:${singleEdgeSpecimen.hasMaskT} b:${singleEdgeSpecimen.hasMaskB} l:${singleEdgeSpecimen.hasMaskL} r:${singleEdgeSpecimen.hasMaskR}`
+      : 'missing specimen',
+  ],
+  [
+    'horizontal cards move selected treatment on click',
+    railSelection?.before[0] === true &&
+      railSelection.before.filter(Boolean).length === 1 &&
+      railSelection.after[2] === true &&
+      railSelection.after.filter(Boolean).length === 1,
+    railSelection ? `${railSelection.count} cards, selected:${railSelection.selectedLabel}` : 'missing rail cards',
+  ],
   ['top of page: no top fade (t≈0)', approx(top.t, 0), `t≈${top.t.toFixed(2)}`],
   ['top of page: bottom fade present (b≈1)', approx(top.b, 1), `b≈${top.b.toFixed(2)}`],
   ['mid scroll: both fades present (t≈1,b≈1)', approx(mid.t, 1) && approx(mid.b, 1), `t≈${mid.t.toFixed(2)},b≈${mid.b.toFixed(2)}`],
@@ -79,7 +142,7 @@ const checks = [
   ['bottom of page: no bottom fade (b≈0)', approx(bot.b, 0), `b≈${bot.b.toFixed(2)}`],
 ]
 
-console.log('Demo page: <body class="fade-y fade-size-[8.75rem] …">')
+console.log('Demo page: <body class="fade-y fade-size-4xl …">')
 console.log(
   `structure — scroller:${structure.bodyIsScroller} htmlBg:${structure.htmlBg} bodyBg:${structure.bodyBg} composite:${structure.maskComposite}`,
 )
