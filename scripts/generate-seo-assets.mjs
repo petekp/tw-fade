@@ -152,7 +152,7 @@ function ogDocument() {
       .og-frame .masthead-plugin-label svg { width: 44px; height: 27px; }
       .og-frame .hero-title { font-size: 150px; }
       .og-frame .og-tagline {
-        margin: 2.4rem 0 0;
+        margin: 3.6rem 0 0;
         max-width: none;
         white-space: nowrap;
         font-size: 31px;
