@@ -458,6 +458,7 @@ modern wide-gamut OKLCH/P3 color syntax. */
        font-family:
            "Climate Crisis", "Arial Black", Impact, ui-sans-serif,
            system-ui, sans-serif;
+       font-size: clamp(3rem, 15.2vw, 8rem);
        font-weight: 400;
        letter-spacing: 0;
        line-height: 0.92;
@@ -798,6 +799,11 @@ modern wide-gamut OKLCH/P3 color syntax. */
            align-items: flex-start;
        }
 
+       .footer-browser-support {
+           position: relative;
+           width: 100%;
+       }
+
        .footer-social-links {
            align-self: flex-end;
            margin-left: 0;
@@ -1126,6 +1132,22 @@ modern wide-gamut OKLCH/P3 color syntax. */
        .support-tooltip-right-compact {
            right: 0;
            left: auto;
+       }
+   }
+
+   @media (max-width: 640px) {
+       .support-tooltip-root {
+           position: static;
+       }
+
+       .support-tooltip,
+       .support-tooltip-right,
+       .support-tooltip-left-compact,
+       .support-tooltip-right-compact {
+           right: 0;
+           left: 0;
+           width: auto;
+           max-width: none;
        }
    }
 
