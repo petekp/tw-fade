@@ -229,6 +229,9 @@
   .mt-\[9rem\] {
     margin-top: 9rem;
   }
+  .ml-2 {
+    margin-left: calc(var(--spacing) * 2);
+  }
   .flex {
     display: flex;
   }
@@ -893,9 +896,6 @@
   .p-4 {
     padding: calc(var(--spacing) * 4);
   }
-  .p-5 {
-    padding: calc(var(--spacing) * 5);
-  }
   .px-4 {
     padding-inline: calc(var(--spacing) * 4);
   }
@@ -930,9 +930,6 @@
   }
   .text-\[0\.875rem\] {
     font-size: 0.875rem;
-  }
-  .text-\[0\.6875rem\] {
-    font-size: 0.6875rem;
   }
   .text-\[0\.8125rem\] {
     font-size: 0.8125rem;

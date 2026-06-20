@@ -88,7 +88,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Climate+Crisis&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Bokor&family=Climate+Crisis&display=swap"
             rel="stylesheet"
         />
         <link rel="stylesheet" href="./styles.css" />
@@ -247,23 +247,17 @@
                     --demo-panel-strong: oklch(14.479% 0 0 / 0.95);
                     --demo-panel-soft: oklch(14.479% 0 0 / 0.62);
                     --demo-control-bg: oklch(100% 0 0 / 0.03);
-                    --demo-control-active: color(
-                        display-p3 1 0.37 0.27 / 0.14
-                    );
+                    --demo-control-active: color(display-p3 1 0.37 0.27 / 0.14);
                     --demo-border: oklch(100% 0 0 / 0.1);
                     --demo-border-strong: oklch(100% 0 0 / 0.14);
-                    --demo-focus: color(
-                        display-p3 1 0.37 0.27 / 0.62
-                    );
+                    --demo-focus: color(display-p3 1 0.37 0.27 / 0.62);
                     --demo-text-strong: oklch(98.51% 0 0);
                     --demo-text-primary: oklch(86.994% 0 0);
                     --demo-text-muted: oklch(71.547% 0 0);
                     --demo-text-subtle: oklch(58.971% 0 0);
                     --demo-accent-text: color(display-p3 1 0.52 0.42);
                     --demo-accent-text-strong: color(display-p3 1 0.8 0.74);
-                    --demo-selection-bg: color(
-                        display-p3 1 0.37 0.27 / 0.82
-                    );
+                    --demo-selection-bg: color(display-p3 1 0.37 0.27 / 0.82);
                     --demo-selection-text: oklch(14.479% 0 0);
                     --demo-warning-text: oklch(92.428% 0.1151 95.75);
                     --demo-warning-text-strong: oklch(96.19% 0.058 95.62);
@@ -478,12 +472,6 @@
                 initial-value: 0;
             }
 
-            @property --sweep-x {
-                syntax: "<number>";
-                inherits: false;
-                initial-value: -320;
-            }
-
             @property --kin-blur {
                 syntax: "<number>";
                 inherits: false;
@@ -512,6 +500,24 @@
                 syntax: "<number>";
                 inherits: false;
                 initial-value: 0;
+            }
+
+            @property --fade-option-flash {
+                syntax: "<number>";
+                inherits: false;
+                initial-value: 0;
+            }
+
+            @property --edge-toggle-active {
+                syntax: "<number>";
+                inherits: false;
+                initial-value: 0;
+            }
+
+            @property --edge-toggle-scale {
+                syntax: "<number>";
+                inherits: false;
+                initial-value: 1;
             }
 
             @property --rail-letter-scale {
@@ -599,6 +605,26 @@
                 font-variant-numeric: tabular-nums slashed-zero;
             }
 
+            .fade-option-label {
+                color: var(--demo-text-subtle);
+            }
+
+            .fade-option-token {
+                display: inline-flex;
+                white-space: nowrap;
+            }
+
+            .fade-option-part {
+                --fade-option-flash: 0;
+                color: color-mix(
+                    in oklab,
+                    var(--demo-text-subtle)
+                        calc((1 - var(--fade-option-flash)) * 100%),
+                    var(--demo-accent-text-strong)
+                        calc(var(--fade-option-flash) * 100%)
+                );
+            }
+
             .visually-hidden {
                 position: absolute;
                 width: 1px;
@@ -640,8 +666,6 @@
             }
 
             .install-snippet-sweep {
-                --sweep-x: -320;
-
                 position: absolute;
                 inset: 0;
                 z-index: 0;
@@ -672,7 +696,7 @@
                     transparent 76%,
                     transparent 100%
                 );
-                transform: translateX(calc(var(--sweep-x) * 1px));
+                transform: translate3d(-320px, 0, 0);
                 will-change: opacity, transform;
             }
 
@@ -973,10 +997,10 @@
                 overflow: hidden;
                 padding: 0.375rem;
                 isolation: isolate;
-                background: rgb(255 255 255 / 0.035);
+                background: rgb(255 255 255 / 0.05);
                 box-shadow:
-                    inset 0 0 0 1px rgb(255 255 255 / 0.22),
-                    inset 0 1px 0 rgb(255 255 255 / 0.32),
+                    inset 0 0 0 1px rgb(255 255 255 / 0.1),
+                    inset 0 1px 0 rgb(255 255 255 / 0.15),
                     inset 0 -18px 28px rgb(255 255 255 / 0.02),
                     0 12px 36px rgb(0 0 0 / 0.16);
                 -webkit-backdrop-filter: var(--palette-glass-filter)
@@ -993,29 +1017,6 @@
                 transition:
                     opacity 180ms ease,
                     transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
-            }
-
-            .floating-surface-palette::after {
-                content: "";
-                position: absolute;
-                inset: 0;
-                z-index: 1;
-                border-radius: inherit;
-                pointer-events: none;
-                background:
-                    linear-gradient(
-                        135deg,
-                        rgb(255 255 255 / 0.22),
-                        transparent 14%,
-                        transparent 78%,
-                        rgb(255 255 255 / 0.09)
-                    ),
-                    radial-gradient(
-                        circle at 72% 24%,
-                        rgb(255 255 255 / 0.06),
-                        transparent 22%
-                    );
-                mix-blend-mode: screen;
             }
 
             .floating-surface-palette[data-visible="true"] {
@@ -1042,7 +1043,7 @@
                     var(--demo-text-primary) 8%
                 );
                 box-shadow:
-                    inset 0 1px 0 rgb(255 255 255 / 0.2),
+                    inset 0.4px 1px 0 rgb(255 255 255 / 0.2),
                     0 1px 2px rgb(0 0 0 / 0.4);
                 cursor: pointer;
                 outline: none;
@@ -1331,7 +1332,7 @@
                     system-ui, sans-serif;
                 font-size: 11.2125rem;
                 line-height: 0.8;
-                opacity: calc(0.12 + var(--rail-letter-active) * 0.06);
+                opacity: calc(0.12 + var(--rail-letter-active) * 0.88);
                 pointer-events: none;
                 transform: translate(-16px, -24px)
                     scale(var(--rail-letter-scale));
@@ -1374,11 +1375,22 @@
             .fade-control-slider::-webkit-slider-runnable-track {
                 height: 0.3125rem;
                 border-radius: 999px;
-                background: color-mix(
-                    in oklab,
-                    var(--demo-border-strong) 58%,
-                    transparent
-                );
+                background:
+                    radial-gradient(
+                        circle at var(--slider-fill) 50%,
+                        var(--demo-accent-text) 0 0.15625rem,
+                        transparent 0.164rem
+                    ),
+                    linear-gradient(
+                        90deg,
+                        var(--demo-accent-text) 0 var(--slider-fill),
+                        transparent var(--slider-fill) 100%
+                    ),
+                    color-mix(
+                        in oklab,
+                        var(--demo-border-strong) 58%,
+                        transparent
+                    );
             }
 
             .fade-control-slider::-webkit-slider-thumb {
@@ -1386,78 +1398,66 @@
                 height: 1.0625rem;
                 margin-top: -0.375rem;
                 appearance: none;
-                border: 1px solid
-                    color-mix(
-                        in oklab,
-                        var(--demo-text-strong) 18%,
-                        transparent
-                    );
+                border: 0;
                 border-radius: 999px;
-                background: var(--demo-focus);
-                box-shadow:
-                    inset 0 1px 0 rgb(255 255 255 / 0.16),
-                    0 0 0 0.25rem
-                        color-mix(in oklab, var(--demo-focus) 14%, transparent);
+                background: transparent;
+                box-shadow: none;
             }
 
             .fade-control-slider:focus-visible::-webkit-slider-thumb {
-                box-shadow:
-                    0 0 0 0.25rem
-                        color-mix(in oklab, var(--demo-focus) 22%, transparent),
-                    0 0 0 0.375rem
-                        color-mix(
-                            in oklab,
-                            var(--demo-text-strong) 14%,
-                            transparent
-                        );
+                box-shadow: none;
             }
 
             .fade-control-slider::-moz-range-track {
                 height: 0.3125rem;
                 border-radius: 999px;
-                background: color-mix(
-                    in oklab,
-                    var(--demo-border-strong) 58%,
-                    transparent
-                );
+                background:
+                    radial-gradient(
+                        circle at var(--slider-fill) 50%,
+                        var(--demo-accent-text) 0 0.15625rem,
+                        transparent 0.164rem
+                    ),
+                    linear-gradient(
+                        90deg,
+                        var(--demo-accent-text) 0 var(--slider-fill),
+                        transparent var(--slider-fill) 100%
+                    ),
+                    color-mix(
+                        in oklab,
+                        var(--demo-border-strong) 58%,
+                        transparent
+                    );
+            }
+
+            .fade-control-slider::-moz-range-progress {
+                height: 0.3125rem;
+                border-radius: 999px;
+                background: var(--demo-accent-text);
             }
 
             .fade-control-slider::-moz-range-thumb {
                 width: 1.0625rem;
                 height: 1.0625rem;
-                border: 1px solid
-                    color-mix(
-                        in oklab,
-                        var(--demo-text-strong) 18%,
-                        transparent
-                    );
+                border: 0;
                 border-radius: 999px;
-                background: var(--demo-focus);
-                box-shadow:
-                    inset 0 1px 0 rgb(255 255 255 / 0.16),
-                    0 0 0 0.25rem
-                        color-mix(in oklab, var(--demo-focus) 14%, transparent);
+                background: transparent;
+                box-shadow: none;
             }
 
             .fade-control-value {
-                min-width: 2.25rem;
-                border-radius: 999px;
-                background: color-mix(
-                    in oklab,
-                    var(--demo-page-bg) 70%,
-                    var(--demo-text-primary) 30%
-                );
-                padding: 0.125rem 0.375rem;
+                min-width: 2.5rem;
+                margin-inline-start: auto;
                 color: var(--demo-text-primary);
                 font-size: 0.75rem;
+                font-weight: 400;
                 line-height: 1rem;
-                text-align: center;
+                text-align: right;
                 font-variant-numeric: tabular-nums;
             }
 
             .option-card-body {
                 display: grid;
-                grid-template-columns: minmax(0, 1fr) minmax(12.5rem, 13.75rem);
+                grid-template-columns: minmax(0, 1fr) minmax(10rem, 11rem);
                 min-height: 18rem;
             }
 
@@ -1495,6 +1495,10 @@
                     );
             }
 
+            label.option-control {
+                gap: 0.375rem;
+            }
+
             .option-control:first-child {
                 padding-top: 0;
             }
@@ -1507,7 +1511,7 @@
             .option-control-heading {
                 display: flex;
                 min-height: 1.375rem;
-                align-items: center;
+                align-items: baseline;
                 justify-content: space-between;
                 gap: 0.75rem;
             }
@@ -1522,216 +1526,160 @@
             }
 
             .option-slider-control {
+                --slider-progress: 0;
+                --slider-fill: 0%;
+                --slider-knob-size: 1rem;
+                position: relative;
                 display: block;
+                height: 1.625rem;
+                isolation: isolate;
+            }
+
+            .option-slider-control::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: calc(
+                    var(--slider-progress) * (100% - var(--slider-knob-size))
+                );
+                z-index: 3;
+                width: var(--slider-knob-size);
+                height: var(--slider-knob-size);
+                border-radius: 999px;
+                background: var(--demo-accent-text);
+                transform: translateY(-50%);
+                pointer-events: none;
+            }
+
+            .option-slider-control:has(
+                    .fade-control-slider:focus-visible
+                )::after {
+                box-shadow: 0 0 0 0.25rem
+                    color-mix(in oklab, var(--demo-accent-text) 24%, transparent);
+            }
+
+            .option-slider-control > .fade-control-slider {
+                position: relative;
+                z-index: 1;
             }
 
             .edge-toggle-group {
                 position: relative;
-                display: block;
-                width: 7.25rem;
-                height: 5rem;
-                overflow: hidden;
-                border: 1px solid
-                    color-mix(
-                        in oklab,
-                        var(--demo-border-strong) 52%,
-                        transparent
-                    );
-                border-radius: var(--demo-radius-lg);
-                background:
-                    radial-gradient(
-                        circle at 50% 50%,
-                        color-mix(
-                                in oklab,
-                                var(--demo-page-bg) 72%,
-                                var(--demo-text-primary) 28%
-                            )
-                            0 1.68rem,
-                        transparent 1.72rem
-                    ),
-                    color-mix(
-                        in oklab,
-                        var(--demo-page-bg) 66%,
-                        var(--demo-text-primary) 34%
-                    );
-                box-shadow:
-                    inset 0 1px 0 rgb(255 255 255 / 0.05),
-                    0 10px 24px rgb(0 0 0 / 0.18);
-            }
-
-            .edge-toggle-group::before,
-            .edge-toggle-group::after {
-                position: absolute;
-                pointer-events: none;
-                content: "";
-                z-index: 2;
+                display: grid;
+                width: min(100%, 10rem);
+                aspect-ratio: 1;
+                overflow: visible;
+                border: 0;
+                background: transparent;
+                box-shadow: none;
+                isolation: isolate;
             }
 
             .edge-toggle-group::before {
-                top: 50%;
-                left: 50%;
-                width: 2.15rem;
-                height: 2.15rem;
-                border: 1px solid
-                    color-mix(
-                        in oklab,
-                        var(--demo-border-strong) 48%,
-                        transparent
-                    );
-                border-radius: var(--demo-radius-sm);
-                background: color-mix(
-                    in oklab,
-                    var(--demo-page-bg) 82%,
-                    var(--demo-text-primary) 18%
-                );
-                box-shadow:
-                    inset 0 1px 0 rgb(255 255 255 / 0.04),
-                    0 0 0 1px
-                        color-mix(
-                            in oklab,
-                            var(--demo-page-bg) 58%,
-                            transparent
-                        );
-                transform: translate(-50%, -50%);
+                content: none;
             }
 
             .edge-toggle-group::after {
-                top: 50%;
-                left: 50%;
-                width: 0.35rem;
-                height: 0.35rem;
-                border-radius: 999px;
-                background: color-mix(
-                    in oklab,
-                    var(--demo-border-strong) 78%,
-                    var(--demo-page-bg) 22%
-                );
-                transform: translate(-50%, -50%);
+                content: none;
             }
 
             .edge-toggle-button {
-                --edge-fill: color-mix(
-                    in oklab,
-                    var(--demo-page-bg) 68%,
-                    var(--demo-text-primary) 32%
-                );
-                --edge-outline: color-mix(
-                    in oklab,
-                    var(--demo-text-strong) 10%,
-                    transparent
-                );
-
                 position: absolute;
-                z-index: 3;
-                display: grid;
-                place-items: center;
+                inset: 0;
+                z-index: 2;
                 border: 0;
-                border-radius: 999px;
-                color: transparent;
+                padding: 0;
+                background: transparent;
                 font: inherit;
                 font-size: 0;
                 line-height: 1;
-                background: transparent;
                 cursor: pointer;
-                transition:
-                    box-shadow 160ms ease,
-                    filter 160ms ease;
-            }
-
-            .edge-toggle-button::before {
-                position: absolute;
-                border-radius: 999px;
-                background: var(--edge-fill);
-                box-shadow:
-                    inset 0 1px 0 rgb(255 255 255 / 0.08),
-                    0 0 0 1px var(--edge-outline);
-                content: "";
-                transition:
-                    background-color 160ms ease,
-                    box-shadow 160ms ease,
-                    opacity 160ms ease;
-            }
-
-            .edge-toggle-button[aria-pressed="true"] {
-                --edge-fill: color-mix(
-                    in oklab,
-                    var(--demo-page-bg) 48%,
-                    var(--demo-focus) 52%
-                );
-                --edge-outline: color-mix(
-                    in oklab,
-                    var(--demo-focus) 64%,
-                    transparent
-                );
-            }
-
-            .edge-toggle-button:active {
-                filter: brightness(1.14);
+                outline: none;
+                -webkit-tap-highlight-color: transparent;
             }
 
             .edge-toggle-button:focus-visible {
-                outline: none;
                 box-shadow:
-                    0 0 0 2px
-                        color-mix(
-                            in oklab,
-                            var(--demo-page-bg) 80%,
-                            transparent
-                        ),
-                    0 0 0 4px
-                        color-mix(in oklab, var(--demo-focus) 42%, transparent);
+                    inset 0 0 0 2px var(--demo-page-bg),
+                    inset 0 0 0 4px
+                        color-mix(in oklab, var(--demo-focus) 62%, transparent);
             }
 
             .edge-toggle-button[data-fade-edge-toggle="t"] {
-                top: 0.35rem;
-                left: 50%;
-                width: 3.85rem;
-                height: 1.25rem;
-                translate: -50% 0;
+                clip-path: polygon(0 0, 100% 0, 50% 50%);
             }
 
             .edge-toggle-button[data-fade-edge-toggle="r"] {
-                top: 50%;
-                right: 0.35rem;
-                width: 1.25rem;
-                height: 3.85rem;
-                translate: 0 -50%;
+                clip-path: polygon(100% 0, 100% 100%, 50% 50%);
             }
 
             .edge-toggle-button[data-fade-edge-toggle="b"] {
-                bottom: 0.35rem;
-                left: 50%;
-                width: 3.85rem;
-                height: 1.25rem;
-                translate: -50% 0;
+                clip-path: polygon(100% 100%, 0 100%, 50% 50%);
             }
 
             .edge-toggle-button[data-fade-edge-toggle="l"] {
-                top: 50%;
-                left: 0.35rem;
-                width: 1.25rem;
-                height: 3.85rem;
-                translate: 0 -50%;
+                clip-path: polygon(0 100%, 0 0, 50% 50%);
             }
 
-            .edge-toggle-button[data-fade-edge-toggle="t"]::before,
-            .edge-toggle-button[data-fade-edge-toggle="b"]::before {
-                inset: 0.45rem 0.55rem;
+            .edge-toggle-button[data-fade-edge-toggle="r"] .edge-toggle-svg {
+                --edge-rotation: 90deg;
             }
 
-            .edge-toggle-button[data-fade-edge-toggle="r"]::before,
-            .edge-toggle-button[data-fade-edge-toggle="l"]::before {
-                inset: 0.55rem 0.45rem;
+            .edge-toggle-button[data-fade-edge-toggle="b"] .edge-toggle-svg {
+                --edge-rotation: 180deg;
             }
 
-            @media (hover: hover) and (pointer: fine) {
-                .edge-toggle-button:hover {
-                    filter: brightness(1.08);
-                }
+            .edge-toggle-button[data-fade-edge-toggle="l"] .edge-toggle-svg {
+                --edge-rotation: -90deg;
+            }
+
+            .edge-toggle-svg {
+                --edge-toggle-scale: 1;
+                --edge-rotation: 0deg;
+
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                overflow: visible;
+                pointer-events: none;
+                transform: rotate(var(--edge-rotation))
+                    scale(var(--edge-toggle-scale));
+                transform-origin: 50% 50%;
+                will-change: transform;
+            }
+
+            .edge-toggle-shape {
+                stroke: none;
+                opacity: 1;
+            }
+
+            .edge-toggle-gradient-stop {
+                --edge-toggle-active: 0;
+                stop-color: color-mix(
+                    in oklab,
+                    color-mix(
+                            in oklab,
+                            var(--demo-border-strong) 58%,
+                            transparent
+                        )
+                        calc((1 - var(--edge-toggle-active)) * 100%),
+                    var(--demo-accent-text)
+                        calc(var(--edge-toggle-active) * 100%)
+                );
+            }
+
+            .edge-toggle-gradient-base {
+                stop-opacity: calc(0.58 + var(--edge-toggle-active) * 0.42);
+            }
+
+            .edge-toggle-gradient-tip {
+                stop-opacity: 0;
             }
 
             .type-scale-sample {
                 container-type: inline-size;
+                padding: 2.5rem;
             }
 
             .type-scale-content {
@@ -1745,6 +1693,8 @@
             }
 
             .type-scale-word {
+                font-family: "Bokor", ui-serif, Georgia, serif;
+                font-weight: 400;
                 font-size: clamp(
                     var(--type-min),
                     calc(var(--type-min) + var(--type-fluid) * 1cqw),
@@ -1917,7 +1867,7 @@
             }
 
             .scroll-aware-rows {
-                transform: translateY(0);
+                transform: translate3d(0, 0, 0);
             }
 
             .scroll-aware-top-fade {
@@ -1931,7 +1881,7 @@
             }
 
             .scroll-aware-thumb {
-                transform: translateY(0);
+                transform: translate3d(0, 0, 0);
             }
 
             .eased-curve-base,
@@ -1983,8 +1933,10 @@
 
                 filter: blur(calc(var(--kin-blur) * 1px));
                 opacity: 0;
+                transform: translate3d(0, 11px, 0);
                 transform-box: fill-box;
                 transform-origin: center;
+                backface-visibility: hidden;
                 will-change: transform, opacity, filter;
             }
 
@@ -2015,7 +1967,7 @@
 
             @media (prefers-reduced-motion: reduce) {
                 .scroll-aware-rows {
-                    transform: translateY(-40px);
+                    transform: translate3d(0, -40px, 0);
                 }
 
                 .scroll-aware-top-fade {
@@ -2027,7 +1979,7 @@
                 }
 
                 .scroll-aware-thumb {
-                    transform: translateY(50px);
+                    transform: translate3d(0, 50px, 0);
                 }
 
                 .eased-curve-active {
@@ -2394,13 +2346,347 @@
             <section class="space-y-6" aria-label="Scroll fade examples">
                 <div class="min-w-0 space-y-[4.5rem]">
                     <section
+                        class="space-y-3"
+                        aria-label="Horizontal item list demo"
+                    >
+                        <div class="flex items-baseline justify-between gap-4">
+                            <div>
+                                <h2
+                                    class="ml-2 flex flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
+                                >
+                                    Horizontal
+                                    <code
+                                        class="mono-copy font-mono text-[1rem] font-normal leading-6 text-neutral-500"
+                                        >fade-x</code
+                                    >
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="tuning-card overflow-hidden rounded-lg">
+                            <div
+                                class="fade-x thin-scroll flex h-72 gap-4 overflow-x-auto p-4"
+                                data-demo="rail"
+                                role="listbox"
+                                aria-label="Horizontal fade examples"
+                            >
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="true"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >D</span
+                                    >
+                                    <span class="rail-card-label"
+                                        >Dissolve</span
+                                    >
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >S</span
+                                    >
+                                    <span class="rail-card-label">Soften</span>
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >D</span
+                                    >
+                                    <span class="rail-card-label">Dim</span>
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >W</span
+                                    >
+                                    <span class="rail-card-label">Wane</span>
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >R</span
+                                    >
+                                    <span class="rail-card-label">Recede</span>
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >T</span
+                                    >
+                                    <span class="rail-card-label">Taper</span>
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >B</span
+                                    >
+                                    <span class="rail-card-label">Blur</span>
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >M</span
+                                    >
+                                    <span class="rail-card-label">Melt</span>
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >G</span
+                                    >
+                                    <span class="rail-card-label">Ghost</span>
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >V</span
+                                    >
+                                    <span class="rail-card-label">Vanish</span>
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >E</span
+                                    >
+                                    <span class="rail-card-label"
+                                        >Evaporate</span
+                                    >
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >D</span
+                                    >
+                                    <span class="rail-card-label"
+                                        >Dissipate</span
+                                    >
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >H</span
+                                    >
+                                    <span class="rail-card-label">Haze</span>
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >E</span
+                                    >
+                                    <span class="rail-card-label"
+                                        >Evanesce</span
+                                    >
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >D</span
+                                    >
+                                    <span class="rail-card-label"
+                                        >Deliquescence</span
+                                    >
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >P</span
+                                    >
+                                    <span class="rail-card-label"
+                                        >Penumbra</span
+                                    >
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >C</span
+                                    >
+                                    <span class="rail-card-label"
+                                        >Crepuscular</span
+                                    >
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >I</span
+                                    >
+                                    <span class="rail-card-label"
+                                        >Involution</span
+                                    >
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >A</span
+                                    >
+                                    <span class="rail-card-label"
+                                        >Adumbrate</span
+                                    >
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >S</span
+                                    >
+                                    <span class="rail-card-label">Shadow</span>
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >V</span
+                                    >
+                                    <span class="rail-card-label">Veil</span>
+                                </button>
+                                <button
+                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span
+                                        class="rail-card-initial"
+                                        aria-hidden="true"
+                                        >S</span
+                                    >
+                                    <span class="rail-card-label"
+                                        >Silhouette</span
+                                    >
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section
                         class="min-w-0 space-y-3"
                         aria-labelledby="list-title"
                     >
                         <div>
                             <h2
                                 id="list-title"
-                                class="flex flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
+                                class="ml-2 flex flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
                             >
                                 Vertical
                                 <code
@@ -2763,340 +3049,6 @@
                             </div>
                         </div>
                     </section>
-
-                    <section
-                        class="space-y-3"
-                        aria-label="Horizontal item list demo"
-                    >
-                        <div class="flex items-baseline justify-between gap-4">
-                            <div>
-                                <h2
-                                    class="flex flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
-                                >
-                                    Horizontal
-                                    <code
-                                        class="mono-copy font-mono text-[1rem] font-normal leading-6 text-neutral-500"
-                                        >fade-x</code
-                                    >
-                                </h2>
-                            </div>
-                        </div>
-                        <div class="tuning-card overflow-hidden rounded-lg">
-                            <div
-                                class="fade-x thin-scroll flex h-72 gap-4 overflow-x-auto p-4"
-                                data-demo="rail"
-                                role="listbox"
-                                aria-label="Horizontal fade examples"
-                            >
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="true"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >D</span
-                                    >
-                                    <span class="rail-card-label"
-                                        >Dissolve</span
-                                    >
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >S</span
-                                    >
-                                    <span class="rail-card-label">Soften</span>
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >D</span
-                                    >
-                                    <span class="rail-card-label">Dim</span>
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >W</span
-                                    >
-                                    <span class="rail-card-label">Wane</span>
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >R</span
-                                    >
-                                    <span class="rail-card-label">Recede</span>
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >T</span
-                                    >
-                                    <span class="rail-card-label">Taper</span>
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >B</span
-                                    >
-                                    <span class="rail-card-label">Blur</span>
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >M</span
-                                    >
-                                    <span class="rail-card-label">Melt</span>
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >G</span
-                                    >
-                                    <span class="rail-card-label">Ghost</span>
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >V</span
-                                    >
-                                    <span class="rail-card-label">Vanish</span>
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >E</span
-                                    >
-                                    <span class="rail-card-label"
-                                        >Evaporate</span
-                                    >
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >D</span
-                                    >
-                                    <span class="rail-card-label"
-                                        >Dissipate</span
-                                    >
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >H</span
-                                    >
-                                    <span class="rail-card-label">Haze</span>
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >E</span
-                                    >
-                                    <span class="rail-card-label"
-                                        >Evanesce</span
-                                    >
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >D</span
-                                    >
-                                    <span class="rail-card-label"
-                                        >Deliquescence</span
-                                    >
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >P</span
-                                    >
-                                    <span class="rail-card-label"
-                                        >Penumbra</span
-                                    >
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >C</span
-                                    >
-                                    <span class="rail-card-label"
-                                        >Crepuscular</span
-                                    >
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >I</span
-                                    >
-                                    <span class="rail-card-label"
-                                        >Involution</span
-                                    >
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >A</span
-                                    >
-                                    <span class="rail-card-label"
-                                        >Adumbrate</span
-                                    >
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >S</span
-                                    >
-                                    <span class="rail-card-label">Shadow</span>
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >V</span
-                                    >
-                                    <span class="rail-card-label">Veil</span>
-                                </button>
-                                <button
-                                    class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
-                                    type="button"
-                                    role="option"
-                                    aria-selected="false"
-                                >
-                                    <span
-                                        class="rail-card-initial"
-                                        aria-hidden="true"
-                                        >S</span
-                                    >
-                                    <span class="rail-card-label"
-                                        >Silhouette</span
-                                    >
-                                </button>
-                            </div>
-                        </div>
-                    </section>
                 </div>
             </section>
 
@@ -3107,13 +3059,45 @@
                 <div class="min-w-0 space-y-3">
                     <h2
                         id="tuning-title"
-                        class="flex flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
+                        class="ml-2 flex flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
                     >
                         Advanced
                         <code
-                            class="mono-copy font-mono text-[1rem] font-normal leading-6 text-neutral-500"
+                            class="fade-option-label mono-copy font-mono text-[1rem] font-normal leading-6"
                             data-fade-option-label
-                            >fade-xy fade-size-2xl fade-range-md</code
+                            aria-label="fade-xy fade-size-2xl fade-range-md"
+                            ><span
+                                class="fade-option-token"
+                                data-fade-option-token="fade-xy"
+                                ><span class="fade-option-part">fade-</span
+                                ><span
+                                    class="fade-option-part"
+                                    data-fade-option-stem
+                                    >xy</span
+                                ></span
+                            >
+                            <span
+                                class="fade-option-token"
+                                data-fade-option-token="fade-size-2xl"
+                                ><span class="fade-option-part"
+                                    >fade-size-</span
+                                ><span
+                                    class="fade-option-part"
+                                    data-fade-option-stem
+                                    >2xl</span
+                                ></span
+                            >
+                            <span
+                                class="fade-option-token"
+                                data-fade-option-token="fade-range-md"
+                                ><span class="fade-option-part"
+                                    >fade-range-</span
+                                ><span
+                                    class="fade-option-part"
+                                    data-fade-option-stem
+                                    >md</span
+                                ></span
+                            ></code
                         >
                     </h2>
 
@@ -3122,7 +3106,7 @@
                             <div class="option-card-body">
                                 <div class="option-demo-panel">
                                     <div
-                                        class="fade-xy fade-size-2xl fade-range-md thin-scroll type-scale-sample h-[21rem] overflow-auto p-5 sm:h-[23.5rem]"
+                                        class="fade-xy fade-size-2xl fade-range-md thin-scroll type-scale-sample h-[21rem] overflow-auto sm:h-[23.5rem]"
                                         data-demo="type-specimen"
                                     >
                                         <article
@@ -3138,7 +3122,7 @@
                                                             --type-fluid: 9.5;
                                                         "
                                                     >
-                                                        peripheral and ephemeral
+                                                        Peripheral impermanence
                                                     </p>
                                                 </div>
                                                 <div class="type-scale-row">
@@ -3150,7 +3134,7 @@
                                                             --type-fluid: 7.5;
                                                         "
                                                     >
-                                                        peripheral and ephemeral
+                                                        Peripheral impermanence
                                                     </p>
                                                 </div>
                                                 <div class="type-scale-row">
@@ -3162,7 +3146,7 @@
                                                             --type-fluid: 6;
                                                         "
                                                     >
-                                                        peripheral and ephemeral
+                                                        Peripheral impermanence
                                                     </p>
                                                 </div>
                                                 <div class="type-scale-row">
@@ -3174,7 +3158,7 @@
                                                             --type-fluid: 5;
                                                         "
                                                     >
-                                                        peripheral and ephemeral
+                                                        Peripheral impermanence
                                                     </p>
                                                 </div>
                                                 <div class="type-scale-row">
@@ -3186,7 +3170,7 @@
                                                             --type-fluid: 4;
                                                         "
                                                     >
-                                                        peripheral and ephemeral
+                                                        Peripheral impermanence
                                                     </p>
                                                 </div>
                                                 <div class="type-scale-row">
@@ -3198,7 +3182,7 @@
                                                             --type-fluid: 3;
                                                         "
                                                     >
-                                                        peripheral and ephemeral
+                                                        Peripheral impermanence
                                                     </p>
                                                 </div>
                                                 <div class="type-scale-row">
@@ -3210,7 +3194,7 @@
                                                             --type-fluid: 2;
                                                         "
                                                     >
-                                                        peripheral and ephemeral
+                                                        Peripheral impermanence
                                                     </p>
                                                 </div>
                                                 <div class="type-scale-row">
@@ -3222,7 +3206,7 @@
                                                             --type-fluid: 1.5;
                                                         "
                                                     >
-                                                        peripheral and ephemeral
+                                                        Peripheral impermanence
                                                     </p>
                                                 </div>
                                                 <div class="type-scale-row">
@@ -3234,7 +3218,7 @@
                                                             --type-fluid: 0.8;
                                                         "
                                                     >
-                                                        peripheral and ephemeral
+                                                        Peripheral impermanence
                                                     </p>
                                                 </div>
                                                 <div class="type-scale-row">
@@ -3246,7 +3230,7 @@
                                                             --type-fluid: 0.5;
                                                         "
                                                     >
-                                                        peripheral and ephemeral
+                                                        Peripheral impermanence
                                                     </p>
                                                 </div>
                                                 <div class="type-scale-row">
@@ -3258,7 +3242,7 @@
                                                             --type-fluid: 0.4;
                                                         "
                                                     >
-                                                        peripheral and ephemeral
+                                                        Peripheral impermanence
                                                     </p>
                                                 </div>
                                             </section>
@@ -3275,7 +3259,7 @@
                                                 >Fade depth</span
                                             >
                                             <output
-                                                class="fade-control-value mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500"
+                                                class="fade-control-value mono-copy font-mono"
                                                 for="fade-depth-control"
                                                 data-fade-depth-value
                                                 >2xl</output
@@ -3305,7 +3289,7 @@
                                                 >Scroll range</span
                                             >
                                             <output
-                                                class="fade-control-value mono-copy font-mono text-[0.6875rem] leading-4 text-neutral-500"
+                                                class="fade-control-value mono-copy font-mono"
                                                 for="fade-range-control"
                                                 data-fade-range-value
                                                 >md</output
@@ -3343,28 +3327,152 @@
                                                 aria-pressed="true"
                                                 aria-label="Toggle top edge fade"
                                                 data-fade-edge-toggle="t"
-                                            ></button>
+                                            >
+                                                <svg
+                                                    class="edge-toggle-svg"
+                                                    viewBox="0 0 100 100"
+                                                    aria-hidden="true"
+                                                >
+                                                    <defs>
+                                                        <linearGradient
+                                                            id="edge-toggle-gradient-t"
+                                                            gradientUnits="userSpaceOnUse"
+                                                            x1="50"
+                                                            y1="8"
+                                                            x2="50"
+                                                            y2="56"
+                                                        >
+                                                            <stop
+                                                                class="edge-toggle-gradient-stop edge-toggle-gradient-base"
+                                                                offset="0"
+                                                            />
+                                                            <stop
+                                                                class="edge-toggle-gradient-stop edge-toggle-gradient-tip"
+                                                                offset="0.48"
+                                                            />
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <path
+                                                        class="edge-toggle-shape"
+                                                        fill="url(#edge-toggle-gradient-t)"
+                                                        d="M28 8 L72 8 C80.4 8 81.6 15.6 75.8 20.2 L55.8 40.2 C52.6 44.2 47.4 44.2 44.2 40.2 L24.2 20.2 C18.4 15.6 19.6 8 28 8 Z"
+                                                    />
+                                                </svg>
+                                            </button>
                                             <button
                                                 class="edge-toggle-button"
                                                 type="button"
                                                 aria-pressed="true"
                                                 aria-label="Toggle right edge fade"
                                                 data-fade-edge-toggle="r"
-                                            ></button>
+                                            >
+                                                <svg
+                                                    class="edge-toggle-svg"
+                                                    viewBox="0 0 100 100"
+                                                    aria-hidden="true"
+                                                >
+                                                    <defs>
+                                                        <linearGradient
+                                                            id="edge-toggle-gradient-r"
+                                                            gradientUnits="userSpaceOnUse"
+                                                            x1="50"
+                                                            y1="8"
+                                                            x2="50"
+                                                            y2="56"
+                                                        >
+                                                            <stop
+                                                                class="edge-toggle-gradient-stop edge-toggle-gradient-base"
+                                                                offset="0"
+                                                            />
+                                                            <stop
+                                                                class="edge-toggle-gradient-stop edge-toggle-gradient-tip"
+                                                                offset="0.48"
+                                                            />
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <path
+                                                        class="edge-toggle-shape"
+                                                        fill="url(#edge-toggle-gradient-r)"
+                                                        d="M28 8 L72 8 C80.4 8 81.6 15.6 75.8 20.2 L55.8 40.2 C52.6 44.2 47.4 44.2 44.2 40.2 L24.2 20.2 C18.4 15.6 19.6 8 28 8 Z"
+                                                    />
+                                                </svg>
+                                            </button>
                                             <button
                                                 class="edge-toggle-button"
                                                 type="button"
                                                 aria-pressed="true"
                                                 aria-label="Toggle bottom edge fade"
                                                 data-fade-edge-toggle="b"
-                                            ></button>
+                                            >
+                                                <svg
+                                                    class="edge-toggle-svg"
+                                                    viewBox="0 0 100 100"
+                                                    aria-hidden="true"
+                                                >
+                                                    <defs>
+                                                        <linearGradient
+                                                            id="edge-toggle-gradient-b"
+                                                            gradientUnits="userSpaceOnUse"
+                                                            x1="50"
+                                                            y1="8"
+                                                            x2="50"
+                                                            y2="56"
+                                                        >
+                                                            <stop
+                                                                class="edge-toggle-gradient-stop edge-toggle-gradient-base"
+                                                                offset="0"
+                                                            />
+                                                            <stop
+                                                                class="edge-toggle-gradient-stop edge-toggle-gradient-tip"
+                                                                offset="0.48"
+                                                            />
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <path
+                                                        class="edge-toggle-shape"
+                                                        fill="url(#edge-toggle-gradient-b)"
+                                                        d="M28 8 L72 8 C80.4 8 81.6 15.6 75.8 20.2 L55.8 40.2 C52.6 44.2 47.4 44.2 44.2 40.2 L24.2 20.2 C18.4 15.6 19.6 8 28 8 Z"
+                                                    />
+                                                </svg>
+                                            </button>
                                             <button
                                                 class="edge-toggle-button"
                                                 type="button"
                                                 aria-pressed="true"
                                                 aria-label="Toggle left edge fade"
                                                 data-fade-edge-toggle="l"
-                                            ></button>
+                                            >
+                                                <svg
+                                                    class="edge-toggle-svg"
+                                                    viewBox="0 0 100 100"
+                                                    aria-hidden="true"
+                                                >
+                                                    <defs>
+                                                        <linearGradient
+                                                            id="edge-toggle-gradient-l"
+                                                            gradientUnits="userSpaceOnUse"
+                                                            x1="50"
+                                                            y1="8"
+                                                            x2="50"
+                                                            y2="56"
+                                                        >
+                                                            <stop
+                                                                class="edge-toggle-gradient-stop edge-toggle-gradient-base"
+                                                                offset="0"
+                                                            />
+                                                            <stop
+                                                                class="edge-toggle-gradient-stop edge-toggle-gradient-tip"
+                                                                offset="0.48"
+                                                            />
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <path
+                                                        class="edge-toggle-shape"
+                                                        fill="url(#edge-toggle-gradient-l)"
+                                                        d="M28 8 L72 8 C80.4 8 81.6 15.6 75.8 20.2 L55.8 40.2 C52.6 44.2 47.4 44.2 44.2 40.2 L24.2 20.2 C18.4 15.6 19.6 8 28 8 Z"
+                                                    />
+                                                </svg>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -4080,11 +4188,9 @@
                 <span
                     class="surface-swatch"
                     style="
-                        --surface-swatch: rgb(31 31 31);
+                        --surface-swatch: rgb(23 23 23);
                         --surface-swatch: oklch(23.929% 0 0);
-                        --surface-swatch: color(
-                            display-p3 0.1216 0.1216 0.1216
-                        );
+                        --surface-swatch: color(display-p3 0.09 0.09 0.09);
                     "
                     aria-hidden="true"
                 ></span>
@@ -4103,7 +4209,7 @@
                     style="
                         --surface-swatch: rgb(0 87 255);
                         --surface-swatch: oklch(59% 0.285 263);
-                        --surface-swatch: color(display-p3 0.02 0.27 1);
+                        --surface-swatch: color(display-p3 0.2 0.38 1);
                     "
                     aria-hidden="true"
                 ></span>
@@ -4158,36 +4264,49 @@
                     stiffness: 320,
                     damping: 36,
                     mass: 0.85,
+                    restDelta: 0.001,
                 },
                 scroll: {
                     type: "spring",
                     stiffness: 260,
                     damping: 34,
                     mass: 0.85,
+                    restDelta: 0.001,
                 },
                 sweep: {
                     type: "spring",
                     stiffness: 360,
                     damping: 42,
                     mass: 0.9,
+                    restDelta: 0.001,
                 },
                 surface: {
                     type: "spring",
                     stiffness: 520,
                     damping: 46,
                     mass: 0.72,
+                    restDelta: 0.001,
+                },
+                edge: {
+                    type: "spring",
+                    stiffness: 560,
+                    damping: 46,
+                    mass: 0.7,
+                    restDelta: 0.001,
                 },
                 rail: {
                     type: "spring",
                     stiffness: 520,
                     damping: 48,
                     mass: 0.75,
+                    restDelta: 0.001,
                 },
                 token: {
                     type: "spring",
                     stiffness: 420,
                     damping: 44,
                     mass: 0.75,
+                    restDelta: 0.001,
                 },
             };
             const sleep = (ms) =>
@@ -4197,19 +4316,30 @@
             const setNumber = (element, property, value) => {
                 element?.style.setProperty(property, String(value));
             };
-            const readY = (element) => {
+            const readTranslate = (element, axis) => {
                 const transform = getComputedStyle(element).transform;
                 if (!transform || transform === "none") return 0;
                 const matrix3d = transform.match(/^matrix3d\((.+)\)$/);
-                if (matrix3d) return Number(matrix3d[1].split(",")[13]) || 0;
+                if (matrix3d) {
+                    return (
+                        Number(
+                            matrix3d[1].split(",")[axis === "x" ? 12 : 13],
+                        ) || 0
+                    );
+                }
                 const matrix = transform.match(/^matrix\((.+)\)$/);
-                if (matrix) return Number(matrix[1].split(",")[5]) || 0;
+                if (matrix) {
+                    return (
+                        Number(matrix[1].split(",")[axis === "x" ? 4 : 5]) || 0
+                    );
+                }
                 return 0;
             };
             const readValue = (element, property) => {
                 const styles = getComputedStyle(element);
                 if (property === "opacity") return Number(styles.opacity) || 0;
-                if (property === "y") return readY(element);
+                if (property === "x" || property === "y")
+                    return readTranslate(element, property);
                 if (property === "strokeDashoffset")
                     return parseFloat(styles.strokeDashoffset) || 0;
                 if (property.startsWith("--"))
@@ -4221,8 +4351,12 @@
                     element.style.opacity = String(value);
                     return;
                 }
+                if (property === "x") {
+                    element.style.transform = `translate3d(${value}px, 0, 0)`;
+                    return;
+                }
                 if (property === "y") {
-                    element.style.transform = `translateY(${value}px)`;
+                    element.style.transform = `translate3d(0, ${value}px, 0)`;
                     return;
                 }
                 if (property === "strokeDashoffset") {
@@ -4262,6 +4396,8 @@
                     const stiffness = transition.stiffness ?? 300;
                     const damping = transition.damping ?? 36;
                     const mass = transition.mass ?? 1;
+                    const restDelta = transition.restDelta ?? 0.001;
+                    const restSpeed = transition.restSpeed ?? 0.02;
                     let frame = 0;
                     let previous = performance.now();
                     let resolveFinished;
@@ -4286,8 +4422,8 @@
                             entry.value += entry.velocity * dt;
 
                             if (
-                                Math.abs(entry.velocity) > 0.02 ||
-                                Math.abs(entry.target - entry.value) > 0.02
+                                Math.abs(entry.velocity) > restSpeed ||
+                                Math.abs(entry.target - entry.value) > restDelta
                             ) {
                                 settled = false;
                             }
@@ -4376,11 +4512,11 @@
                             280,
                             sweep.getBoundingClientRect().width * 1.25,
                         );
-                        setNumber(sweep, "--sweep-x", -distance);
+                        sweep.style.transform = `translate3d(${-distance}px, 0, 0)`;
                         sweep.style.opacity = "0";
                         sweepControl = animate(
                             sweep,
-                            { "--sweep-x": distance },
+                            { x: distance },
                             spring.sweep,
                         );
                         sweepOpacityControl = animate(
@@ -4458,14 +4594,14 @@
                         rows,
                         frames.map((frame) => ({
                             offset: frame.offset,
-                            transform: `translateY(${frame.rowsY.toFixed(3)}px)`,
+                            transform: `translate3d(0, ${frame.rowsY.toFixed(3)}px, 0)`,
                         })),
                     );
                     animateProgress(
                         thumb,
                         frames.map((frame) => ({
                             offset: frame.offset,
-                            transform: `translateY(${frame.thumbY.toFixed(3)}px)`,
+                            transform: `translate3d(0, ${frame.thumbY.toFixed(3)}px, 0)`,
                         })),
                     );
                     animateProgress(
@@ -4657,7 +4793,7 @@
 
                     const setToken = (token, opacity, y, blur) => {
                         token.style.opacity = String(opacity);
-                        token.style.transform = `translateY(${y}px)`;
+                        token.style.transform = `translate3d(0, ${y}px, 0)`;
                         setNumber(token, "--kin-blur", blur);
                     };
                     const show = (token, fromY = 11) => {
@@ -4767,6 +4903,9 @@
             const fadeEdgeButtons = Array.from(
                 document.querySelectorAll("[data-fade-edge-toggle]"),
             );
+            const edgeGradientTipStops = Array.from(
+                document.querySelectorAll(".edge-toggle-gradient-tip"),
+            );
             const fadeDepthSizes = [
                 { className: "fade-size-sm", value: "sm", aria: "small" },
                 { className: "fade-size-md", value: "md", aria: "medium" },
@@ -4820,9 +4959,13 @@
             let installCopyResetTimer = 0;
             const surfaceSpringControls = new WeakMap();
             const surfaceInteractionState = new WeakMap();
+            const edgeToggleSpringControls = new WeakMap();
+            const edgeToggleInteractionState = new WeakMap();
             const railSpringControls = new WeakMap();
             const railLetterSpringControls = new WeakMap();
             const railInteractionState = new WeakMap();
+            const fadeOptionFlashControls = new WeakMap();
+            let fadeOptionReadoutState = null;
 
             function prefersReducedSurfaceMotion() {
                 return window.matchMedia?.("(prefers-reduced-motion: reduce)")
@@ -4874,6 +5017,7 @@
                             stiffness: 520,
                             damping: 46,
                             mass: 0.72,
+                            restDelta: 0.001,
                         },
                     ),
                 );
@@ -4906,6 +5050,124 @@
                 setSurfaceScale(button, 1.12, 1, true);
                 window.setTimeout(() => {
                     syncSurfaceButtonSpring(button, true);
+                }, 120);
+            }
+
+            function edgeToggleStateFor(button) {
+                const existing = edgeToggleInteractionState.get(button);
+                if (existing) return existing;
+                const next = { hovered: false, pressed: false };
+                edgeToggleInteractionState.set(button, next);
+                return next;
+            }
+
+            function setEdgeToggleValues(button, values, animated = true) {
+                const controls = edgeToggleSpringControls.get(button);
+                controls?.forEach((control) => control?.stop?.());
+
+                const svg = button.querySelector(".edge-toggle-svg");
+                const gradientStops = button.querySelectorAll(
+                    ".edge-toggle-gradient-stop",
+                );
+                const svgValues = {};
+                const gradientValues = {};
+
+                for (const [property, value] of Object.entries(values)) {
+                    if (property === "--edge-toggle-active") {
+                        gradientValues[property] = value;
+                    } else {
+                        svgValues[property] = value;
+                    }
+                }
+
+                const animation = window.demoAnimations;
+                if (
+                    !animated ||
+                    prefersReducedSurfaceMotion() ||
+                    !animation?.animate
+                ) {
+                    if (svg) {
+                        for (const [property, value] of Object.entries(
+                            svgValues,
+                        )) {
+                            svg.style.setProperty(property, String(value));
+                        }
+                    }
+                    if (gradientStops.length) {
+                        for (const [property, value] of Object.entries(
+                            gradientValues,
+                        )) {
+                            gradientStops.forEach((stop) => {
+                                stop.style.setProperty(
+                                    property,
+                                    String(value),
+                                );
+                            });
+                        }
+                    }
+                    edgeToggleSpringControls.delete(button);
+                    return;
+                }
+
+                const edgeSpring = animation.spring?.edge ?? {
+                    type: "spring",
+                    stiffness: 560,
+                    damping: 46,
+                    mass: 0.7,
+                    restDelta: 0.001,
+                };
+                const nextControls = [];
+
+                if (svg && Object.keys(svgValues).length) {
+                    nextControls.push(
+                        animation.animate(svg, svgValues, edgeSpring),
+                    );
+                }
+                if (gradientStops.length && Object.keys(gradientValues).length) {
+                    gradientStops.forEach((stop) => {
+                        nextControls.push(
+                            animation.animate(stop, gradientValues, edgeSpring),
+                        );
+                    });
+                }
+                edgeToggleSpringControls.set(button, nextControls);
+            }
+
+            function syncEdgeToggleSpring(button, animated = true) {
+                const state = edgeToggleStateFor(button);
+                const active = button.getAttribute("aria-pressed") === "true";
+                const scale = state.pressed
+                    ? 0.965
+                    : active
+                      ? state.hovered
+                          ? 1.015
+                          : 1
+                      : state.hovered
+                        ? 1.01
+                        : 1;
+
+                setEdgeToggleValues(
+                    button,
+                    {
+                        "--edge-toggle-active": active ? 1 : 0,
+                        "--edge-toggle-scale": scale,
+                    },
+                    animated,
+                );
+            }
+
+            function springEdgeToggleSelection(button) {
+                const active = button.getAttribute("aria-pressed") === "true";
+                setEdgeToggleValues(
+                    button,
+                    {
+                        "--edge-toggle-active": active ? 1 : 0,
+                        "--edge-toggle-scale": active ? 1.035 : 0.975,
+                    },
+                    true,
+                );
+                window.setTimeout(() => {
+                    syncEdgeToggleSpring(button, true);
                 }, 120);
             }
 
@@ -4957,6 +5219,7 @@
                     stiffness: 520,
                     damping: 48,
                     mass: 0.75,
+                    restDelta: 0.001,
                 };
                 railSpringControls.set(
                     card,
@@ -5061,6 +5324,168 @@
                 return activeEdges.map((edge) => `fade-${edge}`);
             }
 
+            function syncSliderKnob(slider) {
+                const min = Number(slider.min || 0);
+                const max = Number(slider.max || 100);
+                const value = Number(slider.value || min);
+                const progress = max === min ? 0 : (value - min) / (max - min);
+                const clampedProgress = Math.min(1, Math.max(0, progress));
+                const wrapper = slider.closest(".option-slider-control");
+                wrapper?.style.setProperty(
+                    "--slider-progress",
+                    String(clampedProgress),
+                );
+                wrapper?.style.setProperty(
+                    "--slider-fill",
+                    `${clampedProgress * 100}%`,
+                );
+            }
+
+            function syncEdgeGradientDepth(depthIndex) {
+                const maxDepthIndex = Math.max(1, fadeDepthSizes.length - 1);
+                const depthProgress = Math.min(
+                    1,
+                    Math.max(0, depthIndex / maxDepthIndex),
+                );
+                const transparentOffset = 0.68 - depthProgress * 0.3;
+
+                for (const stop of edgeGradientTipStops) {
+                    stop.setAttribute("offset", transparentOffset.toFixed(3));
+                }
+            }
+
+            function fadeUtilityParts(className) {
+                const prefix =
+                    ["fade-size-", "fade-range-", "fade-"].find((candidate) =>
+                        className.startsWith(candidate),
+                    ) ?? "";
+                return {
+                    prefix,
+                    stem: prefix ? className.slice(prefix.length) : className,
+                };
+            }
+
+            function createFadeOptionToken(className, flashMode, flashTargets) {
+                const token = document.createElement("span");
+                const { prefix, stem } = fadeUtilityParts(className);
+
+                token.className = "fade-option-token";
+                token.dataset.fadeOptionToken = className;
+
+                const prefixPart = document.createElement("span");
+                prefixPart.className = "fade-option-part";
+                prefixPart.textContent = prefix;
+                token.append(prefixPart);
+
+                const stemPart = document.createElement("span");
+                stemPart.className = "fade-option-part";
+                stemPart.dataset.fadeOptionStem = "";
+                stemPart.textContent = stem;
+                token.append(stemPart);
+
+                if (flashMode === "token") {
+                    flashTargets.push(prefixPart, stemPart);
+                } else if (flashMode === "stem") {
+                    flashTargets.push(stemPart);
+                }
+
+                return token;
+            }
+
+            function flashFadeOptionParts(parts) {
+                if (!parts.length) return;
+
+                for (const part of parts) {
+                    const existing = fadeOptionFlashControls.get(part);
+                    existing?.cancel?.();
+
+                    if (prefersReducedSurfaceMotion()) {
+                        part.style.removeProperty("--fade-option-flash");
+                        fadeOptionFlashControls.delete(part);
+                        continue;
+                    }
+
+                    const animation = part.animate(
+                        [
+                            { "--fade-option-flash": "1" },
+                            { "--fade-option-flash": "0" },
+                        ],
+                        {
+                            duration: 6000,
+                            easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+                            fill: "both",
+                        },
+                    );
+                    fadeOptionFlashControls.set(part, animation);
+                    animation.finished
+                        .catch(() => {})
+                        .finally(() => {
+                            if (fadeOptionFlashControls.get(part) !== animation)
+                                return;
+                            animation.cancel();
+                            fadeOptionFlashControls.delete(part);
+                        });
+                }
+            }
+
+            function setFadeOptionLabel(edgeClasses, sizeClass, rangeClass) {
+                const nextState = {
+                    edgeClasses: [...edgeClasses],
+                    sizeClass,
+                    rangeClass,
+                };
+                const previous = fadeOptionReadoutState;
+                const flashTargets = [];
+                const fragment = document.createDocumentFragment();
+                const fullClassName = [
+                    ...edgeClasses,
+                    sizeClass,
+                    rangeClass,
+                ].join(" ");
+                const previousEdgeClasses = previous?.edgeClasses ?? [];
+                const edgeStemChanged =
+                    previous &&
+                    previousEdgeClasses.length === 1 &&
+                    edgeClasses.length === 1 &&
+                    previousEdgeClasses[0] !== edgeClasses[0];
+
+                const appendToken = (className, flashMode) => {
+                    if (fragment.childNodes.length) {
+                        fragment.append(document.createTextNode(" "));
+                    }
+                    fragment.append(
+                        createFadeOptionToken(
+                            className,
+                            previous ? flashMode : "none",
+                            flashTargets,
+                        ),
+                    );
+                };
+
+                for (const className of edgeClasses) {
+                    const flashMode = edgeStemChanged
+                        ? "stem"
+                        : previousEdgeClasses.includes(className)
+                          ? "none"
+                          : "token";
+                    appendToken(className, flashMode);
+                }
+
+                appendToken(
+                    sizeClass,
+                    previous?.sizeClass === sizeClass ? "none" : "stem",
+                );
+                appendToken(
+                    rangeClass,
+                    previous?.rangeClass === rangeClass ? "none" : "stem",
+                );
+
+                fadeOptionLabel.replaceChildren(fragment);
+                fadeOptionLabel.setAttribute("aria-label", fullClassName);
+                fadeOptionReadoutState = nextState;
+                flashFadeOptionParts(flashTargets);
+            }
+
             function setFadeControls() {
                 if (
                     !fadeDepthSlider ||
@@ -5089,8 +5514,9 @@
                     );
                     return button?.getAttribute("aria-pressed") === "true";
                 });
+                const edgeClasses = edgeUtilities(activeEdges);
                 const utilityClasses = [
-                    ...edgeUtilities(activeEdges),
+                    ...edgeClasses,
                     nextSize.className,
                     nextRange.className,
                 ];
@@ -5104,11 +5530,18 @@
                     ...fadeRanges.map((range) => range.className),
                 );
                 fadeSpecimen.classList.add(...utilityClasses);
-                fadeOptionLabel.textContent = utilityClasses.join(" ");
+                setFadeOptionLabel(
+                    edgeClasses,
+                    nextSize.className,
+                    nextRange.className,
+                );
                 fadeDepthValue.textContent = nextSize.value;
                 fadeRangeValue.textContent = nextRange.value;
                 fadeDepthSlider.setAttribute("aria-valuetext", nextSize.aria);
                 fadeRangeSlider.setAttribute("aria-valuetext", nextRange.aria);
+                syncSliderKnob(fadeDepthSlider);
+                syncSliderKnob(fadeRangeSlider);
+                syncEdgeGradientDepth(depthIndex);
             }
 
             function setFloatingPaletteVisible(nextVisible) {
@@ -5292,10 +5725,41 @@
             });
 
             for (const button of fadeEdgeButtons) {
+                syncEdgeToggleSpring(button, false);
+
+                button.addEventListener("pointerenter", () => {
+                    edgeToggleStateFor(button).hovered = true;
+                    syncEdgeToggleSpring(button, true);
+                });
+                button.addEventListener("pointerleave", () => {
+                    const state = edgeToggleStateFor(button);
+                    state.hovered = false;
+                    state.pressed = false;
+                    syncEdgeToggleSpring(button, true);
+                });
+                button.addEventListener("pointerdown", () => {
+                    edgeToggleStateFor(button).pressed = true;
+                    syncEdgeToggleSpring(button, true);
+                });
+                button.addEventListener("pointerup", () => {
+                    edgeToggleStateFor(button).pressed = false;
+                    syncEdgeToggleSpring(button, true);
+                });
+                button.addEventListener("pointercancel", () => {
+                    edgeToggleStateFor(button).pressed = false;
+                    syncEdgeToggleSpring(button, true);
+                });
+                button.addEventListener("blur", () => {
+                    const state = edgeToggleStateFor(button);
+                    state.hovered = false;
+                    state.pressed = false;
+                    syncEdgeToggleSpring(button, true);
+                });
                 button.addEventListener("click", () => {
                     const isPressed =
                         button.getAttribute("aria-pressed") === "true";
                     button.setAttribute("aria-pressed", String(!isPressed));
+                    springEdgeToggleSelection(button);
                     setFadeControls();
                 });
             }
