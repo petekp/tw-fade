@@ -1,18 +1,14 @@
 /**
- * verify-page.mjs — regression for the whole-page fade (the demo applies
- * `fade-y` to <body> itself).
+ * verify-page.mjs - regression smoke for the static demo page.
  *
- * The fragile part of fading the page body is NOT the mask (verify-fade.mjs
- * already proves masks render) — it's that <body> must become a REAL scroll
- * container for `animation-timeline: scroll(self block)` to attach. If `html`
- * still had `overflow: visible`, the browser would propagate body's overflow to
- * the viewport, body would never scroll, and the amounts would stay pinned at 0.
- * So we drive the actual demo page in Chromium and assert, at the variable level:
- *   - body is genuinely the scroller (scrollHeight > clientHeight)
- *   - the surface sits on <html> and body is transparent (mask reveals into it)
- *   - the mask utility applied to body (mask-composite: intersect)
- *   - the scroll-driven amounts gate correctly: top→no top fade, mid→both,
- *     bottom→no bottom fade — proving the timeline tracks body's own scroll.
+ * The package-level mask behavior is covered by verify.mjs, verify-dist.mjs,
+ * and verify-fade.mjs. This script drives the actual demo in Chromium and
+ * asserts the page contract that can drift during design work:
+ *   - <body> remains the page scroller over an <html> theme surface
+ *   - generated demo CSS still contains the public fade utilities
+ *   - the advanced specimen can switch to one edge without dragging in the
+ *     other mask layers
+ *   - the horizontal rail starts on Recede and still moves selection on click
  *
  * Usage: node build/verify-page.mjs
  */
@@ -36,30 +32,11 @@ const structure = await page.evaluate(() => {
   const htmlBg = getComputedStyle(document.documentElement).backgroundColor
   return {
     bodyIsScroller: b.scrollHeight > b.clientHeight + 8,
-    maskComposite: cs.maskComposite || cs.webkitMaskComposite,
     bodyBg: cs.backgroundColor,
+    bodyClass: b.className,
     htmlBg,
   }
 })
-
-// Read body's animated amounts at a given scroll position.
-async function amounts(where) {
-  return page.evaluate(async (w) => {
-    const b = document.body
-    const max = b.scrollHeight - b.clientHeight
-    b.scrollTop = w === 'mid' ? Math.round(max / 2) : w === 'max' ? max : 0
-    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
-    const cs = getComputedStyle(b)
-    return {
-      t: parseFloat(cs.getPropertyValue('--sf-t')) || 0,
-      b: parseFloat(cs.getPropertyValue('--sf-b')) || 0,
-    }
-  }, where)
-}
-
-const top = await amounts('top')
-const mid = await amounts('mid')
-const bot = await amounts('max')
 
 const demoEdgeUtilities = ['fade-t', 'fade-b', 'fade-l', 'fade-r']
 const missingDemoEdgeUtilities = demoEdgeUtilities.filter((className) => {
@@ -85,24 +62,35 @@ const singleEdgeSpecimen = await page.evaluate(async () => {
 })
 
 const railSelection = await page.evaluate(() => {
-  const cards = Array.from(document.querySelectorAll('[data-demo="rail"] .rail-card'))
+  const rail = document.querySelector('[data-demo="rail"]')
+  const cards = Array.from(rail?.querySelectorAll('.rail-card') ?? [])
   if (!cards.length) return null
 
+  const labelFor = (card) => card.querySelector('.rail-card-label')?.textContent.trim() || ''
   const readSelection = () => cards.map((card) => card.getAttribute('aria-selected') === 'true')
   const before = readSelection()
-  cards[2]?.click()
+  const beforeIndex = before.findIndex(Boolean)
+  const recede = cards.find((card) => labelFor(card) === 'Recede')
+  const railRect = rail.getBoundingClientRect()
+  const recedeRect = recede?.getBoundingClientRect()
+  const targetIndex = cards.findIndex((card, index) => index !== beforeIndex && labelFor(card) === 'Dim')
+  const clickIndex = targetIndex === -1 ? (beforeIndex === 0 ? 1 : 0) : targetIndex
+  cards[clickIndex]?.click()
 
   return {
     count: cards.length,
     before,
+    beforeIndex,
+    beforeLabel: beforeIndex === -1 ? '' : labelFor(cards[beforeIndex]),
     after: readSelection(),
+    clickIndex,
     selectedLabel: cards.find((card) => card.getAttribute('aria-selected') === 'true')?.textContent.trim().replace(/\s+/g, ' ') || '',
+    recedeLeftFromRail: recedeRect ? Number((recedeRect.left - railRect.left).toFixed(2)) : null,
   }
 })
 
 await browser.close()
 
-const approx = (v, target, tol = 0.2) => Math.abs(v - target) <= tol
 const transparent = (c) => c === 'rgba(0, 0, 0, 0)' || c === 'transparent'
 
 const checks = [
@@ -115,7 +103,7 @@ const checks = [
   ['body is the real scroll container', structure.bodyIsScroller, String(structure.bodyIsScroller)],
   ['surface is on <html> (non-transparent)', !transparent(structure.htmlBg), structure.htmlBg],
   ['body is transparent (mask reveals the surface)', transparent(structure.bodyBg), structure.bodyBg],
-  ['mask applied to body (composite: intersect)', /intersect/.test(structure.maskComposite || ''), structure.maskComposite],
+  ['body does not own a page-level fade utility', !/\bfade-[tblrxy]/.test(structure.bodyClass), structure.bodyClass],
   [
     'advanced demo supports a single top fade',
     singleEdgeSpecimen?.hasMaskT === true &&
@@ -128,26 +116,28 @@ const checks = [
       : 'missing specimen',
   ],
   [
-    'horizontal cards move selected treatment on click',
-    railSelection?.before[0] === true &&
+    'horizontal rail starts on Recede at the designed inset',
+    railSelection?.beforeLabel === 'Recede' &&
       railSelection.before.filter(Boolean).length === 1 &&
-      railSelection.after[2] === true &&
+      Math.abs((railSelection.recedeLeftFromRail ?? 0) - 140) <= 1,
+    railSelection
+      ? `${railSelection.count} cards, selected:${railSelection.beforeLabel}, inset:${railSelection.recedeLeftFromRail}`
+      : 'missing rail cards',
+  ],
+  [
+    'horizontal cards move selected treatment on click',
+    railSelection?.after[railSelection.clickIndex] === true &&
+      railSelection.before.filter(Boolean).length === 1 &&
       railSelection.after.filter(Boolean).length === 1,
     railSelection ? `${railSelection.count} cards, selected:${railSelection.selectedLabel}` : 'missing rail cards',
   ],
-  ['top of page: no top fade (t≈0)', approx(top.t, 0), `t≈${top.t.toFixed(2)}`],
-  ['top of page: bottom fade present (b≈1)', approx(top.b, 1), `b≈${top.b.toFixed(2)}`],
-  ['mid scroll: both fades present (t≈1,b≈1)', approx(mid.t, 1) && approx(mid.b, 1), `t≈${mid.t.toFixed(2)},b≈${mid.b.toFixed(2)}`],
-  ['bottom of page: top fade present (t≈1)', approx(bot.t, 1), `t≈${bot.t.toFixed(2)}`],
-  ['bottom of page: no bottom fade (b≈0)', approx(bot.b, 0), `b≈${bot.b.toFixed(2)}`],
 ]
 
-console.log('Demo page: <body class="fade-y fade-size-4xl …">')
+console.log('Demo page: static file smoke')
 console.log(
-  `structure — scroller:${structure.bodyIsScroller} htmlBg:${structure.htmlBg} bodyBg:${structure.bodyBg} composite:${structure.maskComposite}`,
+  `structure - scroller:${structure.bodyIsScroller} htmlBg:${structure.htmlBg} bodyBg:${structure.bodyBg} bodyClass:${structure.bodyClass}`,
 )
-console.log(`amounts — top{t:${top.t.toFixed(2)},b:${top.b.toFixed(2)}} mid{t:${mid.t.toFixed(2)},b:${mid.b.toFixed(2)}} bottom{t:${bot.t.toFixed(2)},b:${bot.b.toFixed(2)}}`)
-console.log('\n=== PAGE-BODY FADE CHECKS ===')
+console.log('\n=== DEMO PAGE CHECKS ===')
 let pass = 0
 for (const [label, ok, detail] of checks) {
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${label}  (${detail})`)
