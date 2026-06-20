@@ -1,5 +1,6 @@
 @import "tailwindcss" source(none);
 @import "../src/tw-fade.css";
+@import "./vendor/tw-glass.css";
 
 /* Scan the demo markup for utility classes. */
 @source "./index.html";
