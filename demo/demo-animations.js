@@ -203,18 +203,8 @@ const createLocalSpringAnimate =
         };
     };
 const localSpringAnimate = createLocalSpringAnimate();
-let motionAnimate = null;
-const animate = (target, keyframes, transition) => {
-    if (motionAnimate) {
-        try {
-            return motionAnimate(target, keyframes, transition);
-        } catch {
-            document.documentElement.dataset.motionAnimations =
-                "local-spring";
-        }
-    }
-    return localSpringAnimate(target, keyframes, transition);
-};
+const animate = (target, keyframes, transition) =>
+    localSpringAnimate(target, keyframes, transition);
 const motionAnimations = {
     animate: (target, keyframes, transition) =>
         animate(target, keyframes, transition),
@@ -227,20 +217,6 @@ document.documentElement.dataset.motionAnimations =
 document.addEventListener("tw-fade:copy-sweep", () => {
     motionAnimations.copySweep();
 });
-import("https://cdn.jsdelivr.net/npm/motion@12.40.0/mini/+esm")
-    .then((motion) => {
-        motionAnimate = motion.animate;
-        if (!prefersReducedMotion) {
-            document.documentElement.dataset.motionAnimations =
-                "motion-mini";
-        }
-    })
-    .catch(() => {
-        if (!prefersReducedMotion) {
-            document.documentElement.dataset.motionAnimations =
-                "local-spring";
-        }
-    });
 
 if (!prefersReducedMotion) {
     function initCopySweep() {

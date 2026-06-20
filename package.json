@@ -40,10 +40,11 @@
   "scripts": {
     "build": "node scripts/build-css.mjs",
     "build:demo": "tailwindcss -i demo/input.css -o demo/styles.css",
+    "export:demo": "node scripts/export-demo-static.mjs",
     "generate:seo": "node scripts/generate-seo-assets.mjs",
     "release": "node scripts/release.mjs",
     "test": "node --test",
-    "verify": "node build/verify.mjs && node build/verify-dist.mjs && node build/verify-fade.mjs && node build/verify-page.mjs && node build/verify-seo.mjs",
+    "verify": "node build/verify.mjs && node build/verify-dist.mjs && node build/verify-fade.mjs && node build/verify-demo-assets.mjs && node build/verify-page.mjs && node build/verify-demo-runtime.mjs && node build/verify-seo.mjs",
     "prepublishOnly": "node scripts/build-css.mjs && node --test"
   },
   "peerDependencies": {

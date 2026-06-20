@@ -425,7 +425,6 @@ function syncRailCardSpring(card, animated = true) {
         card,
         {
             "--rail-card-scale": cardScale,
-            "--rail-card-active": selected ? 1 : 0,
         },
         {
             "--rail-letter-scale": letterScale,
@@ -441,7 +440,6 @@ function springRailSelection(card) {
         card,
         {
             "--rail-card-scale": state.hovered ? 1.04 : 1.03,
-            "--rail-card-active": 1,
         },
         {
             "--rail-letter-scale": 1.15,
@@ -587,34 +585,20 @@ function flashFadeOptionParts(parts) {
 
     for (const part of parts) {
         const existing = fadeOptionFlashControls.get(part);
-        existing?.cancel?.();
+        window.clearTimeout(existing);
 
         if (prefersReducedSurfaceMotion()) {
-            part.style.removeProperty("--fade-option-flash");
+            part.classList.remove("is-flashing");
             fadeOptionFlashControls.delete(part);
             continue;
         }
 
-        const animation = part.animate(
-            [
-                { "--fade-option-flash": "1" },
-                { "--fade-option-flash": "0" },
-            ],
-            {
-                duration: 6000,
-                easing: "cubic-bezier(0.16, 1, 0.3, 1)",
-                fill: "both",
-            },
-        );
-        fadeOptionFlashControls.set(part, animation);
-        animation.finished
-            .catch(() => {})
-            .finally(() => {
-                if (fadeOptionFlashControls.get(part) !== animation)
-                    return;
-                animation.cancel();
-                fadeOptionFlashControls.delete(part);
-            });
+        part.classList.add("is-flashing");
+        const timer = window.setTimeout(() => {
+            part.classList.remove("is-flashing");
+            fadeOptionFlashControls.delete(part);
+        }, 160);
+        fadeOptionFlashControls.set(part, timer);
     }
 }
 

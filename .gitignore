@@ -4,6 +4,7 @@ node_modules/
 # Local tooling / editor state (not part of the package)
 .circuit/
 .claude/
+.tmp/
 
 # Logs & OS cruft
 *.log

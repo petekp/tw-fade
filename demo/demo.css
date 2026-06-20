@@ -191,20 +191,88 @@ modern wide-gamut OKLCH/P3 color syntax. */
    }
 
    html[data-surface] {
+       --demo-wave-top: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'128'%20height%3D'1158'%20viewBox%3D'0%200%20128%201158'%3E%3Cpath%20d%3D'M64%200C90%2048.25%2090%20144.75%2064%20193S38%20337.75%2064%20386S90%20530.75%2064%20579S38%20723.75%2064%20772S90%20916.75%2064%20965S38%201109.75%2064%201158'%20fill%3D'none'%20stroke%3D'%23ffffff'%20stroke-opacity%3D'0.065'%20stroke-width%3D'1.25'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%20shape-rendering%3D'geometricPrecision'%2F%3E%3C%2Fsvg%3E");
+       --demo-wave-bottom: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22128%22%20height%3D%22480%22%20viewBox%3D%220%200%20128%20480%22%3E%3Cpath%20d%3D%22M64%200C138%2020%20138%2060%2064%2080S-10%20140%2064%20160S138%20220%2064%20240S-10%20300%2064%20320S138%20380%2064%20400S-10%20460%2064%20480%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.065%22%20stroke-width%3D%221.25%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20shape-rendering%3D%22geometricPrecision%22%2F%3E%3C%2Fsvg%3E");
+
        background-color: var(--demo-page-bg);
-       /* Static fallback = the scroll-0 wave (amp 26 / wl 386). The script at
-  the end of <body> overrides background-image/-size on scroll to morph
-  amplitude + wavelength; this rule is what shows pre-JS and under
-  prefers-reduced-motion. */
-       background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'128'%20height%3D'1158'%20viewBox%3D'0%200%20128%201158'%3E%3Cpath%20d%3D'M64%200C90%2048.25%2090%20144.75%2064%20193S38%20337.75%2064%20386S90%20530.75%2064%20579S38%20723.75%2064%20772S90%20916.75%2064%20965S38%201109.75%2064%201158'%20fill%3D'none'%20stroke%3D'%23ffffff'%20stroke-opacity%3D'0.065'%20stroke-width%3D'1.25'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%20shape-rendering%3D'geometricPrecision'%2F%3E%3C%2Fsvg%3E");
-       background-repeat: repeat;
-       background-size: 128px 1158px;
        transition: background-color 180ms ease;
    }
 
    html[data-surface] body {
+       position: relative;
+       isolation: isolate;
        color: var(--demo-text-primary);
+       scroll-timeline-axis: block;
+       scroll-timeline-name: --demo-page-scroll;
        transition: color 180ms ease;
+   }
+
+   html[data-surface] body::before,
+   html[data-surface] body::after {
+       content: "";
+       position: fixed;
+       inset: -12%;
+       z-index: -1;
+       pointer-events: none;
+       background-repeat: repeat;
+       transform: translate3d(0, 0, 0);
+       transform-origin: center;
+       will-change: opacity, transform;
+   }
+
+   html[data-surface] body::before {
+       background-image: var(--demo-wave-top);
+       background-size: 128px 1158px;
+       opacity: 1;
+   }
+
+   html[data-surface] body::after {
+       background-image: var(--demo-wave-bottom);
+       background-size: 128px 480px;
+       opacity: 0;
+       transform: translate3d(-16px, -40px, 0) scale(1.04);
+   }
+
+   @supports (animation-timeline: scroll()) {
+       html[data-surface] body::before {
+           animation: demo-wave-top linear both;
+           animation-timeline: --demo-page-scroll;
+       }
+
+       html[data-surface] body::after {
+           animation: demo-wave-bottom linear both;
+           animation-timeline: --demo-page-scroll;
+       }
+   }
+
+   @keyframes demo-wave-top {
+       to {
+           opacity: 0;
+           transform: translate3d(18px, -32px, 0) scale(1.08);
+       }
+   }
+
+   @keyframes demo-wave-bottom {
+       to {
+           opacity: 1;
+           transform: translate3d(-34px, -72px, 0) scale(1.12);
+       }
+   }
+
+   @media (prefers-reduced-motion: reduce) {
+       html[data-surface] body::before,
+       html[data-surface] body::after {
+           animation: none;
+           transform: translate3d(0, 0, 0);
+       }
+
+       html[data-surface] body::before {
+           opacity: 1;
+       }
+
+       html[data-surface] body::after {
+           display: none;
+       }
    }
 
    html[data-surface] ::selection {
@@ -356,18 +424,6 @@ modern wide-gamut OKLCH/P3 color syntax. */
        initial-value: 1;
    }
 
-   @property --rail-card-active {
-       syntax: "<number>";
-       inherits: false;
-       initial-value: 0;
-   }
-
-   @property --fade-option-flash {
-       syntax: "<number>";
-       inherits: false;
-       initial-value: 0;
-   }
-
    @property --edge-toggle-active {
        syntax: "<number>";
        inherits: false;
@@ -481,14 +537,12 @@ modern wide-gamut OKLCH/P3 color syntax. */
    }
 
    .fade-option-part {
-       --fade-option-flash: 0;
-       color: color-mix(
-           in oklab,
-           var(--demo-text-subtle)
-               calc((1 - var(--fade-option-flash)) * 100%),
-           var(--demo-accent-text-strong)
-               calc(var(--fade-option-flash) * 100%)
-       );
+       color: var(--demo-text-subtle);
+       transition: color 1800ms cubic-bezier(0.16, 1, 0.3, 1);
+   }
+
+   .fade-option-part.is-flashing {
+       color: var(--demo-accent-text-strong);
    }
 
    .visually-hidden {
@@ -1120,7 +1174,6 @@ modern wide-gamut OKLCH/P3 color syntax. */
 
    .rail-card {
        --rail-card-scale: 1;
-       --rail-card-active: 0;
        --rail-card-base-bg: color-mix(
            in oklab,
            var(--demo-page-bg) 74%,
@@ -1131,39 +1184,28 @@ modern wide-gamut OKLCH/P3 color syntax. */
            var(--demo-page-bg) 62%,
            var(--demo-accent-text) 38%
        );
-       --rail-card-bg: color-mix(
-           in oklab,
-           var(--rail-card-base-bg)
-               calc((1 - var(--rail-card-active)) * 100%),
-           var(--rail-card-active-bg)
-               calc(var(--rail-card-active) * 100%)
-       );
-       --rail-card-color: color-mix(
-           in oklab,
-           var(--demo-text-primary)
-               calc((1 - var(--rail-card-active)) * 100%),
-           var(--demo-accent-text-strong)
-               calc(var(--rail-card-active) * 100%)
-       );
        position: relative;
        isolation: isolate;
        align-items: flex-start;
        overflow: hidden;
        border: 0 !important;
-       background: var(--rail-card-bg);
-       color: var(--rail-card-color);
+       background: var(--rail-card-base-bg);
+       color: var(--demo-text-primary);
        font-size: 1rem;
        line-height: 1.5rem;
        box-shadow: none;
        transform: translateZ(0) scale(var(--rail-card-scale));
        transition:
            box-shadow 160ms ease,
-           border-color 160ms ease;
+           border-color 160ms ease,
+           background-color 180ms ease,
+           color 180ms ease;
        will-change: transform;
    }
 
    .rail-card[aria-selected="true"] {
-       --rail-card-active: 1;
+       background: var(--rail-card-active-bg);
+       color: var(--demo-accent-text-strong);
    }
 
    .rail-card.ui-button:active {
@@ -1174,8 +1216,6 @@ modern wide-gamut OKLCH/P3 color syntax. */
        .rail-card.ui-button:hover,
        .rail-card.ui-button[aria-selected="true"]:hover {
            border-color: transparent;
-           background: var(--rail-card-bg);
-           color: var(--rail-card-color);
        }
    }
 
@@ -1186,13 +1226,7 @@ modern wide-gamut OKLCH/P3 color syntax. */
        bottom: calc(-0.28em + 18px);
        left: 0.35rem;
        z-index: -1;
-       color: color-mix(
-           in oklab,
-           var(--demo-accent-text-strong)
-               calc((1 - var(--rail-letter-active)) * 100%),
-           var(--demo-accent-text)
-               calc(var(--rail-letter-active) * 100%)
-       );
+       color: var(--demo-accent-text);
        font-family:
            "Climate Crisis", "Arial Black", Impact, ui-sans-serif,
            system-ui, sans-serif;
@@ -1535,17 +1569,7 @@ modern wide-gamut OKLCH/P3 color syntax. */
    .edge-toggle-gradient-stop {
        --edge-toggle-active: 0;
        --edge-toggle-hover: 0;
-       stop-color: color-mix(
-           in oklab,
-           color-mix(
-                   in oklab,
-                   var(--demo-border-strong) 58%,
-                   transparent
-               )
-               calc((1 - var(--edge-toggle-active)) * 100%),
-           var(--demo-accent-text)
-               calc(var(--edge-toggle-active) * 100%)
-       );
+       stop-color: var(--demo-accent-text);
    }
 
    .edge-toggle-gradient-base {

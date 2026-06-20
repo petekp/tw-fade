@@ -70,7 +70,11 @@ const checks = [
   ['Open Graph dimensions are declared', propertyContent('og:image:width') === '1200' && propertyContent('og:image:height') === '630'],
   ['Twitter uses summary_large_image', metaContent('twitter:card') === 'summary_large_image'],
   ['Twitter image points to production PNG', metaContent('twitter:image') === 'https://pete.design/tw-fade/og-image.png'],
-  ['local demo keeps relative stylesheet path', has('<link rel="stylesheet" href="./styles.css" />')],
+  [
+    'local demo keeps relative stylesheet paths',
+    has('<link rel="stylesheet" href="./styles.css" />') &&
+      has('<link rel="stylesheet" href="./demo.css" />'),
+  ],
   [
     'favicon links are present',
     has('href="./favicon.ico"') &&

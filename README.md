@@ -324,13 +324,17 @@ contains nothing but this plugin's rules.
 npm test                      # fast, browser-free unit tests on the compiled CSS
 node scripts/build-css.mjs    # regenerate dist/tw-fade.css from src/tw-fade.css
 npm run build:demo            # rebuild the demo stylesheet (demo/styles.css)
+npm run export:demo           # export the static demo with /tw-fade asset paths
 
-# real-browser verification (needs Chromium via Playwright)
-npm run verify                # runs all four checks below
+# real-browser verification (needs Chromium and WebKit via Playwright)
+npm run verify                # runs all checks below
 node build/verify.mjs         # amount-level checks against the full demo build
 node build/verify-dist.mjs    # amount-level checks against the shipped framework-free CSS
 node build/verify-fade.mjs    # pixel-level: the mask actually renders (vertical, horizontal, size, nesting)
+node build/verify-demo-assets.mjs
 node build/verify-page.mjs    # the whole-page fade on <body> (scroller + scroll-gating)
+node build/verify-demo-runtime.mjs
+node build/verify-seo.mjs
 node build/shots.mjs          # capture demo screenshots
 
 open demo/index.html          # the interactive demo
