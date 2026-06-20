@@ -199,17 +199,17 @@
                 --demo-panel-strong: rgb(3 29 19 / 0.97);
                 --demo-panel-soft: rgb(7 54 34 / 0.56);
                 --demo-control-bg: rgb(16 185 129 / 0.1);
-                --demo-control-active: rgb(251 113 133 / 0.18);
+                --demo-control-active: rgb(255 74 113 / 0.2);
                 --demo-border: rgb(52 211 153 / 0.2);
                 --demo-border-strong: rgb(52 211 153 / 0.3);
-                --demo-focus: rgb(251 113 133 / 0.65);
+                --demo-focus: rgb(255 74 113 / 0.68);
                 --demo-text-strong: rgb(240 253 244);
                 --demo-text-primary: rgb(204 245 224);
                 --demo-text-muted: rgb(157 213 187);
                 --demo-text-subtle: rgb(119 170 145);
-                --demo-accent-text: rgb(253 164 175);
-                --demo-accent-text-strong: rgb(255 228 230);
-                --demo-selection-bg: rgb(251 113 133 / 0.82);
+                --demo-accent-text: rgb(255 108 139);
+                --demo-accent-text-strong: rgb(255 204 216);
+                --demo-selection-bg: rgb(255 74 113 / 0.84);
                 --demo-selection-text: rgb(2 18 12);
                 --demo-warning-text: rgb(190 242 100);
                 --demo-warning-text-strong: rgb(236 252 203);
@@ -291,17 +291,17 @@
                     --demo-panel-strong: oklch(20.665% 0.0388 164.94 / 0.97);
                     --demo-panel-soft: oklch(29.629% 0.0613 160 / 0.56);
                     --demo-control-bg: oklch(69.587% 0.1491 162.48 / 0.1);
-                    --demo-control-active: oklch(71.919% 0.169 13.43 / 0.18);
+                    --demo-control-active: oklch(68.7% 0.231 13.43 / 0.2);
                     --demo-border: oklch(77.294% 0.1535 163.22 / 0.2);
                     --demo-border-strong: oklch(77.294% 0.1535 163.22 / 0.3);
-                    --demo-focus: oklch(71.919% 0.169 13.43 / 0.65);
+                    --demo-focus: oklch(68.7% 0.231 13.43 / 0.68);
                     --demo-text-strong: oklch(98.193% 0.0181 155.83);
                     --demo-text-primary: oklch(93.542% 0.0509 163.02);
                     --demo-text-muted: oklch(82.708% 0.0684 164.53);
                     --demo-text-subtle: oklch(69.47% 0.0657 162.82);
-                    --demo-accent-text: oklch(80.966% 0.1061 11.64);
-                    --demo-accent-text-strong: oklch(94.137% 0.0298 12.58);
-                    --demo-selection-bg: oklch(71.919% 0.169 13.43 / 0.82);
+                    --demo-accent-text: oklch(76.8% 0.188 13.43);
+                    --demo-accent-text-strong: oklch(91.5% 0.069 13.43);
+                    --demo-selection-bg: oklch(68.7% 0.231 13.43 / 0.84);
                     --demo-selection-text: oklch(16.423% 0.0282 168.92);
                     --demo-warning-text: oklch(89.715% 0.1786 126.67);
                     --demo-warning-text-strong: oklch(96.693% 0.0659 122.33);
@@ -509,6 +509,12 @@
             }
 
             @property --edge-toggle-active {
+                syntax: "<number>";
+                inherits: false;
+                initial-value: 0;
+            }
+
+            @property --edge-toggle-hover {
                 syntax: "<number>";
                 inherits: false;
                 initial-value: 0;
@@ -1654,8 +1660,21 @@
                 opacity: 1;
             }
 
+            .edge-toggle-inner-glow {
+                fill: none;
+                filter: blur(2.75px);
+                opacity: 0;
+                pointer-events: none;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                stroke-width: 9;
+                transform: translateZ(0);
+                will-change: opacity;
+            }
+
             .edge-toggle-gradient-stop {
                 --edge-toggle-active: 0;
+                --edge-toggle-hover: 0;
                 stop-color: color-mix(
                     in oklab,
                     color-mix(
@@ -1670,11 +1689,15 @@
             }
 
             .edge-toggle-gradient-base {
-                stop-opacity: calc(0.58 + var(--edge-toggle-active) * 0.42);
+                stop-opacity: 0;
             }
 
             .edge-toggle-gradient-tip {
-                stop-opacity: 0;
+                stop-opacity: calc(
+                    0.72 + var(--edge-toggle-active) * 0.28 +
+                        (1 - var(--edge-toggle-active)) *
+                        var(--edge-toggle-hover) * 0.08
+                );
             }
 
             .type-scale-sample {
@@ -2021,7 +2044,7 @@
             <header
                 class="flex min-h-[75vh] max-w-[45rem] flex-col justify-center pb-12"
             >
-                <div class="masthead-lockup">
+                <div class="masthead-lockup ml-4">
                     <div class="masthead-top-row">
                         <p class="masthead-plugin-label">
                             <svg
@@ -2289,12 +2312,12 @@
                     </h1>
                 </div>
                 <p
-                    class="mt-11 max-w-[40rem] text-balance text-lg leading-8 text-neutral-300/85 sm:text-xl"
+                    class="ml-4 mt-11 max-w-[40rem] text-balance text-lg leading-8 text-neutral-300/85 sm:text-xl"
                 >
                     Elegant, scroll-driven edge masking. One class. Zero
                     JavaScript.
                 </p>
-                <div class="install-snippet" data-install-snippet>
+                <div class="install-snippet ml-4" data-install-snippet>
                     <span
                         class="install-snippet-sweep"
                         aria-hidden="true"
@@ -2346,13 +2369,13 @@
             <section class="space-y-6" aria-label="Scroll fade examples">
                 <div class="min-w-0 space-y-[4.5rem]">
                     <section
-                        class="space-y-3"
+                        class="space-y-4"
                         aria-label="Horizontal item list demo"
                     >
                         <div class="flex items-baseline justify-between gap-4">
                             <div>
                                 <h2
-                                    class="ml-2 flex flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
+                                    class="ml-4 flex flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
                                 >
                                     Horizontal
                                     <code
@@ -2373,7 +2396,7 @@
                                     class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
                                     type="button"
                                     role="option"
-                                    aria-selected="true"
+                                    aria-selected="false"
                                 >
                                     <span
                                         class="rail-card-initial"
@@ -2427,7 +2450,7 @@
                                     class="rail-card ui-button flex h-full aspect-[3/4] shrink-0 items-end justify-start rounded-md border p-4 text-left text-[0.9375rem] font-medium leading-5"
                                     type="button"
                                     role="option"
-                                    aria-selected="false"
+                                    aria-selected="true"
                                 >
                                     <span
                                         class="rail-card-initial"
@@ -2680,13 +2703,13 @@
                     </section>
 
                     <section
-                        class="min-w-0 space-y-3"
+                        class="min-w-0 space-y-4"
                         aria-labelledby="list-title"
                     >
                         <div>
                             <h2
                                 id="list-title"
-                                class="ml-2 flex flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
+                                class="ml-4 flex flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
                             >
                                 Vertical
                                 <code
@@ -3056,10 +3079,10 @@
                 class="mt-[7.5rem] space-y-6"
                 aria-labelledby="tuning-title"
             >
-                <div class="min-w-0 space-y-3">
+                <div class="min-w-0 space-y-4">
                     <h2
                         id="tuning-title"
-                        class="ml-2 flex flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
+                        class="ml-4 flex flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
                     >
                         Advanced
                         <code
@@ -3348,13 +3371,19 @@
                                                             />
                                                             <stop
                                                                 class="edge-toggle-gradient-stop edge-toggle-gradient-tip"
-                                                                offset="0.48"
+                                                                offset="0.58"
                                                             />
                                                         </linearGradient>
                                                     </defs>
                                                     <path
                                                         class="edge-toggle-shape"
                                                         fill="url(#edge-toggle-gradient-t)"
+                                                        d="M28 8 L72 8 C80.4 8 81.6 15.6 75.8 20.2 L55.8 40.2 C52.6 44.2 47.4 44.2 44.2 40.2 L24.2 20.2 C18.4 15.6 19.6 8 28 8 Z"
+                                                    />
+                                                    <path
+                                                        class="edge-toggle-inner-glow"
+                                                        fill="none"
+                                                        stroke="url(#edge-toggle-gradient-t)"
                                                         d="M28 8 L72 8 C80.4 8 81.6 15.6 75.8 20.2 L55.8 40.2 C52.6 44.2 47.4 44.2 44.2 40.2 L24.2 20.2 C18.4 15.6 19.6 8 28 8 Z"
                                                     />
                                                 </svg>
@@ -3386,13 +3415,19 @@
                                                             />
                                                             <stop
                                                                 class="edge-toggle-gradient-stop edge-toggle-gradient-tip"
-                                                                offset="0.48"
+                                                                offset="0.58"
                                                             />
                                                         </linearGradient>
                                                     </defs>
                                                     <path
                                                         class="edge-toggle-shape"
                                                         fill="url(#edge-toggle-gradient-r)"
+                                                        d="M28 8 L72 8 C80.4 8 81.6 15.6 75.8 20.2 L55.8 40.2 C52.6 44.2 47.4 44.2 44.2 40.2 L24.2 20.2 C18.4 15.6 19.6 8 28 8 Z"
+                                                    />
+                                                    <path
+                                                        class="edge-toggle-inner-glow"
+                                                        fill="none"
+                                                        stroke="url(#edge-toggle-gradient-r)"
                                                         d="M28 8 L72 8 C80.4 8 81.6 15.6 75.8 20.2 L55.8 40.2 C52.6 44.2 47.4 44.2 44.2 40.2 L24.2 20.2 C18.4 15.6 19.6 8 28 8 Z"
                                                     />
                                                 </svg>
@@ -3424,13 +3459,19 @@
                                                             />
                                                             <stop
                                                                 class="edge-toggle-gradient-stop edge-toggle-gradient-tip"
-                                                                offset="0.48"
+                                                                offset="0.58"
                                                             />
                                                         </linearGradient>
                                                     </defs>
                                                     <path
                                                         class="edge-toggle-shape"
                                                         fill="url(#edge-toggle-gradient-b)"
+                                                        d="M28 8 L72 8 C80.4 8 81.6 15.6 75.8 20.2 L55.8 40.2 C52.6 44.2 47.4 44.2 44.2 40.2 L24.2 20.2 C18.4 15.6 19.6 8 28 8 Z"
+                                                    />
+                                                    <path
+                                                        class="edge-toggle-inner-glow"
+                                                        fill="none"
+                                                        stroke="url(#edge-toggle-gradient-b)"
                                                         d="M28 8 L72 8 C80.4 8 81.6 15.6 75.8 20.2 L55.8 40.2 C52.6 44.2 47.4 44.2 44.2 40.2 L24.2 20.2 C18.4 15.6 19.6 8 28 8 Z"
                                                     />
                                                 </svg>
@@ -3462,13 +3503,19 @@
                                                             />
                                                             <stop
                                                                 class="edge-toggle-gradient-stop edge-toggle-gradient-tip"
-                                                                offset="0.48"
+                                                                offset="0.58"
                                                             />
                                                         </linearGradient>
                                                     </defs>
                                                     <path
                                                         class="edge-toggle-shape"
                                                         fill="url(#edge-toggle-gradient-l)"
+                                                        d="M28 8 L72 8 C80.4 8 81.6 15.6 75.8 20.2 L55.8 40.2 C52.6 44.2 47.4 44.2 44.2 40.2 L24.2 20.2 C18.4 15.6 19.6 8 28 8 Z"
+                                                    />
+                                                    <path
+                                                        class="edge-toggle-inner-glow"
+                                                        fill="none"
+                                                        stroke="url(#edge-toggle-gradient-l)"
                                                         d="M28 8 L72 8 C80.4 8 81.6 15.6 75.8 20.2 L55.8 40.2 C52.6 44.2 47.4 44.2 44.2 40.2 L24.2 20.2 C18.4 15.6 19.6 8 28 8 Z"
                                                     />
                                                 </svg>
@@ -4873,6 +4920,7 @@
             const railCards = rail
                 ? Array.from(rail.querySelectorAll(".rail-card"))
                 : [];
+            const initialRailCardInset = 140;
             const installCommand = document.querySelector(
                 "[data-install-command]",
             );
@@ -5066,15 +5114,22 @@
                 controls?.forEach((control) => control?.stop?.());
 
                 const svg = button.querySelector(".edge-toggle-svg");
+                const glow = button.querySelector(".edge-toggle-inner-glow");
                 const gradientStops = button.querySelectorAll(
                     ".edge-toggle-gradient-stop",
                 );
                 const svgValues = {};
+                const glowValues = {};
                 const gradientValues = {};
 
                 for (const [property, value] of Object.entries(values)) {
-                    if (property === "--edge-toggle-active") {
+                    if (
+                        property === "--edge-toggle-active" ||
+                        property === "--edge-toggle-hover"
+                    ) {
                         gradientValues[property] = value;
+                    } else if (property === "edgeGlowOpacity") {
+                        glowValues.opacity = value;
                     } else {
                         svgValues[property] = value;
                     }
@@ -5105,6 +5160,13 @@
                             });
                         }
                     }
+                    if (glow) {
+                        for (const [property, value] of Object.entries(
+                            glowValues,
+                        )) {
+                            glow.style.setProperty(property, String(value));
+                        }
+                    }
                     edgeToggleSpringControls.delete(button);
                     return;
                 }
@@ -5130,6 +5192,11 @@
                         );
                     });
                 }
+                if (glow && Object.keys(glowValues).length) {
+                    nextControls.push(
+                        animation.animate(glow, glowValues, edgeSpring),
+                    );
+                }
                 edgeToggleSpringControls.set(button, nextControls);
             }
 
@@ -5145,12 +5212,15 @@
                       : state.hovered
                         ? 1.01
                         : 1;
+                const glowOpacity = active ? 0 : state.hovered ? 0.38 : 0.28;
 
                 setEdgeToggleValues(
                     button,
                     {
                         "--edge-toggle-active": active ? 1 : 0,
+                        "--edge-toggle-hover": state.hovered ? 1 : 0,
                         "--edge-toggle-scale": scale,
+                        edgeGlowOpacity: glowOpacity,
                     },
                     animated,
                 );
@@ -5162,7 +5232,9 @@
                     button,
                     {
                         "--edge-toggle-active": active ? 1 : 0,
+                        "--edge-toggle-hover": state.hovered ? 1 : 0,
                         "--edge-toggle-scale": active ? 1.035 : 0.975,
+                        edgeGlowOpacity: active ? 0 : 0.42,
                     },
                     true,
                 );
@@ -5312,6 +5384,32 @@
                 if (animated) springRailSelection(nextCard);
             }
 
+            function alignInitialRailScroll() {
+                if (!rail || !railCards.length) return;
+
+                const selectedCard =
+                    railCards.find(
+                        (card) =>
+                            card.getAttribute("aria-selected") === "true",
+                    ) ?? railCards[0];
+                const railRect = rail.getBoundingClientRect();
+                const cardRect = selectedCard.getBoundingClientRect();
+                const nextScrollLeft =
+                    rail.scrollLeft +
+                    cardRect.left -
+                    railRect.left -
+                    initialRailCardInset;
+                const maxScrollLeft = Math.max(
+                    0,
+                    rail.scrollWidth - rail.clientWidth,
+                );
+
+                rail.scrollLeft = Math.min(
+                    maxScrollLeft,
+                    Math.max(0, nextScrollLeft),
+                );
+            }
+
             function edgeUtilities(activeEdges) {
                 const has = (edge) => activeEdges.includes(edge);
 
@@ -5347,10 +5445,10 @@
                     1,
                     Math.max(0, depthIndex / maxDepthIndex),
                 );
-                const transparentOffset = 0.68 - depthProgress * 0.3;
+                const accentOffset = 0.38 + depthProgress * 0.3;
 
                 for (const stop of edgeGradientTipStops) {
-                    stop.setAttribute("offset", transparentOffset.toFixed(3));
+                    stop.setAttribute("offset", accentOffset.toFixed(3));
                 }
             }
 
@@ -5680,6 +5778,8 @@
                     selectRailCard(card);
                 });
             }
+
+            window.requestAnimationFrame(alignInitialRailScroll);
 
             installCopyButton?.addEventListener("click", async () => {
                 const command =
