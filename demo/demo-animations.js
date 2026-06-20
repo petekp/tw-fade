@@ -464,7 +464,8 @@ if (!prefersReducedMotion) {
         const curve = document.querySelector(".eased-curve-active");
         if (!curve) return;
 
-        const sampleCount = 240;
+        const sampleCount = 360;
+        const targetLapDuration = 3200;
         const springStep = (value) => {
             const t = Math.min(1, Math.max(0, value));
             const tension = 7;
@@ -474,32 +475,95 @@ if (!prefersReducedMotion) {
                 1 - Math.exp(-tension) * (1 + tension);
             return response / responseMax;
         };
-        const smoothSpeeds = (speeds) => {
-            let next = speeds;
-            for (let pass = 0; pass < 5; pass += 1) {
-                next = next.map((speed, index) => {
-                    const previous = next[index - 1] ?? speed;
-                    const following = next[index + 1] ?? speed;
-                    return (previous + speed * 2 + following) / 4;
+        const clamp = (value, min, max) =>
+            Math.min(max, Math.max(min, value));
+        const trendSign = (value) => {
+            if (value > 0.05) return 1;
+            if (value < -0.05) return -1;
+            return 0;
+        };
+        const smoothValues = (values, passes = 5) => {
+            let next = values;
+            for (let pass = 0; pass < passes; pass += 1) {
+                next = next.map((value, index) => {
+                    const previous = next[index - 1] ?? value;
+                    const following = next[index + 1] ?? value;
+                    return (previous + value * 2 + following) / 4;
                 });
             }
             return next;
         };
-        const speedForSlope = (slope) => {
-            const easedSlope = Math.sin(
-                Math.max(-1, Math.min(1, slope)) * (Math.PI / 2),
-            );
-            return Math.max(0.64, 1 + easedSlope * 0.72);
+        const findVerticalExtrema = (points, distances, length) => {
+            const extrema = [];
+            let trend = trendSign(points[1].y - points[0].y);
+            const minimumSeparation = length * 0.075;
+
+            for (let index = 2; index < points.length; index += 1) {
+                const nextTrend = trendSign(
+                    points[index].y - points[index - 1].y,
+                );
+                if (!nextTrend) continue;
+
+                if (trend && nextTrend !== trend) {
+                    const distance = distances[index - 1];
+                    const previous = extrema[extrema.length - 1];
+                    if (
+                        !previous ||
+                        distance - previous.distance > minimumSeparation
+                    ) {
+                        extrema.push({
+                            distance,
+                            type:
+                                trend < 0 && nextTrend > 0
+                                    ? "peak"
+                                    : "valley",
+                        });
+                    }
+                }
+                trend = nextTrend;
+            }
+
+            return extrema;
         };
-        const buildSlopeAwareKeyframes = () => {
+        const turningPhase = (distance, turns) => {
+            let rightIndex = turns.findIndex((turn) => turn >= distance);
+            if (rightIndex === -1) rightIndex = turns.length - 1;
+            const left = turns[Math.max(0, rightIndex - 1)];
+            const right = turns[rightIndex];
+            const span = Math.max(1, right - left);
+            const nearestTurn = Math.min(
+                distance - left,
+                right - distance,
+            );
+            const phase = clamp(nearestTurn / (span / 2), 0, 1);
+
+            return 0.5 - Math.cos(phase * Math.PI) * 0.5;
+        };
+        const measureCurveGeometry = () => {
             const length = curve.getTotalLength();
             const dashLength = Math.min(76, length * 0.2);
             const distances = Array.from(
                 { length: sampleCount + 1 },
                 (_, index) => (length * index) / sampleCount,
             );
-            const tangentWindow = Math.max(2, length / sampleCount);
-            const speeds = smoothSpeeds(
+            const points = distances.map((distance) =>
+                curve.getPointAtLength(distance),
+            );
+            const extrema = findVerticalExtrema(
+                points,
+                distances,
+                length,
+            );
+            const turns = [
+                0,
+                ...extrema.map((extremum) => extremum.distance),
+                length,
+            ];
+            const tangentWindow = Math.max(2, (length / sampleCount) * 2);
+
+            // Measure against real path geometry: slow at peaks/valleys,
+            // quickest between them, and biased faster when moving downhill.
+            const speeds = smoothValues(
                 distances.map((distance) => {
                     const before = curve.getPointAtLength(
                         Math.max(0, distance - tangentWindow),
@@ -510,40 +574,122 @@ if (!prefersReducedMotion) {
                     const dx = after.x - before.x;
                     const dy = after.y - before.y;
                     const tangentLength = Math.hypot(dx, dy) || 1;
-                    return speedForSlope(dy / tangentLength);
+                    const tangentY = dy / tangentLength;
+                    const downhill = Math.max(0, tangentY);
+                    const uphill = Math.max(0, -tangentY);
+                    const verticality = Math.abs(tangentY);
+                    const distanceFromTurn = turningPhase(
+                        distance,
+                        turns,
+                    );
+                    const directionBias =
+                        0.72 +
+                        downhill * 1.06 -
+                        uphill * 0.2 +
+                        (1 - verticality) * 0.16;
+
+                    return clamp(
+                        0.5,
+                        2.15,
+                        0.5 + distanceFromTurn * directionBias,
+                    );
                 }),
             );
-            const times = [0];
-            let totalTime = 0;
+            let weightedSpeed = 0;
 
             for (let index = 1; index < distances.length; index += 1) {
                 const distance =
                     distances[index] - distances[index - 1];
                 const speed =
                     (speeds[index - 1] + speeds[index]) / 2;
-                totalTime += distance / speed;
-                times.push(totalTime);
+                weightedSpeed += speed * distance;
             }
 
             const gapLength = Math.max(0, length - dashLength);
             curve.style.strokeDasharray = `${dashLength.toFixed(3)} ${gapLength.toFixed(3)}`;
+            curve.dataset.easedTiming = "peak-valley";
+            curve.dataset.easedExtrema = extrema
+                .map(
+                    (extremum) =>
+                        `${extremum.type}:${extremum.distance.toFixed(1)}`,
+                )
+                .join(" ");
 
-            return distances.map((distance, index) => ({
-                offset:
-                    index === distances.length - 1
-                        ? 1
-                        : times[index] / totalTime,
-                strokeDashoffset: `${(-distance).toFixed(3)}px`,
-            }));
+            return {
+                length,
+                speeds,
+                averageSpeed: weightedSpeed / length || 1,
+            };
         };
-        const keyframes = buildSlopeAwareKeyframes();
+        const speedAtDistance = (geometry, distance) => {
+            const position =
+                (clamp(distance / geometry.length, 0, 1) *
+                    sampleCount) ||
+                0;
+            const index = Math.min(
+                sampleCount - 1,
+                Math.max(0, Math.floor(position)),
+            );
+            const mix = position - index;
+            const current = geometry.speeds[index] ?? 1;
+            const next = geometry.speeds[index + 1] ?? current;
+            return current + (next - current) * mix;
+        };
+        let curveGeometry = null;
+        let curveGeometryDirty = true;
+        let curveDistance = 0;
+        let lastCurveFrame = 0;
+        let lastCurveMeasure = 0;
+
+        const markCurveGeometryDirty = () => {
+            curveGeometryDirty = true;
+        };
+        const refreshCurveGeometry = (now, force = false) => {
+            if (
+                !force &&
+                (!curveGeometryDirty || now - lastCurveMeasure < 96)
+            )
+                return;
+
+            const progress =
+                curveGeometry?.length > 0
+                    ? curveDistance / curveGeometry.length
+                    : 0;
+            curveGeometry = measureCurveGeometry();
+            curveDistance =
+                ((progress % 1) + 1) % 1 * curveGeometry.length;
+            curveGeometryDirty = false;
+            lastCurveMeasure = now;
+        };
+        const animateCurveDash = (now) => {
+            refreshCurveGeometry(now);
+            if (!lastCurveFrame) lastCurveFrame = now;
+            const dt = Math.min(34, Math.max(1, now - lastCurveFrame));
+            lastCurveFrame = now;
+
+            if (curveGeometry?.length) {
+                const pixelsPerMillisecond =
+                    curveGeometry.length /
+                    targetLapDuration /
+                    curveGeometry.averageSpeed;
+                curveDistance =
+                    (curveDistance +
+                        pixelsPerMillisecond *
+                            speedAtDistance(
+                                curveGeometry,
+                                curveDistance,
+                            ) *
+                            dt) %
+                    curveGeometry.length;
+                curve.style.strokeDashoffset = `${(-curveDistance).toFixed(3)}px`;
+            }
+
+            requestAnimationFrame(animateCurveDash);
+        };
 
         curve.style.strokeDashoffset = "0px";
-        curve.animate(keyframes, {
-            duration: 3200,
-            easing: "linear",
-            iterations: Infinity,
-        });
+        refreshCurveGeometry(performance.now(), true);
+        requestAnimationFrame(animateCurveDash);
 
         const handleLine =
             document.querySelector(".eased-handle-line");
@@ -608,6 +754,7 @@ if (!prefersReducedMotion) {
             for (const curvePath of curves) {
                 curvePath.setAttribute("d", curveD);
             }
+            markCurveGeometryDirty();
             handles.forEach((handle, index) => {
                 handlePoints[index].setAttribute(
                     "cx",

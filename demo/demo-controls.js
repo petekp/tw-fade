@@ -115,6 +115,7 @@ const faviconBayer8 = [
 ];
 const themedFaviconCells = createThemedFaviconCells();
 let installCopyResetTimer = 0;
+let installCommandFlashTimer = 0;
 let installIconStackSpringControl = null;
 const surfaceSpringControls = new WeakMap();
 const surfaceInteractionState = new WeakMap();
@@ -246,6 +247,21 @@ function pressInstallCopyIcon() {
 
 function releaseInstallCopyIcon() {
     setInstallIconStackScale(1, true);
+}
+
+function flashInstallCommand() {
+    if (!installCommand) return;
+    window.clearTimeout(installCommandFlashTimer);
+
+    if (prefersReducedSurfaceMotion()) {
+        installCommand.classList.remove("is-flashing");
+        return;
+    }
+
+    installCommand.classList.add("is-flashing");
+    installCommandFlashTimer = window.setTimeout(() => {
+        installCommand.classList.remove("is-flashing");
+    }, 160);
 }
 
 function surfaceStateFor(button) {
@@ -1053,6 +1069,7 @@ installCopyButton?.addEventListener("click", async () => {
         document.dispatchEvent(
             new CustomEvent("tw-fade:copy-sweep"),
         );
+        flashInstallCommand();
         installCopyButton.dataset.copied = "true";
         installCopyButton.setAttribute(
             "aria-label",
