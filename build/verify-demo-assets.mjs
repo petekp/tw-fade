@@ -96,9 +96,14 @@ check(
   !/backgroundImage|backgroundSize/.test(animationsSource + controlsSource),
 )
 check(
-  'CSS wave field is scroll-timeline driven when supported',
-  cssSource.includes('scroll-timeline-name: --demo-page-scroll') &&
-    cssSource.includes('animation-timeline: --demo-page-scroll'),
+  'wave field morphs one SVG path instead of crossfading image states',
+  html.includes('data-demo-wave-field') &&
+    html.includes('data-demo-wave-pattern') &&
+    html.includes('data-demo-wave-path') &&
+    animationsSource.includes('initWaveBackground') &&
+    animationsSource.includes('setAttribute("d"') &&
+    !cssSource.includes('--demo-wave-bottom') &&
+    !cssSource.includes('demo-wave-bottom'),
 )
 check(
   'demo CSS avoids WebKit-crashing dynamic color-mix percentages',

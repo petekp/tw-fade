@@ -82,7 +82,9 @@ async function readPageState(page) {
       return !button.textContent.trim() && !button.getAttribute('aria-label')
     })
     const waveBefore = getComputedStyle(document.body, '::before')
-    const waveAfter = getComputedStyle(document.body, '::after')
+    const waveField = document.querySelector('[data-demo-wave-field]')
+    const wavePath = document.querySelector('[data-demo-wave-path]')
+    const wavePattern = document.querySelector('[data-demo-wave-pattern]')
 
     return {
       bodyIsScroller: document.body.scrollHeight > document.body.clientHeight + 8,
@@ -104,11 +106,13 @@ async function readPageState(page) {
       unnamedButtonCount: unnamedButtons.length,
       railRole: rail?.getAttribute('role') ?? '',
       edgeGroupRole: document.querySelector('.edge-toggle-group')?.getAttribute('role') ?? '',
+      waveMode: doc.dataset.waveField ?? '',
       waveBeforeImage: waveBefore.backgroundImage,
+      waveBeforeDisplay: waveBefore.display,
       waveBeforeWillChange: waveBefore.willChange,
-      waveAfterDisplay: waveAfter.display,
-      waveAfterImage: waveAfter.backgroundImage,
-      waveAfterWillChange: waveAfter.willChange,
+      waveFieldDisplay: waveField ? getComputedStyle(waveField).display : '',
+      wavePathD: wavePath?.getAttribute('d') ?? '',
+      wavePatternHeight: wavePattern?.getAttribute('height') ?? '',
       movingWillChange: {
         railCard: getComputedStyle(document.querySelector('.rail-card')).willChange,
         easedLine: getComputedStyle(document.querySelector('.eased-curve-active')).willChange,
@@ -216,10 +220,15 @@ async function smokePage(browser, options) {
   assert(state.waveBeforeImage !== 'none', `${label}: CSS wave layer renders`)
   assert(/transform/.test(state.waveBeforeWillChange), `${label}: wave layer is transform composited`, state.waveBeforeWillChange)
   if (reducedMotion) {
-    assert(state.waveAfterDisplay === 'none', `${label}: reduced motion disables secondary wave`, state.waveAfterDisplay)
+    assert(state.waveMode !== 'svg', `${label}: reduced motion keeps procedural wave disabled`, state.waveMode)
+    assert(state.waveBeforeDisplay === 'block', `${label}: reduced motion keeps static wave fallback`, state.waveBeforeDisplay)
+    assert(state.waveFieldDisplay === 'none', `${label}: reduced motion hides SVG wave field`, state.waveFieldDisplay)
   } else {
-    assert(state.waveAfterImage !== 'none', `${label}: second CSS wave layer renders`)
-    assert(/transform/.test(state.waveAfterWillChange), `${label}: second wave layer is transform composited`, state.waveAfterWillChange)
+    assert(state.waveMode === 'svg', `${label}: procedural SVG wave field activates`, state.waveMode)
+    assert(state.waveBeforeDisplay === 'none', `${label}: procedural wave hides static fallback`, state.waveBeforeDisplay)
+    assert(state.waveFieldDisplay === 'block', `${label}: SVG wave field renders`, state.waveFieldDisplay)
+    assert(state.wavePathD.startsWith('M64 0C90'), `${label}: SVG wave starts at top geometry`, state.wavePathD.slice(0, 20))
+    assert(state.wavePatternHeight === '1158', `${label}: SVG wave pattern starts at top wavelength`, state.wavePatternHeight)
   }
   assert(/transform/.test(state.movingWillChange.railCard), `${label}: rail cards are composited`, state.movingWillChange.railCard)
   assert(/transform/.test(state.movingWillChange.easedLine), `${label}: eased line is composited`, state.movingWillChange.easedLine)
@@ -234,6 +243,14 @@ async function smokePage(browser, options) {
   })
   await page.waitForTimeout(240)
   assert(await page.evaluate(() => Boolean(document.body)), `${label}: page survives scroll-linked animation probe`)
+  if (!reducedMotion) {
+    const waveAfterScroll = await page.evaluate(() => ({
+      d: document.querySelector('[data-demo-wave-path]')?.getAttribute('d') ?? '',
+      height: document.querySelector('[data-demo-wave-pattern]')?.getAttribute('height') ?? '',
+    }))
+    assert(waveAfterScroll.d && waveAfterScroll.d !== state.wavePathD, `${label}: wave path geometry changes with scroll`, waveAfterScroll.d.slice(0, 32))
+    assert(waveAfterScroll.height !== state.wavePatternHeight, `${label}: wave wavelength changes with scroll`, `${state.wavePatternHeight} -> ${waveAfterScroll.height}`)
+  }
   await page.evaluate(() => {
     document.body.scrollTo({ top: 0, left: 0, behavior: 'instant' })
   })

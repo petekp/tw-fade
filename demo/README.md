@@ -5,12 +5,12 @@ This demo is intentionally static: opening `index.html` directly from disk shoul
 - `index.html` contains document structure, metadata, and demo content.
 - `styles.css` is generated Tailwind utility output from `demo/input.css`.
 - `demo.css` is hand-authored theme, component, and graphic styling.
-- `demo.css` also owns the background wave field; it is static by default and scroll-timeline driven in browsers that support CSS scroll animations.
-- `demo-animations.js` owns the local spring runtime and decorative SVG animations. It must run before `demo-controls.js`.
+- `demo.css` also owns the static fallback for the background wave field.
+- `demo-animations.js` owns the local spring runtime, decorative SVG animations, and the scroll-modulated SVG wave path. It must run before `demo-controls.js`.
 - `demo-controls.js` owns user-facing controls: theme switching, rail card selection, install-command copy state, advanced fade controls, and edge toggles.
 - `hero-lab.html` and `wave-lab.html` are noindex design scratchpads. They are intentionally excluded from the production `/tw-fade` static export and should be treated as source references, not shipped demo code.
 - `../build/demo-static.mjs` owns the production static export contract for `/tw-fade`.
-- `../build/verify-demo-assets.mjs` checks local asset links, script order, static export rewriting, spring rest thresholds, and the absence of scroll-repaint background code.
+- `../build/verify-demo-assets.mjs` checks local asset links, script order, static export rewriting, spring rest thresholds, and the SVG wave morph contract.
 - `../build/verify-demo-runtime.mjs` runs browser smoke checks for the file URL and exported `/tw-fade` route across desktop, mobile, WebKit iPhone, keyboard, and reduced-motion contexts.
 
 Before finishing demo edits, run:

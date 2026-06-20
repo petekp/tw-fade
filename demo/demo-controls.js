@@ -4,6 +4,9 @@
 const surfaceButtons = Array.from(
     document.querySelectorAll("[data-surface-option]"),
 );
+const themeFaviconLink = document.querySelector(
+    "[data-theme-favicon]",
+);
 const floatingSurfacePalette = document.querySelector(
     "[data-floating-surface-palette]",
 );
@@ -17,6 +20,9 @@ const installCommand = document.querySelector(
 );
 const installCopyButton = document.querySelector(
     "[data-copy-install]",
+);
+const installCopyIconStack = document.querySelector(
+    ".install-copy-icon-stack",
 );
 const installCopyStatus = document.querySelector(
     "[data-copy-install-status]",
@@ -95,7 +101,21 @@ const fadeEdgeOrder = ["t", "r", "b", "l"];
 const fadeEdgeClassNames = fadeEdgeOrder.map(
     (edge) => `fade-${edge}`,
 );
+const faviconSize = 256;
+const faviconCells = 32;
+const faviconBayer8 = [
+    [0, 48, 12, 60, 3, 51, 15, 63],
+    [32, 16, 44, 28, 35, 19, 47, 31],
+    [8, 56, 4, 52, 11, 59, 7, 55],
+    [40, 24, 36, 20, 43, 27, 39, 23],
+    [2, 50, 14, 62, 1, 49, 13, 61],
+    [34, 18, 46, 30, 33, 17, 45, 29],
+    [10, 58, 6, 54, 9, 57, 5, 53],
+    [42, 26, 38, 22, 41, 25, 37, 21],
+];
+const themedFaviconCells = createThemedFaviconCells();
 let installCopyResetTimer = 0;
+let installIconStackSpringControl = null;
 const surfaceSpringControls = new WeakMap();
 const surfaceInteractionState = new WeakMap();
 const edgeToggleSpringControls = new WeakMap();
@@ -109,6 +129,123 @@ let fadeOptionReadoutState = null;
 function prefersReducedSurfaceMotion() {
     return window.matchMedia?.("(prefers-reduced-motion: reduce)")
         .matches;
+}
+
+function createThemedFaviconCells() {
+    const cellSize = faviconSize / faviconCells;
+    const cells = [];
+
+    for (let y = 0; y < faviconCells; y++) {
+        for (let x = 0; x < faviconCells; x++) {
+            const diagonal = (x + y) / (2 * (faviconCells - 1));
+            const value = Math.max(
+                0,
+                Math.min(1, (diagonal - 0.22) / 0.52),
+            );
+            const threshold =
+                (faviconBayer8[y % 8][x % 8] + 0.5) / 64;
+            cells.push({
+                className:
+                    value >= threshold
+                        ? "favicon-light"
+                        : "favicon-dark",
+                x: (x * cellSize).toFixed(3),
+                y: (y * cellSize).toFixed(3),
+                size: cellSize.toFixed(3),
+            });
+        }
+    }
+
+    return cells;
+}
+
+function escapeSvgCss(value) {
+    return String(value).replaceAll("</", "<\\/");
+}
+
+function themeColor(propertyName, fallback) {
+    const value = getComputedStyle(document.documentElement)
+        .getPropertyValue(propertyName)
+        .trim();
+    return value || fallback;
+}
+
+function renderThemedFaviconSvg() {
+    const background = escapeSvgCss(
+        themeColor("--demo-page-bg", "#020617"),
+    );
+    const accent = escapeSvgCss(
+        themeColor("--demo-accent-text", "#f8fafc"),
+    );
+    const cellRects = themedFaviconCells
+        .map(
+            (cell) =>
+                `<rect class="${cell.className}" x="${cell.x}" y="${cell.y}" width="${cell.size}" height="${cell.size}" />`,
+        )
+        .join("");
+
+    return [
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${faviconSize}" height="${faviconSize}" viewBox="0 0 ${faviconSize} ${faviconSize}" role="img" aria-label="Dithered fade square">`,
+        `<style>.favicon-dark{fill:${background}}.favicon-light{fill:${accent}}</style>`,
+        `<rect class="favicon-dark" width="${faviconSize}" height="${faviconSize}" />`,
+        cellRects,
+        "</svg>",
+    ].join("");
+}
+
+function updateThemeFavicon() {
+    if (!themeFaviconLink) return;
+    themeFaviconLink.href = `data:image/svg+xml,${encodeURIComponent(
+        renderThemedFaviconSvg(),
+    )}`;
+}
+
+function scheduleThemeFaviconUpdate() {
+    if (!themeFaviconLink) return;
+    if (window.requestAnimationFrame) {
+        window.requestAnimationFrame(updateThemeFavicon);
+        return;
+    }
+    updateThemeFavicon();
+}
+
+function setInstallIconStackScale(scale, animated = true) {
+    if (!installCopyIconStack) return;
+    const animation = window.demoAnimations;
+    installIconStackSpringControl?.stop?.();
+
+    if (
+        !animated ||
+        prefersReducedSurfaceMotion() ||
+        !animation?.animate
+    ) {
+        installCopyIconStack.style.setProperty(
+            "--install-icon-stack-scale",
+            String(scale),
+        );
+        installIconStackSpringControl = null;
+        return;
+    }
+
+    installIconStackSpringControl = animation.animate(
+        installCopyIconStack,
+        { "--install-icon-stack-scale": scale },
+        animation.spring?.installIcon ?? {
+            type: "spring",
+            stiffness: 650,
+            damping: 22,
+            mass: 0.55,
+            restDelta: 0.001,
+        },
+    );
+}
+
+function pressInstallCopyIcon() {
+    setInstallIconStackScale(0.9, true);
+}
+
+function releaseInstallCopyIcon() {
+    setInstallIconStackScale(1, true);
 }
 
 function surfaceStateFor(button) {
@@ -303,7 +440,7 @@ function syncEdgeToggleSpring(button, animated = true) {
           : state.hovered
             ? 1.01
             : 1;
-    const glowOpacity = active ? 0 : state.hovered ? 0.38 : 0.28;
+    const glowOpacity = active ? 0 : state.hovered ? 0.16 : 0.08;
 
     setEdgeToggleValues(
         button,
@@ -326,7 +463,7 @@ function springEdgeToggleSelection(button) {
             "--edge-toggle-active": active ? 1 : 0,
             "--edge-toggle-hover": state.hovered ? 1 : 0,
             "--edge-toggle-scale": active ? 1.035 : 0.975,
-            edgeGlowOpacity: active ? 0 : 0.42,
+            edgeGlowOpacity: active ? 0 : 0.2,
         },
         true,
     );
@@ -452,8 +589,21 @@ function springRailSelection(card) {
     }, 130);
 }
 
+function initRailLetterLayers() {
+    const letters = railCards
+        .map((card) => card.querySelector(".rail-card-initial"))
+        .filter(Boolean);
+    for (const letter of letters) {
+        letter.dataset.railLetter = letter.textContent.trim();
+    }
+    if (letters.length) {
+        document.documentElement.dataset.railLetterLayers = "true";
+    }
+}
+
 function setSurface(nextSurface, sourceButton = null) {
     document.documentElement.dataset.surface = nextSurface;
+    scheduleThemeFaviconUpdate();
     for (const button of surfaceButtons) {
         const checked =
             button.dataset.surfaceOption === nextSurface;
@@ -819,6 +969,9 @@ for (const button of surfaceButtons) {
     });
 }
 
+updateThemeFavicon();
+initRailLetterLayers();
+
 for (const card of railCards) {
     syncRailCardSpring(card, false);
 
@@ -856,6 +1009,39 @@ for (const card of railCards) {
 }
 
 window.requestAnimationFrame(alignInitialRailScroll);
+
+if (installCopyButton) {
+    setInstallIconStackScale(1, false);
+
+    installCopyButton.addEventListener("pointerdown", (event) => {
+        if (event.button !== 0) return;
+        installCopyButton.setPointerCapture?.(event.pointerId);
+        pressInstallCopyIcon();
+    });
+    installCopyButton.addEventListener("pointerup", releaseInstallCopyIcon);
+    installCopyButton.addEventListener(
+        "pointercancel",
+        releaseInstallCopyIcon,
+    );
+    installCopyButton.addEventListener(
+        "lostpointercapture",
+        releaseInstallCopyIcon,
+    );
+    installCopyButton.addEventListener("blur", releaseInstallCopyIcon);
+    installCopyButton.addEventListener("keydown", (event) => {
+        if (
+            event.repeat ||
+            (event.key !== " " && event.key !== "Enter")
+        ) {
+            return;
+        }
+        pressInstallCopyIcon();
+    });
+    installCopyButton.addEventListener("keyup", (event) => {
+        if (event.key !== " " && event.key !== "Enter") return;
+        releaseInstallCopyIcon();
+    });
+}
 
 installCopyButton?.addEventListener("click", async () => {
     const command =

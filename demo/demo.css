@@ -191,8 +191,7 @@ modern wide-gamut OKLCH/P3 color syntax. */
    }
 
    html[data-surface] {
-       --demo-wave-top: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'128'%20height%3D'1158'%20viewBox%3D'0%200%20128%201158'%3E%3Cpath%20d%3D'M64%200C90%2048.25%2090%20144.75%2064%20193S38%20337.75%2064%20386S90%20530.75%2064%20579S38%20723.75%2064%20772S90%20916.75%2064%20965S38%201109.75%2064%201158'%20fill%3D'none'%20stroke%3D'%23ffffff'%20stroke-opacity%3D'0.065'%20stroke-width%3D'1.25'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%20shape-rendering%3D'geometricPrecision'%2F%3E%3C%2Fsvg%3E");
-       --demo-wave-bottom: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22128%22%20height%3D%22480%22%20viewBox%3D%220%200%20128%20480%22%3E%3Cpath%20d%3D%22M64%200C138%2020%20138%2060%2064%2080S-10%20140%2064%20160S138%20220%2064%20240S-10%20300%2064%20320S138%20380%2064%20400S-10%20460%2064%20480%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.065%22%20stroke-width%3D%221.25%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20shape-rendering%3D%22geometricPrecision%22%2F%3E%3C%2Fsvg%3E");
+       --demo-wave-fallback: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'128'%20height%3D'1158'%20viewBox%3D'0%200%20128%201158'%3E%3Cpath%20d%3D'M64%200C90%2048.25%2090%20144.75%2064%20193S38%20337.75%2064%20386S90%20530.75%2064%20579S38%20723.75%2064%20772S90%20916.75%2064%20965S38%201109.75%2064%201158'%20fill%3D'none'%20stroke%3D'%23ffffff'%20stroke-opacity%3D'0.065'%20stroke-width%3D'1.25'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%20shape-rendering%3D'geometricPrecision'%2F%3E%3C%2Fsvg%3E");
 
        background-color: var(--demo-page-bg);
        transition: background-color 180ms ease;
@@ -202,77 +201,56 @@ modern wide-gamut OKLCH/P3 color syntax. */
        position: relative;
        isolation: isolate;
        color: var(--demo-text-primary);
-       scroll-timeline-axis: block;
-       scroll-timeline-name: --demo-page-scroll;
        transition: color 180ms ease;
    }
 
-   html[data-surface] body::before,
-   html[data-surface] body::after {
+   html[data-surface] body::before {
        content: "";
        position: fixed;
        inset: -12%;
        z-index: -1;
        pointer-events: none;
+       background-image: var(--demo-wave-fallback);
        background-repeat: repeat;
-       transform: translate3d(0, 0, 0);
-       transform-origin: center;
-       will-change: opacity, transform;
-   }
-
-   html[data-surface] body::before {
-       background-image: var(--demo-wave-top);
        background-size: 128px 1158px;
        opacity: 1;
+       transform: translate3d(0, 0, 0);
+       will-change: transform;
    }
 
-   html[data-surface] body::after {
-       background-image: var(--demo-wave-bottom);
-       background-size: 128px 480px;
-       opacity: 0;
-       transform: translate3d(-16px, -40px, 0) scale(1.04);
-   }
-
-   @supports (animation-timeline: scroll()) {
-       html[data-surface] body::before {
-           animation: demo-wave-top linear both;
-           animation-timeline: --demo-page-scroll;
-       }
-
-       html[data-surface] body::after {
-           animation: demo-wave-bottom linear both;
-           animation-timeline: --demo-page-scroll;
-       }
-   }
-
-   @keyframes demo-wave-top {
-       to {
-           opacity: 0;
-           transform: translate3d(18px, -32px, 0) scale(1.08);
-       }
-   }
-
-   @keyframes demo-wave-bottom {
-       to {
-           opacity: 1;
-           transform: translate3d(-34px, -72px, 0) scale(1.12);
-       }
+   html[data-wave-field="svg"] body::before {
+       display: none;
    }
 
    @media (prefers-reduced-motion: reduce) {
-       html[data-surface] body::before,
-       html[data-surface] body::after {
+       html[data-surface] body::before {
            animation: none;
+           display: block;
            transform: translate3d(0, 0, 0);
        }
 
-       html[data-surface] body::before {
-           opacity: 1;
-       }
-
-       html[data-surface] body::after {
+       .demo-wave-field {
            display: none;
        }
+   }
+
+   .demo-wave-field {
+       position: fixed;
+       inset: -12%;
+       z-index: -1;
+       display: none;
+       overflow: hidden;
+       pointer-events: none;
+   }
+
+   html[data-wave-field="svg"] .demo-wave-field {
+       display: block;
+   }
+
+   .demo-wave-svg {
+       display: block;
+       width: 100%;
+       height: 100%;
    }
 
    html[data-surface] ::selection {
@@ -362,6 +340,7 @@ modern wide-gamut OKLCH/P3 color syntax. */
            .install-copy-button,
            .support-tooltip,
            .edge-toggle-group,
+           .vertical-element-card,
            .feature-column
        ) {
            corner-shape: var(--demo-corner-shape);
@@ -404,6 +383,12 @@ modern wide-gamut OKLCH/P3 color syntax. */
        syntax: "<number>";
        inherits: false;
        initial-value: 6;
+   }
+
+   @property --install-icon-stack-scale {
+       syntax: "<number>";
+       inherits: false;
+       initial-value: 1;
    }
 
    @property --surface-button-scale {
@@ -450,7 +435,7 @@ modern wide-gamut OKLCH/P3 color syntax. */
 
    @property --rail-letter-active {
        syntax: "<number>";
-       inherits: false;
+       inherits: true;
        initial-value: 0;
    }
 
@@ -656,17 +641,21 @@ modern wide-gamut OKLCH/P3 color syntax. */
    }
 
    .install-copy-icon-stack {
+       --install-icon-stack-scale: 1;
        position: relative;
        display: grid;
-       width: 1.125rem;
-       height: 1.125rem;
+       width: 1.25rem;
+       height: 1.25rem;
        place-items: center;
+       scale: var(--install-icon-stack-scale);
+       transform: translateZ(0);
+       will-change: scale;
    }
 
    .install-copy-button svg {
        grid-area: 1 / 1;
-       width: 1.125rem;
-       height: 1.125rem;
+       width: 1.25rem;
+       height: 1.25rem;
        fill: none;
        stroke: currentColor;
        stroke-linecap: round;
@@ -677,9 +666,15 @@ modern wide-gamut OKLCH/P3 color syntax. */
            transform 180ms cubic-bezier(0.23, 1, 0.32, 1);
    }
 
+   .install-copy-icon {
+       margin-right: -3px;
+       margin-bottom: -3px;
+   }
+
    .install-copy-check-icon {
+       margin-bottom: -3px;
        opacity: 0;
-       transform: translateY(0.125rem) scale(0.82);
+       transform: translateY(0.125rem);
    }
 
    .install-copy-button[data-copied="true"] .install-copy-icon {
@@ -689,7 +684,7 @@ modern wide-gamut OKLCH/P3 color syntax. */
 
    .install-copy-button[data-copied="true"] .install-copy-check-icon {
        opacity: 1;
-       transform: translateY(0) scale(1);
+       transform: translateY(0);
    }
 
    .install-copy-button:active {
@@ -759,6 +754,8 @@ modern wide-gamut OKLCH/P3 color syntax. */
    }
 
    .masthead-social-links {
+       position: relative;
+       z-index: 2;
        display: flex;
        flex: 0 0 auto;
        align-items: center;
@@ -811,9 +808,11 @@ modern wide-gamut OKLCH/P3 color syntax. */
    }
 
    .social-icon-link {
-       display: inline-grid;
+       position: relative;
+       display: grid;
        width: 2.25rem;
        height: 2.25rem;
+       flex: 0 0 2.25rem;
        place-items: center;
        border: 1px solid var(--demo-border);
        border-radius: 9999px;
@@ -828,6 +827,9 @@ modern wide-gamut OKLCH/P3 color syntax. */
            transparent
        );
        backdrop-filter: blur(12px);
+       cursor: pointer;
+       text-decoration: none;
+       touch-action: manipulation;
        transition:
            color 180ms ease,
            background-color 180ms ease,
@@ -844,6 +846,7 @@ modern wide-gamut OKLCH/P3 color syntax. */
        width: 1rem;
        height: 1rem;
        fill: currentColor;
+       pointer-events: none;
    }
 
    .surface-panel {
@@ -897,13 +900,89 @@ modern wide-gamut OKLCH/P3 color syntax. */
        border-color: transparent !important;
    }
 
-   [data-demo="list"] > article {
-       align-items: center;
+   .vertical-element-list {
+       height: clamp(25rem, 56vh, 33rem);
    }
 
-   [data-demo="list"] > article > .mono-copy {
+   .vertical-element-row {
+       display: grid;
+       min-height: 7rem;
+       grid-template-columns: auto minmax(0, 1fr) auto;
+       align-items: center;
+       column-gap: 1rem;
+       padding: 1.125rem 1.25rem;
+   }
+
+   @media (min-width: 640px) {
+       .vertical-element-row {
+           min-height: 7.5rem;
+           column-gap: 1.125rem;
+           padding-inline: 1.5rem;
+       }
+   }
+
+   .vertical-element-body {
+       min-width: 0;
+   }
+
+   .vertical-element-title {
+       color: var(--demo-text-strong);
+       font-size: 0.9375rem;
+       font-weight: 560;
+       line-height: 1.45;
+   }
+
+   .vertical-element-summary {
+       margin-top: 0.25rem;
+       max-width: 36rem;
+       color: var(--demo-text-muted);
+       font-size: 0.875rem;
+       line-height: 1.45;
+   }
+
+   .vertical-element-meta {
+       display: flex;
+       flex-wrap: wrap;
+       gap: 0.25rem 0.75rem;
+       margin-top: 0.625rem;
+       color: var(--demo-text-soft);
+       font-size: 0.75rem;
+       line-height: 1.35;
+   }
+
+   .vertical-element-card {
+       position: relative;
+       display: grid;
+       width: 2.625rem;
+       height: 3.5rem;
+       flex: 0 0 auto;
+       place-items: center;
+       border: 1px solid
+           color-mix(
+               in oklab,
+               var(--demo-accent-text) 28%,
+               var(--demo-border) 72%
+           );
+       border-radius: 0.375rem;
+       color: var(--demo-accent-text);
+       background: color-mix(
+           in oklab,
+           var(--demo-accent-text) 8%,
+           transparent
+       );
+       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+       font-size: 1.0625rem;
+       font-weight: 650;
+       line-height: 1;
+       letter-spacing: 0.02em;
+   }
+
+   .vertical-element-id {
        align-self: center;
        margin-left: auto;
+       color: var(--demo-text-soft);
+       font-size: 0.75rem;
+       line-height: 1.35;
        text-align: right;
    }
 
@@ -1248,7 +1327,7 @@ modern wide-gamut OKLCH/P3 color syntax. */
        bottom: calc(-0.28em + 18px);
        left: 0.35rem;
        z-index: -1;
-       color: var(--demo-accent-text);
+       color: var(--demo-text-primary);
        font-family:
            "Climate Crisis", "Arial Black", Impact, ui-sans-serif,
            system-ui, sans-serif;
@@ -1265,6 +1344,31 @@ modern wide-gamut OKLCH/P3 color syntax. */
    .rail-card[aria-selected="true"] .rail-card-initial {
        --rail-letter-active: 1;
        --rail-letter-scale: 1.08;
+       color: var(--demo-accent-text);
+   }
+
+   html[data-rail-letter-layers="true"] .rail-card-initial {
+       color: transparent;
+       opacity: 1;
+   }
+
+   html[data-rail-letter-layers="true"] .rail-card-initial::before,
+   html[data-rail-letter-layers="true"] .rail-card-initial::after {
+       content: attr(data-rail-letter);
+       position: absolute;
+       inset: 0 auto auto 0;
+       pointer-events: none;
+       will-change: opacity;
+   }
+
+   html[data-rail-letter-layers="true"] .rail-card-initial::before {
+       color: var(--demo-text-primary);
+       opacity: calc(0.12 - var(--rail-letter-active) * 0.12);
+   }
+
+   html[data-rail-letter-layers="true"] .rail-card-initial::after {
+       color: var(--demo-accent-text);
+       opacity: var(--rail-letter-active);
    }
 
    .rail-card-label {
@@ -1591,6 +1695,10 @@ modern wide-gamut OKLCH/P3 color syntax. */
    .edge-toggle-gradient-stop {
        --edge-toggle-active: 0;
        --edge-toggle-hover: 0;
+       stop-color: var(--demo-text-muted);
+   }
+
+   .edge-toggle-button[aria-pressed="true"] .edge-toggle-gradient-stop {
        stop-color: var(--demo-accent-text);
    }
 
@@ -1600,9 +1708,9 @@ modern wide-gamut OKLCH/P3 color syntax. */
 
    .edge-toggle-gradient-tip {
        stop-opacity: calc(
-           0.72 + var(--edge-toggle-active) * 0.28 +
+           0.22 + var(--edge-toggle-active) * 0.78 +
                (1 - var(--edge-toggle-active)) *
-               var(--edge-toggle-hover) * 0.08
+               var(--edge-toggle-hover) * 0.1
        );
    }
 

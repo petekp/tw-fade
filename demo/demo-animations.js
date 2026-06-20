@@ -26,6 +26,13 @@ const spring = {
         mass: 0.9,
         restDelta: 0.001,
     },
+    installIcon: {
+        type: "spring",
+        stiffness: 650,
+        damping: 22,
+        mass: 0.55,
+        restDelta: 0.001,
+    },
     surface: {
         type: "spring",
         stiffness: 520,
@@ -256,6 +263,117 @@ if (!prefersReducedMotion) {
         };
     }
 
+    function initWaveBackground() {
+        const field = document.querySelector("[data-demo-wave-field]");
+        const pattern = document.querySelector(
+            "[data-demo-wave-pattern]",
+        );
+        const path = document.querySelector("[data-demo-wave-path]");
+        const scroller = document.body;
+        if (!field || !pattern || !path || !scroller) return;
+
+        const params = {
+            amplitudeTop: 26,
+            amplitudeBottom: 74,
+            wavelengthTop: 386,
+            wavelengthBottom: 160,
+            cycles: 3,
+            spacing: 128,
+            columns: 1,
+            stagger: false,
+        };
+        const round = (value) => Number(value.toFixed(3));
+        const lerp = (from, to, amount) =>
+            from + (to - from) * amount;
+        const currentScrollProgress = () => {
+            const max = scroller.scrollHeight - scroller.clientHeight;
+            return max > 0
+                ? Math.min(
+                      1,
+                      Math.max(0, scroller.scrollTop / max),
+                  )
+                : 0;
+        };
+        const buildWave = (amplitude, wavelength) => {
+            const halfWave = wavelength / 2;
+            const segmentCount = 2 * Math.round(params.cycles);
+            const columnCount = Math.round(params.columns);
+            const tileWidth =
+                Math.round(params.spacing) * columnCount;
+            const tileHeight =
+                Math.round(params.cycles) * wavelength;
+            let d = "";
+
+            for (let column = 0; column < columnCount; column += 1) {
+                const centerX =
+                    params.spacing * column + params.spacing / 2;
+                const initialSign =
+                    params.stagger && column % 2 === 1 ? -1 : 1;
+                d += `M${round(centerX)} 0`;
+                d += `C${round(centerX + initialSign * amplitude)} ${round(0.25 * halfWave)} ${round(centerX + initialSign * amplitude)} ${round(0.75 * halfWave)} ${round(centerX)} ${round(halfWave)}`;
+
+                for (
+                    let segment = 1;
+                    segment < segmentCount;
+                    segment += 1
+                ) {
+                    const sign =
+                        initialSign *
+                        (segment % 2 === 0 ? 1 : -1);
+                    d += `S${round(centerX + sign * amplitude)} ${round(segment * halfWave + 0.75 * halfWave)} ${round(centerX)} ${round((segment + 1) * halfWave)}`;
+                }
+            }
+
+            return { d, tileWidth, tileHeight };
+        };
+
+        let lastKey = "";
+        let lastProgress = -1;
+        const render = () => {
+            const progress = currentScrollProgress();
+            if (Math.abs(progress - lastProgress) < 0.001) return;
+            lastProgress = progress;
+
+            const amplitude = lerp(
+                params.amplitudeTop,
+                params.amplitudeBottom,
+                progress,
+            );
+            const wavelength = Math.round(
+                lerp(
+                    params.wavelengthTop,
+                    params.wavelengthBottom,
+                    progress,
+                ),
+            );
+            const wave = buildWave(amplitude, wavelength);
+            const key = `${wave.tileWidth}:${wave.tileHeight}:${wave.d}`;
+            if (key === lastKey) return;
+
+            pattern.setAttribute("width", String(wave.tileWidth));
+            pattern.setAttribute("height", String(wave.tileHeight));
+            path.setAttribute("d", wave.d);
+            lastKey = key;
+        };
+
+        let pending = false;
+        const queueRender = () => {
+            if (pending) return;
+            pending = true;
+            requestAnimationFrame(() => {
+                pending = false;
+                render();
+            });
+        };
+
+        render();
+        document.documentElement.dataset.waveField = "svg";
+        scroller.addEventListener("scroll", queueRender, {
+            passive: true,
+        });
+        window.addEventListener("resize", queueRender);
+    }
+
     function initScrollAwareGraphic() {
         const rows = document.querySelector(".scroll-aware-rows");
         const topFade = document.querySelector(
@@ -346,8 +464,7 @@ if (!prefersReducedMotion) {
         const curve = document.querySelector(".eased-curve-active");
         if (!curve) return;
 
-        const length = 506;
-        const sampleCount = 120;
+        const sampleCount = 240;
         const springStep = (value) => {
             const t = Math.min(1, Math.max(0, value));
             const tension = 7;
@@ -357,29 +474,73 @@ if (!prefersReducedMotion) {
                 1 - Math.exp(-tension) * (1 + tension);
             return response / responseMax;
         };
-        const windowedSpeed = (progress) => {
-            const enter = springStep((progress - 0.16) / 0.1);
-            const exit = springStep((progress - 0.5) / 0.14);
-            return 1 + 1.7 * enter * (1 - exit);
+        const smoothSpeeds = (speeds) => {
+            let next = speeds;
+            for (let pass = 0; pass < 5; pass += 1) {
+                next = next.map((speed, index) => {
+                    const previous = next[index - 1] ?? speed;
+                    const following = next[index + 1] ?? speed;
+                    return (previous + speed * 2 + following) / 4;
+                });
+            }
+            return next;
         };
+        const speedForSlope = (slope) => {
+            const easedSlope = Math.sin(
+                Math.max(-1, Math.min(1, slope)) * (Math.PI / 2),
+            );
+            return Math.max(0.64, 1 + easedSlope * 0.72);
+        };
+        const buildSlopeAwareKeyframes = () => {
+            const length = curve.getTotalLength();
+            const dashLength = Math.min(76, length * 0.2);
+            const distances = Array.from(
+                { length: sampleCount + 1 },
+                (_, index) => (length * index) / sampleCount,
+            );
+            const tangentWindow = Math.max(2, length / sampleCount);
+            const speeds = smoothSpeeds(
+                distances.map((distance) => {
+                    const before = curve.getPointAtLength(
+                        Math.max(0, distance - tangentWindow),
+                    );
+                    const after = curve.getPointAtLength(
+                        Math.min(length, distance + tangentWindow),
+                    );
+                    const dx = after.x - before.x;
+                    const dy = after.y - before.y;
+                    const tangentLength = Math.hypot(dx, dy) || 1;
+                    return speedForSlope(dy / tangentLength);
+                }),
+            );
+            const times = [0];
+            let totalTime = 0;
 
-        let progress = 0;
-        const progressSamples = [0];
-        for (let index = 1; index <= sampleCount; index += 1) {
-            progress += windowedSpeed(progress) / sampleCount;
-            progressSamples.push(progress);
-        }
+            for (let index = 1; index < distances.length; index += 1) {
+                const distance =
+                    distances[index] - distances[index - 1];
+                const speed =
+                    (speeds[index - 1] + speeds[index]) / 2;
+                totalTime += distance / speed;
+                times.push(totalTime);
+            }
 
-        const scale =
-            progressSamples[progressSamples.length - 1] || 1;
-        const keyframes = progressSamples.map((sample, index) => ({
-            offset: index / sampleCount,
-            strokeDashoffset: `${(-Math.min(1, sample / scale) * length).toFixed(3)}px`,
-        }));
+            const gapLength = Math.max(0, length - dashLength);
+            curve.style.strokeDasharray = `${dashLength.toFixed(3)} ${gapLength.toFixed(3)}`;
+
+            return distances.map((distance, index) => ({
+                offset:
+                    index === distances.length - 1
+                        ? 1
+                        : times[index] / totalTime,
+                strokeDashoffset: `${(-distance).toFixed(3)}px`,
+            }));
+        };
+        const keyframes = buildSlopeAwareKeyframes();
 
         curve.style.strokeDashoffset = "0px";
         curve.animate(keyframes, {
-            duration: 4300,
+            duration: 3200,
             easing: "linear",
             iterations: Infinity,
         });
@@ -579,6 +740,7 @@ if (!prefersReducedMotion) {
     }
 
     initCopySweep();
+    initWaveBackground();
     initScrollAwareGraphic();
     initEasedCurveGraphic();
     initComposableGraphic();
