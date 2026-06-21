@@ -190,7 +190,7 @@ modern wide-gamut OKLCH/P3 color syntax. */
 }
 
 html[data-surface] {
-    --demo-wave-fallback: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'128'%20height%3D'1158'%20viewBox%3D'0%200%20128%201158'%3E%3Cpath%20d%3D'M64%200C90%2048.25%2090%20144.75%2064%20193S38%20337.75%2064%20386S90%20530.75%2064%20579S38%20723.75%2064%20772S90%20916.75%2064%20965S38%201109.75%2064%201158'%20fill%3D'none'%20stroke%3D'%23ffffff'%20stroke-opacity%3D'0.065'%20stroke-width%3D'1.25'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%20shape-rendering%3D'geometricPrecision'%2F%3E%3C%2Fsvg%3E");
+    --demo-wave-fallback: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'128'%20height%3D'1629'%20viewBox%3D'0%200%20128%201629'%3E%3Cpath%20d%3D'M64%200C124%2067.875%20124%20203.625%2064%20271.5S4%20475.125%2064%20543S124%20746.625%2064%20814.5S4%201018.125%2064%201086S124%201289.625%2064%201357.5S4%201561.125%2064%201629'%20fill%3D'none'%20stroke%3D'%23ffffff'%20stroke-opacity%3D'0.075'%20stroke-width%3D'1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%20shape-rendering%3D'geometricPrecision'%2F%3E%3C%2Fsvg%3E");
 
     /* Color for the stepped wave-strip fills. Matches the white wave strokes
        on every (dark) surface; overridable per theme for a tinted gradation. */
@@ -215,7 +215,7 @@ html[data-surface] body::before {
     pointer-events: none;
     background-image: var(--demo-wave-fallback);
     background-repeat: repeat;
-    background-size: 128px 1158px;
+    background-size: 128px 1629px;
     opacity: 1;
     transform: translate3d(0, 0, 0);
     will-change: transform;

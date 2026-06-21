@@ -11,17 +11,33 @@ const root = path.resolve(__dirname, '..')
 const demoDir = path.join(root, 'demo')
 
 // The OG card reuses the live masthead verbatim: the page's compiled Tailwind
-// (styles.css) and its inline <style> block are inlined so the wordmark depth
-// stack, eyebrow, tokens, and wave background render byte-identically to the
-// real hero — no hand-maintained approximation to drift out of sync.
-const indexHtml = await fs.readFile(path.join(demoDir, 'index.html'), 'utf8')
-const inlineStyleRaw = indexHtml.match(/<style>([\s\S]*?)<\/style>/)[1]
+// (styles.css) and the hand-authored demo styles (demo.css) are inlined so the
+// wordmark depth stack, eyebrow, tokens, and wave background render
+// byte-identically to the real hero — no approximation to drift out of sync.
+// The wave (stroke lines + stepped fill gradation) is produced by the REAL
+// runtime: the live wave-field markup and demo-animations.js are embedded, so
+// buildStrips paints the exact same gradation the demo shows at the top of the
+// page (scroll progress 0 → top wave). This runs at build time inside Chromium;
+// the emitted PNG is still static.
 const stylesCss = await fs.readFile(path.join(demoDir, 'styles.css'), 'utf8')
+const demoCss = await fs.readFile(path.join(demoDir, 'demo.css'), 'utf8')
+const demoJs = await fs.readFile(path.join(demoDir, 'demo-animations.js'), 'utf8')
 
-// The OG card shows the wave background statically (the scroll-driven morph JS
-// never runs here), so bump the wave stroke opacity +15% (0.065 -> 0.075) for a
-// touch more presence. OG-only — the live page's inline style is untouched.
-const inlineStyle = inlineStyleRaw.replace("stroke-opacity%3D'0.065'", "stroke-opacity%3D'0.075'")
+// The live wave-field SVG (defs/pattern/strips/rect), copied verbatim from
+// index.html. demo-animations.js populates the pattern path + strips group and
+// flips html[data-wave-field="svg"], which reveals this field and hides the
+// stroke-only body::before fallback.
+const waveField = `<div class="demo-wave-field" data-demo-wave-field aria-hidden="true">
+      <svg class="demo-wave-svg" focusable="false">
+        <defs>
+          <pattern id="demo-wave-pattern" data-demo-wave-pattern patternUnits="userSpaceOnUse" width="128" height="1629">
+            <path data-demo-wave-path fill="none" stroke="#ffffff" stroke-opacity="0.075" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" shape-rendering="geometricPrecision" vector-effect="non-scaling-stroke" />
+          </pattern>
+        </defs>
+        <g class="demo-wave-strips" data-demo-wave-strips></g>
+        <rect width="100%" height="100%" fill="url(#demo-wave-pattern)" />
+      </svg>
+    </div>`
 
 const bayer8 = [
   [0, 48, 12, 60, 3, 51, 15, 63],
@@ -127,7 +143,7 @@ function ogDocument() {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Climate+Crisis&display=swap" rel="stylesheet" />
     <style>${stylesCss}</style>
-    <style>${inlineStyle}</style>
+    <style>${demoCss}</style>
     <style>
       /* OG frame: fixed 1200x630, masthead left-aligned to match the live hero.
          Note the page body's fade-y mask is deliberately omitted here — at a
@@ -162,6 +178,7 @@ function ogDocument() {
     </style>
   </head>
   <body class="antialiased">
+    ${waveField}
     <div class="og-frame">
       <div class="masthead-lockup">
         ${heroEyebrow}
@@ -169,6 +186,7 @@ function ogDocument() {
       </div>
       <p class="og-tagline text-balance text-neutral-300/85">Elegant, scroll-driven edge masking. One class. Zero JavaScript.</p>
     </div>
+    <script>${demoJs}</script>
   </body>
 </html>`
 }
@@ -210,9 +228,16 @@ async function renderPng(browser, html, size, outPath) {
 // Render the 1200x630 OG card at 2x then downscale, so the Climate Crisis
 // display face stays crisp. Downscale uses macOS `sips`.
 async function renderOgPng(browser, html, outPath) {
-  const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 2 })
+  // reducedMotion 'no-preference' guarantees demo-animations.js runs its inits
+  // (it bails under prefers-reduced-motion), so the wave field + gradation build.
+  const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 2, reducedMotion: 'no-preference' })
   await page.setContent(html, { waitUntil: 'networkidle' })
   await page.evaluate(() => document.fonts?.ready)
+  // Wait for the real runtime to paint the stepped fill strips (the gradation).
+  await page.waitForFunction(
+    () => (document.querySelector('[data-demo-wave-strips]')?.childElementCount ?? 0) > 0,
+    { timeout: 5000 },
+  )
   await page.waitForTimeout(200)
   const hiRes = outPath.replace(/\.png$/, '@2x.png')
   await page.screenshot({ path: hiRes, type: 'png' })
