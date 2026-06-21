@@ -262,6 +262,9 @@ if (!prefersReducedMotion) {
     const scroller = document.body;
     if (!field || !pattern || !path || !scroller) return;
 
+    // The OG card renders this wave statically and overrides the scroll-morph
+    // geometry via window.__demoWaveParams (set before this script runs); the
+    // live page leaves it unset and uses these defaults.
     const params = {
       amplitudeTop: 60,
       amplitudeBottom: 28,
@@ -271,17 +274,18 @@ if (!prefersReducedMotion) {
       spacing: 128,
       columns: 1,
       stagger: false,
+      ...(window.__demoWaveParams || {}),
     };
 
     // Stepped per-strip fill (tuned in wave-lab.html): every band between wave
     // lines gets ONE flat shade, stepping across the screen along `angle`.
     // Color comes from --demo-wave-fill (CSS); only opacity is set per strip.
     const fill = {
-      angle: 0,
-      opacityStart: 0.07,
+      angle: 180,
+      opacityStart: 0.122,
       opacityEnd: 0.0,
       offsetStart: 0,
-      offsetEnd: 100,
+      offsetEnd: 77,
     };
 
     const round = (value) => Number(value.toFixed(3));

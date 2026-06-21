@@ -186,6 +186,14 @@ function ogDocument() {
       </div>
       <p class="og-tagline text-balance text-neutral-300/85">Elegant, scroll-driven edge masking. One class. Zero JavaScript.</p>
     </div>
+    <script>
+      // OG-only scroll-morph geometry. The card renders at scroll progress 0,
+      // so only the *Top* values affect it (amplitude 66, wavelength 605); the
+      // Bottom values are set for parity with the live params. demo-animations.js
+      // merges this over its defaults, so the OG wave is taller/longer than the
+      // live page's while sharing the same fill gradation.
+      window.__demoWaveParams = { amplitudeTop: 66, amplitudeBottom: 28, wavelengthTop: 605, wavelengthBottom: 402 }
+    </script>
     <script>${demoJs}</script>
   </body>
 </html>`
