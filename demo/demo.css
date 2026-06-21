@@ -907,7 +907,9 @@ h3 {
     outline: none;
     /* Snap so a row always settles on the center "reading band" rather than
        resting half-cut under the fade. proximity keeps free scrolling fluid
-       while still anchoring to the nearest row when the user lets go. */
+       while still anchoring to the nearest row when the user lets go. Keep this
+       a plain block scroller: a grid scroll container snaps mandatorily, which
+       would jerk small scrolls back to the top. */
     scroll-snap-type: y proximity;
 }
 
@@ -920,9 +922,13 @@ h3 {
     position: relative;
     isolation: isolate;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    /* Fixed leading column (sized in .lexicon-word's em so it tracks the
+       responsive word size) keeps the definition column aligned across rows
+       without subgrid — subgrid would make each row a grid item, which turns
+       the list's gentle proximity snap into hard per-row snapping. */
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    column-gap: 1.25rem;
+    column-gap: 1.5rem;
     width: 100%;
     min-height: 5.75rem;
     padding: 1.15rem 1.25rem;
@@ -994,20 +1000,23 @@ h3 {
     transform-origin: center;
 }
 
-.lexicon-term {
+.lexicon-word {
     position: relative;
     z-index: 1;
     grid-column: 1;
-    min-width: 0;
-}
-
-.lexicon-word {
-    display: block;
+    align-self: center;
+    /* Floor the word box at the widest entry ("Evanesce" ≈ 4.86em) so every
+       definition starts at the same x. em is relative to this element's own
+       font-size, so the column tracks the responsive clamp below. */
+    min-width: 5.25em;
     color: color-mix(in oklab, var(--demo-text-primary) 46%, transparent);
+    font-family: "Zalando Sans SemiExpanded", ui-sans-serif, system-ui,
+        sans-serif;
     font-size: clamp(1.75rem, 1.05rem + 2.6vw, 2.75rem);
     font-weight: 600;
     line-height: 1;
     letter-spacing: -0.02em;
+    white-space: nowrap;
     transform: scale(var(--lex-word-scale));
     transform-origin: left center;
     transition: color 200ms ease;
@@ -1015,9 +1024,9 @@ h3 {
 }
 
 .lexicon-def {
-    display: block;
-    margin-top: 0.5rem;
-    max-width: 34rem;
+    grid-column: 2;
+    align-self: center;
+    min-width: 0;
     color: var(--demo-text-soft);
     font-size: 0.875rem;
     line-height: 1.4;
@@ -1030,7 +1039,7 @@ h3 {
 .lexicon-index {
     position: relative;
     z-index: 1;
-    grid-column: 2;
+    grid-column: 3;
     align-self: center;
     justify-self: end;
     color: var(--demo-text-soft);

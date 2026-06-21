@@ -10,17 +10,23 @@ const page = await browser.newPage({ viewport: { width: 1200, height: 1400 }, de
 await page.goto(demo, { waitUntil: 'networkidle' })
 await page.waitForTimeout(150)
 
-async function probe(selector, { top, left } = {}) {
+async function probe(selector, { top, left, noSnap } = {}) {
   return page.evaluate(
-    async ([sel, scrollTop, scrollLeft]) => {
+    async ([sel, scrollTop, scrollLeft, disableSnap]) => {
       const el = document.querySelector(sel)
       if (!el) throw new Error(`Missing selector: ${sel}`)
+      // Some probes measure the fade as a pure function of scroll offset. Snap
+      // would pull a small programmatic scroll to the nearest row center, so the
+      // exact offset (and thus the partial fade) depends on row height rather
+      // than the plugin. Disable snap for those to test the ramp itself.
+      const prevSnap = el.style.scrollSnapType
+      if (disableSnap) el.style.scrollSnapType = 'none'
       if (scrollTop != null) el.scrollTop = scrollTop
       if (scrollLeft != null) el.scrollLeft = scrollLeft
       await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
       const cs = getComputedStyle(el)
       const num = (v) => Number(cs.getPropertyValue(v).trim() || 'NaN')
-      return {
+      const result = {
         className: el.className,
         scrollTop: el.scrollTop,
         scrollLeft: el.scrollLeft,
@@ -37,8 +43,10 @@ async function probe(selector, { top, left } = {}) {
         maskImage: cs.maskImage,
         maskComposite: cs.maskComposite || cs.webkitMaskComposite,
       }
+      if (disableSnap) el.style.scrollSnapType = prevSnap
+      return result
     },
-    [selector, top, left],
+    [selector, top, left, noSnap],
   )
 }
 
@@ -50,7 +58,10 @@ const listMax = listTop.maxScrollTop
 results.list_top = listTop
 results.list_mid = await probe('[data-demo="list"]', { top: Math.round(listMax / 2) })
 results.list_bottom = await probe('[data-demo="list"]', { top: listMax })
-results.list_quarter = await probe('[data-demo="list"]', { top: 25 })
+// Measure the fade ramp at a small offset with snap off: this asserts the
+// plugin reveals the top edge progressively, independent of where snap would
+// settle (which shifts with row height).
+results.list_quarter = await probe('[data-demo="list"]', { top: 25, noSnap: true })
 
 // 2. Horizontal tabs / chip rows.
 const railStart = await probe('[data-demo="rail"]', { left: 0 })
