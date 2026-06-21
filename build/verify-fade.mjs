@@ -2,19 +2,19 @@
  * verify-fade.mjs — pixel-level regression: does the mask ACTUALLY render visible
  * transparency, on BOTH axes and at the correct band width?
  *
- * verify.mjs / verify-dist.mjs only read the numeric `--sf-t/--sf-b` amounts —
+ * verify.mjs / verify-dist.mjs only read the numeric `--tw-fade-t/--tw-fade-b` amounts —
  * which were NEVER the broken part — so they stayed green straight through the
  * "only large fades" bug. This file rasters real panels in Chromium and samples
  * pixels, where the mask is baked into the bitmap. It covers:
  *
  *   1. vertical (fade-y), default size — top & bottom melt to background
  *   2. horizontal (fade-x), default size — left & right melt to background
- *   3. an overridden size (inline `--sf-size`, exactly what `fade-size-[120px]`
+ *   3. an overridden size (inline `--tw-fade-size`, exactly what `fade-size-[120px]`
  *      JIT-emits) — the fade band SCALES to the larger size, not the default
  *   4. a scoped edge size (`fade-size-b-lg`) — the bottom band scales without
  *      changing the top band
  *   5. nested isolation — a DEFAULT fade under an ancestor that sets a larger
- *      `--sf-size` still renders the DEFAULT band, proving the `@property`
+ *      `--tw-fade-size` still renders the DEFAULT band, proving the `@property`
  *      `inherits: false` registration stops size/range leaking down (the cascade fix)
  *   6. mixed individual edges (fade-t fade-r) — arbitrary edge utilities compose
  *   7. nested single edge under a faded ancestor — mask layers do not leak down
@@ -178,13 +178,13 @@ const hLeft = mean(hLum, 0, 12)
 const hMid = mean(hLum, Math.floor(hLum.length * 0.45), Math.floor(hLum.length * 0.55))
 const hRight = mean(hLum, hLum.length - 12, hLum.length)
 
-// 3. Overridden size. Inline `--sf-size: 120px` is exactly what Tailwind's JIT
+// 3. Overridden size. Inline `--tw-fade-size: 120px` is exactly what Tailwind's JIT
 //    emits for `fade-size-[120px]`; the band must scale to it, not collapse
-//    or stick at the default — the very thing an unset --sf-size used to break.
+//    or stick at the default — the very thing an unset --tw-fade-size used to break.
 const bigLum = await profileLine({
   axis: 'y',
   innerSelector: '#big',
-  body: `<div id="big" data-scroll class="fade-y panel-v" style="--sf-size: 120px">${blocks('vb', 40)}</div>`,
+  body: `<div id="big" data-scroll class="fade-y panel-v" style="--tw-fade-size: 120px">${blocks('vb', 40)}</div>`,
 })
 const bigCross = crossing(bigLum)
 
@@ -197,14 +197,14 @@ const scopedLum = await profileLine({
 const scopedTopCross = crossing(scopedLum)
 const scopedBottomCross = crossing([...scopedLum].reverse())
 
-// 5. Nested isolation. An ancestor sets a larger --sf-size (as a fade-size-*
+// 5. Nested isolation. An ancestor sets a larger --tw-fade-size (as a fade-size-*
 //    ancestor would); the inner DEFAULT fade must render the DEFAULT band. If
-//    --sf-size still inherited, the inner band would balloon to ~120px. The
+//    --tw-fade-size still inherited, the inner band would balloon to ~120px. The
 //    @property `inherits: false` registration is what prevents the leak.
 const nestLum = await profileLine({
   axis: 'y',
   innerSelector: '#inner',
-  body: `<div style="--sf-size: 120px; --sf-range: 96px"><div id="inner" data-scroll class="fade-y panel-v">${blocks('vb', 40)}</div></div>`,
+  body: `<div style="--tw-fade-size: 120px; --tw-fade-range: 96px"><div id="inner" data-scroll class="fade-y panel-v">${blocks('vb', 40)}</div></div>`,
 })
 const nestCross = crossing(nestLum)
 

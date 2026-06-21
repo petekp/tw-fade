@@ -267,13 +267,13 @@ automatically becomes a matching utility.
    the scroll container. Layers composite with `mask-composite: intersect`, and
    unset edges fall back to an opaque identity layer that never clips — which is
    what makes the edges independently composable.
-2. **A numeric amount per edge.** `--sf-t/-b/-l/-r` are registered
+2. **A numeric amount per edge.** `--tw-fade-t/-b/-l/-r` are registered
    `@property … <number>` values in `[0, 1]`: `0` = no fade, `1` = full fade. The
    amount scales **both** the gradient's length and its alpha, so the reveal is
    pixel-faithful to the source component's `scaleY` + `opacity` animation.
 3. **Scroll-gating is the timeline.** `animation-timeline: scroll(self y)` (or
    `scroll(self x)` for horizontal edges) drives each amount across a fixed scroll
-   window (`--sf-range`). Leading edges reveal over the first range; trailing edges
+   window (`--tw-fade-range`). Leading edges reveal over the first range; trailing edges
    hide over the last. Because the amount is a typed `<number>`, the browser
    interpolates it smoothly. The axis is **physical** (`y`/`x`), matching the
    physical mask gradients, so the fade stays correct under any writing mode.

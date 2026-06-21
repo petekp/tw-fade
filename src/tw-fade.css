@@ -1,88 +1,88 @@
 /* tw-fade — CSS scroll-edge fade masking for Tailwind v4. MIT · github.com/petekp/tw-fade */
 
 /* Amounts: keep <number> so scroll animation interpolates them; initial 0 = no fade. */
-@property --sf-t {
+@property --tw-fade-t {
     syntax: "<number>";
     inherits: false;
     initial-value: 0;
 }
-@property --sf-b {
+@property --tw-fade-b {
     syntax: "<number>";
     inherits: false;
     initial-value: 0;
 }
-@property --sf-l {
+@property --tw-fade-l {
     syntax: "<number>";
     inherits: false;
     initial-value: 0;
 }
-@property --sf-r {
+@property --tw-fade-r {
     syntax: "<number>";
     inherits: false;
     initial-value: 0;
 }
 /* Config: keep "*" with NO initial-value — a typed <length> rejects the rem initial, dropping the registration (fade collapses); inherits:false stops size and mask-layer declarations leaking into nested fades. */
-@property --sf-size {
+@property --tw-fade-size {
     syntax: "*";
     inherits: false;
 }
-@property --sf-size-y {
+@property --tw-fade-size-y {
     syntax: "*";
     inherits: false;
 }
-@property --sf-size-x {
+@property --tw-fade-size-x {
     syntax: "*";
     inherits: false;
 }
-@property --sf-size-t {
+@property --tw-fade-size-t {
     syntax: "*";
     inherits: false;
 }
-@property --sf-size-b {
+@property --tw-fade-size-b {
     syntax: "*";
     inherits: false;
 }
-@property --sf-size-l {
+@property --tw-fade-size-l {
     syntax: "*";
     inherits: false;
 }
-@property --sf-size-r {
+@property --tw-fade-size-r {
     syntax: "*";
     inherits: false;
 }
-@property --sf-range {
+@property --tw-fade-range {
     syntax: "*";
     inherits: false;
 }
-@property --sf-clear-t {
+@property --tw-fade-clear-t {
     syntax: "*";
     inherits: false;
 }
-@property --sf-clear-b {
+@property --tw-fade-clear-b {
     syntax: "*";
     inherits: false;
 }
-@property --sf-clear-l {
+@property --tw-fade-clear-l {
     syntax: "*";
     inherits: false;
 }
-@property --sf-clear-r {
+@property --tw-fade-clear-r {
     syntax: "*";
     inherits: false;
 }
-@property --sf-mask-t {
+@property --tw-fade-mask-t {
     syntax: "*";
     inherits: false;
 }
-@property --sf-mask-b {
+@property --tw-fade-mask-b {
     syntax: "*";
     inherits: false;
 }
-@property --sf-mask-l {
+@property --tw-fade-mask-l {
     syntax: "*";
     inherits: false;
 }
-@property --sf-mask-r {
+@property --tw-fade-mask-r {
     syntax: "*";
     inherits: false;
 }
@@ -114,126 +114,126 @@
     --fade-clear-4xl: calc(var(--spacing, 0.25rem) * 40);
 }
 
-@keyframes sf-reveal-t {
+@keyframes tw-fade-reveal-t {
     from {
-        --sf-t: 0;
+        --tw-fade-t: 0;
     }
     to {
-        --sf-t: 1;
+        --tw-fade-t: 1;
     }
 }
-@keyframes sf-reveal-b {
+@keyframes tw-fade-reveal-b {
     from {
-        --sf-b: 1;
+        --tw-fade-b: 1;
     }
     to {
-        --sf-b: 0;
+        --tw-fade-b: 0;
     }
 }
-@keyframes sf-reveal-l {
+@keyframes tw-fade-reveal-l {
     from {
-        --sf-l: 0;
+        --tw-fade-l: 0;
     }
     to {
-        --sf-l: 1;
+        --tw-fade-l: 1;
     }
 }
-@keyframes sf-reveal-r {
+@keyframes tw-fade-reveal-r {
     from {
-        --sf-r: 1;
+        --tw-fade-r: 1;
     }
     to {
-        --sf-r: 0;
+        --tw-fade-r: 0;
     }
 }
 
 @utility fade-size-* {
-    --sf-size: --value(--fade-size-*, [length], [percentage]);
+    --tw-fade-size: --value(--fade-size-*, [length], [percentage]);
 }
 @utility fade-size-t-* {
-    --sf-size-t: --value(--fade-size-*, [length], [percentage]);
+    --tw-fade-size-t: --value(--fade-size-*, [length], [percentage]);
 }
 @utility fade-size-b-* {
-    --sf-size-b: --value(--fade-size-*, [length], [percentage]);
+    --tw-fade-size-b: --value(--fade-size-*, [length], [percentage]);
 }
 @utility fade-size-l-* {
-    --sf-size-l: --value(--fade-size-*, [length], [percentage]);
+    --tw-fade-size-l: --value(--fade-size-*, [length], [percentage]);
 }
 @utility fade-size-r-* {
-    --sf-size-r: --value(--fade-size-*, [length], [percentage]);
+    --tw-fade-size-r: --value(--fade-size-*, [length], [percentage]);
 }
 @utility fade-size-y-* {
-    --sf-size-y: --value(--fade-size-*, [length], [percentage]);
+    --tw-fade-size-y: --value(--fade-size-*, [length], [percentage]);
 }
 @utility fade-size-x-* {
-    --sf-size-x: --value(--fade-size-*, [length], [percentage]);
+    --tw-fade-size-x: --value(--fade-size-*, [length], [percentage]);
 }
 @utility fade-range-* {
-    --sf-range: --value(--fade-range-*, [length], [percentage]);
+    --tw-fade-range: --value(--fade-range-*, [length], [percentage]);
 }
 @utility fade-clear-t-* {
-    --sf-clear-t: calc(var(--spacing, 0.25rem) * --value(integer));
-    --sf-clear-t: --value(--fade-clear-*, [length], [percentage]);
+    --tw-fade-clear-t: calc(var(--spacing, 0.25rem) * --value(integer));
+    --tw-fade-clear-t: --value(--fade-clear-*, [length], [percentage]);
 }
 @utility fade-clear-b-* {
-    --sf-clear-b: calc(var(--spacing, 0.25rem) * --value(integer));
-    --sf-clear-b: --value(--fade-clear-*, [length], [percentage]);
+    --tw-fade-clear-b: calc(var(--spacing, 0.25rem) * --value(integer));
+    --tw-fade-clear-b: --value(--fade-clear-*, [length], [percentage]);
 }
 @utility fade-clear-l-* {
-    --sf-clear-l: calc(var(--spacing, 0.25rem) * --value(integer));
-    --sf-clear-l: --value(--fade-clear-*, [length], [percentage]);
+    --tw-fade-clear-l: calc(var(--spacing, 0.25rem) * --value(integer));
+    --tw-fade-clear-l: --value(--fade-clear-*, [length], [percentage]);
 }
 @utility fade-clear-r-* {
-    --sf-clear-r: calc(var(--spacing, 0.25rem) * --value(integer));
-    --sf-clear-r: --value(--fade-clear-*, [length], [percentage]);
+    --tw-fade-clear-r: calc(var(--spacing, 0.25rem) * --value(integer));
+    --tw-fade-clear-r: --value(--fade-clear-*, [length], [percentage]);
 }
 @utility fade-clear-y-* {
-    --sf-clear-t: calc(var(--spacing, 0.25rem) * --value(integer));
-    --sf-clear-t: --value(--fade-clear-*, [length], [percentage]);
-    --sf-clear-b: calc(var(--spacing, 0.25rem) * --value(integer));
-    --sf-clear-b: --value(--fade-clear-*, [length], [percentage]);
+    --tw-fade-clear-t: calc(var(--spacing, 0.25rem) * --value(integer));
+    --tw-fade-clear-t: --value(--fade-clear-*, [length], [percentage]);
+    --tw-fade-clear-b: calc(var(--spacing, 0.25rem) * --value(integer));
+    --tw-fade-clear-b: --value(--fade-clear-*, [length], [percentage]);
 }
 @utility fade-clear-x-* {
-    --sf-clear-l: calc(var(--spacing, 0.25rem) * --value(integer));
-    --sf-clear-l: --value(--fade-clear-*, [length], [percentage]);
-    --sf-clear-r: calc(var(--spacing, 0.25rem) * --value(integer));
-    --sf-clear-r: --value(--fade-clear-*, [length], [percentage]);
+    --tw-fade-clear-l: calc(var(--spacing, 0.25rem) * --value(integer));
+    --tw-fade-clear-l: --value(--fade-clear-*, [length], [percentage]);
+    --tw-fade-clear-r: calc(var(--spacing, 0.25rem) * --value(integer));
+    --tw-fade-clear-r: --value(--fade-clear-*, [length], [percentage]);
 }
 @utility fade-clear-xy-* {
-    --sf-clear-t: calc(var(--spacing, 0.25rem) * --value(integer));
-    --sf-clear-t: --value(--fade-clear-*, [length], [percentage]);
-    --sf-clear-b: calc(var(--spacing, 0.25rem) * --value(integer));
-    --sf-clear-b: --value(--fade-clear-*, [length], [percentage]);
-    --sf-clear-l: calc(var(--spacing, 0.25rem) * --value(integer));
-    --sf-clear-l: --value(--fade-clear-*, [length], [percentage]);
-    --sf-clear-r: calc(var(--spacing, 0.25rem) * --value(integer));
-    --sf-clear-r: --value(--fade-clear-*, [length], [percentage]);
+    --tw-fade-clear-t: calc(var(--spacing, 0.25rem) * --value(integer));
+    --tw-fade-clear-t: --value(--fade-clear-*, [length], [percentage]);
+    --tw-fade-clear-b: calc(var(--spacing, 0.25rem) * --value(integer));
+    --tw-fade-clear-b: --value(--fade-clear-*, [length], [percentage]);
+    --tw-fade-clear-l: calc(var(--spacing, 0.25rem) * --value(integer));
+    --tw-fade-clear-l: --value(--fade-clear-*, [length], [percentage]);
+    --tw-fade-clear-r: calc(var(--spacing, 0.25rem) * --value(integer));
+    --tw-fade-clear-r: --value(--fade-clear-*, [length], [percentage]);
 }
 @utility fade-clear-t-var {
-    --sf-clear-t: var(--fade-clear-t, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
+    --tw-fade-clear-t: var(--fade-clear-t, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
 }
 @utility fade-clear-b-var {
-    --sf-clear-b: var(--fade-clear-b, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
+    --tw-fade-clear-b: var(--fade-clear-b, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
 }
 @utility fade-clear-l-var {
-    --sf-clear-l: var(--fade-clear-l, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
+    --tw-fade-clear-l: var(--fade-clear-l, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
 }
 @utility fade-clear-r-var {
-    --sf-clear-r: var(--fade-clear-r, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
+    --tw-fade-clear-r: var(--fade-clear-r, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
 }
 @utility fade-clear-y-var {
-    --sf-clear-t: var(--fade-clear-t, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
-    --sf-clear-b: var(--fade-clear-b, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
+    --tw-fade-clear-t: var(--fade-clear-t, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
+    --tw-fade-clear-b: var(--fade-clear-b, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
 }
 @utility fade-clear-x-var {
-    --sf-clear-l: var(--fade-clear-l, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
-    --sf-clear-r: var(--fade-clear-r, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
+    --tw-fade-clear-l: var(--fade-clear-l, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
+    --tw-fade-clear-r: var(--fade-clear-r, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
 }
 @utility fade-clear-xy-var {
-    --sf-clear-t: var(--fade-clear-t, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
-    --sf-clear-b: var(--fade-clear-b, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
-    --sf-clear-l: var(--fade-clear-l, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
-    --sf-clear-r: var(--fade-clear-r, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
+    --tw-fade-clear-t: var(--fade-clear-t, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
+    --tw-fade-clear-b: var(--fade-clear-b, var(--fade-clear-y, var(--fade-clear-xy, 0px)));
+    --tw-fade-clear-l: var(--fade-clear-l, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
+    --tw-fade-clear-r: var(--fade-clear-r, var(--fade-clear-x, var(--fade-clear-xy, 0px)));
 }
 
 /* Keep shared defaults on public fade elements, not :root: root aliases would
@@ -247,203 +247,203 @@
     .fade-y,
     .fade-x,
     .fade-xy {
-        --sf-size-default: var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12));
-        --sf-range-active: var(--sf-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)));
+        --tw-fade-size-default: var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12));
+        --tw-fade-range-active: var(--tw-fade-range, var(--fade-range-md, calc(var(--spacing, 0.25rem) * 12)));
     }
 }
 
-/* Private (only @apply'd by fade-*). The gradient must live on the element so var(--sf-t) resolves per-element — a :root copy would bake in --sf-t:0. */
-@utility sf-mask {
+/* Private (only @apply'd by fade-*). The gradient must live on the element so var(--tw-fade-t) resolves per-element — a :root copy would bake in --tw-fade-t:0. */
+@utility tw-fade-mask {
     mask-image:
-        var(--sf-mask-t, linear-gradient(#000, #000)),
-        var(--sf-mask-b, linear-gradient(#000, #000)),
-        var(--sf-mask-l, linear-gradient(#000, #000)),
-        var(--sf-mask-r, linear-gradient(#000, #000));
+        var(--tw-fade-mask-t, linear-gradient(#000, #000)),
+        var(--tw-fade-mask-b, linear-gradient(#000, #000)),
+        var(--tw-fade-mask-l, linear-gradient(#000, #000)),
+        var(--tw-fade-mask-r, linear-gradient(#000, #000));
     mask-composite: intersect;
     mask-repeat: no-repeat;
     mask-size: 100% 100%;
     @supports (animation-timeline: scroll()) {
         animation:
-            sf-reveal-t auto linear both,
-            sf-reveal-b auto linear both,
-            sf-reveal-l auto linear both,
-            sf-reveal-r auto linear both;
+            tw-fade-reveal-t auto linear both,
+            tw-fade-reveal-b auto linear both,
+            tw-fade-reveal-l auto linear both,
+            tw-fade-reveal-r auto linear both;
         animation-timeline:
             scroll(self y), scroll(self y), scroll(self x), scroll(self x);
         animation-range:
-            0 var(--sf-range-active),
-            calc(100% - var(--sf-range-active)) 100%,
-            0 var(--sf-range-active),
-            calc(100% - var(--sf-range-active)) 100%;
+            0 var(--tw-fade-range-active),
+            calc(100% - var(--tw-fade-range-active)) 100%,
+            0 var(--tw-fade-range-active),
+            calc(100% - var(--tw-fade-range-active)) 100%;
     }
     @supports not (animation-timeline: scroll()) {
-        --sf-t: 1;
-        --sf-b: 1;
-        --sf-l: 1;
-        --sf-r: 1;
+        --tw-fade-t: 1;
+        --tw-fade-b: 1;
+        --tw-fade-l: 1;
+        --tw-fade-r: 1;
     }
 }
-@utility sf-edge-t {
-    --sf-edge-size-t: var(--sf-size-t, var(--sf-size-y, var(--sf-size, var(--sf-size-default))));
-    --sf-edge-clear-t: var(--sf-clear-t, 0px);
-    --sf-edge-band-t: calc(var(--sf-edge-size-t) * var(--sf-t));
-    --sf-mask-t: linear-gradient(
+@utility tw-fade-edge-t {
+    --tw-fade-edge-size-t: var(--tw-fade-size-t, var(--tw-fade-size-y, var(--tw-fade-size, var(--tw-fade-size-default))));
+    --tw-fade-edge-clear-t: var(--tw-fade-clear-t, 0px);
+    --tw-fade-edge-band-t: calc(var(--tw-fade-edge-size-t) * var(--tw-fade-t));
+    --tw-fade-mask-t: linear-gradient(
         to bottom,
-        #000 0 var(--sf-edge-clear-t),
-        rgb(0 0 0 / calc(1 - var(--sf-t))) var(--sf-edge-clear-t),
-        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.983))
-            calc(var(--sf-edge-clear-t) + var(--sf-edge-band-t) * 0.08333),
-        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.933))
-            calc(var(--sf-edge-clear-t) + var(--sf-edge-band-t) * 0.16667),
-        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.854))
-            calc(var(--sf-edge-clear-t) + var(--sf-edge-band-t) * 0.25),
-        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.75))
-            calc(var(--sf-edge-clear-t) + var(--sf-edge-band-t) * 0.33333),
-        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.629))
-            calc(var(--sf-edge-clear-t) + var(--sf-edge-band-t) * 0.41667),
-        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.5))
-            calc(var(--sf-edge-clear-t) + var(--sf-edge-band-t) * 0.5),
-        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.371))
-            calc(var(--sf-edge-clear-t) + var(--sf-edge-band-t) * 0.58333),
-        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.25))
-            calc(var(--sf-edge-clear-t) + var(--sf-edge-band-t) * 0.66667),
-        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.146))
-            calc(var(--sf-edge-clear-t) + var(--sf-edge-band-t) * 0.75),
-        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.067))
-            calc(var(--sf-edge-clear-t) + var(--sf-edge-band-t) * 0.83333),
-        rgb(0 0 0 / calc(1 - var(--sf-t) * 0.017))
-            calc(var(--sf-edge-clear-t) + var(--sf-edge-band-t) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-edge-clear-t) + var(--sf-edge-band-t))
+        #000 0 var(--tw-fade-edge-clear-t),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-t))) var(--tw-fade-edge-clear-t),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-t) * 0.983))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-t) * 0.933))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-t) * 0.854))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-t) * 0.75))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-t) * 0.629))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-t) * 0.5))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-t) * 0.371))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-t) * 0.25))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-t) * 0.146))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-t) * 0.067))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-t) * 0.017))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t))
     );
 }
-@utility sf-edge-b {
-    --sf-edge-size-b: var(--sf-size-b, var(--sf-size-y, var(--sf-size, var(--sf-size-default))));
-    --sf-edge-clear-b: var(--sf-clear-b, 0px);
-    --sf-edge-band-b: calc(var(--sf-edge-size-b) * var(--sf-b));
-    --sf-mask-b: linear-gradient(
+@utility tw-fade-edge-b {
+    --tw-fade-edge-size-b: var(--tw-fade-size-b, var(--tw-fade-size-y, var(--tw-fade-size, var(--tw-fade-size-default))));
+    --tw-fade-edge-clear-b: var(--tw-fade-clear-b, 0px);
+    --tw-fade-edge-band-b: calc(var(--tw-fade-edge-size-b) * var(--tw-fade-b));
+    --tw-fade-mask-b: linear-gradient(
         to top,
-        #000 0 var(--sf-edge-clear-b),
-        rgb(0 0 0 / calc(1 - var(--sf-b))) var(--sf-edge-clear-b),
-        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.983))
-            calc(var(--sf-edge-clear-b) + var(--sf-edge-band-b) * 0.08333),
-        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.933))
-            calc(var(--sf-edge-clear-b) + var(--sf-edge-band-b) * 0.16667),
-        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.854))
-            calc(var(--sf-edge-clear-b) + var(--sf-edge-band-b) * 0.25),
-        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.75))
-            calc(var(--sf-edge-clear-b) + var(--sf-edge-band-b) * 0.33333),
-        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.629))
-            calc(var(--sf-edge-clear-b) + var(--sf-edge-band-b) * 0.41667),
-        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.5))
-            calc(var(--sf-edge-clear-b) + var(--sf-edge-band-b) * 0.5),
-        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.371))
-            calc(var(--sf-edge-clear-b) + var(--sf-edge-band-b) * 0.58333),
-        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.25))
-            calc(var(--sf-edge-clear-b) + var(--sf-edge-band-b) * 0.66667),
-        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.146))
-            calc(var(--sf-edge-clear-b) + var(--sf-edge-band-b) * 0.75),
-        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.067))
-            calc(var(--sf-edge-clear-b) + var(--sf-edge-band-b) * 0.83333),
-        rgb(0 0 0 / calc(1 - var(--sf-b) * 0.017))
-            calc(var(--sf-edge-clear-b) + var(--sf-edge-band-b) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-edge-clear-b) + var(--sf-edge-band-b))
+        #000 0 var(--tw-fade-edge-clear-b),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-b))) var(--tw-fade-edge-clear-b),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-b) * 0.983))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-b) * 0.933))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-b) * 0.854))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-b) * 0.75))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-b) * 0.629))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-b) * 0.5))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-b) * 0.371))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-b) * 0.25))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-b) * 0.146))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-b) * 0.067))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-b) * 0.017))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b))
     );
 }
-@utility sf-edge-l {
-    --sf-edge-size-l: var(--sf-size-l, var(--sf-size-x, var(--sf-size, var(--sf-size-default))));
-    --sf-edge-clear-l: var(--sf-clear-l, 0px);
-    --sf-edge-band-l: calc(var(--sf-edge-size-l) * var(--sf-l));
-    --sf-mask-l: linear-gradient(
+@utility tw-fade-edge-l {
+    --tw-fade-edge-size-l: var(--tw-fade-size-l, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))));
+    --tw-fade-edge-clear-l: var(--tw-fade-clear-l, 0px);
+    --tw-fade-edge-band-l: calc(var(--tw-fade-edge-size-l) * var(--tw-fade-l));
+    --tw-fade-mask-l: linear-gradient(
         to right,
-        #000 0 var(--sf-edge-clear-l),
-        rgb(0 0 0 / calc(1 - var(--sf-l))) var(--sf-edge-clear-l),
-        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.983))
-            calc(var(--sf-edge-clear-l) + var(--sf-edge-band-l) * 0.08333),
-        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.933))
-            calc(var(--sf-edge-clear-l) + var(--sf-edge-band-l) * 0.16667),
-        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.854))
-            calc(var(--sf-edge-clear-l) + var(--sf-edge-band-l) * 0.25),
-        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.75))
-            calc(var(--sf-edge-clear-l) + var(--sf-edge-band-l) * 0.33333),
-        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.629))
-            calc(var(--sf-edge-clear-l) + var(--sf-edge-band-l) * 0.41667),
-        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.5))
-            calc(var(--sf-edge-clear-l) + var(--sf-edge-band-l) * 0.5),
-        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.371))
-            calc(var(--sf-edge-clear-l) + var(--sf-edge-band-l) * 0.58333),
-        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.25))
-            calc(var(--sf-edge-clear-l) + var(--sf-edge-band-l) * 0.66667),
-        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.146))
-            calc(var(--sf-edge-clear-l) + var(--sf-edge-band-l) * 0.75),
-        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.067))
-            calc(var(--sf-edge-clear-l) + var(--sf-edge-band-l) * 0.83333),
-        rgb(0 0 0 / calc(1 - var(--sf-l) * 0.017))
-            calc(var(--sf-edge-clear-l) + var(--sf-edge-band-l) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-edge-clear-l) + var(--sf-edge-band-l))
+        #000 0 var(--tw-fade-edge-clear-l),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-l))) var(--tw-fade-edge-clear-l),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-l) * 0.983))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-l) * 0.933))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-l) * 0.854))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-l) * 0.75))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-l) * 0.629))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-l) * 0.5))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-l) * 0.371))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-l) * 0.25))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-l) * 0.146))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-l) * 0.067))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-l) * 0.017))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l))
     );
 }
-@utility sf-edge-r {
-    --sf-edge-size-r: var(--sf-size-r, var(--sf-size-x, var(--sf-size, var(--sf-size-default))));
-    --sf-edge-clear-r: var(--sf-clear-r, 0px);
-    --sf-edge-band-r: calc(var(--sf-edge-size-r) * var(--sf-r));
-    --sf-mask-r: linear-gradient(
+@utility tw-fade-edge-r {
+    --tw-fade-edge-size-r: var(--tw-fade-size-r, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))));
+    --tw-fade-edge-clear-r: var(--tw-fade-clear-r, 0px);
+    --tw-fade-edge-band-r: calc(var(--tw-fade-edge-size-r) * var(--tw-fade-r));
+    --tw-fade-mask-r: linear-gradient(
         to left,
-        #000 0 var(--sf-edge-clear-r),
-        rgb(0 0 0 / calc(1 - var(--sf-r))) var(--sf-edge-clear-r),
-        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.983))
-            calc(var(--sf-edge-clear-r) + var(--sf-edge-band-r) * 0.08333),
-        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.933))
-            calc(var(--sf-edge-clear-r) + var(--sf-edge-band-r) * 0.16667),
-        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.854))
-            calc(var(--sf-edge-clear-r) + var(--sf-edge-band-r) * 0.25),
-        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.75))
-            calc(var(--sf-edge-clear-r) + var(--sf-edge-band-r) * 0.33333),
-        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.629))
-            calc(var(--sf-edge-clear-r) + var(--sf-edge-band-r) * 0.41667),
-        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.5))
-            calc(var(--sf-edge-clear-r) + var(--sf-edge-band-r) * 0.5),
-        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.371))
-            calc(var(--sf-edge-clear-r) + var(--sf-edge-band-r) * 0.58333),
-        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.25))
-            calc(var(--sf-edge-clear-r) + var(--sf-edge-band-r) * 0.66667),
-        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.146))
-            calc(var(--sf-edge-clear-r) + var(--sf-edge-band-r) * 0.75),
-        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.067))
-            calc(var(--sf-edge-clear-r) + var(--sf-edge-band-r) * 0.83333),
-        rgb(0 0 0 / calc(1 - var(--sf-r) * 0.017))
-            calc(var(--sf-edge-clear-r) + var(--sf-edge-band-r) * 0.91667),
-        rgb(0 0 0 / 1) calc(var(--sf-edge-clear-r) + var(--sf-edge-band-r))
+        #000 0 var(--tw-fade-edge-clear-r),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-r))) var(--tw-fade-edge-clear-r),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-r) * 0.983))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-r) * 0.933))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-r) * 0.854))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-r) * 0.75))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-r) * 0.629))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-r) * 0.5))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-r) * 0.371))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-r) * 0.25))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-r) * 0.146))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-r) * 0.067))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-r) * 0.017))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r))
     );
 }
 
-/* Public utilities select mask layers; sf-mask owns the shared scroll animation so edge utilities compose. */
+/* Public utilities select mask layers; tw-fade-mask owns the shared scroll animation so edge utilities compose. */
 @utility fade-t {
-    @apply sf-mask sf-edge-t;
+    @apply tw-fade-mask tw-fade-edge-t;
 }
 @utility fade-b {
-    @apply sf-mask sf-edge-b;
+    @apply tw-fade-mask tw-fade-edge-b;
 }
 @utility fade-l {
-    @apply sf-mask sf-edge-l;
+    @apply tw-fade-mask tw-fade-edge-l;
 }
 @utility fade-r {
-    @apply sf-mask sf-edge-r;
+    @apply tw-fade-mask tw-fade-edge-r;
 }
 @utility fade-y {
-    @apply sf-mask sf-edge-t sf-edge-b;
+    @apply tw-fade-mask tw-fade-edge-t tw-fade-edge-b;
 }
 @utility fade-x {
-    @apply sf-mask sf-edge-l sf-edge-r;
+    @apply tw-fade-mask tw-fade-edge-l tw-fade-edge-r;
 }
 @utility fade-xy {
-    @apply sf-mask sf-edge-t sf-edge-b sf-edge-l sf-edge-r;
+    @apply tw-fade-mask tw-fade-edge-t tw-fade-edge-b tw-fade-edge-l tw-fade-edge-r;
 }
 
 /* !important so the static fade outranks the running animation (which itself outranks normal author decls); order-independent vs the edge utility. */
 @utility fade-static {
-    --sf-t: 1 !important;
-    --sf-b: 1 !important;
-    --sf-l: 1 !important;
-    --sf-r: 1 !important;
+    --tw-fade-t: 1 !important;
+    --tw-fade-b: 1 !important;
+    --tw-fade-l: 1 !important;
+    --tw-fade-r: 1 !important;
     animation-name: none;
 }

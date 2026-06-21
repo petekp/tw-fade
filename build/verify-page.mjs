@@ -54,10 +54,10 @@ const singleEdgeSpecimen = await page.evaluate(async () => {
   const cs = getComputedStyle(specimen)
   return {
     maskComposite: cs.maskComposite || cs.webkitMaskComposite,
-    hasMaskT: cs.getPropertyValue('--sf-mask-t').trim() !== '',
-    hasMaskB: cs.getPropertyValue('--sf-mask-b').trim() !== '',
-    hasMaskL: cs.getPropertyValue('--sf-mask-l').trim() !== '',
-    hasMaskR: cs.getPropertyValue('--sf-mask-r').trim() !== '',
+    hasMaskT: cs.getPropertyValue('--tw-fade-mask-t').trim() !== '',
+    hasMaskB: cs.getPropertyValue('--tw-fade-mask-b').trim() !== '',
+    hasMaskL: cs.getPropertyValue('--tw-fade-mask-l').trim() !== '',
+    hasMaskR: cs.getPropertyValue('--tw-fade-mask-r').trim() !== '',
   }
 })
 
@@ -94,7 +94,7 @@ await browser.close()
 const transparent = (c) => c === 'rgba(0, 0, 0, 0)' || c === 'transparent'
 
 const checks = [
-  ['demo build does not emit private .sf-mask utility', !/\.sf-mask\s*\{/.test(demoCss), '.sf-mask absent'],
+  ['demo build does not emit private .tw-fade-mask utility', !/\.tw-fade-mask\s*\{/.test(demoCss), '.tw-fade-mask absent'],
   [
     'demo build emits runtime single-edge utilities',
     missingDemoEdgeUtilities.length === 0,
