@@ -93,7 +93,7 @@ async function readPageState(page) {
       mastheadMarginLeft: masthead ? getComputedStyle(masthead).marginLeft : '',
       selectedRail: selected?.querySelector('.rail-card-label')?.textContent.trim() ?? '',
       recedeLeftFromRail: railRect && recedeRect ? Number((recedeRect.left - railRect.left).toFixed(2)) : null,
-      verticalRows: document.querySelectorAll('[data-demo="list"] article').length,
+      verticalRows: document.querySelectorAll('[data-demo="list"] .lexicon-row').length,
       advancedLabel: document.querySelector('[data-fade-option-label]')?.getAttribute('aria-label') ?? '',
       edgePressed: Array.from(document.querySelectorAll('[data-fade-edge-toggle]'))
         .map((button) => button.getAttribute('aria-pressed'))
@@ -209,8 +209,8 @@ async function smokePage(browser, options) {
     )
   }
   assert(state.verticalRows >= 5, `${label}: vertical list rendered`, String(state.verticalRows))
-  assert(state.advancedLabel === 'fade-xy fade-size-2xl fade-range-md', `${label}: advanced controls initialize class readout`, state.advancedLabel)
-  assert(state.edgePressed === 'true,true,true,true', `${label}: all edge toggles initialize on`, state.edgePressed)
+  assert(state.advancedLabel === 'fade-y fade-size-2xl fade-range-2xl', `${label}: advanced controls initialize class readout`, state.advancedLabel)
+  assert(state.edgePressed === 'true,false,true,false', `${label}: top and bottom edge toggles initialize on`, state.edgePressed)
   assert(state.easedLine && state.scrollAwareThumb && state.composableTokens >= 3, `${label}: key animated graphics rendered`)
   assert(state.documentOverflowX <= 1, `${label}: no document-level horizontal overflow`, String(state.documentOverflowX))
   assert(state.duplicateIdCount === 0, `${label}: no duplicate IDs`, String(state.duplicateIdCount))

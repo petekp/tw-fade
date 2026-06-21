@@ -173,13 +173,21 @@
                         />
                     </pattern>
                 </defs>
-                <rect width="100%" height="100%" fill="url(#demo-wave-pattern)" />
+                <g
+                    class="demo-wave-strips"
+                    data-demo-wave-strips
+                ></g>
+                <rect
+                    width="100%"
+                    height="100%"
+                    fill="url(#demo-wave-pattern)"
+                />
             </svg>
         </div>
 
         <main class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:py-16">
             <header
-                class="flex min-h-[75vh] max-w-[45rem] flex-col justify-center pb-12"
+                class="flex min-h-[75vh] max-w-[45rem] flex-col justify-center"
             >
                 <div class="masthead-lockup ml-4">
                     <div class="masthead-top-row">
@@ -475,7 +483,7 @@
                             class="install-copy-icon-stack"
                             aria-hidden="true"
                         >
-                            <svg class="install-copy-icon" viewBox="0 0 24 24">
+                            <svg class="install-copy-icon" viewBox="0 0 20 20">
                                 <rect
                                     x="8"
                                     y="8"
@@ -489,7 +497,7 @@
                             </svg>
                             <svg
                                 class="install-copy-check-icon"
-                                viewBox="0 0 24 24"
+                                viewBox="0 0 20 20"
                             >
                                 <path d="m5 12 4 4 10-10" />
                             </svg>
@@ -858,396 +866,283 @@
 
                         <div class="tuning-card overflow-hidden rounded-lg">
                             <div
-                                class="vertical-element-list fade-y thin-scroll overflow-y-auto divide-y divide-white/10"
+                                class="lexicon-list fade-y thin-scroll overflow-y-auto"
                                 data-demo="list"
+                                role="listbox"
+                                aria-label="Fade vocabulary"
                             >
-                                <article class="vertical-element-row">
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Dissolve</span>
+                                        <span class="lexicon-def"
+                                            >scatter softly until nothing is left</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-card select-none"
-                                        >Vp</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >01</span
                                     >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Vp - Vanishing Point
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            Defines the invisible target a row
-                                            moves toward as it leaves the
-                                            viewport, keeping exits soft without
-                                            blurring the readable center.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: geometry</span>
-                                            <span>Axis: y</span>
-                                            <span>Range: 5-8rem</span>
-                                        </div>
-                                    </div>
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Recede</span>
+                                        <span class="lexicon-def"
+                                            >draw back gently into the page</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#241</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >02</span
                                     >
-                                </article>
-                                <article class="vertical-element-row">
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Soften</span>
+                                        <span class="lexicon-def"
+                                            >let the hard edge give way</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-card select-none"
-                                        >Er</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >03</span
                                     >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Er - Edge Rehearsal
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            Calibrates the first pixels of the
-                                            mask so content is already fading
-                                            before it reaches the physical
-                                            border.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: boundary</span>
-                                            <span>Signal: top edge</span>
-                                            <span>Tolerance: 1px</span>
-                                        </div>
-                                    </div>
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Taper</span>
+                                        <span class="lexicon-def"
+                                            >thin to a whisper toward the edge</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#240</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >04</span
                                     >
-                                </article>
-                                <article class="vertical-element-row">
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Wane</span>
+                                        <span class="lexicon-def"
+                                            >diminish steadily, like a falling moon</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-card select-none"
-                                        >Ms</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >05</span
                                     >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Ms - Mask Sheet
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            The shared gradient layer that
-                                            carries icons, labels, and metadata
-                                            through one fade instead of letting
-                                            pieces separate.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: masking</span>
-                                            <span>Phase: unified</span>
-                                            <span>Output: alpha</span>
-                                        </div>
-                                    </div>
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Vanish</span>
+                                        <span class="lexicon-def"
+                                            >slip away without a trace</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#239</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >06</span
                                     >
-                                </article>
-                                <article class="vertical-element-row">
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Dim</span>
+                                        <span class="lexicon-def"
+                                            >lower the light a notch at a time</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-card select-none"
-                                        >Hl</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >07</span
                                     >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Hl - Horizon Line
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            The fully opaque band in the middle
-                                            of the scrollview where rows remain
-                                            crisp, stable, and untouched by the
-                                            edge fade.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: clarity</span>
-                                            <span>Core: 100%</span>
-                                            <span>Role: reading</span>
-                                        </div>
-                                    </div>
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="true"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Fade</span>
+                                        <span class="lexicon-def"
+                                            >surrender brightness by degrees</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#238</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >08</span
                                     >
-                                </article>
-                                <article class="vertical-element-row">
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Blur</span>
+                                        <span class="lexicon-def"
+                                            >trade focus for a quiet haze</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-card select-none"
-                                        >Fg</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >09</span
                                     >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Fg - Fog Gradient
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            Controls how quickly opacity falls
-                                            away from the horizon to
-                                            transparent; shallow slopes feel
-                                            quieter and more natural.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: opacity</span>
-                                            <span>Curve: eased</span>
-                                            <span>Depth: variable</span>
-                                        </div>
-                                    </div>
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Ghost</span>
+                                        <span class="lexicon-def"
+                                            >linger as a faint afterimage</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#237</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >10</span
                                     >
-                                </article>
-                                <article class="vertical-element-row">
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Evanesce</span>
+                                        <span class="lexicon-def"
+                                            >disappear like vapor in air</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-card select-none"
-                                        >Sh</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >11</span
                                     >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Sh - Shadow Handling
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            Keeps dark surfaces from
-                                            contaminating the fade by tying the
-                                            edge to the page surface instead of
-                                            a hard overlay.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: surface</span>
-                                            <span>Mode: neutral</span>
-                                            <span>Risk: muddy edges</span>
-                                        </div>
-                                    </div>
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Melt</span>
+                                        <span class="lexicon-def"
+                                            >lose your shape into the surround</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#236</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >12</span
                                     >
-                                </article>
-                                <article class="vertical-element-row">
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Diffuse</span>
+                                        <span class="lexicon-def"
+                                            >spread thin until evenly gone</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-card select-none"
-                                        >Fr</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >13</span
                                     >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Fr - Focus Recession
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            Lets focus rings and active
-                                            affordances pass through the same
-                                            mask, so keyboard state never floats
-                                            above faded content.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: interaction</span>
-                                            <span>Input: keyboard</span>
-                                            <span>Priority: accessible</span>
-                                        </div>
-                                    </div>
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Veil</span>
+                                        <span class="lexicon-def"
+                                            >soften behind a translucent screen</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#235</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >14</span
                                     >
-                                </article>
-                                <article class="vertical-element-row">
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Eclipse</span>
+                                        <span class="lexicon-def"
+                                            >slip into shadow at the margin</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-card select-none"
-                                        >Dw</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >15</span
                                     >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Dw - Drawer Wake
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            Applies the same edge logic to
-                                            sheets and drawers, where content
-                                            enters from a side but should not
-                                            look clipped.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: layout</span>
-                                            <span>Host: panels</span>
-                                            <span>Motion: entering</span>
-                                        </div>
-                                    </div>
+                                </button>
+                                <button
+                                    class="lexicon-row"
+                                    type="button"
+                                    role="option"
+                                    aria-selected="false"
+                                >
+                                    <span class="lexicon-term">
+                                        <span class="lexicon-word">Ebb</span>
+                                        <span class="lexicon-def"
+                                            >retreat like a tide from the shore</span
+                                        >
+                                    </span>
                                     <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#234</span
+                                        class="lexicon-index mono-copy select-none font-mono"
+                                        >16</span
                                     >
-                                </article>
-                                <article class="vertical-element-row">
-                                    <span
-                                        class="vertical-element-card select-none"
-                                        >Tm</span
-                                    >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Tm - Theme Medium
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            Adapts the fade to graphite, blue,
-                                            green, and red surfaces by reading
-                                            the active surface colors instead of
-                                            guessing.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: theming</span>
-                                            <span>Source: tokens</span>
-                                            <span>Accent: inherited</span>
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#233</span
-                                    >
-                                </article>
-                                <article class="vertical-element-row">
-                                    <span
-                                        class="vertical-element-card select-none"
-                                        >Tp</span
-                                    >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Tp - Top Fade
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            The leading mask stop that tells the
-                                            user there is content above without
-                                            putting a visible cap on the list.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: edge</span>
-                                            <span>Side: top</span>
-                                            <span>Stop: dynamic</span>
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#232</span
-                                    >
-                                </article>
-                                <article class="vertical-element-row">
-                                    <span
-                                        class="vertical-element-card select-none"
-                                        >Bt</span
-                                    >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Bt - Bottom Taper
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            The trailing mask stop that gives
-                                            the last visible row enough distance
-                                            to disappear before it meets the
-                                            frame.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: edge</span>
-                                            <span>Side: bottom</span>
-                                            <span>Falloff: soft</span>
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#231</span
-                                    >
-                                </article>
-                                <article class="vertical-element-row">
-                                    <span
-                                        class="vertical-element-card select-none"
-                                        >Nt</span
-                                    >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Nt - Neutral Tone
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            The default color channel for
-                                            inactive details, keeping quiet data
-                                            legible without competing with
-                                            accent states.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: color</span>
-                                            <span>Chroma: low</span>
-                                            <span>Contrast: steady</span>
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#230</span
-                                    >
-                                </article>
-                                <article class="vertical-element-row">
-                                    <span
-                                        class="vertical-element-card select-none"
-                                        >Gl</span
-                                    >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Gl - Glass Limit
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            Marks where refractive controls can
-                                            sit near the list without muddying
-                                            type in the readable region.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: material</span>
-                                            <span>Blur: bounded</span>
-                                            <span>Use: controls</span>
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#229</span
-                                    >
-                                </article>
-                                <article class="vertical-element-row">
-                                    <span
-                                        class="vertical-element-card select-none"
-                                        >St</span
-                                    >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            St - Sticky Threshold
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            Defines the offset where sticky
-                                            children stop participating in the
-                                            mask and become a stable reference
-                                            point.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: position</span>
-                                            <span>Mode: sticky</span>
-                                            <span>Boundary: explicit</span>
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#228</span
-                                    >
-                                </article>
-                                <article class="vertical-element-row">
-                                    <span
-                                        class="vertical-element-card select-none"
-                                        >Ga</span
-                                    >
-                                    <div class="vertical-element-body">
-                                        <h3 class="vertical-element-title">
-                                            Ga - Ghost Afterimage
-                                        </h3>
-                                        <p class="vertical-element-summary">
-                                            A final low-opacity trail at the
-                                            viewport edge that proves the list
-                                            continues beyond what is visible.
-                                        </p>
-                                        <div class="vertical-element-meta">
-                                            <span>Family: perception</span>
-                                            <span>Opacity: faint</span>
-                                            <span>Exit: delayed</span>
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="vertical-element-id mono-copy select-none font-mono"
-                                        >#227</span
-                                    >
-                                </article>
+                                </button>
                             </div>
                         </div>
                     </section>
@@ -1281,8 +1176,7 @@
                             <span
                                 class="fade-option-token"
                                 data-fade-option-token="fade-size-2xl"
-                                ><span class="fade-option-part"
-                                    >fade-size-</span
+                                ><span class="fade-option-part">fade-size-</span
                                 ><span
                                     class="fade-option-part"
                                     data-fade-option-stem
@@ -1308,7 +1202,7 @@
                             <div class="option-card-body">
                                 <div class="option-demo-panel">
                                     <div
-                                        class="fade-xy fade-size-2xl fade-range-md thin-scroll type-scale-sample h-[21rem] overflow-auto sm:h-[23.5rem]"
+                                        class="fade-xy fade-size-2xl fade-range-md thin-scroll type-scale-sample h-[26.25rem] overflow-auto sm:h-[29.375rem]"
                                         data-demo="type-specimen"
                                     >
                                         <article
@@ -1457,7 +1351,8 @@
                                         for="fade-depth-control"
                                     >
                                         <span class="option-control-heading">
-                                            <span class="option-control-label select-none"
+                                            <span
+                                                class="option-control-label select-none"
                                                 >Fade depth</span
                                             >
                                             <output
@@ -1487,14 +1382,15 @@
                                         for="fade-range-control"
                                     >
                                         <span class="option-control-heading">
-                                            <span class="option-control-label select-none"
+                                            <span
+                                                class="option-control-label select-none"
                                                 >Scroll range</span
                                             >
                                             <output
                                                 class="fade-control-value mono-copy select-none font-mono"
                                                 for="fade-range-control"
                                                 data-fade-range-value
-                                                >md</output
+                                                >2xl</output
                                             >
                                         </span>
                                         <span class="option-slider-control">
@@ -1505,8 +1401,8 @@
                                                 min="0"
                                                 max="6"
                                                 step="1"
-                                                value="1"
-                                                aria-valuetext="medium"
+                                                value="4"
+                                                aria-valuetext="double extra large"
                                                 data-fade-range-slider
                                                 data-fade-range-options="fade-range-sm fade-range-md fade-range-lg fade-range-xl fade-range-2xl fade-range-3xl fade-range-4xl"
                                             />
@@ -1570,7 +1466,7 @@
                                             <button
                                                 class="edge-toggle-button"
                                                 type="button"
-                                                aria-pressed="true"
+                                                aria-pressed="false"
                                                 aria-label="Toggle right edge fade"
                                                 data-fade-edge-toggle="r"
                                             >
@@ -1658,7 +1554,7 @@
                                             <button
                                                 class="edge-toggle-button"
                                                 type="button"
-                                                aria-pressed="true"
+                                                aria-pressed="false"
                                                 aria-label="Toggle left edge fade"
                                                 data-fade-edge-toggle="l"
                                             >
@@ -1709,7 +1605,7 @@
             </section>
 
             <section class="mt-[9rem]">
-                <div class="grid gap-4 md:grid-cols-3">
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <article class="feature-column">
                         <div
                             class="feature-graphic feature-graphic-scroll"
@@ -1931,7 +1827,16 @@
                                             "
                                         />
                                         <stop
-                                            offset="0.5"
+                                            offset="0.14"
+                                            style="
+                                                stop-color: var(
+                                                    --demo-accent-text
+                                                );
+                                                stop-opacity: 1;
+                                            "
+                                        />
+                                        <stop
+                                            offset="0.86"
                                             style="
                                                 stop-color: var(
                                                     --demo-accent-text
@@ -2033,7 +1938,11 @@
                                 focusable="false"
                             >
                                 <!-- line 1: persistent "fade-" anchor + rolling suffix -->
-                                <text class="kin-line select-none kin-mut" x="20" y="84">
+                                <text
+                                    class="kin-line select-none kin-mut"
+                                    x="20"
+                                    y="84"
+                                >
                                     fade-
                                 </text>
                                 <text

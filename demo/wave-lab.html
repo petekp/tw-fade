@@ -20,14 +20,27 @@
         scrollbar-width: thin;
       }
 
-      /* the surface under test — background-image is set by JS */
       body {
         margin: 0;
         min-height: 320vh; /* generous runway so the morph plays out over scroll */
         background-color: var(--lab-bg);
-        background-repeat: repeat;
         color: rgb(229 229 229);
         font-family: ui-sans-serif, system-ui, sans-serif;
+      }
+
+      /* SVG pattern layer — fill lobes + stroke, same architecture as the shipped demo */
+      .wave-field {
+        position: fixed;
+        inset: -12%;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .wave-svg {
+        display: block;
+        width: 100%;
+        height: 100%;
       }
 
       .sample {
@@ -243,6 +256,47 @@
     </style>
   </head>
   <body>
+    <div class="wave-field" id="waveField" aria-hidden="true">
+      <svg class="wave-svg" focusable="false">
+        <defs>
+          <linearGradient
+            id="waveFillGrad"
+            gradientUnits="userSpaceOnUse"
+            x1="0"
+            y1="0"
+            x2="100%"
+            y2="0"
+          >
+            <stop id="waveFillStopStart" offset="0%" />
+            <stop id="waveFillStopEnd" offset="100%" />
+          </linearGradient>
+          <pattern id="wavePattern" patternUnits="userSpaceOnUse" width="128" height="1158">
+            <path
+              id="waveFill"
+              fill="url(#waveFillGrad)"
+              stroke="none"
+              shape-rendering="geometricPrecision"
+            />
+            <path
+              id="waveStroke"
+              fill="none"
+              stroke="#ffffff"
+              stroke-opacity="0.075"
+              stroke-width="1"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              shape-rendering="geometricPrecision"
+              vector-effect="non-scaling-stroke"
+            />
+          </pattern>
+        </defs>
+        <!-- stepped per-strip fills (populated by JS); sits behind the stroke lines -->
+        <g id="waveStrips"></g>
+        <!-- pattern rect paints the wave stroke lines (and the lobe-wash fill when strips are off) -->
+        <rect width="100%" height="100%" fill="url(#wavePattern)" />
+      </svg>
+    </div>
+
     <div class="sample">
       <h2>wave background lab</h2>
       <p>
@@ -263,8 +317,8 @@
     <aside id="panel" aria-label="Wave background controls">
       <h1>wave background lab</h1>
       <p class="sub">
-        Amplitude &amp; wavelength morph with scroll. Defaults keep top === bottom, so a fresh load reproduces the
-        shipped static wave exactly.
+        Amplitude &amp; wavelength morph with scroll. Stepped strips: every band between wave lines gets one flat
+        shade, stepping from the start edge (default left) to the end edge across the screen. Ignores columns/stagger.
       </p>
       <p class="readout" id="readout"></p>
       <div id="groups"></div>
@@ -297,6 +351,14 @@
         strokeWidth: 1,
         strokeOpacity: 0.075,
         strokeColor: "#ffffff",
+        fillEnabled: true, // closed fills under the stroke
+        fillStrips: true, // stepped per-strip shades (vs. uniform wash)
+        fillColor: "#ffffff",
+        fillAngle: 0, // step direction in deg (0 = left→right, 90 = top→bottom)
+        fillOpacityStart: 0.07, // start edge (default left) — lightest strip
+        fillOpacityEnd: 0.0, // end edge (default right) — darkest strip
+        fillOffsetStart: 0, // remap: where the start shade begins (%)
+        fillOffsetEnd: 100, // remap: where the end shade lands (%)
         bg: "#0a0a0a",
         lockProgress: false, // freeze the morph at `progress` instead of scrolling
         progress: 0, // 0..1, only used while locked
@@ -324,6 +386,31 @@
           ],
         },
         {
+          title: "Fill gradation",
+          items: [
+            { key: "fillEnabled", label: "fill (gradation)", type: "check" },
+            { key: "fillStrips", label: "stepped strips (vs. wash)", type: "check" },
+            { key: "fillColor", label: "fill color", type: "color" },
+            { key: "fillAngle", label: "step direction (° · 0=→ 90=↓)", min: 0, max: 360, step: 1 },
+            {
+              key: "fillOpacityStart",
+              label: "opacity · start edge",
+              min: 0,
+              max: 0.2,
+              step: 0.001,
+            },
+            {
+              key: "fillOpacityEnd",
+              label: "opacity · end edge",
+              min: 0,
+              max: 0.2,
+              step: 0.001,
+            },
+            { key: "fillOffsetStart", label: "stop offset · start (%)", min: 0, max: 100, step: 1 },
+            { key: "fillOffsetEnd", label: "stop offset · end (%)", min: 0, max: 100, step: 1 },
+          ],
+        },
+        {
           title: "Stroke & surface",
           items: [
             { key: "strokeWidth", label: "stroke width (px)", min: 0.25, max: 8, step: 0.25 },
@@ -344,33 +431,145 @@
       // `amp`/`wl` are the interpolated values for the current scroll
       // progress. `wl` is pre-rounded to an int so cycles*wl === the viewBox
       // height — the tile keeps repeating seamlessly at every progress value.
+      //
+      // columnPath() returns BOTH the stroke string for one wave column and the
+      // explicit cubic segments (p0..p3) that compose it. The cubics let us
+      // build closed fill shapes — either lobes (curve→tile-edge) or strips
+      // (the negative space *between* two adjacent wave lines).
+      function columnPath(cx, s0, a, h, segs) {
+        let stroke = `M${r(cx)} 0`;
+        const cubics = [];
+        const p0 = { x: cx, y: 0 };
+        const p1 = { x: cx + s0 * a, y: 0.25 * h };
+        const p2 = { x: cx + s0 * a, y: 0.75 * h };
+        const p3 = { x: cx, y: h };
+        stroke += `C${r(p1.x)} ${r(p1.y)} ${r(p2.x)} ${r(p2.y)} ${r(p3.x)} ${r(p3.y)}`;
+        cubics.push({ p0, p1, p2, p3 });
+
+        let prevP2 = p2;
+        let prevP3 = p3;
+        for (let i = 1; i < segs; i += 1) {
+          const sign = s0 * (i % 2 === 0 ? 1 : -1);
+          const cp1 = { x: 2 * prevP3.x - prevP2.x, y: 2 * prevP3.y - prevP2.y };
+          const cp2 = { x: cx + sign * a, y: i * h + 0.75 * h };
+          const end = { x: cx, y: (i + 1) * h };
+          stroke += `S${r(cp2.x)} ${r(cp2.y)} ${r(end.x)} ${r(end.y)}`;
+          cubics.push({ p0: prevP3, p1: cp1, p2: cp2, p3: end });
+          prevP2 = cp2;
+          prevP3 = end;
+        }
+
+        return { stroke, cubics };
+      }
+
+      // Closed fill for the wavy STRIP between two adjacent wave lines: trace the
+      // left wave down, across the bottom, the right wave up (reversed), and close
+      // across the top. Both columns start/end at their center x (H is an integer
+      // number of wavelengths) so the strip seals cleanly and tiles seamlessly.
+      function stripFill(left, right, cxLeft, cxRight, H) {
+        let d = `M${r(cxLeft)} 0`;
+        for (const c of left.cubics) {
+          d += `C${r(c.p1.x)} ${r(c.p1.y)} ${r(c.p2.x)} ${r(c.p2.y)} ${r(c.p3.x)} ${r(c.p3.y)}`;
+        }
+        d += `L${r(cxRight)} ${r(H)}`;
+        for (let i = right.cubics.length - 1; i >= 0; i -= 1) {
+          const c = right.cubics[i];
+          d += `C${r(c.p2.x)} ${r(c.p2.y)} ${r(c.p1.x)} ${r(c.p1.y)} ${r(c.p0.x)} ${r(c.p0.y)}`;
+        }
+        d += "Z";
+        return d;
+      }
+
+      // Closed fill for BOTH lobes of one column (curve → tile edges). Filling
+      // every column this way covers the whole plane — the "uniform wash" look.
+      function lobeFill(col, cx, leftEdge, rightEdge, H) {
+        let right = `M${r(cx)} 0`;
+        for (const c of col.cubics) {
+          right += `C${r(c.p1.x)} ${r(c.p1.y)} ${r(c.p2.x)} ${r(c.p2.y)} ${r(c.p3.x)} ${r(c.p3.y)}`;
+        }
+        right += `L${r(rightEdge)} ${r(H)} L${r(rightEdge)} 0 Z`;
+
+        let left = `M${r(leftEdge)} 0 L${r(leftEdge)} ${r(H)} L${r(cx)} ${r(H)}`;
+        for (let i = col.cubics.length - 1; i >= 0; i -= 1) {
+          const c = col.cubics[i];
+          left += `C${r(c.p2.x)} ${r(c.p2.y)} ${r(c.p1.x)} ${r(c.p1.y)} ${r(c.p0.x)} ${r(c.p0.y)}`;
+        }
+        left += "Z";
+        return left + right;
+      }
+
+      // The stroke lines (and the optional uniform "wash" fill) are uniform, so
+      // they stay in a cheap repeating <pattern>. Per-strip stepped shading can't
+      // tile, so it's built separately as explicit geometry (buildSteppedStrips).
       function buildWave(amp, wl) {
         const a = amp;
         const h = wl / 2;
         const segs = 2 * Math.round(params.cycles);
-        const cols = Math.round(params.columns);
-        const tileW = Math.round(params.spacing) * cols;
+        const S = Math.round(params.spacing);
         const H = Math.round(params.cycles) * wl;
-        let d = "";
-        for (let c = 0; c < cols; c++) {
-          const cx = params.spacing * c + params.spacing / 2;
+        const cols = Math.round(params.columns);
+        const tileW = S * cols;
+        let strokeD = "";
+        let fillD = "";
+        for (let c = 0; c < cols; c += 1) {
+          const cx = S * c + S / 2;
           const s0 = params.stagger && c % 2 === 1 ? -1 : 1;
-          d += `M${r(cx)} 0`;
-          d += `C${r(cx + s0 * a)} ${r(0.25 * h)} ${r(cx + s0 * a)} ${r(0.75 * h)} ${r(cx)} ${r(h)}`;
-          for (let i = 1; i < segs; i++) {
-            const sign = s0 * (i % 2 === 0 ? 1 : -1);
-            d += `S${r(cx + sign * a)} ${r(i * h + 0.75 * h)} ${r(cx)} ${r((i + 1) * h)}`;
-          }
+          const col = columnPath(cx, s0, a, h, segs);
+          strokeD += col.stroke;
+          fillD += lobeFill(col, cx, S * c, S * (c + 1), H);
         }
-        return { d, tileW, H };
+        return { d: strokeD, fillD, tileW, H };
       }
 
-      function svgString({ d, tileW, H }) {
-        return (
-          `<svg xmlns='http://www.w3.org/2000/svg' width='${tileW}' height='${H}' viewBox='0 0 ${tileW} ${H}'>` +
-          `<path d='${d}' fill='none' stroke='${params.strokeColor}' stroke-opacity='${params.strokeOpacity}' ` +
-          `stroke-width='${params.strokeWidth}' stroke-linecap='round' stroke-linejoin='round' shape-rendering='geometricPrecision'/></svg>`
-        );
+      const shiftCubics = (cubics, dx) =>
+        cubics.map((c) => ({
+          p0: { x: c.p0.x + dx, y: c.p0.y },
+          p1: { x: c.p1.x + dx, y: c.p1.y },
+          p2: { x: c.p2.x + dx, y: c.p2.y },
+          p3: { x: c.p3.x + dx, y: c.p3.y },
+        }));
+
+      // Map a strip's horizontal center to a 0..1 ramp position along the chosen
+      // direction, then remap through the start/end stop offsets. Strips are
+      // full-height vertical bands, so only the horizontal projection varies.
+      function stripShade(centerX, Wf, Hf) {
+        const rad = (params.fillAngle * Math.PI) / 180;
+        const dirx = Math.cos(rad);
+        const diry = Math.sin(rad);
+        const half = (Math.abs(dirx) * Wf + Math.abs(diry) * Hf) / 2 || 1;
+        const t = ((centerX - Wf / 2) * dirx + half) / (2 * half);
+        const o0 = params.fillOffsetStart / 100;
+        const o1 = params.fillOffsetEnd / 100;
+        const span = o1 - o0 || 1e-6;
+        const tt = clamp01((t - o0) / span);
+        return lerp(params.fillOpacityStart, params.fillOpacityEnd, tt);
+      }
+
+      // Every inter-wave strip across the field gets ONE flat shade that steps
+      // along the gradient direction — far strip light, each next strip a bit
+      // darker. Built as explicit paths because per-strip shades can't tile.
+      function buildSteppedStrips(amp, wl, Wf, Hf) {
+        if (!Wf || !Hf) return "";
+        const a = amp;
+        const h = wl / 2;
+        const S = Math.round(params.spacing);
+        const segs = 2 * (Math.ceil(Hf / wl) + 1); // cover full field height + overscan
+        const totalH = segs * h;
+        const base = columnPath(0, 1, a, h, segs).cubics; // one wave centered at x=0
+        const kMax = Math.ceil(Wf / S) + 1;
+        let out = "";
+        for (let k = -1; k < kMax; k += 1) {
+          const cxLeft = k * S + S / 2;
+          const cxRight = cxLeft + S;
+          const left = { cubics: shiftCubics(base, cxLeft) };
+          const right = { cubics: shiftCubics(base, cxRight) };
+          const d = stripFill(left, right, cxLeft, cxRight, totalH);
+          const opacity = r(stripShade(cxLeft + S / 2, Wf, Hf));
+          out +=
+            `<path d='${d}' fill='${params.fillColor}' fill-opacity='${opacity}' ` +
+            `stroke='none' shape-rendering='geometricPrecision'/>`;
+        }
+        return out;
       }
 
       const ampAt = (p) => lerp(params.amplitudeTop, params.amplitudeBottom, p);
@@ -378,14 +577,47 @@
 
       // ---- scroll-driven render ------------------------------------------
       const readout = document.getElementById("readout");
-      const surface = document.body;
+      const svg = document.querySelector(".wave-svg");
+      const pattern = document.getElementById("wavePattern");
+      const fillPath = document.getElementById("waveFill");
+      const strokePath = document.getElementById("waveStroke");
+      const stripsGroup = document.getElementById("waveStrips");
+      const fillGrad = document.getElementById("waveFillGrad");
+      const fillStopStart = document.getElementById("waveFillStopStart");
+      const fillStopEnd = document.getElementById("waveFillStopEnd");
       let lastP = -1;
-      let lastUri = "";
+      let lastKey = "";
+      let lastStripsKey = "";
 
       function scrollProgress() {
         if (params.lockProgress) return clamp01(params.progress);
         const max = document.documentElement.scrollHeight - window.innerHeight;
         return max > 0 ? clamp01(window.scrollY / max) : 0;
+      }
+
+      // The gradient lives in viewport user space so the gradation runs across
+      // the whole screen (not per-tile). `fillAngle` rotates the gradient line
+      // about the viewport center; we extend it so it spans the box edge-to-edge
+      // along that direction (0° = left→right, 90° = top→bottom).
+      function updateFillGradient() {
+        const W = window.innerWidth;
+        const Hh = window.innerHeight;
+        const rad = (params.fillAngle * Math.PI) / 180;
+        const dx = Math.cos(rad);
+        const dy = Math.sin(rad);
+        const cx = W / 2;
+        const cy = Hh / 2;
+        const half = (Math.abs(dx) * W + Math.abs(dy) * Hh) / 2;
+        fillGrad.setAttribute("x1", String(r(cx - dx * half)));
+        fillGrad.setAttribute("y1", String(r(cy - dy * half)));
+        fillGrad.setAttribute("x2", String(r(cx + dx * half)));
+        fillGrad.setAttribute("y2", String(r(cy + dy * half)));
+        fillStopStart.setAttribute("offset", `${params.fillOffsetStart}%`);
+        fillStopStart.setAttribute("stop-color", params.fillColor);
+        fillStopStart.setAttribute("stop-opacity", String(params.fillOpacityStart));
+        fillStopEnd.setAttribute("offset", `${params.fillOffsetEnd}%`);
+        fillStopEnd.setAttribute("stop-color", params.fillColor);
+        fillStopEnd.setAttribute("stop-opacity", String(params.fillOpacityEnd));
       }
 
       function render(p, force) {
@@ -394,17 +626,66 @@
         const amp = ampAt(p);
         const wl = wlAt(p);
         const wave = buildWave(amp, wl);
-        const uri = `data:image/svg+xml,${encodeURIComponent(svgString(wave))}`;
-        // only touch the DOM (and force a re-raster) when the tile actually changed
-        if (uri !== lastUri) {
-          surface.style.backgroundImage = `url("${uri}")`;
-          surface.style.backgroundSize = `${wave.tileW}px ${wave.H}px`;
-          lastUri = uri;
+        const steppedMode = params.fillEnabled && params.fillStrips;
+
+        // --- stroke pattern (always) + lobe wash (only when not stepped) ---
+        const key = [
+          wave.tileW,
+          wave.H,
+          wave.d,
+          wave.fillD,
+          params.strokeWidth,
+          params.strokeOpacity,
+          params.strokeColor,
+          params.fillColor,
+          params.fillOpacityStart,
+          params.fillOpacityEnd,
+        ].join(":");
+        updateFillGradient();
+        strokePath.setAttribute("stroke", params.strokeColor);
+        strokePath.setAttribute("stroke-opacity", String(params.strokeOpacity));
+        strokePath.setAttribute("stroke-width", String(params.strokeWidth));
+        fillPath.style.display = params.fillEnabled && !steppedMode ? "" : "none";
+
+        if (key !== lastKey) {
+          pattern.setAttribute("width", String(wave.tileW));
+          pattern.setAttribute("height", String(wave.H));
+          strokePath.setAttribute("d", wave.d);
+          fillPath.setAttribute("d", wave.fillD);
+          lastKey = key;
         }
+
+        // --- stepped per-strip fills (explicit geometry across the field) ---
+        const rect = svg.getBoundingClientRect();
+        const Wf = Math.round(rect.width);
+        const Hf = Math.round(rect.height);
+        const stripsKey = steppedMode
+          ? [
+              "on",
+              Wf,
+              Hf,
+              amp,
+              wl,
+              params.spacing,
+              params.cycles,
+              params.fillColor,
+              params.fillAngle,
+              params.fillOpacityStart,
+              params.fillOpacityEnd,
+              params.fillOffsetStart,
+              params.fillOffsetEnd,
+            ].join(":")
+          : "off";
+        if (stripsKey !== lastStripsKey) {
+          stripsGroup.innerHTML = steppedMode ? buildSteppedStrips(amp, wl, Wf, Hf) : "";
+          lastStripsKey = stripsKey;
+        }
+
         document.documentElement.style.setProperty("--lab-bg", params.bg);
+        const fillLabel = !params.fillEnabled ? "off" : steppedMode ? "stepped strips" : "wash";
         readout.innerHTML =
           `progress <b>${p.toFixed(2)}</b> · amp <b>${amp.toFixed(1)}</b> · wl <b>${wl}</b><br/>` +
-          `tile <b>${wave.tileW}×${wave.H}px</b> · <b>${Math.round(params.columns)}</b> col(s) · URI <b>${uri.length}</b> chars`;
+          `tile <b>${wave.tileW}×${wave.H}px</b> · fill <b>${fillLabel}</b>`;
       }
 
       // re-render at the live progress; used whenever a control changes
@@ -525,65 +806,155 @@
         delete out.lockProgress; // lab-only tuning aids, not part of the wave
         delete out.progress;
 
-        // static fallback = the top-of-page (progress 0) state, for the initial
-        // paint before JS runs and for reduced-motion users.
+        // static fallback = the top-of-page (progress 0) state, baked into the
+        // pattern markup for the initial paint and for reduced-motion users.
         const fb = buildWave(out.amplitudeTop, Math.round(out.wavelengthTop));
-        const fbUri = `data:image/svg+xml,${encodeURIComponent(svgString(fb))}`;
 
-        // self-contained morph script (concatenation, no template literals, so
-        // it embeds cleanly anywhere). Only the closing tag is escaped.
+        // Split the flat lab params into the wave geometry (P) and the stepped
+        // fill config (F) the production runtime consumes.
+        const waveKeys = [
+          "amplitudeTop",
+          "amplitudeBottom",
+          "wavelengthTop",
+          "wavelengthBottom",
+          "cycles",
+          "spacing",
+          "columns",
+          "stagger",
+          "strokeColor",
+          "strokeOpacity",
+          "strokeWidth",
+        ];
+        const P = {};
+        for (const k of waveKeys) P[k] = out[k];
+        const F = {
+          angle: out.fillAngle,
+          opacityStart: out.fillOpacityStart,
+          opacityEnd: out.fillOpacityEnd,
+          offsetStart: out.fillOffsetStart,
+          offsetEnd: out.fillOffsetEnd,
+        };
+
+        const markup =
+          `<!-- 1) markup: place as the first child of the scroll surface -->\n` +
+          `<div class="wave-field" data-wave-field aria-hidden="true">\n` +
+          `  <svg class="wave-svg" focusable="false">\n` +
+          `    <defs>\n` +
+          `      <pattern id="wave-pattern" data-wave-pattern patternUnits="userSpaceOnUse" width="${fb.tileW}" height="${fb.H}">\n` +
+          `        <path data-wave-path fill="none" stroke="${out.strokeColor}" stroke-opacity="${out.strokeOpacity}" stroke-width="${out.strokeWidth}" stroke-linecap="round" stroke-linejoin="round" shape-rendering="geometricPrecision" vector-effect="non-scaling-stroke" d="${fb.d}"/>\n` +
+          `      </pattern>\n` +
+          `    </defs>\n` +
+          `    <g class="wave-strips" data-wave-strips></g>\n` +
+          `    <rect width="100%" height="100%" fill="url(#wave-pattern)"/>\n` +
+          `  </svg>\n` +
+          `</div>`;
+
+        const css =
+          `/* 2) CSS */\n` +
+          `.wave-field { position: fixed; inset: -12%; z-index: -1; overflow: hidden; pointer-events: none; }\n` +
+          `.wave-svg { display: block; width: 100%; height: 100%; }\n` +
+          `/* per-strip opacity is set inline by the runtime; this is just the tint */\n` +
+          `.wave-strips { fill: ${out.fillColor}; }`;
+
+        // Self-contained runtime (var-based, no ${'$'}{} interpolation in the body, so
+        // it embeds anywhere). Mirrors demo-animations.js initWaveBackground:
+        // morphs the stroke pattern + rebuilds stepped strip fills on scroll.
         const runtime =
           `<script>\n` +
-          `  // tw-fade wave background — amplitude + wavelength morph with scroll.\n` +
-          `  // Paste before </body>. Targets <html>; set T / the scroller to taste.\n` +
+          `  // tw-fade waved background — stroke morph + stepped strip fills. Paste before </body>.\n` +
           `  (function () {\n` +
-          `    var P = ${JSON.stringify(out)};\n` +
-          `    var T = document.documentElement;\n` +
+          `    var P = ${JSON.stringify(P)};\n` +
+          `    var F = ${JSON.stringify(F)};\n` +
+          `    var field = document.querySelector("[data-wave-field]");\n` +
+          `    var svg = field && field.querySelector("svg");\n` +
+          `    var pattern = document.querySelector("[data-wave-pattern]");\n` +
+          `    var path = document.querySelector("[data-wave-path]");\n` +
+          `    var strips = document.querySelector("[data-wave-strips]");\n` +
+          `    if (!field || !svg || !pattern || !path) return;\n` +
+          `    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;\n` +
           `    var r = function (v) { return Number(Number(v).toFixed(3)); };\n` +
           `    var lerp = function (a, b, t) { return a + (b - a) * t; };\n` +
-          `    function wave(amp, wl) {\n` +
+          `    var clamp01 = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };\n` +
+          `    function buildWave(amp, wl) {\n` +
           `      var h = wl / 2, segs = 2 * Math.round(P.cycles), cols = Math.round(P.columns);\n` +
           `      var tileW = Math.round(P.spacing) * cols, H = Math.round(P.cycles) * wl, d = "";\n` +
           `      for (var c = 0; c < cols; c++) {\n` +
           `        var cx = P.spacing * c + P.spacing / 2, s0 = P.stagger && c % 2 === 1 ? -1 : 1;\n` +
           `        d += "M" + r(cx) + " 0C" + r(cx + s0 * amp) + " " + r(0.25 * h) + " " + r(cx + s0 * amp) + " " + r(0.75 * h) + " " + r(cx) + " " + r(h);\n` +
-          `        for (var i = 1; i < segs; i++) {\n` +
-          `          var sign = s0 * (i % 2 === 0 ? 1 : -1);\n` +
-          `          d += "S" + r(cx + sign * amp) + " " + r(i * h + 0.75 * h) + " " + r(cx) + " " + r((i + 1) * h);\n` +
-          `        }\n` +
+          `        for (var i = 1; i < segs; i++) { var sn = s0 * (i % 2 === 0 ? 1 : -1); d += "S" + r(cx + sn * amp) + " " + r(i * h + 0.75 * h) + " " + r(cx) + " " + r((i + 1) * h); }\n` +
           `      }\n` +
-          `      var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='" + tileW + "' height='" + H + "' viewBox='0 0 " + tileW + " " + H + "'><path d='" + d + "' fill='none' stroke='" + P.strokeColor + "' stroke-opacity='" + P.strokeOpacity + "' stroke-width='" + P.strokeWidth + "' stroke-linecap='round' stroke-linejoin='round' shape-rendering='geometricPrecision'/></svg>";\n` +
-          `      return { uri: "data:image/svg+xml," + encodeURIComponent(svg), tileW: tileW, H: H };\n` +
+          `      return { d: d, tileW: tileW, H: H };\n` +
           `    }\n` +
-          `    var lastUri = "", pending = false;\n` +
+          `    function columnCubics(cx, s0, amp, h, segs) {\n` +
+          `      var cs = [{ p0: { x: cx, y: 0 }, p1: { x: cx + s0 * amp, y: 0.25 * h }, p2: { x: cx + s0 * amp, y: 0.75 * h }, p3: { x: cx, y: h } }];\n` +
+          `      var pP2 = cs[0].p2, pP3 = cs[0].p3;\n` +
+          `      for (var i = 1; i < segs; i++) {\n` +
+          `        var sn = s0 * (i % 2 === 0 ? 1 : -1);\n` +
+          `        var cp1 = { x: 2 * pP3.x - pP2.x, y: 2 * pP3.y - pP2.y };\n` +
+          `        var cp2 = { x: cx + sn * amp, y: i * h + 0.75 * h };\n` +
+          `        var end = { x: cx, y: (i + 1) * h };\n` +
+          `        cs.push({ p0: pP3, p1: cp1, p2: cp2, p3: end }); pP2 = cp2; pP3 = end;\n` +
+          `      }\n` +
+          `      return cs;\n` +
+          `    }\n` +
+          `    function shift(cs, dx) { return cs.map(function (c) { return { p0: { x: c.p0.x + dx, y: c.p0.y }, p1: { x: c.p1.x + dx, y: c.p1.y }, p2: { x: c.p2.x + dx, y: c.p2.y }, p3: { x: c.p3.x + dx, y: c.p3.y } }; }); }\n` +
+          `    function stripPath(L, R, cxL, cxR, H) {\n` +
+          `      var d = "M" + r(cxL) + " 0", i, c;\n` +
+          `      for (i = 0; i < L.length; i++) { c = L[i]; d += "C" + r(c.p1.x) + " " + r(c.p1.y) + " " + r(c.p2.x) + " " + r(c.p2.y) + " " + r(c.p3.x) + " " + r(c.p3.y); }\n` +
+          `      d += "L" + r(cxR) + " " + r(H);\n` +
+          `      for (i = R.length - 1; i >= 0; i--) { c = R[i]; d += "C" + r(c.p2.x) + " " + r(c.p2.y) + " " + r(c.p1.x) + " " + r(c.p1.y) + " " + r(c.p0.x) + " " + r(c.p0.y); }\n` +
+          `      return d + "Z";\n` +
+          `    }\n` +
+          `    function shade(cx, W, Hh) {\n` +
+          `      var rad = F.angle * Math.PI / 180, dx = Math.cos(rad), dy = Math.sin(rad);\n` +
+          `      var half = (Math.abs(dx) * W + Math.abs(dy) * Hh) / 2 || 1;\n` +
+          `      var t = ((cx - W / 2) * dx + half) / (2 * half);\n` +
+          `      var o0 = F.offsetStart / 100, o1 = F.offsetEnd / 100, span = (o1 - o0) || 1e-6;\n` +
+          `      return lerp(F.opacityStart, F.opacityEnd, clamp01((t - o0) / span));\n` +
+          `    }\n` +
+          `    function buildStrips(amp, wl, W, Hh) {\n` +
+          `      if (!W || !Hh) return "";\n` +
+          `      var h = wl / 2, S = Math.round(P.spacing);\n` +
+          `      var segs = 2 * (Math.ceil(Hh / wl) + 1), totalH = segs * h;\n` +
+          `      var base = columnCubics(0, 1, amp, h, segs), out = "", kMax = Math.ceil(W / S) + 1;\n` +
+          `      for (var k = -1; k < kMax; k++) {\n` +
+          `        var cxL = k * S + S / 2, cxR = cxL + S;\n` +
+          `        var d = stripPath(shift(base, cxL), shift(base, cxR), cxL, cxR, totalH);\n` +
+          `        out += "<path d='" + d + "' fill-opacity='" + r(shade(cxL + S / 2, W, Hh)) + "' shape-rendering='geometricPrecision'/>";\n` +
+          `      }\n` +
+          `      return out;\n` +
+          `    }\n` +
+          `    var fw = 0, fh = 0;\n` +
+          `    function measure() { var b = svg.getBoundingClientRect(); fw = Math.round(b.width); fh = Math.round(b.height); }\n` +
+          `    var lastKey = "", lastStrips = "", pending = false;\n` +
           `    function frame() {\n` +
           `      pending = false;\n` +
           `      var max = document.documentElement.scrollHeight - window.innerHeight;\n` +
           `      var p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;\n` +
           `      var amp = lerp(P.amplitudeTop, P.amplitudeBottom, p);\n` +
           `      var wl = Math.round(lerp(P.wavelengthTop, P.wavelengthBottom, p));\n` +
-          `      var w = wave(amp, wl);\n` +
-          `      if (w.uri === lastUri) return;\n` +
-          `      lastUri = w.uri;\n` +
-          `      T.style.backgroundImage = "url('" + w.uri + "')";\n` +
-          `      T.style.backgroundSize = w.tileW + "px " + w.H + "px";\n` +
+          `      var w = buildWave(amp, wl);\n` +
+          `      var key = w.tileW + ":" + w.H + ":" + w.d;\n` +
+          `      if (key !== lastKey) { pattern.setAttribute("width", w.tileW); pattern.setAttribute("height", w.H); path.setAttribute("d", w.d); lastKey = key; }\n` +
+          `      if (strips) { var sk = fw + ":" + fh + ":" + r(amp) + ":" + wl; if (sk !== lastStrips) { strips.innerHTML = buildStrips(amp, wl, fw, fh); lastStrips = sk; } }\n` +
           `    }\n` +
-          `    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;\n` +
-          `    addEventListener("scroll", function () { if (!pending) { pending = true; requestAnimationFrame(frame); } }, { passive: true });\n` +
-          `    addEventListener("resize", frame);\n` +
-          `    frame();\n` +
+          `    function queue() { if (!pending) { pending = true; requestAnimationFrame(frame); } }\n` +
+          `    measure(); frame();\n` +
+          `    addEventListener("scroll", queue, { passive: true });\n` +
+          `    addEventListener("resize", function () { measure(); queue(); });\n` +
           `  })();\n` +
           `<\/script>`;
 
         const text =
-          `/* tw-fade wave — scroll-morphing params */\n` +
-          JSON.stringify(out, null, 2) +
-          `\n\n/* 1) static fallback on html[data-surface] — initial paint & reduced-motion. */\n` +
-          `/*    background-color stays themeable: keep var(--demo-page-bg) in production. */\n` +
-          `        background-image: url("${fbUri}");\n` +
-          `        background-repeat: repeat;\n` +
-          `        background-size: ${fb.tileW}px ${fb.H}px;\n\n` +
-          `/* 2) paste this before </body> to morph amplitude + wavelength on scroll: */\n` +
+          `/* tw-fade waved background — stepped strip fills. Tuned params: */\n` +
+          JSON.stringify({ wave: P, fill: F }, null, 2) +
+          `\n\n` +
+          markup +
+          `\n\n` +
+          css +
+          `\n\n` +
+          `/* 3) paste before </body> — morphs the stroke + steps the strip fills on scroll. */\n` +
+          `/*    Reduced-motion users get the static stroke-only pattern above (no JS). */\n` +
           runtime;
 
         const ta = document.getElementById("export");
