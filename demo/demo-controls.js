@@ -4,7 +4,7 @@
 const surfaceButtons = Array.from(
   document.querySelectorAll("[data-surface-option]"),
 );
-const themeFaviconLink = document.querySelector("[data-theme-favicon]");
+let themeFaviconLink = document.querySelector("[data-theme-favicon]");
 const floatingSurfacePalette = document.querySelector(
   "[data-floating-surface-palette]",
 );
@@ -165,9 +165,16 @@ function renderThemedFaviconSvg() {
 
 function updateThemeFavicon() {
   if (!themeFaviconLink) return;
-  themeFaviconLink.href = `data:image/svg+xml,${encodeURIComponent(
+  const href = `data:image/svg+xml,${encodeURIComponent(
     renderThemedFaviconSvg(),
   )}`;
+  // Browsers cache the favicon by <link> identity and frequently skip a repaint
+  // when only .href mutates. Swapping in a fresh node forces a re-read so the
+  // tab icon actually recolors with the surface theme.
+  const nextLink = themeFaviconLink.cloneNode(false);
+  nextLink.setAttribute("href", href);
+  themeFaviconLink.replaceWith(nextLink);
+  themeFaviconLink = nextLink;
 }
 
 function scheduleThemeFaviconUpdate() {
