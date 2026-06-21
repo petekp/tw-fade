@@ -263,10 +263,10 @@ if (!prefersReducedMotion) {
     if (!field || !pattern || !path || !scroller) return;
 
     const params = {
-      amplitudeTop: 26,
-      amplitudeBottom: 74,
-      wavelengthTop: 386,
-      wavelengthBottom: 160,
+      amplitudeTop: 60,
+      amplitudeBottom: 28,
+      wavelengthTop: 543,
+      wavelengthBottom: 402,
       cycles: 3,
       spacing: 128,
       columns: 1,
@@ -277,11 +277,11 @@ if (!prefersReducedMotion) {
     // lines gets ONE flat shade, stepping across the screen along `angle`.
     // Color comes from --demo-wave-fill (CSS); only opacity is set per strip.
     const fill = {
-      angle: 176,
+      angle: 0,
       opacityStart: 0.07,
       opacityEnd: 0.0,
       offsetStart: 0,
-      offsetEnd: 93,
+      offsetEnd: 100,
     };
 
     const round = (value) => Number(value.toFixed(3));
