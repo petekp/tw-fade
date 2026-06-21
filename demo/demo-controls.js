@@ -4,7 +4,9 @@
 const surfaceButtons = Array.from(
   document.querySelectorAll("[data-surface-option]"),
 );
-let themeFaviconLink = document.querySelector("[data-theme-favicon]");
+const themeFaviconEnabled = Boolean(
+  document.querySelector("[data-theme-favicon]"),
+);
 const floatingSurfacePalette = document.querySelector(
   "[data-floating-surface-palette]",
 );
@@ -133,10 +135,6 @@ function createThemedFaviconCells() {
   return cells;
 }
 
-function escapeSvgCss(value) {
-  return String(value).replaceAll("</", "<\\/");
-}
-
 function themeColor(propertyName, fallback) {
   const value = getComputedStyle(document.documentElement)
     .getPropertyValue(propertyName)
@@ -144,41 +142,71 @@ function themeColor(propertyName, fallback) {
   return value || fallback;
 }
 
-function renderThemedFaviconSvg() {
-  const background = escapeSvgCss(themeColor("--demo-page-bg", "#020617"));
-  const accent = escapeSvgCss(themeColor("--demo-accent-text", "#f8fafc"));
-  const cellRects = themedFaviconCells
-    .map(
-      (cell) =>
-        `<rect class="${cell.className}" x="${cell.x}" y="${cell.y}" width="${cell.size}" height="${cell.size}" />`,
-    )
-    .join("");
+// The theme tokens resolve to oklch / display-p3; normalize to a concrete sRGB
+// string the 2D canvas always understands before painting.
+function resolveColor(value, fallback) {
+  const ctx = document.createElement("canvas").getContext("2d");
+  ctx.fillStyle = fallback;
+  ctx.fillStyle = value;
+  return ctx.fillStyle;
+}
 
-  return [
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${faviconSize}" height="${faviconSize}" viewBox="0 0 ${faviconSize} ${faviconSize}" role="img" aria-label="Dithered fade square">`,
-    `<style>.favicon-dark{fill:${background}}.favicon-light{fill:${accent}}</style>`,
-    `<rect class="favicon-dark" width="${faviconSize}" height="${faviconSize}" />`,
-    cellRects,
-    "</svg>",
-  ].join("");
+// Paint the dither to a small canvas and return a PNG data URL. Chrome's
+// favicon pipeline renders and refreshes PNG data URLs reliably; SVG data URLs
+// are frequently ignored there (even valid ones that render fine in an <img>),
+// which is why the tab icon never recolored. This is the canvas->PNG approach
+// proven dynamic-favicon libraries rely on.
+function renderThemedFaviconDataUrl() {
+  const px = 64;
+  const scale = px / faviconSize;
+  const canvas = document.createElement("canvas");
+  canvas.width = px;
+  canvas.height = px;
+  const ctx = canvas.getContext("2d");
+  const background = resolveColor(
+    themeColor("--demo-page-bg", "#020617"),
+    "#020617",
+  );
+  const accent = resolveColor(
+    themeColor("--demo-accent-text", "#f8fafc"),
+    "#f8fafc",
+  );
+
+  ctx.fillStyle = background;
+  ctx.fillRect(0, 0, px, px);
+  ctx.fillStyle = accent;
+  for (const cell of themedFaviconCells) {
+    if (cell.className !== "favicon-light") continue;
+    ctx.fillRect(
+      Number(cell.x) * scale,
+      Number(cell.y) * scale,
+      Number(cell.size) * scale,
+      Number(cell.size) * scale,
+    );
+  }
+  return canvas.toDataURL("image/png");
 }
 
 function updateThemeFavicon() {
-  if (!themeFaviconLink) return;
-  const href = `data:image/svg+xml,${encodeURIComponent(
-    renderThemedFaviconSvg(),
-  )}`;
-  // Browsers cache the favicon by <link> identity and frequently skip a repaint
-  // when only .href mutates. Swapping in a fresh node forces a re-read so the
-  // tab icon actually recolors with the surface theme.
-  const nextLink = themeFaviconLink.cloneNode(false);
-  nextLink.setAttribute("href", href);
-  themeFaviconLink.replaceWith(nextLink);
-  themeFaviconLink = nextLink;
+  if (!themeFaviconEnabled) return;
+  const href = renderThemedFaviconDataUrl();
+  // Remove every tab icon (the static .ico/.png fallbacks plus any prior
+  // dynamic link) and install a single fresh one. A brand-new <link> is what
+  // makes Chrome re-read the favicon, and clearing the competitors guarantees
+  // this themed icon is the one it paints.
+  for (const link of document.querySelectorAll('link[rel~="icon"]')) {
+    link.remove();
+  }
+  const link = document.createElement("link");
+  link.rel = "icon";
+  link.type = "image/png";
+  link.setAttribute("data-theme-favicon", "");
+  link.href = href;
+  document.head.appendChild(link);
 }
 
 function scheduleThemeFaviconUpdate() {
-  if (!themeFaviconLink) return;
+  if (!themeFaviconEnabled) return;
   if (window.requestAnimationFrame) {
     window.requestAnimationFrame(updateThemeFavicon);
     return;
