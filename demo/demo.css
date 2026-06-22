@@ -403,6 +403,12 @@ h3 {
     initial-value: 0.54;
 }
 
+@property --swatch-scale {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 1;
+}
+
 @property --rail-card-scale {
     syntax: "<number>";
     inherits: false;
@@ -1217,12 +1223,14 @@ h3 {
     opacity: 0.5;
     cursor: pointer;
     outline: none;
+    /* --swatch-scale is spring-driven from demo-controls.js (the spring writes
+       it every frame), so it is deliberately absent from the transition list
+       below — a CSS transition would fight the per-frame updates. */
     transform: translateZ(0) scale(var(--swatch-scale));
     transition:
         opacity 160ms ease,
         border-color 160ms ease,
-        box-shadow 160ms ease,
-        transform 160ms ease;
+        box-shadow 160ms ease;
 }
 
 .pattern-swatch > svg {
@@ -1232,7 +1240,8 @@ h3 {
 }
 
 .pattern-swatch[aria-checked="true"] {
-    --swatch-scale: 1.06;
+    /* Scale is owned by the spring (syncSwatchSpring); only the lit visuals
+       live here. */
     opacity: 1;
     border-color: color-mix(in oklab, var(--demo-accent-text) 65%, transparent);
     box-shadow:
@@ -1602,6 +1611,10 @@ h3 {
     pointer-events: none;
     transform: translate(-16px, -24px) scale(var(--rail-letter-scale));
     transform-origin: left bottom;
+    /* Tween the big letter's color when the theme/surface swaps the accent and
+       text tokens, matching the parent .rail-card's 180ms color transition so
+       the letter no longer snaps. */
+    transition: color 180ms ease;
     will-change: transform;
 }
 
@@ -1622,6 +1635,10 @@ html[data-rail-letter-layers="true"] .rail-card-initial::after {
     position: absolute;
     inset: 0 auto auto 0;
     pointer-events: none;
+    /* Each layer holds one theme token (text on ::before, accent on ::after);
+       a color transition lets them tween on theme switch while opacity still
+       drives the select-state crossfade. */
+    transition: color 180ms ease;
     will-change: opacity;
 }
 

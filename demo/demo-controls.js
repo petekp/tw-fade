@@ -99,6 +99,8 @@ let installCommandFlashTimer = 0;
 let installIconStackSpringControl = null;
 const surfaceSpringControls = new WeakMap();
 const surfaceInteractionState = new WeakMap();
+const swatchSpringControls = new WeakMap();
+const swatchInteractionState = new WeakMap();
 const edgeToggleSpringControls = new WeakMap();
 const edgeToggleInteractionState = new WeakMap();
 const railSpringControls = new WeakMap();
@@ -345,6 +347,68 @@ function springSurfaceSelection(button) {
   window.setTimeout(() => {
     syncSurfaceButtonSpring(button, true);
   }, 120);
+}
+
+// ── Background-picker thumbnails ───────────────────────────────────────────
+// The anybg pattern swatches get the same spring treatment as the surface
+// buttons: hover/press/select drive a CSS-var scale (--swatch-scale) through
+// the shared spring engine instead of a flat CSS transition.
+function swatchStateFor(swatch) {
+  const existing = swatchInteractionState.get(swatch);
+  if (existing) return existing;
+  const next = { hovered: false, pressed: false };
+  swatchInteractionState.set(swatch, next);
+  return next;
+}
+
+function setSwatchScale(swatch, scale, animated = true, transition) {
+  const control = swatchSpringControls.get(swatch);
+  control?.stop?.();
+
+  const animation = window.demoAnimations;
+  if (!animated || prefersReducedSurfaceMotion() || !animation?.animate) {
+    swatch.style.setProperty("--swatch-scale", String(scale));
+    swatchSpringControls.delete(swatch);
+    return;
+  }
+
+  swatchSpringControls.set(
+    swatch,
+    animation.animate(
+      swatch,
+      { "--swatch-scale": scale },
+      transition ??
+        animation.spring?.swatch ?? {
+          type: "spring",
+          stiffness: 560,
+          damping: 26,
+          mass: 0.7,
+          restDelta: 0.001,
+        },
+    ),
+  );
+}
+
+function syncSwatchSpring(swatch, animated = true) {
+  const state = swatchStateFor(swatch);
+  const checked = swatch.getAttribute("aria-checked") === "true";
+  const scale = state.pressed
+    ? 0.9
+    : checked
+      ? 1.08
+      : state.hovered
+        ? 1.05
+        : 1;
+  setSwatchScale(swatch, scale, animated);
+}
+
+function springSwatchSelection(swatch) {
+  // Pop: spring past the checked rest scale, then settle back to it. The
+  // transient over-target (1.18 → 1.08) reads as a deliberate selection bounce.
+  setSwatchScale(swatch, 1.18, true);
+  window.setTimeout(() => {
+    syncSwatchSpring(swatch, true);
+  }, 130);
 }
 
 function edgeToggleStateFor(button) {
@@ -1239,12 +1303,45 @@ if (anybgPicker && anybgRect) {
       other.setAttribute("aria-checked", active ? "true" : "false");
       // Roving tabindex: only the selected radio stays in the tab order.
       other.tabIndex = active ? 0 : -1;
+      // Deselected swatches spring back to rest; the chosen one pops below.
+      if (!active) syncSwatchSpring(other, true);
     }
+    springSwatchSelection(swatch);
     if (focus) swatch.focus();
   };
 
   for (const swatch of swatches) {
     swatch.tabIndex = swatch.getAttribute("aria-checked") === "true" ? 0 : -1;
+    syncSwatchSpring(swatch, false);
+
+    swatch.addEventListener("pointerenter", () => {
+      swatchStateFor(swatch).hovered = true;
+      syncSwatchSpring(swatch, true);
+    });
+    swatch.addEventListener("pointerleave", () => {
+      const state = swatchStateFor(swatch);
+      state.hovered = false;
+      state.pressed = false;
+      syncSwatchSpring(swatch, true);
+    });
+    swatch.addEventListener("pointerdown", () => {
+      swatchStateFor(swatch).pressed = true;
+      syncSwatchSpring(swatch, true);
+    });
+    swatch.addEventListener("pointerup", () => {
+      swatchStateFor(swatch).pressed = false;
+      syncSwatchSpring(swatch, true);
+    });
+    swatch.addEventListener("pointercancel", () => {
+      swatchStateFor(swatch).pressed = false;
+      syncSwatchSpring(swatch, true);
+    });
+    swatch.addEventListener("blur", () => {
+      const state = swatchStateFor(swatch);
+      state.hovered = false;
+      state.pressed = false;
+      syncSwatchSpring(swatch, true);
+    });
     swatch.addEventListener("click", () => selectPattern(swatch));
   }
 

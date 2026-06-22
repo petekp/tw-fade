@@ -84,6 +84,16 @@ const spring = {
     mass: 1,
     restDelta: 0.001,
   },
+  swatch: {
+    // Background-picker thumbnails (ζ≈0.66): a single, lively overshoot on
+    // hover/press, and a pop on selection (driven by a transient over-target,
+    // not a velocity kick) that settles in one clean bounce.
+    type: "spring",
+    stiffness: 560,
+    damping: 26,
+    mass: 0.7,
+    restDelta: 0.001,
+  },
 };
 const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 const finish = (control) =>
