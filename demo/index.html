@@ -849,11 +849,11 @@
 
                     <section
                         class="min-w-0 space-y-4"
-                        aria-labelledby="list-title"
+                        aria-labelledby="vertical-title"
                     >
                         <div>
                             <h2
-                                id="list-title"
+                                id="vertical-title"
                                 class="ml-4 flex select-none flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
                             >
                                 Vertical
@@ -864,13 +864,17 @@
                             </h2>
                         </div>
 
-                        <div class="tuning-card overflow-hidden rounded-lg">
-                            <div
-                                class="lexicon-list fade-y thin-scroll overflow-y-auto"
-                                data-demo="list"
-                                role="listbox"
-                                aria-label="Fade vocabulary"
-                            >
+                        <div class="grid gap-5 lg:grid-cols-2">
+                            <div class="min-w-0 space-y-3">
+                                <div
+                                    class="tuning-card overflow-hidden rounded-lg"
+                                >
+                                    <div
+                                        class="lexicon-list fade-y thin-scroll overflow-y-auto"
+                                        data-demo="list"
+                                        role="listbox"
+                                        aria-label="Fade vocabulary"
+                                    >
                                 <button
                                     class="lexicon-row"
                                     type="button"
@@ -1079,6 +1083,103 @@
                                         >16</span
                                     >
                                 </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="min-w-0 space-y-3">
+                                <div
+                                    class="tuning-card overflow-hidden rounded-lg"
+                                >
+                                    <div
+                                        class="chat-thread fade-y thin-scroll overflow-y-auto"
+                                        data-demo="chat"
+                                        role="log"
+                                        aria-label="Messages fade demo"
+                                    >
+                                        <div class="chat-msg chat-msg-in">
+                                            <p class="chat-bubble">
+                                                hey! finally trying tw-fade 👋
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-out">
+                                            <p class="chat-bubble">
+                                                oh nice — welcome
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-in">
+                                            <p class="chat-bubble">
+                                                these scroll lists are slick
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-out">
+                                            <p class="chat-bubble">
+                                                thanks, it’s all CSS
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-in">
+                                            <p class="chat-bubble">
+                                                this thread fades at the edges
+                                                while i scroll 👀
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-out">
+                                            <p class="chat-bubble">
+                                                that’s tw-fade ✨
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-in">
+                                            <p class="chat-bubble">
+                                                some scroll library?
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-out">
+                                            <p class="chat-bubble">
+                                                nope — a pure CSS mask
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-out">
+                                            <p class="chat-bubble">
+                                                zero JavaScript
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-in">
+                                            <p class="chat-bubble">
+                                                so how does it know i’m
+                                                scrolling?
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-out">
+                                            <p class="chat-bubble">
+                                                scroll-driven CSS — the fade is
+                                                scroll-gated
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-in">
+                                            <p class="chat-bubble">
+                                                does it soften both edges?
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-out">
+                                            <p class="chat-bubble">
+                                                fade-y — one class on the
+                                                container
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-in">
+                                            <p class="chat-bubble">
+                                                but the newest message stays
+                                                sharp 🔥
+                                            </p>
+                                        </div>
+                                        <div class="chat-msg chat-msg-out">
+                                            <p class="chat-bubble">
+                                                pinned to the bottom, yep — scroll
+                                                up and both edges dissolve ↕&#xFE0E;
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -1950,6 +2051,220 @@
                             directly on the scroll container.
                         </p>
                     </article>
+                </div>
+            </section>
+
+            <section
+                class="mt-[9rem] space-y-4"
+                aria-labelledby="any-bg-title"
+            >
+                <div
+                    class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+                >
+                    <div>
+                        <h2
+                            id="any-bg-title"
+                            class="ml-4 flex select-none flex-wrap items-baseline gap-5 text-[1.875rem] font-medium leading-9 text-neutral-50"
+                        >
+                            Any background
+                        </h2>
+                    </div>
+                    <!-- Pattern selector — swaps the background lattice. Each
+                         swatch previews the shared <pattern> def by id; the JS
+                         (demo-controls) points the stage rect at the chosen
+                         one. Patterns sampled from across the world. -->
+                    <div
+                        class="pattern-picker ml-4 sm:ml-0 sm:mr-4"
+                        role="radiogroup"
+                        aria-label="Background pattern"
+                        data-anybg-picker
+                    >
+                        <button
+                            class="pattern-swatch"
+                            type="button"
+                            role="radio"
+                            aria-checked="true"
+                            data-anybg-pattern="seigaiha"
+                            aria-label="Seigaiha, Japan"
+                            title="Seigaiha · Japan"
+                        >
+                            <svg viewBox="0 0 102 102" aria-hidden="true">
+                                <rect
+                                    width="100%"
+                                    height="100%"
+                                    fill="url(#anybg-seigaiha)"
+                                />
+                            </svg>
+                        </button>
+                        <button
+                            class="pattern-swatch"
+                            type="button"
+                            role="radio"
+                            aria-checked="false"
+                            data-anybg-pattern="asanoha"
+                            aria-label="Asanoha, Japan"
+                            title="Asanoha · Japan"
+                        >
+                            <svg viewBox="0 0 80 80" aria-hidden="true">
+                                <rect
+                                    width="100%"
+                                    height="100%"
+                                    fill="url(#anybg-asanoha)"
+                                />
+                            </svg>
+                        </button>
+                        <button
+                            class="pattern-swatch"
+                            type="button"
+                            role="radio"
+                            aria-checked="false"
+                            data-anybg-pattern="star8cross"
+                            aria-label="Eight-point star, Morocco"
+                            title="Eight-point star · Morocco"
+                        >
+                            <svg viewBox="0 0 112 112" aria-hidden="true">
+                                <rect
+                                    width="100%"
+                                    height="100%"
+                                    fill="url(#anybg-star8cross)"
+                                />
+                            </svg>
+                        </button>
+                        <button
+                            class="pattern-swatch"
+                            type="button"
+                            role="radio"
+                            aria-checked="false"
+                            data-anybg-pattern="hexweave"
+                            aria-label="Hexagon weave, Persia"
+                            title="Hexagon weave · Persia"
+                        >
+                            <svg viewBox="0 0 84 84" aria-hidden="true">
+                                <rect
+                                    width="100%"
+                                    height="100%"
+                                    fill="url(#anybg-hexweave)"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="anybg-stage overflow-hidden rounded-lg">
+                    <svg
+                        class="anybg-pattern fade-xy fade-static"
+                        aria-hidden="true"
+                        focusable="false"
+                    >
+                        <defs>
+                            <!-- World patterns, each one tile period; SVG pattern
+                                 tiling repeats them. Paths may overhang the tile
+                                 box (motifs on the boundary) — tiling wraps them.
+                                 vector-effect keeps swatch previews legible when
+                                 the viewBox scales the tile down. -->
+                            <!-- Hexagon weave, Persia: pointy-top honeycomb (R=24)
+                                 as an edge lattice; at each 3-valent vertex one edge
+                                 runs over and two tuck under (4px gap) for a calm
+                                 over/under strapwork. Period 41.57 x 72. -->
+                            <pattern
+                                id="anybg-hexweave"
+                                width="41.57"
+                                height="72"
+                                patternUnits="userSpaceOnUse"
+                            >
+                                <path
+                                    d="M20.78 30L3.46 40M41.57 42L20.78 30M20.78 30L20.78 6M20.78 6L41.57 -6M0 -6L20.78 6M41.57 42L24.25 32M24.25 76L41.57 66M20.78 10L20.78 30M20.78 6L20.78 26M20.78 6L3.46 -4M0 62L0 46M41.57 42L41.57 66M0 66L0 46M20.78 78L41.57 66M0 66L20.78 78M20.78 30L0 42"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                    stroke-linejoin="round"
+                                    stroke-linecap="round"
+                                    vector-effect="non-scaling-stroke"
+                                />
+                            </pattern>
+                            <!-- Asanoha (hemp leaf), Japan: triangular lattice,
+                                 each triangle's 3 edges + 3 cevians to centroid. -->
+                            <pattern
+                                id="anybg-asanoha"
+                                width="40"
+                                height="69.28"
+                                patternUnits="userSpaceOnUse"
+                            >
+                                <path
+                                    d="M20.00 -34.64L0.00 0.00M0.00 0.00L-20.00 -34.64M0.00 0.00L0.00 -23.09M-40.00 0.00L0.00 0.00M0.00 0.00L-20.00 -11.55M60.00 -34.64L40.00 0.00M40.00 0.00L20.00 -34.64M40.00 0.00L40.00 -23.09M0.00 0.00L40.00 0.00M0.00 0.00L20.00 -11.55M40.00 0.00L20.00 -11.55M40.00 0.00L80.00 0.00M40.00 0.00L60.00 -11.55M0.00 0.00L-20.00 34.64M0.00 0.00L-20.00 11.55M-20.00 34.64L20.00 34.64M20.00 34.64L0.00 0.00M-20.00 34.64L0.00 23.09M20.00 34.64L0.00 23.09M0.00 0.00L0.00 23.09M40.00 0.00L20.00 34.64M0.00 0.00L20.00 11.55M40.00 0.00L20.00 11.55M20.00 34.64L20.00 11.55M20.00 34.64L60.00 34.64M60.00 34.64L40.00 0.00M20.00 34.64L40.00 23.09M60.00 34.64L40.00 23.09M40.00 0.00L40.00 23.09M40.00 0.00L60.00 11.55M20.00 34.64L0.00 69.28M0.00 69.28L-20.00 34.64M-20.00 34.64L0.00 46.19M20.00 34.64L0.00 46.19M0.00 69.28L0.00 46.19M-40.00 69.28L0.00 69.28M0.00 69.28L-20.00 57.74M60.00 34.64L40.00 69.28M40.00 69.28L20.00 34.64M20.00 34.64L40.00 46.19M60.00 34.64L40.00 46.19M40.00 69.28L40.00 46.19M0.00 69.28L40.00 69.28M0.00 69.28L20.00 57.74M40.00 69.28L20.00 57.74M20.00 34.64L20.00 57.74M40.00 69.28L80.00 69.28M40.00 69.28L60.00 57.74M0.00 69.28L-20.00 103.92M0.00 69.28L-20.00 80.83M20.00 103.92L0.00 69.28M0.00 69.28L0.00 92.38M40.00 69.28L20.00 103.92M0.00 69.28L20.00 80.83M40.00 69.28L20.00 80.83M60.00 103.92L40.00 69.28M40.00 69.28L40.00 92.38M40.00 69.28L60.00 80.83"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linejoin="round"
+                                    stroke-linecap="round"
+                                    vector-effect="non-scaling-stroke"
+                                />
+                            </pattern>
+                            <!-- Seigaiha (ocean waves), Japan: 4 concentric upper
+                                 arcs per scale (r=58,43.5,29,14.5) on a half-offset
+                                 brick grid (Dx=102, Dy=R/2=29); each arc trimmed to
+                                 the visible nested-dome crescent so scales interlock
+                                 with no crossing lines and no flat cutoff. Period
+                                 102 x 58. -->
+                            <pattern
+                                id="anybg-seigaiha"
+                                width="102"
+                                height="58"
+                                patternUnits="userSpaceOnUse"
+                            >
+                                <path
+                                    d="M -152.23 -87 A 58 58 0 0 1 -51.77 -87 M -136.39 -84.63 A 43.5 43.5 0 0 1 -67.61 -84.63 M -122.6 -78.42 A 29 29 0 0 1 -81.4 -78.42 M -111.17 -69.23 A 14.5 14.5 0 0 1 -92.83 -69.23 M -50.23 -87 A 58 58 0 0 1 50.23 -87 M -34.39 -84.63 A 43.5 43.5 0 0 1 34.39 -84.63 M -20.6 -78.42 A 29 29 0 0 1 20.6 -78.42 M -9.17 -69.23 A 14.5 14.5 0 0 1 9.17 -69.23 M 51.77 -87 A 58 58 0 0 1 152.23 -87 M 67.61 -84.63 A 43.5 43.5 0 0 1 136.39 -84.63 M 81.4 -78.42 A 29 29 0 0 1 122.6 -78.42 M 92.83 -69.23 A 14.5 14.5 0 0 1 111.17 -69.23 M 153.77 -87 A 58 58 0 0 1 254.23 -87 M 169.61 -84.63 A 43.5 43.5 0 0 1 238.39 -84.63 M 183.4 -78.42 A 29 29 0 0 1 224.6 -78.42 M 194.83 -69.23 A 14.5 14.5 0 0 1 213.17 -69.23 M -101.23 -58 A 58 58 0 0 1 -0.77 -58 M -85.39 -55.63 A 43.5 43.5 0 0 1 -16.61 -55.63 M -71.6 -49.42 A 29 29 0 0 1 -30.4 -49.42 M -60.17 -40.23 A 14.5 14.5 0 0 1 -41.83 -40.23 M 0.77 -58 A 58 58 0 0 1 101.23 -58 M 16.61 -55.63 A 43.5 43.5 0 0 1 85.39 -55.63 M 30.4 -49.42 A 29 29 0 0 1 71.6 -49.42 M 41.83 -40.23 A 14.5 14.5 0 0 1 60.17 -40.23 M 102.77 -58 A 58 58 0 0 1 203.23 -58 M 118.61 -55.63 A 43.5 43.5 0 0 1 187.39 -55.63 M 132.4 -49.42 A 29 29 0 0 1 173.6 -49.42 M 143.83 -40.23 A 14.5 14.5 0 0 1 162.17 -40.23 M -152.23 -29 A 58 58 0 0 1 -51.77 -29 M -136.39 -26.63 A 43.5 43.5 0 0 1 -67.61 -26.63 M -122.6 -20.42 A 29 29 0 0 1 -81.4 -20.42 M -111.17 -11.23 A 14.5 14.5 0 0 1 -92.83 -11.23 M -50.23 -29 A 58 58 0 0 1 50.23 -29 M -34.39 -26.63 A 43.5 43.5 0 0 1 34.39 -26.63 M -20.6 -20.42 A 29 29 0 0 1 20.6 -20.42 M -9.17 -11.23 A 14.5 14.5 0 0 1 9.17 -11.23 M 51.77 -29 A 58 58 0 0 1 152.23 -29 M 67.61 -26.63 A 43.5 43.5 0 0 1 136.39 -26.63 M 81.4 -20.42 A 29 29 0 0 1 122.6 -20.42 M 92.83 -11.23 A 14.5 14.5 0 0 1 111.17 -11.23 M 153.77 -29 A 58 58 0 0 1 254.23 -29 M 169.61 -26.63 A 43.5 43.5 0 0 1 238.39 -26.63 M 183.4 -20.42 A 29 29 0 0 1 224.6 -20.42 M 194.83 -11.23 A 14.5 14.5 0 0 1 213.17 -11.23 M -101.23 0 A 58 58 0 0 1 -0.77 0 M -85.39 2.37 A 43.5 43.5 0 0 1 -16.61 2.37 M -71.6 8.58 A 29 29 0 0 1 -30.4 8.58 M -60.17 17.77 A 14.5 14.5 0 0 1 -41.83 17.77 M 0.77 0 A 58 58 0 0 1 101.23 0 M 16.61 2.37 A 43.5 43.5 0 0 1 85.39 2.37 M 30.4 8.58 A 29 29 0 0 1 71.6 8.58 M 41.83 17.77 A 14.5 14.5 0 0 1 60.17 17.77 M 102.77 0 A 58 58 0 0 1 203.23 0 M 118.61 2.37 A 43.5 43.5 0 0 1 187.39 2.37 M 132.4 8.58 A 29 29 0 0 1 173.6 8.58 M 143.83 17.77 A 14.5 14.5 0 0 1 162.17 17.77 M -152.23 29 A 58 58 0 0 1 -51.77 29 M -136.39 31.37 A 43.5 43.5 0 0 1 -67.61 31.37 M -122.6 37.58 A 29 29 0 0 1 -81.4 37.58 M -111.17 46.77 A 14.5 14.5 0 0 1 -92.83 46.77 M -50.23 29 A 58 58 0 0 1 50.23 29 M -34.39 31.37 A 43.5 43.5 0 0 1 34.39 31.37 M -20.6 37.58 A 29 29 0 0 1 20.6 37.58 M -9.17 46.77 A 14.5 14.5 0 0 1 9.17 46.77 M 51.77 29 A 58 58 0 0 1 152.23 29 M 67.61 31.37 A 43.5 43.5 0 0 1 136.39 31.37 M 81.4 37.58 A 29 29 0 0 1 122.6 37.58 M 92.83 46.77 A 14.5 14.5 0 0 1 111.17 46.77 M 153.77 29 A 58 58 0 0 1 254.23 29 M 169.61 31.37 A 43.5 43.5 0 0 1 238.39 31.37 M 183.4 37.58 A 29 29 0 0 1 224.6 37.58 M 194.83 46.77 A 14.5 14.5 0 0 1 213.17 46.77 M -101.23 58 A 58 58 0 0 1 -0.77 58 M -85.39 60.37 A 43.5 43.5 0 0 1 -16.61 60.37 M -71.6 66.58 A 29 29 0 0 1 -30.4 66.58 M -60.17 75.77 A 14.5 14.5 0 0 1 -41.83 75.77 M 0.77 58 A 58 58 0 0 1 101.23 58 M 16.61 60.37 A 43.5 43.5 0 0 1 85.39 60.37 M 30.4 66.58 A 29 29 0 0 1 71.6 66.58 M 41.83 75.77 A 14.5 14.5 0 0 1 60.17 75.77 M 102.77 58 A 58 58 0 0 1 203.23 58 M 118.61 60.37 A 43.5 43.5 0 0 1 187.39 60.37 M 132.4 66.58 A 29 29 0 0 1 173.6 66.58 M 143.83 75.77 A 14.5 14.5 0 0 1 162.17 75.77 M -152.23 87 A 58 58 0 0 1 -51.77 87 M -136.39 89.37 A 43.5 43.5 0 0 1 -67.61 89.37 M -122.6 95.58 A 29 29 0 0 1 -81.4 95.58 M -111.17 104.77 A 14.5 14.5 0 0 1 -92.83 104.77 M -50.23 87 A 58 58 0 0 1 50.23 87 M -34.39 89.37 A 43.5 43.5 0 0 1 34.39 89.37 M -20.6 95.58 A 29 29 0 0 1 20.6 95.58 M -9.17 104.77 A 14.5 14.5 0 0 1 9.17 104.77 M 51.77 87 A 58 58 0 0 1 152.23 87 M 67.61 89.37 A 43.5 43.5 0 0 1 136.39 89.37 M 81.4 95.58 A 29 29 0 0 1 122.6 95.58 M 92.83 104.77 A 14.5 14.5 0 0 1 111.17 104.77 M 153.77 87 A 58 58 0 0 1 254.23 87 M 169.61 89.37 A 43.5 43.5 0 0 1 238.39 89.37 M 183.4 95.58 A 29 29 0 0 1 224.6 95.58 M 194.83 104.77 A 14.5 14.5 0 0 1 213.17 104.77"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                    stroke-linejoin="round"
+                                    stroke-linecap="round"
+                                    vector-effect="non-scaling-stroke"
+                                />
+                            </pattern>
+                            <!-- Eight-point star & cross (khatam zellige), Morocco:
+                                 interlocking 8-point stars on a 56px grid with a
+                                 rotated-square cross filling each gap. -->
+                            <pattern
+                                id="anybg-star8cross"
+                                width="56"
+                                height="56"
+                                patternUnits="userSpaceOnUse"
+                            >
+                                <path
+                                    d="M-28.00 -44.40L-67.60 -28.00L-84.00 -67.60L-44.40 -84.00ZM-44.40 -28.00L-84.00 -44.40L-67.60 -84.00L-28.00 -67.60ZM-28.00 11.60L-67.60 28.00L-84.00 -11.60L-44.40 -28.00ZM-44.40 28.00L-84.00 11.60L-67.60 -28.00L-28.00 -11.60ZM-28.00 67.60L-67.60 84.00L-84.00 44.40L-44.40 28.00ZM-44.40 84.00L-84.00 67.60L-67.60 28.00L-28.00 44.40ZM28.00 -44.40L-11.60 -28.00L-28.00 -67.60L11.60 -84.00ZM11.60 -28.00L-28.00 -44.40L-11.60 -84.00L28.00 -67.60ZM28.00 11.60L-11.60 28.00L-28.00 -11.60L11.60 -28.00ZM11.60 28.00L-28.00 11.60L-11.60 -28.00L28.00 -11.60ZM28.00 67.60L-11.60 84.00L-28.00 44.40L11.60 28.00ZM11.60 84.00L-28.00 67.60L-11.60 28.00L28.00 44.40ZM84.00 -44.40L44.40 -28.00L28.00 -67.60L67.60 -84.00ZM67.60 -28.00L28.00 -44.40L44.40 -84.00L84.00 -67.60ZM84.00 11.60L44.40 28.00L28.00 -11.60L67.60 -28.00ZM67.60 28.00L28.00 11.60L44.40 -28.00L84.00 -11.60ZM84.00 67.60L44.40 84.00L28.00 44.40L67.60 28.00ZM67.60 84.00L28.00 67.60L44.40 28.00L84.00 44.40ZM-11.60 -28.00L-28.00 -11.60L-44.40 -28.00L-28.00 -44.40ZM-11.60 28.00L-28.00 44.40L-44.40 28.00L-28.00 11.60ZM44.40 -28.00L28.00 -11.60L11.60 -28.00L28.00 -44.40ZM44.40 28.00L28.00 44.40L11.60 28.00L28.00 11.60Z"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                    stroke-linejoin="round"
+                                    stroke-linecap="round"
+                                    vector-effect="non-scaling-stroke"
+                                />
+                            </pattern>
+                        </defs>
+                        <rect
+                            width="100%"
+                            height="100%"
+                            fill="url(#anybg-seigaiha)"
+                            data-anybg-rect
+                        />
+                    </svg>
+                    <div
+                        class="anybg-rail fade-x thin-scroll overflow-x-auto"
+                        data-demo="anybg"
+                        role="group"
+                        aria-label="Words dissolving over a patterned background"
+                    >
+                        <span class="anybg-word">Dissolve</span>
+                        <span class="anybg-word">Recede</span>
+                        <span class="anybg-word">Soften</span>
+                        <span class="anybg-word">Vanish</span>
+                        <span class="anybg-word">Fade</span>
+                        <span class="anybg-word">Blur</span>
+                        <span class="anybg-word">Ghost</span>
+                        <span class="anybg-word">Diffuse</span>
+                        <span class="anybg-word">Eclipse</span>
+                        <span class="anybg-word">Ebb</span>
+                    </div>
                 </div>
             </section>
 

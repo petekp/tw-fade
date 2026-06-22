@@ -1078,6 +1078,186 @@ h3 {
     }
 }
 
+/* Messages thread — the fade-t companion to the lexicon. It starts pinned to
+   the bottom (newest reply crisp) so scrolling up dissolves older messages into
+   the top edge only. Height matches the lexicon so the two cards balance. */
+.chat-thread {
+    height: clamp(25rem, 56vh, 33rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    outline: none;
+}
+
+.chat-msg {
+    display: flex;
+}
+
+.chat-msg-in {
+    justify-content: flex-start;
+}
+
+.chat-msg-out {
+    justify-content: flex-end;
+}
+
+.chat-bubble {
+    max-width: 80%;
+    margin: 0;
+    padding: 0.55rem 0.85rem;
+    border-radius: 1.15rem;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    text-wrap: pretty;
+}
+
+/* Incoming: a quiet neutral bubble with a squared corner on the leading edge. */
+.chat-msg-in .chat-bubble {
+    border-bottom-left-radius: 0.35rem;
+    background: color-mix(in oklab, var(--demo-text-primary) 12%, transparent);
+    color: var(--demo-text-primary);
+}
+
+/* Outgoing: a muted accent bubble that mirrors the lexicon active row — a soft
+   accent-tinted fill with the brighter accent text, squared on the trailing edge. */
+.chat-msg-out .chat-bubble {
+    border-bottom-right-radius: 0.35rem;
+    background: color-mix(in oklab, var(--demo-accent-text) 16%, transparent);
+    color: var(--demo-accent-text);
+}
+
+/* Any background — the fade masks the content's own alpha, not a gradient tuned
+   to one color, so it works over anything. The geometric pattern lives on the
+   stage (never masked); the rail above is transparent and fade-x masked, so the
+   words dissolve and the pattern shows straight through their edges. A static
+   gradient overlay can only paint one flat color and would leave a band here. */
+.anybg-stage {
+    position: relative;
+    /* Transparent base so the page background (and its wave) shows through every
+       gap in the lattice above. */
+    background-color: transparent;
+}
+
+/* World pattern lattice — fine accent line-work in an SVG <pattern>, swappable
+   via the selector top-right (hexweave, asanoha, seigaiha, …). Only the strokes
+   are opaque; the motif interiors and the gaps stay transparent, so the page
+   shows straight through. It sits behind the rail (the words dissolve over it via
+   the rail's own fade-x).
+
+   A plane-filling lattice can never present only whole motifs behind a hard
+   rectangular edge — any straight container edge cuts through them at almost
+   every size. So rather than hard-clip, we DISSOLVE the pattern's own four edges
+   using the plugin itself: the SVG carries `fade-xy fade-static`, which pins a
+   permanent all-edge fade (no scroll needed). A motif the box slices is already
+   transparent at the cut, so it feathers out instead of being chopped — at any
+   width/height and through live resize, zero JS, and it dogfoods tw-fade. The
+   default md fade size (3rem) matches the rail's fade-x, so the pattern and the
+   words dissolve along one shared edge. */
+.anybg-pattern {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--demo-accent-text);
+    opacity: 0.85;
+    pointer-events: none;
+}
+
+.anybg-rail {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 2.75rem;
+    height: 13rem;
+    padding: 0 2.25rem;
+    background: transparent;
+}
+
+.anybg-word {
+    flex: none;
+    color: #fafafa;
+    font-family: "Zalando Sans SemiExpanded", ui-sans-serif, system-ui,
+        sans-serif;
+    font-size: clamp(2.5rem, 1.5rem + 3.2vw, 4rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    white-space: nowrap;
+    user-select: none;
+    /* A soft dark halo keeps words legible where they cross a bright diamond or
+       the transparent page background behind the lattice. */
+    text-shadow: 0 1px 12px rgb(0 0 0 / 0.7);
+}
+
+/* Pattern selector — a row of preview swatches, top-right opposite the title.
+   Each swatch is a tiny window onto the shared <pattern> def (theme-aware via
+   currentColor). The active one is lit; the rest dim until hovered/focused. */
+.pattern-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.pattern-swatch {
+    --swatch-scale: 1;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: none;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, var(--demo-text-primary) 12%, transparent);
+    border-radius: 0.625rem;
+    background: color-mix(in oklab, var(--demo-page-bg) 55%, #000 45%);
+    color: var(--demo-accent-text);
+    opacity: 0.5;
+    cursor: pointer;
+    outline: none;
+    transform: translateZ(0) scale(var(--swatch-scale));
+    transition:
+        opacity 160ms ease,
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.pattern-swatch > svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.pattern-swatch[aria-checked="true"] {
+    --swatch-scale: 1.06;
+    opacity: 1;
+    border-color: color-mix(in oklab, var(--demo-accent-text) 65%, transparent);
+    box-shadow:
+        0 0 0 1px color-mix(in oklab, var(--demo-accent-text) 55%, transparent),
+        0 3px 10px rgb(0 0 0 / 0.45);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .pattern-swatch:not([aria-checked="true"]):hover {
+        opacity: 0.85;
+        border-color: color-mix(
+            in oklab,
+            var(--demo-text-primary) 22%,
+            transparent
+        );
+    }
+}
+
+.pattern-swatch:focus-visible {
+    opacity: 1;
+    box-shadow:
+        0 0 0 2px var(--demo-page-bg),
+        0 0 0 4px var(--demo-accent-text);
+}
+
 .floating-surface-palette {
     --palette-glass-filter: url(#palette-glass-filter);
     --palette-glass-blur: 3px;

@@ -1197,6 +1197,73 @@ if (lexiconList) {
   });
 }
 
+const chatThread = document.querySelector('[data-demo="chat"]');
+if (chatThread) {
+  // Start pinned to the newest message so the fade-y edge reads immediately:
+  // older messages dissolve into the top edge while the latest reply stays crisp
+  // at the bottom (the bottom fade is scroll-gated off here). Re-pin after
+  // fonts/emoji settle so a late reflow can't unstick it.
+  const pinChatToBottom = () => {
+    chatThread.scrollTop = chatThread.scrollHeight;
+  };
+  window.requestAnimationFrame(pinChatToBottom);
+  document.fonts?.ready.then(pinChatToBottom);
+}
+
+const anybgRail = document.querySelector('[data-demo="anybg"]');
+if (anybgRail) {
+  // Start centered so both the left and right fade edges are active at once: the
+  // words dissolve into the patterned stage on either side, proving the fade
+  // masks content rather than overlaying a flat gradient. Re-center after fonts
+  // load since the word widths (and thus scrollWidth) shift on font swap.
+  const centerAnybgRail = () => {
+    anybgRail.scrollLeft = (anybgRail.scrollWidth - anybgRail.clientWidth) / 2;
+  };
+  window.requestAnimationFrame(centerAnybgRail);
+  document.fonts?.ready.then(centerAnybgRail);
+}
+
+// Pattern selector: point the stage's background rect at the chosen <pattern>
+// def (all defs live once in the stage SVG; swatches preview them by id).
+const anybgPicker = document.querySelector("[data-anybg-picker]");
+const anybgRect = document.querySelector("[data-anybg-rect]");
+if (anybgPicker && anybgRect) {
+  const swatches = Array.from(anybgPicker.querySelectorAll(".pattern-swatch"));
+
+  const selectPattern = (swatch, focus = false) => {
+    const key = swatch.dataset.anybgPattern;
+    if (!key) return;
+    anybgRect.setAttribute("fill", `url(#anybg-${key})`);
+    for (const other of swatches) {
+      const active = other === swatch;
+      other.setAttribute("aria-checked", active ? "true" : "false");
+      // Roving tabindex: only the selected radio stays in the tab order.
+      other.tabIndex = active ? 0 : -1;
+    }
+    if (focus) swatch.focus();
+  };
+
+  for (const swatch of swatches) {
+    swatch.tabIndex = swatch.getAttribute("aria-checked") === "true" ? 0 : -1;
+    swatch.addEventListener("click", () => selectPattern(swatch));
+  }
+
+  // Arrow keys move and select within the group, matching native radio semantics.
+  anybgPicker.addEventListener("keydown", (event) => {
+    const current = swatches.indexOf(document.activeElement);
+    if (current === -1) return;
+    let next = null;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      next = (current + 1) % swatches.length;
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      next = (current - 1 + swatches.length) % swatches.length;
+    }
+    if (next === null) return;
+    event.preventDefault();
+    selectPattern(swatches[next], true);
+  });
+}
+
 if (installCopyButton) {
   setInstallIconStackScale(1, false);
 
