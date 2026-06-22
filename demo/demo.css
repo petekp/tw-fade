@@ -1127,7 +1127,7 @@ h3 {
     color: var(--demo-accent-text);
 }
 
-/* Any background — the fade masks the content's own alpha, not a gradient tuned
+/* Works on any background — the fade masks the content's own alpha, not a gradient tuned
    to one color, so it works over anything. The geometric pattern lives on the
    stage (never masked); the rail above is transparent and fade-x masked, so the
    words dissolve and the pattern shows straight through their edges. A static
