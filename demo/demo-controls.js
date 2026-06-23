@@ -1084,37 +1084,54 @@ async function copyText(text) {
   if (!copied) throw new Error("Copy command failed");
 }
 
+// Hover and press are affordances of a device that actually hovers (a mouse).
+// On touch, the browser fires pointerenter/pointerdown on whatever the finger
+// lands on BEFORE it decides the gesture is a scroll — so flicking through a
+// list springs every word the finger grazes ("chars dancing"), and a hover
+// state stranded by the follow-up pointercancel leaves a word enlarged so the
+// next tap makes it jump. Gate hover/press springs to non-touch pointers; real
+// taps still activate (and play their own selection spring) via each element's
+// click handler, and keyboard focus stays untouched.
+function attachHoverPressSprings(el, getState, sync) {
+  el.addEventListener("pointerenter", (event) => {
+    if (event.pointerType === "touch") return;
+    getState(el).hovered = true;
+    sync(el, true);
+  });
+  el.addEventListener("pointerleave", (event) => {
+    if (event.pointerType === "touch") return;
+    const state = getState(el);
+    state.hovered = false;
+    state.pressed = false;
+    sync(el, true);
+  });
+  el.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "touch") return;
+    getState(el).pressed = true;
+    sync(el, true);
+  });
+  el.addEventListener("pointerup", (event) => {
+    if (event.pointerType === "touch") return;
+    getState(el).pressed = false;
+    sync(el, true);
+  });
+  el.addEventListener("pointercancel", (event) => {
+    if (event.pointerType === "touch") return;
+    getState(el).pressed = false;
+    sync(el, true);
+  });
+  el.addEventListener("blur", () => {
+    const state = getState(el);
+    state.hovered = false;
+    state.pressed = false;
+    sync(el, true);
+  });
+}
+
 for (const button of surfaceButtons) {
   syncSurfaceButtonSpring(button, false);
 
-  button.addEventListener("pointerenter", () => {
-    surfaceStateFor(button).hovered = true;
-    syncSurfaceButtonSpring(button, true);
-  });
-  button.addEventListener("pointerleave", () => {
-    const state = surfaceStateFor(button);
-    state.hovered = false;
-    state.pressed = false;
-    syncSurfaceButtonSpring(button, true);
-  });
-  button.addEventListener("pointerdown", () => {
-    surfaceStateFor(button).pressed = true;
-    syncSurfaceButtonSpring(button, true);
-  });
-  button.addEventListener("pointerup", () => {
-    surfaceStateFor(button).pressed = false;
-    syncSurfaceButtonSpring(button, true);
-  });
-  button.addEventListener("pointercancel", () => {
-    surfaceStateFor(button).pressed = false;
-    syncSurfaceButtonSpring(button, true);
-  });
-  button.addEventListener("blur", () => {
-    const state = surfaceStateFor(button);
-    state.hovered = false;
-    state.pressed = false;
-    syncSurfaceButtonSpring(button, true);
-  });
+  attachHoverPressSprings(button, surfaceStateFor, syncSurfaceButtonSpring);
   button.addEventListener("click", () => {
     setSurface(button.dataset.surfaceOption, button);
   });
@@ -1149,34 +1166,7 @@ initRailLetterLayers();
 for (const card of railCards) {
   syncRailCardSpring(card, false);
 
-  card.addEventListener("pointerenter", () => {
-    railStateFor(card).hovered = true;
-    syncRailCardSpring(card, true);
-  });
-  card.addEventListener("pointerleave", () => {
-    const state = railStateFor(card);
-    state.hovered = false;
-    state.pressed = false;
-    syncRailCardSpring(card, true);
-  });
-  card.addEventListener("pointerdown", () => {
-    railStateFor(card).pressed = true;
-    syncRailCardSpring(card, true);
-  });
-  card.addEventListener("pointerup", () => {
-    railStateFor(card).pressed = false;
-    syncRailCardSpring(card, true);
-  });
-  card.addEventListener("pointercancel", () => {
-    railStateFor(card).pressed = false;
-    syncRailCardSpring(card, true);
-  });
-  card.addEventListener("blur", () => {
-    const state = railStateFor(card);
-    state.hovered = false;
-    state.pressed = false;
-    syncRailCardSpring(card, true);
-  });
+  attachHoverPressSprings(card, railStateFor, syncRailCardSpring);
   card.addEventListener("click", () => {
     selectRailCard(card);
   });
@@ -1189,34 +1179,7 @@ for (const row of lexiconRows) {
   // Start every notch collapsed; the preselected row's springs in on load.
   setLexiconBarScale(row, 0, false);
 
-  row.addEventListener("pointerenter", () => {
-    lexiconStateFor(row).hovered = true;
-    syncLexiconRow(row, true);
-  });
-  row.addEventListener("pointerleave", () => {
-    const state = lexiconStateFor(row);
-    state.hovered = false;
-    state.pressed = false;
-    syncLexiconRow(row, true);
-  });
-  row.addEventListener("pointerdown", () => {
-    lexiconStateFor(row).pressed = true;
-    syncLexiconRow(row, true);
-  });
-  row.addEventListener("pointerup", () => {
-    lexiconStateFor(row).pressed = false;
-    syncLexiconRow(row, true);
-  });
-  row.addEventListener("pointercancel", () => {
-    lexiconStateFor(row).pressed = false;
-    syncLexiconRow(row, true);
-  });
-  row.addEventListener("blur", () => {
-    const state = lexiconStateFor(row);
-    state.hovered = false;
-    state.pressed = false;
-    syncLexiconRow(row, true);
-  });
+  attachHoverPressSprings(row, lexiconStateFor, syncLexiconRow);
   row.addEventListener("click", () => {
     selectLexiconRow(row);
   });
@@ -1314,34 +1277,7 @@ if (anybgPicker && anybgRect) {
     swatch.tabIndex = swatch.getAttribute("aria-checked") === "true" ? 0 : -1;
     syncSwatchSpring(swatch, false);
 
-    swatch.addEventListener("pointerenter", () => {
-      swatchStateFor(swatch).hovered = true;
-      syncSwatchSpring(swatch, true);
-    });
-    swatch.addEventListener("pointerleave", () => {
-      const state = swatchStateFor(swatch);
-      state.hovered = false;
-      state.pressed = false;
-      syncSwatchSpring(swatch, true);
-    });
-    swatch.addEventListener("pointerdown", () => {
-      swatchStateFor(swatch).pressed = true;
-      syncSwatchSpring(swatch, true);
-    });
-    swatch.addEventListener("pointerup", () => {
-      swatchStateFor(swatch).pressed = false;
-      syncSwatchSpring(swatch, true);
-    });
-    swatch.addEventListener("pointercancel", () => {
-      swatchStateFor(swatch).pressed = false;
-      syncSwatchSpring(swatch, true);
-    });
-    swatch.addEventListener("blur", () => {
-      const state = swatchStateFor(swatch);
-      state.hovered = false;
-      state.pressed = false;
-      syncSwatchSpring(swatch, true);
-    });
+    attachHoverPressSprings(swatch, swatchStateFor, syncSwatchSpring);
     swatch.addEventListener("click", () => selectPattern(swatch));
   }
 
@@ -1424,34 +1360,7 @@ fadeRangeSlider?.addEventListener("input", () => {
 for (const button of fadeEdgeButtons) {
   syncEdgeToggleSpring(button, false);
 
-  button.addEventListener("pointerenter", () => {
-    edgeToggleStateFor(button).hovered = true;
-    syncEdgeToggleSpring(button, true);
-  });
-  button.addEventListener("pointerleave", () => {
-    const state = edgeToggleStateFor(button);
-    state.hovered = false;
-    state.pressed = false;
-    syncEdgeToggleSpring(button, true);
-  });
-  button.addEventListener("pointerdown", () => {
-    edgeToggleStateFor(button).pressed = true;
-    syncEdgeToggleSpring(button, true);
-  });
-  button.addEventListener("pointerup", () => {
-    edgeToggleStateFor(button).pressed = false;
-    syncEdgeToggleSpring(button, true);
-  });
-  button.addEventListener("pointercancel", () => {
-    edgeToggleStateFor(button).pressed = false;
-    syncEdgeToggleSpring(button, true);
-  });
-  button.addEventListener("blur", () => {
-    const state = edgeToggleStateFor(button);
-    state.hovered = false;
-    state.pressed = false;
-    syncEdgeToggleSpring(button, true);
-  });
+  attachHoverPressSprings(button, edgeToggleStateFor, syncEdgeToggleSpring);
   button.addEventListener("click", () => {
     const isPressed = button.getAttribute("aria-pressed") === "true";
     button.setAttribute("aria-pressed", String(!isPressed));

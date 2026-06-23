@@ -162,6 +162,46 @@ async function runInteractions(page, label) {
   assert(edgeAfterKeyboard === 'false', `${label}: edge toggle activates from keyboard`, edgeAfterKeyboard)
 }
 
+// Touch must not drive the lexicon's hover/press springs. On Android the
+// browser fires pointerenter/pointerdown on the finger's target BEFORE it knows
+// the gesture is a scroll, so ungated hover/press feedback springs every word a
+// flick grazes ("chars dancing") and strands enlarged words mid-list. Assert a
+// touch pointer leaves the word scale inert, while a real mouse pointer still
+// animates it and a tap still selects — so the guard can't pass by simply
+// disabling the springs.
+async function checkTouchHoverInert(page, label) {
+  const result = await page.evaluate(async () => {
+    const rows = Array.from(document.querySelectorAll('.lexicon-row'))
+    const idle = rows.find((r) => r.getAttribute('aria-selected') !== 'true')
+    const word = idle.querySelector('.lexicon-word')
+    const scale = () => parseFloat(getComputedStyle(word).getPropertyValue('--lex-word-scale')) || 1
+    const frame = () => new Promise((res) => requestAnimationFrame(res))
+    const peakDeviation = async (pointerType) => {
+      const rest = scale()
+      idle.dispatchEvent(new PointerEvent('pointerenter', { pointerType, bubbles: true }))
+      idle.dispatchEvent(new PointerEvent('pointerdown', { pointerType, bubbles: true }))
+      let peak = 0
+      for (let i = 0; i < 18; i++) {
+        peak = Math.max(peak, Math.abs(scale() - rest))
+        await frame()
+      }
+      // Release and clear state so the next probe starts from rest.
+      idle.dispatchEvent(new PointerEvent('pointerup', { pointerType, bubbles: true }))
+      idle.dispatchEvent(new PointerEvent('pointerleave', { pointerType, bubbles: true }))
+      for (let i = 0; i < 18; i++) await frame()
+      return peak
+    }
+    const touch = await peakDeviation('touch')
+    const mouse = await peakDeviation('mouse')
+    const tapTarget = rows.find((r) => r.getAttribute('aria-selected') !== 'true')
+    tapTarget.click()
+    return { touch, mouse, tapSelected: tapTarget.getAttribute('aria-selected') === 'true' }
+  })
+  assert(result.touch < 0.005, `${label}: touch does not spring lexicon hover/press`, `peak ${result.touch.toFixed(3)}`)
+  assert(result.mouse > 0.005, `${label}: mouse still springs lexicon hover/press`, `peak ${result.mouse.toFixed(3)}`)
+  assert(result.tapSelected, `${label}: tap still selects a lexicon row`)
+}
+
 async function smokePage(browser, options) {
   const {
     label,
@@ -255,6 +295,8 @@ async function smokePage(browser, options) {
     document.body.scrollTo({ top: 0, left: 0, behavior: 'instant' })
   })
   await page.waitForTimeout(120)
+
+  await checkTouchHoverInert(page, label)
 
   if (checkKeyboard) await runInteractions(page, label)
   await context.close()
