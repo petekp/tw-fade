@@ -191,6 +191,15 @@ modern wide-gamut OKLCH/P3 color syntax. */
 
 html[data-surface] {
     --demo-wave-fallback: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22128%22%20height%3D%221629%22%20viewBox%3D%220%200%20128%201629%22%3E%3Cpath%20d%3D%22M64%200C75.781%2022.625%2087.489%2045.25%2095.82%2067.875C104.15%2090.5%20109%20113.125%20109%20135.75C109%20158.375%20104.15%20181%2095.82%20203.625C87.489%20226.25%2075.781%20248.875%2064%20271.5C52.219%20294.125%2040.511%20316.75%2032.18%20339.375C23.85%20362%2019%20384.625%2019%20407.25C19%20429.875%2023.85%20452.5%2032.18%20475.125C40.511%20497.75%2052.219%20520.375%2064%20543C75.781%20565.625%2087.489%20588.25%2095.82%20610.875C104.15%20633.5%20109%20656.125%20109%20678.75C109%20701.375%20104.15%20724%2095.82%20746.625C87.489%20769.25%2075.781%20791.875%2064%20814.5C52.219%20837.125%2040.511%20859.75%2032.18%20882.375C23.85%20905%2019%20927.625%2019%20950.25C19%20972.875%2023.85%20995.5%2032.18%201018.125C40.511%201040.75%2052.219%201063.375%2064%201086C75.781%201108.625%2087.489%201131.25%2095.82%201153.875C104.15%201176.5%20109%201199.125%20109%201221.75C109%201244.375%20104.15%201267%2095.82%201289.625C87.489%201312.25%2075.781%201334.875%2064%201357.5C52.219%201380.125%2040.511%201402.75%2032.18%201425.375C23.85%201448%2019%201470.625%2019%201493.25C19%201515.875%2023.85%201538.5%2032.18%201561.125C40.511%201583.75%2052.219%201606.375%2064%201629%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.075%22%20stroke-width%3D%221%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20shape-rendering%3D%22geometricPrecision%22%2F%3E%3C%2Fsvg%3E");
+    --demo-container-shadow:
+        0 1px 1px rgb(0 0 0 / 0.14),
+        0 5px 10px -9px rgb(0 0 0 / 0.2);
+    --demo-inner-border-size: 1px;
+    --demo-inner-border-light-alpha: 0.16;
+    --demo-inner-border-mid-alpha: 0.045;
+    --demo-inner-border-dark-alpha: 0.22;
+    --demo-inner-border-opacity: 0.78;
+    --demo-inner-border-blend-mode: soft-light;
 
     /* Color for the stepped wave-strip fills. Matches the white wave strokes
        on every (dark) surface; overridable per theme for a tinted gradation. */
@@ -958,7 +967,41 @@ h3 {
         border-color 180ms ease;
 }
 
+:is(.tuning-card, .feature-column, .support-tooltip, .floating-surface-palette) {
+    position: relative;
+    isolation: isolate;
+}
+
+:is(.tuning-card, .feature-column, .support-tooltip, .floating-surface-palette)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    padding: var(--demo-inner-border-size);
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+        180deg,
+        rgb(255 255 255 / var(--demo-inner-border-light-alpha)) 0%,
+        rgb(255 255 255 / var(--demo-inner-border-mid-alpha)) 38%,
+        rgb(0 0 0 / var(--demo-inner-border-mid-alpha)) 68%,
+        rgb(0 0 0 / var(--demo-inner-border-dark-alpha)) 100%
+    );
+    mix-blend-mode: var(--demo-inner-border-blend-mode);
+    opacity: var(--demo-inner-border-opacity);
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    mask-composite: exclude;
+}
+
 .tuning-card {
+    --demo-inner-border-light-alpha: 0.18;
+    --demo-inner-border-dark-alpha: 0.2;
     border: 0;
     background-color: color-mix(
         in oklab,
@@ -970,7 +1013,7 @@ h3 {
             95%,
         transparent
     );
-    box-shadow: 0 18px 48px rgb(0 0 0 / 0.22);
+    box-shadow: var(--demo-container-shadow);
     transition:
         background-color 180ms ease,
         box-shadow 180ms ease;
@@ -1345,6 +1388,10 @@ h3 {
 }
 
 .floating-surface-palette {
+    --demo-inner-border-light-alpha: 0.18;
+    --demo-inner-border-mid-alpha: 0.04;
+    --demo-inner-border-dark-alpha: 0.24;
+    --demo-inner-border-opacity: 0.64;
     --palette-glass-filter: url(#palette-glass-filter);
     --palette-glass-blur: 3px;
     --palette-glass-brightness: 1.12;
@@ -1362,10 +1409,8 @@ h3 {
     isolation: isolate;
     background: rgb(255 255 255 / 0.05);
     box-shadow:
-        inset 0 0 0 1px rgb(255 255 255 / 0.1),
-        inset 0 1px 0 rgb(255 255 255 / 0.15),
-        inset 0 -18px 28px rgb(255 255 255 / 0.02),
-        0 12px 36px rgb(0 0 0 / 0.16);
+        0 1px 1px rgb(0 0 0 / 0.14),
+        0 5px 10px -9px rgb(0 0 0 / 0.18);
     -webkit-backdrop-filter: var(--palette-glass-filter)
         blur(var(--palette-glass-blur))
         brightness(var(--palette-glass-brightness))
@@ -1526,6 +1571,10 @@ h3 {
 }
 
 .support-tooltip {
+    --demo-inner-border-light-alpha: 0.2;
+    --demo-inner-border-mid-alpha: 0.04;
+    --demo-inner-border-dark-alpha: 0.22;
+    --demo-inner-border-opacity: 0.72;
     position: absolute;
     bottom: calc(100% + 0.5rem);
     left: 0;
@@ -1533,8 +1582,11 @@ h3 {
     width: min(13rem, calc(100vw - 2rem));
     pointer-events: none;
     border-radius: var(--demo-radius-sm);
-    border: 1px solid var(--demo-border);
+    border: 0;
     background: var(--demo-panel-strong);
+    box-shadow:
+        0 1px 1px rgb(0 0 0 / 0.14),
+        0 5px 10px -9px rgb(0 0 0 / 0.2);
     padding: 0.625rem 0.75rem;
     color: var(--demo-text-primary);
     font-size: 0.75rem;
@@ -2076,6 +2128,10 @@ label.option-control {
 }
 
 .feature-column {
+    --demo-inner-border-light-alpha: 0.14;
+    --demo-inner-border-mid-alpha: 0.035;
+    --demo-inner-border-dark-alpha: 0.18;
+    --demo-inner-border-opacity: 0.72;
     --feature-card-bg: color-mix(
         in oklab,
         color-mix(
@@ -2136,7 +2192,7 @@ label.option-control {
     padding: 1.5rem;
     border-radius: var(--demo-radius-lg);
     background-color: var(--feature-card-bg);
-    box-shadow: 0 18px 48px rgb(0 0 0 / 0.22);
+    box-shadow: var(--demo-container-shadow);
     transition:
         background-color 180ms ease,
         box-shadow 180ms ease;
