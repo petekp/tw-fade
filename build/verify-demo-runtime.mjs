@@ -267,7 +267,7 @@ async function smokePage(browser, options) {
     assert(state.waveMode === 'svg', `${label}: procedural SVG wave field activates`, state.waveMode)
     assert(state.waveBeforeDisplay === 'none', `${label}: procedural wave hides static fallback`, state.waveBeforeDisplay)
     assert(state.waveFieldDisplay === 'block', `${label}: SVG wave field renders`, state.waveFieldDisplay)
-    assert(state.wavePathD.startsWith('M64 0C124'), `${label}: SVG wave starts at top geometry`, state.wavePathD.slice(0, 20))
+    assert(state.wavePathD.startsWith('M64 0C75.781'), `${label}: SVG wave starts at top geometry`, state.wavePathD.slice(0, 24))
     assert(state.wavePatternHeight === '1629', `${label}: SVG wave pattern starts at top wavelength`, state.wavePatternHeight)
   }
   assert(/transform/.test(state.movingWillChange.railCard), `${label}: rail cards are composited`, state.movingWillChange.railCard)
