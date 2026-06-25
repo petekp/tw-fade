@@ -529,6 +529,83 @@ h3 {
     font-variant-numeric: tabular-nums slashed-zero;
 }
 
+.creator-note-link {
+    --shimmer-color: var(--demo-text-strong);
+    --shimmer-speed: 40;
+    --shimmer-repeat-delay: 1400;
+    --shimmer-spread: 96px;
+    --shimmer-track-width: 220px;
+    position: relative;
+    display: inline-block;
+    color: color-mix(in oklab, var(--demo-text-primary) 68%, transparent);
+    text-decoration: none;
+    transition:
+        color 160ms ease;
+}
+
+.creator-note-link:hover {
+    color: color-mix(in oklab, var(--demo-text-primary) 82%, transparent);
+}
+
+.creator-note-tooltip-root {
+    vertical-align: baseline;
+}
+
+.creator-note-tooltip {
+    left: 50%;
+    width: min(16rem, calc(100vw - 2rem));
+    transform: translateX(-50%) translateY(0.25rem);
+}
+
+.creator-note-tooltip-root:hover .creator-note-tooltip,
+.creator-note-tooltip-root:focus-within .creator-note-tooltip {
+    transform: translateX(-50%) translateY(0);
+}
+
+.creator-note-underline {
+    --shimmer-color: color-mix(
+        in oklab,
+        var(--demo-text-strong) 48%,
+        transparent
+    );
+    --shimmer-speed: 40;
+    --shimmer-repeat-delay: 1400;
+    --shimmer-spread: 96px;
+    --shimmer-track-width: 220px;
+    position: absolute;
+    right: 0;
+    bottom: 0.08em;
+    left: 0;
+    height: 1px;
+    border-radius: 999px;
+    background-color: color-mix(
+        in oklab,
+        var(--demo-text-primary) 18%,
+        transparent
+    );
+    color: var(--demo-text-primary);
+    pointer-events: none;
+}
+
+.creator-note-link:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--demo-focus) 78%, transparent);
+    outline-offset: 3px;
+    border-radius: 0.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .creator-note-link.shimmer {
+        animation: none;
+        background: none;
+        -webkit-text-fill-color: currentColor;
+    }
+
+    .creator-note-underline.shimmer-bg {
+        background-image: none;
+        animation: none;
+    }
+}
+
 .fade-option-label {
     color: var(--demo-text-subtle);
 }
