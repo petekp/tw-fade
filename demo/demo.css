@@ -192,13 +192,13 @@ modern wide-gamut OKLCH/P3 color syntax. */
 html[data-surface] {
     --demo-wave-fallback: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22128%22%20height%3D%221629%22%20viewBox%3D%220%200%20128%201629%22%3E%3Cpath%20d%3D%22M64%200C75.781%2022.625%2087.489%2045.25%2095.82%2067.875C104.15%2090.5%20109%20113.125%20109%20135.75C109%20158.375%20104.15%20181%2095.82%20203.625C87.489%20226.25%2075.781%20248.875%2064%20271.5C52.219%20294.125%2040.511%20316.75%2032.18%20339.375C23.85%20362%2019%20384.625%2019%20407.25C19%20429.875%2023.85%20452.5%2032.18%20475.125C40.511%20497.75%2052.219%20520.375%2064%20543C75.781%20565.625%2087.489%20588.25%2095.82%20610.875C104.15%20633.5%20109%20656.125%20109%20678.75C109%20701.375%20104.15%20724%2095.82%20746.625C87.489%20769.25%2075.781%20791.875%2064%20814.5C52.219%20837.125%2040.511%20859.75%2032.18%20882.375C23.85%20905%2019%20927.625%2019%20950.25C19%20972.875%2023.85%20995.5%2032.18%201018.125C40.511%201040.75%2052.219%201063.375%2064%201086C75.781%201108.625%2087.489%201131.25%2095.82%201153.875C104.15%201176.5%20109%201199.125%20109%201221.75C109%201244.375%20104.15%201267%2095.82%201289.625C87.489%201312.25%2075.781%201334.875%2064%201357.5C52.219%201380.125%2040.511%201402.75%2032.18%201425.375C23.85%201448%2019%201470.625%2019%201493.25C19%201515.875%2023.85%201538.5%2032.18%201561.125C40.511%201583.75%2052.219%201606.375%2064%201629%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.075%22%20stroke-width%3D%221%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20shape-rendering%3D%22geometricPrecision%22%2F%3E%3C%2Fsvg%3E");
     --demo-container-shadow:
-        0 1px 1px rgb(0 0 0 / 0.14),
-        0 5px 10px -9px rgb(0 0 0 / 0.2);
+        0 1px 1px rgb(0 0 0 / 0.161),
+        0 5px 10px -9px rgb(0 0 0 / 0.23);
     --demo-inner-border-size: 1px;
-    --demo-inner-border-light-alpha: 0.16;
+    --demo-inner-border-light-alpha: 0.18;
     --demo-inner-border-mid-alpha: 0.045;
     --demo-inner-border-dark-alpha: 0.22;
-    --demo-inner-border-opacity: 0.78;
+    --demo-inner-border-opacity: 0.9;
     --demo-inner-border-blend-mode: soft-light;
 
     /* Color for the stepped wave-strip fills. Matches the white wave strokes
@@ -646,6 +646,8 @@ h3 {
 }
 
 .install-snippet {
+    --demo-inner-border-light-alpha: 0.2;
+    --demo-inner-border-dark-alpha: 0.2;
     position: relative;
     display: inline-flex;
     align-self: flex-start;
@@ -668,9 +670,11 @@ h3 {
             95%,
         transparent
     );
-    box-shadow: none;
+    box-shadow: var(--demo-container-shadow);
     isolation: isolate;
-    transition: background-color 180ms ease;
+    transition:
+        background-color 180ms ease,
+        box-shadow 180ms ease;
 }
 
 .install-snippet-sweep {
@@ -906,19 +910,38 @@ h3 {
 }
 
 .social-icon-link {
+    --demo-inner-border-light-alpha: 0.2;
+    --demo-inner-border-dark-alpha: 0.2;
+    --social-icon-bg: color-mix(
+        in oklab,
+        color-mix(
+                in oklab,
+                var(--demo-page-bg) 92%,
+                var(--demo-text-primary) 8%
+            )
+            96%,
+        transparent
+    );
+    --social-icon-bg-hover: color-mix(
+        in oklab,
+        color-mix(
+                in oklab,
+                var(--demo-page-bg) 84%,
+                var(--demo-text-primary) 16%
+            )
+            96%,
+        transparent
+    );
     position: relative;
     display: grid;
     width: 2.25rem;
     height: 2.25rem;
     flex: 0 0 2.25rem;
     place-items: center;
-    border: 1px solid var(--demo-border);
+    border: 0;
     border-radius: 9999px;
-    background-color: color-mix(
-        in oklab,
-        var(--demo-panel-bg) 54%,
-        transparent
-    );
+    background-color: var(--social-icon-bg);
+    box-shadow: var(--demo-container-shadow);
     color: color-mix(in oklab, var(--demo-text-strong) 68%, transparent);
     backdrop-filter: blur(12px);
     cursor: pointer;
@@ -927,16 +950,17 @@ h3 {
     transition:
         color 180ms ease,
         background-color 180ms ease,
-        border-color 180ms ease;
+        box-shadow 180ms ease;
 }
 
 .social-icon-link:hover {
-    border-color: var(--demo-border-strong);
-    background-color: var(--demo-panel-strong);
+    background-color: var(--social-icon-bg-hover);
     color: var(--demo-text-strong);
 }
 
 .social-icon-link svg {
+    position: relative;
+    z-index: 2;
     width: 1rem;
     height: 1rem;
     fill: currentColor;
@@ -967,12 +991,26 @@ h3 {
         border-color 180ms ease;
 }
 
-:is(.tuning-card, .feature-column, .support-tooltip, .floating-surface-palette) {
+:is(
+        .install-snippet,
+        .social-icon-link,
+        .tuning-card,
+        .feature-column,
+        .support-tooltip,
+        .floating-surface-palette
+    ) {
     position: relative;
     isolation: isolate;
 }
 
-:is(.tuning-card, .feature-column, .support-tooltip, .floating-surface-palette)::before {
+:is(
+        .install-snippet,
+        .social-icon-link,
+        .tuning-card,
+        .feature-column,
+        .support-tooltip,
+        .floating-surface-palette
+    )::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -1000,7 +1038,7 @@ h3 {
 }
 
 .tuning-card {
-    --demo-inner-border-light-alpha: 0.18;
+    --demo-inner-border-light-alpha: 0.2;
     --demo-inner-border-dark-alpha: 0.2;
     border: 0;
     background-color: color-mix(
@@ -1154,6 +1192,7 @@ h3 {
     align-self: center;
     min-width: 0;
     color: var(--demo-text-soft);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 0.875rem;
     line-height: 1.4;
     opacity: 0.34;
@@ -1259,6 +1298,8 @@ h3 {
    words dissolve and the pattern shows straight through their edges. A static
    gradient overlay can only paint one flat color and would leave a band here. */
 .anybg-stage {
+    --anybg-stage-height: 26rem;
+
     position: relative;
     /* Transparent base so the page background (and its wave) shows through every
        gap in the lattice above. */
@@ -1278,8 +1319,8 @@ h3 {
    permanent all-edge fade (no scroll needed). A motif the box slices is already
    transparent at the cut, so it feathers out instead of being chopped — at any
    width/height and through live resize, zero JS, and it dogfoods tw-fade. The
-   default md fade size (3rem) matches the rail's fade-x, so the pattern and the
-   words dissolve along one shared edge. */
+   shared 2xl fade size matches the rail's fade-x, so the pattern and the words
+   dissolve along one shared edge. */
 .anybg-pattern {
     position: absolute;
     inset: 0;
@@ -1295,9 +1336,9 @@ h3 {
     z-index: 1;
     display: flex;
     align-items: center;
-    gap: 2.75rem;
-    height: 13rem;
-    padding: 0 2.25rem;
+    gap: clamp(4rem, 7vw, 6.5rem);
+    height: var(--anybg-stage-height);
+    padding: 0 clamp(3rem, 6vw, 5rem);
     background: transparent;
 }
 
@@ -1306,9 +1347,9 @@ h3 {
     color: #fafafa;
     font-family: "Zalando Sans SemiExpanded", ui-sans-serif, system-ui,
         sans-serif;
-    font-size: clamp(2.5rem, 1.5rem + 3.2vw, 4rem);
+    font-size: clamp(4.75rem, 2.75rem + 6.5vw, 8rem);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
     line-height: 1;
     white-space: nowrap;
     user-select: none;
@@ -1388,10 +1429,10 @@ h3 {
 }
 
 .floating-surface-palette {
-    --demo-inner-border-light-alpha: 0.18;
+    --demo-inner-border-light-alpha: 0.2;
     --demo-inner-border-mid-alpha: 0.04;
     --demo-inner-border-dark-alpha: 0.24;
-    --demo-inner-border-opacity: 0.64;
+    --demo-inner-border-opacity: 0.736;
     --palette-glass-filter: url(#palette-glass-filter);
     --palette-glass-blur: 3px;
     --palette-glass-brightness: 1.12;
@@ -1571,10 +1612,10 @@ h3 {
 }
 
 .support-tooltip {
-    --demo-inner-border-light-alpha: 0.2;
+    --demo-inner-border-light-alpha: 0.22;
     --demo-inner-border-mid-alpha: 0.04;
     --demo-inner-border-dark-alpha: 0.22;
-    --demo-inner-border-opacity: 0.72;
+    --demo-inner-border-opacity: 0.828;
     position: absolute;
     bottom: calc(100% + 0.5rem);
     left: 0;
@@ -2128,10 +2169,10 @@ label.option-control {
 }
 
 .feature-column {
-    --demo-inner-border-light-alpha: 0.14;
+    --demo-inner-border-light-alpha: 0.16;
     --demo-inner-border-mid-alpha: 0.035;
     --demo-inner-border-dark-alpha: 0.18;
-    --demo-inner-border-opacity: 0.72;
+    --demo-inner-border-opacity: 0.828;
     --feature-card-bg: color-mix(
         in oklab,
         color-mix(

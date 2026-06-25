@@ -85,12 +85,12 @@ const spring = {
     restDelta: 0.001,
   },
   swatch: {
-    // Background-picker thumbnails (ζ≈0.66): a single, lively overshoot on
+    // Background-picker thumbnails (ζ≈0.89): a restrained overshoot on
     // hover/press, and a pop on selection (driven by a transient over-target,
-    // not a velocity kick) that settles in one clean bounce.
+    // not a velocity kick) that settles without feeling rubbery.
     type: "spring",
-    stiffness: 560,
-    damping: 26,
+    stiffness: 520,
+    damping: 34,
     mass: 0.7,
     restDelta: 0.001,
   },

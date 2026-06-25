@@ -380,8 +380,8 @@ function setSwatchScale(swatch, scale, animated = true, transition) {
       transition ??
         animation.spring?.swatch ?? {
           type: "spring",
-          stiffness: 560,
-          damping: 26,
+          stiffness: 520,
+          damping: 34,
           mass: 0.7,
           restDelta: 0.001,
         },
@@ -393,7 +393,7 @@ function syncSwatchSpring(swatch, animated = true) {
   const state = swatchStateFor(swatch);
   const checked = swatch.getAttribute("aria-checked") === "true";
   const scale = state.pressed
-    ? 0.9
+    ? 0.95
     : checked
       ? 1.08
       : state.hovered
@@ -404,8 +404,9 @@ function syncSwatchSpring(swatch, animated = true) {
 
 function springSwatchSelection(swatch) {
   // Pop: spring past the checked rest scale, then settle back to it. The
-  // transient over-target (1.18 → 1.08) reads as a deliberate selection bounce.
-  setSwatchScale(swatch, 1.18, true);
+  // transient over-target (1.13 → 1.08) reads as selection without a rubbery
+  // rebound.
+  setSwatchScale(swatch, 1.13, true);
   window.setTimeout(() => {
     syncSwatchSpring(swatch, true);
   }, 130);
