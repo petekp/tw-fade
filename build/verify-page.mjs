@@ -38,7 +38,7 @@ const structure = await page.evaluate(() => {
   }
 })
 
-const demoEdgeUtilities = ['fade-t', 'fade-b', 'fade-l', 'fade-r']
+const demoEdgeUtilities = ['fade-top', 'fade-bottom', 'fade-start', 'fade-end']
 const missingDemoEdgeUtilities = demoEdgeUtilities.filter((className) => {
   return !new RegExp(`\\.${className}\\s*\\{`).test(demoCss)
 })
@@ -46,7 +46,7 @@ const singleEdgeSpecimen = await page.evaluate(async () => {
   const specimen = document.querySelector('[data-demo="type-specimen"]')
   if (!specimen) return null
 
-  specimen.className = 'fade-t fade-size-2xl fade-range-md thin-scroll type-scale-sample h-64 overflow-auto p-5 sm:h-72'
+  specimen.className = 'fade-top fade-size-2xl fade-reveal-md thin-scroll type-scale-sample h-64 overflow-auto p-5 sm:h-72'
   specimen.scrollTop = 96
   specimen.scrollLeft = 96
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
@@ -54,10 +54,10 @@ const singleEdgeSpecimen = await page.evaluate(async () => {
   const cs = getComputedStyle(specimen)
   return {
     maskComposite: cs.maskComposite || cs.webkitMaskComposite,
-    hasMaskT: cs.getPropertyValue('--tw-fade-mask-t').trim() !== '',
-    hasMaskB: cs.getPropertyValue('--tw-fade-mask-b').trim() !== '',
-    hasMaskL: cs.getPropertyValue('--tw-fade-mask-l').trim() !== '',
-    hasMaskR: cs.getPropertyValue('--tw-fade-mask-r').trim() !== '',
+    maskT: cs.getPropertyValue('--tw-fade-mask-t').trim(),
+    maskB: cs.getPropertyValue('--tw-fade-mask-b').trim(),
+    maskL: cs.getPropertyValue('--tw-fade-mask-l').trim(),
+    maskR: cs.getPropertyValue('--tw-fade-mask-r').trim(),
   }
 })
 
@@ -103,16 +103,16 @@ const checks = [
   ['body is the real scroll container', structure.bodyIsScroller, String(structure.bodyIsScroller)],
   ['surface is on <html> (non-transparent)', !transparent(structure.htmlBg), structure.htmlBg],
   ['body is transparent (mask reveals the surface)', transparent(structure.bodyBg), structure.bodyBg],
-  ['body does not own a page-level fade utility', !/\bfade-[tblrxy]/.test(structure.bodyClass), structure.bodyClass],
+  ['body does not own a page-level fade utility', !/\bfade(?:\b|-)/.test(structure.bodyClass), structure.bodyClass],
   [
     'advanced demo supports a single top fade',
-    singleEdgeSpecimen?.hasMaskT === true &&
-      singleEdgeSpecimen.hasMaskB === false &&
-      singleEdgeSpecimen.hasMaskL === false &&
-      singleEdgeSpecimen.hasMaskR === false &&
+    /to bottom/.test(singleEdgeSpecimen?.maskT || '') &&
+      !/to top/.test(singleEdgeSpecimen?.maskB || '') &&
+      !/to right/.test(singleEdgeSpecimen?.maskL || '') &&
+      !/to left/.test(singleEdgeSpecimen?.maskR || '') &&
       /intersect/.test(singleEdgeSpecimen.maskComposite || ''),
     singleEdgeSpecimen
-      ? `t:${singleEdgeSpecimen.hasMaskT} b:${singleEdgeSpecimen.hasMaskB} l:${singleEdgeSpecimen.hasMaskL} r:${singleEdgeSpecimen.hasMaskR}`
+      ? `t:${/to bottom/.test(singleEdgeSpecimen.maskT)} b:${/to top/.test(singleEdgeSpecimen.maskB)} l:${/to right/.test(singleEdgeSpecimen.maskL)} r:${/to left/.test(singleEdgeSpecimen.maskR)}`
       : 'missing specimen',
   ],
   [

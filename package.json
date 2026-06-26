@@ -1,7 +1,7 @@
 {
   "name": "tw-fade",
-  "version": "0.6.0",
-  "description": "Elegant, CSS-driven scroll-edge fade masking for Tailwind CSS v4. Add fade-t/b/l/r (or -x/-y/-xy) to any scroll container to fade content into its surface at the edges — scroll-gated with zero JavaScript.",
+  "version": "0.7.0",
+  "description": "Elegant, CSS-driven scroll-edge fade masking for Tailwind CSS v4. Add fade-y, fade-x, fade-start, or fade-end to any scroll container to fade content into its surface at the edges — scroll-gated with zero JavaScript.",
   "keywords": [
     "tailwindcss",
     "tailwind-plugin",
@@ -35,6 +35,7 @@
     "src",
     "dist",
     "README.md",
+    "MIGRATING.md",
     "LICENSE"
   ],
   "scripts": {
@@ -45,7 +46,7 @@
     "generate:seo": "node scripts/generate-seo-assets.mjs",
     "release": "node scripts/release.mjs",
     "test": "node --test",
-    "verify": "node build/verify.mjs && node build/verify-dist.mjs && node build/verify-fade.mjs && node build/verify-demo-assets.mjs && node build/verify-page.mjs && node build/verify-demo-runtime.mjs && node build/verify-favicon.mjs && node build/verify-seo.mjs",
+    "verify": "node build/verify.mjs && node build/verify-horizontal-rtl.mjs && node build/verify-dist.mjs && node build/verify-fade.mjs && node build/verify-demo-assets.mjs && node build/verify-page.mjs && node build/verify-demo-runtime.mjs && node build/verify-favicon.mjs && node build/verify-seo.mjs",
     "prepublishOnly": "node scripts/build-css.mjs && node --test"
   },
   "peerDependencies": {

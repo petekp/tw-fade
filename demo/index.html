@@ -1180,7 +1180,7 @@
                                         </div>
                                         <div class="chat-msg chat-msg-out">
                                             <p class="chat-bubble">
-                                                set a larger range
+                                                set a larger reveal
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-in">
@@ -1190,7 +1190,7 @@
                                         </div>
                                         <div class="chat-msg chat-msg-out">
                                             <p class="chat-bubble">
-                                                use fade-t
+                                                use fade-top
                                             </p>
                                         </div>
                                     </div>
@@ -1214,15 +1214,15 @@
                         <code
                             class="fade-option-label mono-copy font-mono text-[1rem] font-normal leading-6"
                             data-fade-option-label
-                            aria-label="fade-xy fade-size-2xl fade-range-md"
+                            aria-label="fade-y fade-size-2xl fade-reveal-2xl"
                             ><span
                                 class="fade-option-token"
-                                data-fade-option-token="fade-xy"
+                                data-fade-option-token="fade-y"
                                 ><span class="fade-option-part">fade-</span
                                 ><span
                                     class="fade-option-part"
                                     data-fade-option-stem
-                                    >xy</span
+                                    >y</span
                                 ></span
                             >
                             <span
@@ -1237,13 +1237,13 @@
                             >
                             <span
                                 class="fade-option-token"
-                                data-fade-option-token="fade-range-md"
+                                data-fade-option-token="fade-reveal-2xl"
                                 ><span class="fade-option-part"
-                                    >fade-range-</span
+                                    >fade-reveal-</span
                                 ><span
                                     class="fade-option-part"
                                     data-fade-option-stem
-                                    >md</span
+                                    >2xl</span
                                 ></span
                             ></code
                         >
@@ -1254,7 +1254,7 @@
                             <div class="option-card-body">
                                 <div class="option-demo-panel">
                                     <div
-                                        class="fade-xy fade-size-2xl fade-range-md thin-scroll type-scale-sample h-[26.25rem] overflow-auto sm:h-[29.375rem]"
+                                        class="fade-y fade-size-2xl fade-reveal-2xl thin-scroll type-scale-sample h-[26.25rem] overflow-auto sm:h-[29.375rem]"
                                         data-demo="type-specimen"
                                     >
                                         <article
@@ -1431,23 +1431,23 @@
                                     </label>
                                     <label
                                         class="option-control"
-                                        for="fade-range-control"
+                                        for="fade-reveal-control"
                                     >
                                         <span class="option-control-heading">
                                             <span
                                                 class="option-control-label select-none"
-                                                >Scroll range</span
+                                                >Reveal distance</span
                                             >
                                             <output
                                                 class="fade-control-value mono-copy select-none font-mono"
-                                                for="fade-range-control"
-                                                data-fade-range-value
+                                                for="fade-reveal-control"
+                                                data-fade-reveal-value
                                                 >2xl</output
                                             >
                                         </span>
                                         <span class="option-slider-control">
                                             <input
-                                                id="fade-range-control"
+                                                id="fade-reveal-control"
                                                 class="fade-control-slider shrink-0"
                                                 type="range"
                                                 min="0"
@@ -1455,8 +1455,8 @@
                                                 step="1"
                                                 value="4"
                                                 aria-valuetext="double extra large"
-                                                data-fade-range-slider
-                                                data-fade-range-options="fade-range-sm fade-range-md fade-range-lg fade-range-xl fade-range-2xl fade-range-3xl fade-range-4xl"
+                                                data-fade-reveal-slider
+                                                data-fade-reveal-options="fade-reveal-sm fade-reveal-md fade-reveal-lg fade-reveal-xl fade-reveal-2xl fade-reveal-3xl fade-reveal-4xl"
                                             />
                                         </span>
                                     </label>
@@ -1476,7 +1476,7 @@
                                                 type="button"
                                                 aria-pressed="true"
                                                 aria-label="Toggle top edge fade"
-                                                data-fade-edge-toggle="t"
+                                                data-fade-edge-toggle="top"
                                             >
                                                 <svg
                                                     class="edge-toggle-svg"
@@ -1519,8 +1519,8 @@
                                                 class="edge-toggle-button"
                                                 type="button"
                                                 aria-pressed="false"
-                                                aria-label="Toggle right edge fade"
-                                                data-fade-edge-toggle="r"
+                                                aria-label="Toggle end edge fade"
+                                                data-fade-edge-toggle="end"
                                             >
                                                 <svg
                                                     class="edge-toggle-svg"
@@ -1564,7 +1564,7 @@
                                                 type="button"
                                                 aria-pressed="true"
                                                 aria-label="Toggle bottom edge fade"
-                                                data-fade-edge-toggle="b"
+                                                data-fade-edge-toggle="bottom"
                                             >
                                                 <svg
                                                     class="edge-toggle-svg"
@@ -1607,8 +1607,8 @@
                                                 class="edge-toggle-button"
                                                 type="button"
                                                 aria-pressed="false"
-                                                aria-label="Toggle left edge fade"
-                                                data-fade-edge-toggle="l"
+                                                aria-label="Toggle start edge fade"
+                                                data-fade-edge-toggle="start"
                                             >
                                                 <svg
                                                     class="edge-toggle-svg"
@@ -2009,14 +2009,14 @@
                                     x="91"
                                     y="84"
                                 >
-                                    xy
+                                    top
                                 </text>
                                 <text
                                     class="kin-line select-none kin-amb kin-tok kin-s-t"
                                     x="91"
                                     y="84"
                                 >
-                                    t
+                                    end
                                 </text>
                                 <text
                                     class="kin-line select-none kin-amb kin-tok kin-s-x"
@@ -2038,14 +2038,14 @@
                                     x="91"
                                     y="118"
                                 >
-                                    r
+                                    start
                                 </text>
                                 <text
                                     class="kin-line select-none kin-amb kin-tok kin-s-range"
                                     x="91"
                                     y="118"
                                 >
-                                    range-2xl
+                                    reveal-2xl
                                 </text>
                                 <text
                                     class="kin-line select-none kin-amb kin-tok kin-s-size"
@@ -2062,7 +2062,7 @@
                             Composable
                         </h3>
                         <p class="mt-2 text-base leading-7 text-neutral-400">
-                            Axis, size, range, and clear-zone utilities compose
+                            Axis, size, reveal, and clear-zone utilities compose
                             directly on the scroll container.
                         </p>
                     </article>
@@ -2166,7 +2166,7 @@
                 </div>
                 <div class="anybg-stage overflow-hidden">
                     <svg
-                        class="anybg-pattern fade-xy fade-static fade-size-2xl"
+                        class="anybg-pattern fade fade-always fade-size-2xl"
                         aria-hidden="true"
                         focusable="false"
                     >
@@ -2268,7 +2268,7 @@
                         />
                     </svg>
                     <div
-                        class="anybg-rail fade-x fade-range-sm fade-size-2xl thin-scroll overflow-x-auto"
+                        class="anybg-rail fade-x fade-reveal-sm fade-size-2xl thin-scroll overflow-x-auto"
                         data-demo="anybg"
                         role="group"
                         aria-label="Words dissolving over a patterned background"

@@ -1243,7 +1243,7 @@ h3 {
     }
 }
 
-/* Messages thread — the fade-t companion to the lexicon. It starts pinned to
+/* Messages thread — the fade-y companion to the lexicon. It starts pinned to
    the bottom (newest reply crisp) so scrolling up dissolves older messages into
    the top edge only. Height matches the lexicon so the two cards balance. */
 .chat-thread {
@@ -1315,7 +1315,7 @@ h3 {
    A plane-filling lattice can never present only whole motifs behind a hard
    rectangular edge — any straight container edge cuts through them at almost
    every size. So rather than hard-clip, we DISSOLVE the pattern's own four edges
-   using the plugin itself: the SVG carries `fade-xy fade-static`, which pins a
+   using the plugin itself: the SVG carries `fade fade-always`, which pins a
    permanent all-edge fade (no scroll needed). A motif the box slices is already
    transparent at the cut, so it feathers out instead of being chopped — at any
    width/height and through live resize, zero JS, and it dogfoods tw-fade. The
@@ -2061,31 +2061,31 @@ label.option-control {
         inset 0 0 0 4px color-mix(in oklab, var(--demo-focus) 62%, transparent);
 }
 
-.edge-toggle-button[data-fade-edge-toggle="t"] {
+.edge-toggle-button[data-fade-edge-toggle="top"] {
     clip-path: polygon(0 0, 100% 0, 50% 50%);
 }
 
-.edge-toggle-button[data-fade-edge-toggle="r"] {
+.edge-toggle-button[data-fade-edge-toggle="end"] {
     clip-path: polygon(100% 0, 100% 100%, 50% 50%);
 }
 
-.edge-toggle-button[data-fade-edge-toggle="b"] {
+.edge-toggle-button[data-fade-edge-toggle="bottom"] {
     clip-path: polygon(100% 100%, 0 100%, 50% 50%);
 }
 
-.edge-toggle-button[data-fade-edge-toggle="l"] {
+.edge-toggle-button[data-fade-edge-toggle="start"] {
     clip-path: polygon(0 100%, 0 0, 50% 50%);
 }
 
-.edge-toggle-button[data-fade-edge-toggle="r"] .edge-toggle-svg {
+.edge-toggle-button[data-fade-edge-toggle="end"] .edge-toggle-svg {
     --edge-rotation: 90deg;
 }
 
-.edge-toggle-button[data-fade-edge-toggle="b"] .edge-toggle-svg {
+.edge-toggle-button[data-fade-edge-toggle="bottom"] .edge-toggle-svg {
     --edge-rotation: 180deg;
 }
 
-.edge-toggle-button[data-fade-edge-toggle="l"] .edge-toggle-svg {
+.edge-toggle-button[data-fade-edge-toggle="start"] .edge-toggle-svg {
     --edge-rotation: -90deg;
 }
 
