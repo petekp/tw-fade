@@ -2152,7 +2152,7 @@ label.option-control {
     border: 1px solid
         color-mix(in oklab, var(--demo-border-strong) 34%, transparent);
     border-radius: 0.5rem;
-    background: color-mix(in oklab, var(--demo-page-bg) 62%, transparent);
+    background: color-mix(in oklab, var(--demo-page-bg) 35%, transparent);
 }
 
 .dir-toggle-option {
