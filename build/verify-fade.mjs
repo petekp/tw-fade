@@ -204,12 +204,12 @@ const scopedBottomCross = crossing([...scopedLum].reverse())
 const nestLum = await profileLine({
   axis: 'y',
   innerSelector: '#inner',
-  body: `<div style="--tw-fade-size: 120px; --tw-fade-reveal: 96px"><div id="inner" data-scroll class="fade-y panel-v">${blocks('vb', 40)}</div></div>`,
+  body: `<div style="--tw-fade-size: 120px; --tw-fade-ramp: 96px"><div id="inner" data-scroll class="fade-y panel-v">${blocks('vb', 40)}</div></div>`,
 })
 const nestCross = crossing(nestLum)
 
 // 6. Mixed individual edges. This catches the cascade failure where one utility's
-//    animation shorthand used to overwrite the other edge's reveal animation.
+//    animation shorthand used to overwrite the other edge's ramp animation.
 const combo = await samplePanel({
   innerSelector: '#combo',
   body: `<div id="combo" data-scroll class="fade-top fade-end panel-xy"><div class="xy-plane"></div></div>`,

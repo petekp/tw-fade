@@ -23,8 +23,8 @@ it also explains the [naming rationale](./MIGRATING.md#why-plain-directions).
 - **Breaking:** the public API is now plain directions — `fade`, `fade-y`, `fade-top`,
   `fade-bottom`, `fade-x`, `fade-start`, `fade-end` — replacing the old physical
   `fade-t/b/l/r/x/y/xy` set.
-- **Breaking:** `fade-range-*` renamed to `fade-reveal-*` (and `--fade-range-*` →
-  `--fade-reveal-*`).
+- **Breaking:** `fade-range-*` renamed to `fade-ramp-*` (and `--fade-range-*` →
+  `--fade-ramp-*`).
 - **Breaking:** `fade-static` renamed to `fade-always`.
 - The prebuilt CDN example in the README is pinned to a fixed version; unversioned
   URLs track latest and will receive breaking renames.

@@ -21,7 +21,7 @@ A static gradient overlay is always on. It dims content even when nothing is hid
 - **Scroll-aware.** The fade is gated by the element's own scroll position.
 - **No extra DOM.** The mask lives on the scroll container.
 - **Surface-neutral.** The mask reveals whatever is behind the element instead of painting a fake background color.
-- **Composable.** Direction, size, reveal distance, and clear zones are separate utilities.
+- **Composable.** Direction, size, ramp distance, and clear zones are separate utilities.
 - **Graceful fallback.** Browsers without scroll-driven animations get a static fade instead of a broken mask.
 
 ## Install
@@ -72,8 +72,8 @@ Put the fade utility on the element that actually scrolls.
 <!-- Compose single edges -->
 <div class="fade-top fade-end h-80 overflow-auto">...</div>
 
-<!-- Tune the band and reveal distance -->
-<div class="fade-y fade-size-lg fade-reveal-xl h-80 overflow-y-auto">...</div>
+<!-- Tune the band and ramp distance -->
+<div class="fade-y fade-size-lg fade-ramp-xl h-80 overflow-y-auto">...</div>
 ```
 
 ## Direction Utilities
@@ -137,22 +137,22 @@ On the Tailwind source path, size accepts named values, lengths, and percentages
 
 The prebuilt CSS includes the named sizes only.
 
-## Reveal Distance
+## Ramp Distance
 
-Reveal distance controls how much scroll travel is used to bring a fade in or out.
+Ramp distance controls how much scroll travel is used to bring a fade in or out.
 
 | Utility | Affects |
 | --- | --- |
-| `fade-reveal-*` | all selected edges |
+| `fade-ramp-*` | all selected edges |
 
 ```html
-<div class="fade-y fade-reveal-sm overflow-y-auto">...</div>
-<div class="fade-y fade-reveal-[80px] overflow-y-auto">...</div>
+<div class="fade-y fade-ramp-sm overflow-y-auto">...</div>
+<div class="fade-y fade-ramp-[80px] overflow-y-auto">...</div>
 ```
 
-A smaller reveal distance snaps the fade in faster. A larger distance eases it over more scroll.
+A smaller ramp distance snaps the fade in faster. A larger distance eases it over more scroll.
 
-The named reveal scale is the same as the size scale and can be overridden with `--fade-reveal-{step}`. Arbitrary reveal values are source-path only.
+The named ramp scale is the same as the size scale and can be overridden with `--fade-ramp-{step}`. Arbitrary ramp values are source-path only.
 
 ## Clear Zones
 
@@ -250,7 +250,7 @@ Two details matter:
 | --- | --- | --- |
 | Needs Tailwind v4 | yes | no |
 | Direction utilities | yes | yes |
-| Named size/reveal/clear utilities | yes | yes |
+| Named size/ramp/clear utilities | yes | yes |
 | `fade-clear-*-var` | yes | yes |
 | Arbitrary values like `fade-size-[6rem]` | yes | no |
 | Integer clear values like `fade-clear-top-14` | yes | no |

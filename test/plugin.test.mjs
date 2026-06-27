@@ -18,7 +18,7 @@ const root = path.resolve(__dirname, '..')
 const css = compileCss()
 const customCss = compileCss({
   classes:
-    'fade-size-[15%] fade-size-top-[56px] fade-reveal-[80px] fade-clear-14 fade-clear-y-14 fade-clear-x-14 fade-clear-top-14 fade-clear-bottom-14 fade-clear-start-14 fade-clear-end-14',
+    'fade-size-[15%] fade-size-top-[56px] fade-ramp-[80px] fade-clear-14 fade-clear-y-14 fade-clear-x-14 fade-clear-top-14 fade-clear-bottom-14 fade-clear-start-14 fade-clear-end-14',
 })
 
 function block(selector, source = css) {
@@ -171,7 +171,7 @@ test('registers amounts as typed numbers and config/routing vars as universal no
     assert.equal(prop['initial-value'], '0')
   }
 
-  for (const v of [...SIZE_VARS, '--tw-fade-reveal', ...CLEAR_VARS, ...MASK_VARS, ...ROUTING_VARS]) {
+  for (const v of [...SIZE_VARS, '--tw-fade-ramp', ...CLEAR_VARS, ...MASK_VARS, ...ROUTING_VARS]) {
     const prop = property(v)
     assert.ok(prop, `missing @property ${v}`)
     assert.equal(prop.syntax, '"*"')
@@ -214,16 +214,16 @@ test('prebuilt dist is generated from the current default compile output', () =>
 
 test('leading and trailing keyframes include RTL horizontal variants', () => {
   const kf = (n) => block('@keyframes ' + n)
-  assert.match(kf('tw-fade-reveal-t'), /from\s*\{[^}]*--tw-fade-t:\s*0/)
-  assert.match(kf('tw-fade-reveal-t'), /to\s*\{[^}]*--tw-fade-t:\s*1/)
-  assert.match(kf('tw-fade-reveal-b'), /from\s*\{[^}]*--tw-fade-b:\s*1/)
-  assert.match(kf('tw-fade-reveal-b'), /to\s*\{[^}]*--tw-fade-b:\s*0/)
-  assert.match(kf('tw-fade-reveal-l'), /from\s*\{[^}]*--tw-fade-l:\s*0/)
-  assert.match(kf('tw-fade-reveal-r'), /from\s*\{[^}]*--tw-fade-r:\s*1/)
-  assert.match(kf('tw-fade-reveal-r-leading'), /from\s*\{[^}]*--tw-fade-r:\s*0/)
-  assert.match(kf('tw-fade-reveal-r-leading'), /to\s*\{[^}]*--tw-fade-r:\s*1/)
-  assert.match(kf('tw-fade-reveal-l-trailing'), /from\s*\{[^}]*--tw-fade-l:\s*1/)
-  assert.match(kf('tw-fade-reveal-l-trailing'), /to\s*\{[^}]*--tw-fade-l:\s*0/)
+  assert.match(kf('tw-fade-ramp-t'), /from\s*\{[^}]*--tw-fade-t:\s*0/)
+  assert.match(kf('tw-fade-ramp-t'), /to\s*\{[^}]*--tw-fade-t:\s*1/)
+  assert.match(kf('tw-fade-ramp-b'), /from\s*\{[^}]*--tw-fade-b:\s*1/)
+  assert.match(kf('tw-fade-ramp-b'), /to\s*\{[^}]*--tw-fade-b:\s*0/)
+  assert.match(kf('tw-fade-ramp-l'), /from\s*\{[^}]*--tw-fade-l:\s*0/)
+  assert.match(kf('tw-fade-ramp-r'), /from\s*\{[^}]*--tw-fade-r:\s*1/)
+  assert.match(kf('tw-fade-ramp-r-leading'), /from\s*\{[^}]*--tw-fade-r:\s*0/)
+  assert.match(kf('tw-fade-ramp-r-leading'), /to\s*\{[^}]*--tw-fade-r:\s*1/)
+  assert.match(kf('tw-fade-ramp-l-trailing'), /from\s*\{[^}]*--tw-fade-l:\s*1/)
+  assert.match(kf('tw-fade-ramp-l-trailing'), /to\s*\{[^}]*--tw-fade-l:\s*0/)
 })
 
 test('the shared mask setup owns four physical layers and scroll animation wiring', () => {
@@ -246,27 +246,27 @@ test('the shared mask setup owns four physical layers and scroll animation wirin
 test('direction classes select the expected layers and central RTL routing', () => {
   const top = block(TOP_SELECTOR)
   assert.equal(declValue(top, '--tw-fade-mask-t'), 'var(--tw-fade-gradient-t)')
-  assert.equal(declValue(top, '--tw-fade-animation-t'), 'tw-fade-reveal-t')
+  assert.equal(declValue(top, '--tw-fade-animation-t'), 'tw-fade-ramp-t')
   assert.equal(declValue(top, '--tw-fade-timeline-t'), 'scroll(self y)')
 
   const bottom = block(BOTTOM_SELECTOR)
   assert.equal(declValue(bottom, '--tw-fade-mask-b'), 'var(--tw-fade-gradient-b)')
-  assert.equal(declValue(bottom, '--tw-fade-animation-b'), 'tw-fade-reveal-b')
+  assert.equal(declValue(bottom, '--tw-fade-animation-b'), 'tw-fade-ramp-b')
   assert.equal(declValue(bottom, '--tw-fade-timeline-b'), 'scroll(self y)')
 
   const start = block(START_SELECTOR)
   assert.equal(declValue(start, '--tw-fade-ltr-start-layer'), 'var(--tw-fade-gradient-l)')
   assert.equal(declValue(start, '--tw-fade-rtl-start-layer'), 'var(--tw-fade-gradient-r)')
-  assert.equal(declValue(start, '--tw-fade-ltr-start-animation'), 'tw-fade-reveal-l')
-  assert.equal(declValue(start, '--tw-fade-rtl-start-animation'), 'tw-fade-reveal-r-leading')
+  assert.equal(declValue(start, '--tw-fade-ltr-start-animation'), 'tw-fade-ramp-l')
+  assert.equal(declValue(start, '--tw-fade-rtl-start-animation'), 'tw-fade-ramp-r-leading')
   assert.equal(declValue(start, '--tw-fade-ltr-start-timeline'), 'scroll(self inline)')
   assert.equal(declValue(start, '--tw-fade-rtl-start-timeline'), 'scroll(self inline)')
 
   const end = block(END_SELECTOR)
   assert.equal(declValue(end, '--tw-fade-ltr-end-layer'), 'var(--tw-fade-gradient-r)')
   assert.equal(declValue(end, '--tw-fade-rtl-end-layer'), 'var(--tw-fade-gradient-l)')
-  assert.equal(declValue(end, '--tw-fade-ltr-end-animation'), 'tw-fade-reveal-r')
-  assert.equal(declValue(end, '--tw-fade-rtl-end-animation'), 'tw-fade-reveal-l-trailing')
+  assert.equal(declValue(end, '--tw-fade-ltr-end-animation'), 'tw-fade-ramp-r')
+  assert.equal(declValue(end, '--tw-fade-rtl-end-animation'), 'tw-fade-ramp-l-trailing')
 
   const rtl = block(RTL_SELECTOR)
   assert.ok(rtl, 'missing central RTL routing block')
@@ -310,7 +310,7 @@ test('static fallback pins selected fades on when scroll-driven animation is uns
   }
 })
 
-test('exposes the size and reveal scales as theme-backed utilities', () => {
+test('exposes the size and ramp scales as theme-backed utilities', () => {
   for (const [name] of SCALE) {
     assert.equal(declValue(block(`.fade-size-${name}`), '--tw-fade-size'), `var(--fade-size-${name})`)
     assert.equal(declValue(block(`.fade-size-y-${name}`), '--tw-fade-size-y'), `var(--fade-size-${name})`)
@@ -319,13 +319,13 @@ test('exposes the size and reveal scales as theme-backed utilities', () => {
     assert.equal(declValue(block(`.fade-size-bottom-${name}`), '--tw-fade-size-bottom'), `var(--fade-size-${name})`)
     assert.equal(declValue(block(`.fade-size-start-${name}`), '--tw-fade-size-start'), `var(--fade-size-${name})`)
     assert.equal(declValue(block(`.fade-size-end-${name}`), '--tw-fade-size-end'), `var(--fade-size-${name})`)
-    assert.equal(declValue(block(`.fade-reveal-${name}`), '--tw-fade-reveal'), `var(--fade-reveal-${name})`)
+    assert.equal(declValue(block(`.fade-ramp-${name}`), '--tw-fade-ramp'), `var(--fade-ramp-${name})`)
   }
   const rootBlock = block(':root, :host')
   for (const [name, units] of SCALE) {
     const expected = `calc(var(--spacing, 0.25rem) * ${units})`
     assert.equal(declValue(rootBlock, `--fade-size-${name}`), expected)
-    assert.equal(declValue(rootBlock, `--fade-reveal-${name}`), expected)
+    assert.equal(declValue(rootBlock, `--fade-ramp-${name}`), expected)
   }
   assert.equal(block('.fade-range-sm'), null)
   assert.equal(block('.fade-size-left-sm'), null)
@@ -352,12 +352,12 @@ test('size resolves as edge over axis over global over capped default', () => {
   )
 })
 
-test('arbitrary size and reveal utilities compile only through the source path', () => {
+test('arbitrary size and ramp utilities compile only through the source path', () => {
   assert.equal(declValue(block('.fade-size-\\[15\\%\\]', customCss), '--tw-fade-size'), '15%')
   assert.equal(declValue(block('.fade-size-top-\\[56px\\]', customCss), '--tw-fade-size-top'), '56px')
-  assert.equal(declValue(block('.fade-reveal-\\[80px\\]', customCss), '--tw-fade-reveal'), '80px')
+  assert.equal(declValue(block('.fade-ramp-\\[80px\\]', customCss), '--tw-fade-ramp'), '80px')
   assert.equal(block('.fade-size-\\[15\\%\\]'), null)
-  assert.equal(block('.fade-reveal-\\[80px\\]'), null)
+  assert.equal(block('.fade-ramp-\\[80px\\]'), null)
 })
 
 test('exposes directional clear utilities and source-path integer clear values', () => {

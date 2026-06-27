@@ -249,7 +249,7 @@ async function smokePage(browser, options) {
     )
   }
   assert(state.verticalRows >= 5, `${label}: vertical list rendered`, String(state.verticalRows))
-  assert(state.advancedLabel === 'fade-y fade-size-2xl fade-reveal-2xl', `${label}: advanced controls initialize class readout`, state.advancedLabel)
+  assert(state.advancedLabel === 'fade-y fade-size-2xl fade-ramp-2xl', `${label}: advanced controls initialize class readout`, state.advancedLabel)
   assert(state.edgePressed === 'true,false,true,false', `${label}: top and bottom edge toggles initialize on`, state.edgePressed)
   assert(state.easedLine && state.scrollAwareThumb && state.composableTokens >= 3, `${label}: key animated graphics rendered`)
   assert(state.documentOverflowX <= 1, `${label}: no document-level horizontal overflow`, String(state.documentOverflowX))

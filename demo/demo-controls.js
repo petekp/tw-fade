@@ -22,10 +22,10 @@ const installCopyButton = document.querySelector("[data-copy-install]");
 const installCopyIconStack = document.querySelector(".install-copy-icon-stack");
 const installCopyStatus = document.querySelector("[data-copy-install-status]");
 const fadeDepthSlider = document.querySelector("[data-fade-depth-slider]");
-const fadeRevealSlider = document.querySelector("[data-fade-reveal-slider]");
+const fadeRampSlider = document.querySelector("[data-fade-ramp-slider]");
 const fadeOptionLabel = document.querySelector("[data-fade-option-label]");
 const fadeDepthValue = document.querySelector("[data-fade-depth-value]");
-const fadeRevealValue = document.querySelector("[data-fade-reveal-value]");
+const fadeRampValue = document.querySelector("[data-fade-ramp-value]");
 const fadeSpecimen = document.querySelector('[data-demo="type-specimen"]');
 const fadeEdgeButtons = Array.from(
   document.querySelectorAll("[data-fade-edge-toggle]"),
@@ -54,27 +54,27 @@ const fadeDepthSizes = [
     aria: "quadruple extra large",
   },
 ];
-const fadeReveals = [
-  { className: "fade-reveal-sm", value: "sm", aria: "small" },
-  { className: "fade-reveal-md", value: "md", aria: "medium" },
-  { className: "fade-reveal-lg", value: "lg", aria: "large" },
+const fadeRamps = [
+  { className: "fade-ramp-sm", value: "sm", aria: "small" },
+  { className: "fade-ramp-md", value: "md", aria: "medium" },
+  { className: "fade-ramp-lg", value: "lg", aria: "large" },
   {
-    className: "fade-reveal-xl",
+    className: "fade-ramp-xl",
     value: "xl",
     aria: "extra large",
   },
   {
-    className: "fade-reveal-2xl",
+    className: "fade-ramp-2xl",
     value: "2xl",
     aria: "double extra large",
   },
   {
-    className: "fade-reveal-3xl",
+    className: "fade-ramp-3xl",
     value: "3xl",
     aria: "triple extra large",
   },
   {
-    className: "fade-reveal-4xl",
+    className: "fade-ramp-4xl",
     value: "4xl",
     aria: "quadruple extra large",
   },
@@ -890,7 +890,7 @@ function syncEdgeGradientDepth(depthIndex) {
 
 function fadeUtilityParts(className) {
   const prefix =
-    ["fade-size-", "fade-reveal-", "fade-"].find((candidate) =>
+    ["fade-size-", "fade-ramp-", "fade-"].find((candidate) =>
       className.startsWith(candidate),
     ) ?? "";
   return {
@@ -948,16 +948,16 @@ function flashFadeOptionParts(parts) {
   }
 }
 
-function setFadeOptionLabel(edgeClasses, sizeClass, revealClass) {
+function setFadeOptionLabel(edgeClasses, sizeClass, rampClass) {
   const nextState = {
     edgeClasses: [...edgeClasses],
     sizeClass,
-    revealClass,
+    rampClass,
   };
   const previous = fadeOptionReadoutState;
   const flashTargets = [];
   const fragment = document.createDocumentFragment();
-  const fullClassName = [...edgeClasses, sizeClass, revealClass].join(" ");
+  const fullClassName = [...edgeClasses, sizeClass, rampClass].join(" ");
   const previousEdgeClasses = previous?.edgeClasses ?? [];
   const edgeStemChanged =
     previous &&
@@ -989,8 +989,8 @@ function setFadeOptionLabel(edgeClasses, sizeClass, revealClass) {
 
   appendToken(sizeClass, previous?.sizeClass === sizeClass ? "none" : "stem");
   appendToken(
-    revealClass,
-    previous?.revealClass === revealClass ? "none" : "stem",
+    rampClass,
+    previous?.rampClass === rampClass ? "none" : "stem",
   );
 
   fadeOptionLabel.replaceChildren(fragment);
@@ -1002,10 +1002,10 @@ function setFadeOptionLabel(edgeClasses, sizeClass, revealClass) {
 function setFadeControls() {
   if (
     !fadeDepthSlider ||
-    !fadeRevealSlider ||
+    !fadeRampSlider ||
     !fadeOptionLabel ||
     !fadeDepthValue ||
-    !fadeRevealValue ||
+    !fadeRampValue ||
     !fadeSpecimen
   )
     return;
@@ -1014,12 +1014,12 @@ function setFadeControls() {
     fadeDepthSizes.length - 1,
     Math.max(0, Number(fadeDepthSlider.value)),
   );
-  const revealIndex = Math.min(
-    fadeReveals.length - 1,
-    Math.max(0, Number(fadeRevealSlider.value)),
+  const rampIndex = Math.min(
+    fadeRamps.length - 1,
+    Math.max(0, Number(fadeRampSlider.value)),
   );
   const nextSize = fadeDepthSizes[depthIndex];
-  const nextReveal = fadeReveals[revealIndex];
+  const nextRamp = fadeRamps[rampIndex];
   const activeEdges = fadeEdgeOrder.filter((edge) => {
     const button = fadeEdgeButtons.find(
       (candidate) => candidate.dataset.fadeEdgeToggle === edge,
@@ -1030,7 +1030,7 @@ function setFadeControls() {
   const utilityClasses = [
     ...edgeClasses,
     nextSize.className,
-    nextReveal.className,
+    nextRamp.className,
   ];
 
   fadeSpecimen.classList.remove(
@@ -1039,16 +1039,16 @@ function setFadeControls() {
     "fade-y",
     "fade-x",
     ...fadeDepthSizes.map((size) => size.className),
-    ...fadeReveals.map((reveal) => reveal.className),
+    ...fadeRamps.map((ramp) => ramp.className),
   );
   fadeSpecimen.classList.add(...utilityClasses);
-  setFadeOptionLabel(edgeClasses, nextSize.className, nextReveal.className);
+  setFadeOptionLabel(edgeClasses, nextSize.className, nextRamp.className);
   fadeDepthValue.textContent = nextSize.value;
-  fadeRevealValue.textContent = nextReveal.value;
+  fadeRampValue.textContent = nextRamp.value;
   fadeDepthSlider.setAttribute("aria-valuetext", nextSize.aria);
-  fadeRevealSlider.setAttribute("aria-valuetext", nextReveal.aria);
+  fadeRampSlider.setAttribute("aria-valuetext", nextRamp.aria);
   syncSliderKnob(fadeDepthSlider);
-  syncSliderKnob(fadeRevealSlider);
+  syncSliderKnob(fadeRampSlider);
   syncEdgeGradientDepth(depthIndex);
 }
 
@@ -1357,7 +1357,7 @@ fadeDepthSlider?.addEventListener("input", (event) => {
   setFadeControls();
 });
 
-fadeRevealSlider?.addEventListener("input", () => {
+fadeRampSlider?.addEventListener("input", () => {
   setFadeControls();
 });
 
@@ -1374,6 +1374,79 @@ for (const button of fadeEdgeButtons) {
 }
 
 setFadeControls();
+
+// --- Direction (LTR / RTL) -------------------------------------------------
+// The plugin routes RTL entirely through the :dir(rtl) selector, so flipping
+// the scroll container's `dir` attribute is all it takes to make fade-start /
+// fade-end swap physical edges. This control sets nothing but `dir` and lets
+// the CSS do the rest.
+const dirGroup = document.querySelector("[data-fade-dir-group]");
+if (dirGroup && fadeSpecimen) {
+  const dirOptions = Array.from(dirGroup.querySelectorAll("[data-fade-dir]"));
+
+  const hasHorizontalEdge = () =>
+    fadeEdgeButtons.some(
+      (button) =>
+        (button.dataset.fadeEdgeToggle === "start" ||
+          button.dataset.fadeEdgeToggle === "end") &&
+        button.getAttribute("aria-pressed") === "true",
+    );
+
+  // Block-axis edges (top / bottom) never flip with direction, so switching to
+  // RTL with no horizontal edge active would look like nothing happened. Enable
+  // `end` — it's the edge visible at the specimen's rest scroll position, so the
+  // left/right swap reads at once. The toggle springs on, so the user sees the
+  // cause rather than a hidden side effect.
+  const ensureHorizontalEdgeVisible = () => {
+    if (hasHorizontalEdge()) return;
+    const endButton = fadeEdgeButtons.find(
+      (button) => button.dataset.fadeEdgeToggle === "end",
+    );
+    if (!endButton) return;
+    endButton.setAttribute("aria-pressed", "true");
+    springEdgeToggleSelection(endButton);
+    setFadeControls();
+  };
+
+  const setDir = (dir, focus = false) => {
+    fadeSpecimen.setAttribute("dir", dir);
+    for (const option of dirOptions) {
+      const active = option.dataset.fadeDir === dir;
+      option.setAttribute("aria-checked", active ? "true" : "false");
+      // Roving tabindex: only the selected radio stays in the tab order.
+      option.tabIndex = active ? 0 : -1;
+      if (active && focus) option.focus();
+    }
+    if (dir === "rtl") ensureHorizontalEdgeVisible();
+  };
+
+  for (const option of dirOptions) {
+    option.tabIndex = option.getAttribute("aria-checked") === "true" ? 0 : -1;
+    option.addEventListener("click", () => setDir(option.dataset.fadeDir));
+  }
+
+  // Arrow keys move and select within the group, matching native radio semantics.
+  dirGroup.addEventListener("keydown", (event) => {
+    const current = dirOptions.indexOf(document.activeElement);
+    if (current === -1) return;
+    let next = null;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      next = (current + 1) % dirOptions.length;
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      next = (current - 1 + dirOptions.length) % dirOptions.length;
+    }
+    if (next === null) return;
+    event.preventDefault();
+    setDir(dirOptions[next].dataset.fadeDir, true);
+  });
+
+  // Establish the initial direction on the specimen (LTR by default) without
+  // tripping the RTL safeguard.
+  const initialDir =
+    dirOptions.find((option) => option.getAttribute("aria-checked") === "true")
+      ?.dataset.fadeDir ?? "ltr";
+  fadeSpecimen.setAttribute("dir", initialDir);
+}
 
 function syncFloatingPalette() {
   setFloatingPaletteVisible(document.body.scrollTop > 24);

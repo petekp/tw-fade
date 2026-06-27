@@ -1180,7 +1180,7 @@
                                         </div>
                                         <div class="chat-msg chat-msg-out">
                                             <p class="chat-bubble">
-                                                set a larger reveal
+                                                set a larger ramp
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-in">
@@ -1214,7 +1214,7 @@
                         <code
                             class="fade-option-label mono-copy font-mono text-[1rem] font-normal leading-6"
                             data-fade-option-label
-                            aria-label="fade-y fade-size-2xl fade-reveal-2xl"
+                            aria-label="fade-y fade-size-2xl fade-ramp-2xl"
                             ><span
                                 class="fade-option-token"
                                 data-fade-option-token="fade-y"
@@ -1237,9 +1237,9 @@
                             >
                             <span
                                 class="fade-option-token"
-                                data-fade-option-token="fade-reveal-2xl"
+                                data-fade-option-token="fade-ramp-2xl"
                                 ><span class="fade-option-part"
-                                    >fade-reveal-</span
+                                    >fade-ramp-</span
                                 ><span
                                     class="fade-option-part"
                                     data-fade-option-stem
@@ -1254,7 +1254,7 @@
                             <div class="option-card-body">
                                 <div class="option-demo-panel">
                                     <div
-                                        class="fade-y fade-size-2xl fade-reveal-2xl thin-scroll type-scale-sample h-[26.25rem] overflow-auto sm:h-[29.375rem]"
+                                        class="fade-y fade-size-2xl fade-ramp-2xl thin-scroll type-scale-sample h-[26.25rem] overflow-auto sm:h-[29.375rem]"
                                         data-demo="type-specimen"
                                     >
                                         <article
@@ -1398,68 +1398,6 @@
                                     </div>
                                 </div>
                                 <div class="option-controls-panel">
-                                    <label
-                                        class="option-control"
-                                        for="fade-depth-control"
-                                    >
-                                        <span class="option-control-heading">
-                                            <span
-                                                class="option-control-label select-none"
-                                                >Fade size</span
-                                            >
-                                            <output
-                                                class="fade-control-value mono-copy select-none font-mono"
-                                                for="fade-depth-control"
-                                                data-fade-depth-value
-                                                >2xl</output
-                                            >
-                                        </span>
-                                        <span class="option-slider-control">
-                                            <input
-                                                id="fade-depth-control"
-                                                class="fade-control-slider shrink-0"
-                                                type="range"
-                                                min="0"
-                                                max="6"
-                                                step="1"
-                                                value="4"
-                                                aria-valuetext="double extra large"
-                                                data-fade-depth-slider
-                                                data-fade-size-options="fade-size-sm fade-size-md fade-size-lg fade-size-xl fade-size-2xl fade-size-3xl fade-size-4xl"
-                                            />
-                                        </span>
-                                    </label>
-                                    <label
-                                        class="option-control"
-                                        for="fade-reveal-control"
-                                    >
-                                        <span class="option-control-heading">
-                                            <span
-                                                class="option-control-label select-none"
-                                                >Reveal distance</span
-                                            >
-                                            <output
-                                                class="fade-control-value mono-copy select-none font-mono"
-                                                for="fade-reveal-control"
-                                                data-fade-reveal-value
-                                                >2xl</output
-                                            >
-                                        </span>
-                                        <span class="option-slider-control">
-                                            <input
-                                                id="fade-reveal-control"
-                                                class="fade-control-slider shrink-0"
-                                                type="range"
-                                                min="0"
-                                                max="6"
-                                                step="1"
-                                                value="4"
-                                                aria-valuetext="double extra large"
-                                                data-fade-reveal-slider
-                                                data-fade-reveal-options="fade-reveal-sm fade-reveal-md fade-reveal-lg fade-reveal-xl fade-reveal-2xl fade-reveal-3xl fade-reveal-4xl"
-                                            />
-                                        </span>
-                                    </label>
                                     <div class="option-control">
                                         <span
                                             class="option-control-label select-none"
@@ -1649,6 +1587,102 @@
                                             </button>
                                         </div>
                                     </div>
+                                    <div class="option-control">
+                                        <span
+                                            class="option-control-label select-none"
+                                            id="fade-dir-control-label"
+                                            >Direction</span
+                                        >
+                                        <div
+                                            class="dir-toggle-group select-none"
+                                            role="radiogroup"
+                                            aria-labelledby="fade-dir-control-label"
+                                            data-fade-dir-group
+                                        >
+                                            <button
+                                                class="dir-toggle-option"
+                                                type="button"
+                                                role="radio"
+                                                aria-checked="true"
+                                                aria-label="LTR, left to right"
+                                                data-fade-dir="ltr"
+                                            >
+                                                LTR
+                                            </button>
+                                            <button
+                                                class="dir-toggle-option"
+                                                type="button"
+                                                role="radio"
+                                                aria-checked="false"
+                                                aria-label="RTL, right to left"
+                                                data-fade-dir="rtl"
+                                            >
+                                                RTL
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <label
+                                        class="option-control"
+                                        for="fade-depth-control"
+                                    >
+                                        <span class="option-control-heading">
+                                            <span
+                                                class="option-control-label select-none"
+                                                >Fade size</span
+                                            >
+                                            <output
+                                                class="fade-control-value mono-copy select-none font-mono"
+                                                for="fade-depth-control"
+                                                data-fade-depth-value
+                                                >2xl</output
+                                            >
+                                        </span>
+                                        <span class="option-slider-control">
+                                            <input
+                                                id="fade-depth-control"
+                                                class="fade-control-slider shrink-0"
+                                                type="range"
+                                                min="0"
+                                                max="6"
+                                                step="1"
+                                                value="4"
+                                                aria-valuetext="double extra large"
+                                                data-fade-depth-slider
+                                                data-fade-size-options="fade-size-sm fade-size-md fade-size-lg fade-size-xl fade-size-2xl fade-size-3xl fade-size-4xl"
+                                            />
+                                        </span>
+                                    </label>
+                                    <label
+                                        class="option-control"
+                                        for="fade-ramp-control"
+                                    >
+                                        <span class="option-control-heading">
+                                            <span
+                                                class="option-control-label select-none"
+                                                >Ramp</span
+                                            >
+                                            <output
+                                                class="fade-control-value mono-copy select-none font-mono"
+                                                for="fade-ramp-control"
+                                                data-fade-ramp-value
+                                                >2xl</output
+                                            >
+                                        </span>
+                                        <span class="option-slider-control">
+                                            <input
+                                                id="fade-ramp-control"
+                                                class="fade-control-slider shrink-0"
+                                                type="range"
+                                                min="0"
+                                                max="6"
+                                                step="1"
+                                                value="4"
+                                                aria-valuetext="double extra large"
+                                                data-fade-ramp-slider
+                                                data-fade-ramp-options="fade-ramp-sm fade-ramp-md fade-ramp-lg fade-ramp-xl fade-ramp-2xl fade-ramp-3xl fade-ramp-4xl"
+                                            />
+                                        </span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -2045,7 +2079,7 @@
                                     x="91"
                                     y="118"
                                 >
-                                    reveal-2xl
+                                    ramp-2xl
                                 </text>
                                 <text
                                     class="kin-line select-none kin-amb kin-tok kin-s-size"
@@ -2062,7 +2096,7 @@
                             Composable
                         </h3>
                         <p class="mt-2 text-base leading-7 text-neutral-400">
-                            Axis, size, reveal, and clear-zone utilities compose
+                            Axis, size, ramp, and clear-zone utilities compose
                             directly on the scroll container.
                         </p>
                     </article>
@@ -2268,7 +2302,7 @@
                         />
                     </svg>
                     <div
-                        class="anybg-rail fade-x fade-reveal-sm fade-size-2xl thin-scroll overflow-x-auto"
+                        class="anybg-rail fade-x fade-ramp-sm fade-size-2xl thin-scroll overflow-x-auto"
                         data-demo="anybg"
                         role="group"
                         aria-label="Words dissolving over a patterned background"
@@ -2391,7 +2425,7 @@
                                 data-side="top"
                                 role="tooltip"
                                 >Partial support in stable Firefox: the mask
-                                renders, but the reveal falls back to a static
+                                renders, but the ramp falls back to a static
                                 always-on fade.</span
                             >
                         </span>
