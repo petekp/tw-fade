@@ -274,25 +274,46 @@ async function smokePage(browser, options) {
   assert(/transform/.test(state.movingWillChange.easedLine), `${label}: eased line is composited`, state.movingWillChange.easedLine)
   assert(/opacity/.test(state.movingWillChange.token), `${label}: composable tokens expose compositor hints`, state.movingWillChange.token)
 
-  await page.evaluate(() => {
-    document.body.scrollTo({
-      top: Math.min(900, document.body.scrollHeight - document.body.clientHeight),
-      left: 0,
-      behavior: 'instant',
-    })
-  })
-  await page.waitForTimeout(240)
-  assert(await page.evaluate(() => Boolean(document.body)), `${label}: page survives scroll-linked animation probe`)
+  // Drive the scroll-linked wave field and confirm it morphs. Set scrollTop
+  // directly (the most portable scroll primitive) and dispatch the `scroll`
+  // event the field listens for: headless Linux WebKit does not always emit a
+  // native scroll event for a *programmatic* position change on an overflow
+  // body the way macOS WebKit does, which would otherwise freeze the wave and
+  // fail this check only in CI. Then poll for the morph (rAF-driven) instead
+  // of betting on a single fixed delay.
+  const waveAfterScroll = await page.evaluate(
+    async ({ initialD, initialHeight, reduced }) => {
+      const body = document.body
+      body.scrollTop = Math.min(900, body.scrollHeight - body.clientHeight)
+      body.dispatchEvent(new Event('scroll'))
+      const sample = () => ({
+        d: document.querySelector('[data-demo-wave-path]')?.getAttribute('d') ?? '',
+        height: document.querySelector('[data-demo-wave-pattern]')?.getAttribute('height') ?? '',
+        bodyAlive: Boolean(document.body),
+      })
+      if (reduced) return sample()
+      const deadline = performance.now() + 3000
+      let current = sample()
+      while (
+        performance.now() < deadline &&
+        current.height === initialHeight &&
+        current.d === initialD
+      ) {
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+        current = sample()
+      }
+      return current
+    },
+    { initialD: state.wavePathD, initialHeight: state.wavePatternHeight, reduced: reducedMotion },
+  )
+  assert(waveAfterScroll.bodyAlive, `${label}: page survives scroll-linked animation probe`)
   if (!reducedMotion) {
-    const waveAfterScroll = await page.evaluate(() => ({
-      d: document.querySelector('[data-demo-wave-path]')?.getAttribute('d') ?? '',
-      height: document.querySelector('[data-demo-wave-pattern]')?.getAttribute('height') ?? '',
-    }))
     assert(waveAfterScroll.d && waveAfterScroll.d !== state.wavePathD, `${label}: wave path geometry changes with scroll`, waveAfterScroll.d.slice(0, 32))
     assert(waveAfterScroll.height !== state.wavePatternHeight, `${label}: wave wavelength changes with scroll`, `${state.wavePatternHeight} -> ${waveAfterScroll.height}`)
   }
   await page.evaluate(() => {
-    document.body.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    document.body.scrollTop = 0
+    document.body.dispatchEvent(new Event('scroll'))
   })
   await page.waitForTimeout(120)
 
