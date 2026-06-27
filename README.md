@@ -88,9 +88,9 @@ Put the fade utility on the element that actually scrolls.
 | `fade-start` | horizontal start |
 | `fade-end` | horizontal end |
 
-`start` and `end` follow semantic reading direction for horizontal scrollers. In LTR, start is the left side and end is the right side. In RTL, start is the right side and end is the left side. Use the HTML `dir` attribute on the scroll container or an ancestor; a CSS-only `direction: rtl` rule does not trigger RTL routing.
+`start` and `end` are **horizontal only** and follow semantic reading direction. In LTR, start is the left edge and end is the right edge; in RTL, start is the right edge and end is the left edge. For the top or bottom edge use `fade-top` / `fade-bottom` — there is no `fade-block-start`. Use the HTML `dir` attribute on the scroll container or an ancestor; a CSS-only `direction: rtl` rule does not trigger RTL routing.
 
-Vertical names stay plain because they are not affected by text direction.
+Vertical names stay physical (`top` / `bottom`) because the block axis is not affected by text direction. This split — physical vertical, direction-aware horizontal — mirrors how Tailwind itself ships physical `top`/`bottom` insets alongside logical `ps`/`pe`. See [Why plain directions](./MIGRATING.md#why-plain-directions) for the naming rationale.
 
 ## Size
 
@@ -271,7 +271,7 @@ The prebuilt file is generated from an explicit safelist. It does not include Ta
 
 Each faded element gets a four-layer `mask-image`, one layer per physical edge. Inactive layers fall back to an opaque identity mask. Active layers use a 13-stop eased gradient.
 
-The public API uses plain direction names, but the internal engine still keeps four physical edge amounts. Those internal properties are typed numbers, do not inherit, and are driven by scroll animations. Keeping the engine physical makes the mask predictable; the public `start` and `end` utilities route to the correct physical side for LTR or RTL.
+The public API uses plain direction names, but the internal engine still keeps four physical edge amounts. Those internal properties are typed numbers, do not inherit, and are driven by scroll animations. Keeping the engine physical makes the mask predictable; the public `start` and `end` utilities route to the correct physical side for LTR or RTL in browsers that support the `:dir()` selector (see [Browser Support](#browser-support)).
 
 Inside browsers with scroll-driven animation support:
 
@@ -296,7 +296,7 @@ Horizontal fades are direction-aware:
 
 In that example, `fade-start` selects the right edge because the scroll container is RTL. `fade-end` selects the left edge. `fade-x` selects both.
 
-RTL routing follows semantic direction through `dir`, not a CSS-only `direction: rtl` declaration.
+RTL routing follows semantic direction through `dir`, not a CSS-only `direction: rtl` declaration. It relies on the `:dir()` selector, so on the narrow band of Chromium that supports scroll-driven animations but not `:dir()` (Chrome 115–119), RTL scrollers fall back to LTR edge mapping — see [Browser Support](#browser-support). LTR is unaffected.
 
 Vertical fades are unchanged by text direction.
 
@@ -306,16 +306,31 @@ Vertical fades are unchanged by text direction.
 
 ## Browser Support
 
-Two CSS features matter:
+Three CSS features carry different support floors:
 
-- CSS masking: available in current evergreen browsers.
-- Scroll-driven animations: available in Chromium and current WebKit; Firefox release gets the static fallback.
+- **CSS masking** (`mask-image`, `mask-composite`). Interoperable across current evergreen browsers.
+- **Scroll-driven animations** (`animation-timeline: scroll()`). Shipped by default in every major engine except Firefox release.
+- **The `:dir()` selector**, used to route `start` / `end` to the correct physical edge under RTL.
 
-Browsers without scroll-driven animations still render selected fades, but they render them as always-on static fades.
+| Engine | Masking | Scroll-driven animation | `:dir()` | Result |
+| --- | --- | --- | --- | --- |
+| Chrome / Edge | 120+ | 115+ | 120+ | Full scroll-gated, direction-aware fade |
+| Safari (WebKit) | 15.4+ | 26.0+ | 16.4+ | Full on 26+; static fade fallback below |
+| Firefox (release) | 53+ | not by default | 49+ | Static always-on fade |
+
+**Scroll-driven fallback.** Browsers without scroll-driven animations still render selected fades, but as always-on static fades. Safari 17.x / 18.x and Firefox release get this fallback (Firefox keeps scroll-driven animations behind a flag, default-on only in Nightly).
+
+**RTL routing floor.** Direction-aware `start` / `end` routing additionally needs `:dir()`. On the narrow band of Chromium that has scroll-driven animations but not `:dir()` (Chrome 115–119), RTL scrollers fall back to LTR physical-edge mapping — the fade still renders, but `start` / `end` map to the wrong side. LTR is unaffected, and that band is effectively gone on auto-updating Chromium.
+
+**Older WebKit** may also need `-webkit-mask-*`; run the prebuilt CSS through Autoprefixer if you target it.
 
 ## Migrating
 
-See [MIGRATING.md](./MIGRATING.md) for the breaking rename map.
+Upgrading from `0.6.x`? [MIGRATING.md](./MIGRATING.md) is written as a step-by-step
+procedure you can hand straight to a coding agent ("upgrade this project to tw-fade
+0.7.0 using MIGRATING.md") — ordered renames, the physical→logical RTL caveats to
+review by hand, and a one-line grep to verify nothing was missed. It reads fine for
+humans too.
 
 ## Development
 

@@ -68,6 +68,12 @@ const SCALE = [
 ]
 
 const PUBLIC_DIRECTIONS = ['fade', 'fade-y', 'fade-top', 'fade-bottom', 'fade-x', 'fade-start', 'fade-end']
+// Classes that must NOT compile, both groups intentional:
+//  - the old physical API removed in 0.7.0 (fade-t/b/l/r, fade-xy, fade-static, fade-left/right);
+//  - the fully-logical block/inline aliases from an earlier draft. The shipped API deliberately
+//    uses plain directions (physical top/bottom, direction-aware start/end) instead of
+//    fade-inline-start / fade-block-* — see "Why Plain Directions" in MIGRATING.md. Re-adding
+//    any of these should be a conscious decision, not an accidental regression.
 const REJECTED_CLASSES = [
   'fade-t',
   'fade-b',

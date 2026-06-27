@@ -461,6 +461,20 @@ fades from leaking size, reveal, clearance, mask, or routing state.
         --tw-fade-timeline-r: var(--tw-fade-ltr-end-timeline, none);
         --tw-fade-animation-range-l: var(--tw-fade-ltr-start-animation-range, normal);
         --tw-fade-animation-range-r: var(--tw-fade-ltr-end-animation-range, normal);
+        /*
+        Neutral block-axis defaults. Unlike the l/r hooks above, the t/b
+        animation/timeline/range vars are not @property-registered and are set
+        only in the axis blocks below, so without a local default here a nested
+        fade child would inherit a parent's vertical hook and run a spurious
+        (inert) second scroll animation. The axis blocks override these by
+        source order at equal specificity, so top-level fades are unaffected.
+        */
+        --tw-fade-animation-t: none;
+        --tw-fade-animation-b: none;
+        --tw-fade-timeline-t: none;
+        --tw-fade-timeline-b: none;
+        --tw-fade-animation-range-t: normal;
+        --tw-fade-animation-range-b: normal;
         mask-image:
             var(--tw-fade-mask-t, var(--tw-fade-identity-mask)),
             var(--tw-fade-mask-b, var(--tw-fade-identity-mask)),

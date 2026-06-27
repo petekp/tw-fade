@@ -753,6 +753,12 @@
     --tw-fade-timeline-r: var(--tw-fade-ltr-end-timeline, none);
     --tw-fade-animation-range-l: var(--tw-fade-ltr-start-animation-range, normal);
     --tw-fade-animation-range-r: var(--tw-fade-ltr-end-animation-range, normal);
+    --tw-fade-animation-t: none;
+    --tw-fade-animation-b: none;
+    --tw-fade-timeline-t: none;
+    --tw-fade-timeline-b: none;
+    --tw-fade-animation-range-t: normal;
+    --tw-fade-animation-range-b: normal;
     mask-image: var(--tw-fade-mask-t, var(--tw-fade-identity-mask)), var(--tw-fade-mask-b, var(--tw-fade-identity-mask)), var(--tw-fade-mask-l, var(--tw-fade-identity-mask)), var(--tw-fade-mask-r, var(--tw-fade-identity-mask));
     mask-composite: intersect;
     mask-repeat: no-repeat;

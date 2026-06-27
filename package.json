@@ -12,7 +12,11 @@
     "scroll-driven-animations",
     "scrim",
     "edge-fade",
-    "overflow"
+    "overflow",
+    "rtl",
+    "direction-aware",
+    "logical-properties",
+    "bidi"
   ],
   "license": "MIT",
   "author": "Pete Petrash",
@@ -36,6 +40,7 @@
     "dist",
     "README.md",
     "MIGRATING.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
   "scripts": {
