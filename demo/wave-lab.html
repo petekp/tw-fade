@@ -436,27 +436,36 @@
       // explicit cubic segments (p0..p3) that compose it. The cubics let us
       // build closed fill shapes — either lobes (curve→tile-edge) or strips
       // (the negative space *between* two adjacent wave lines).
-      function columnPath(cx, s0, a, h, segs) {
-        let stroke = `M${r(cx)} 0`;
-        const cubics = [];
-        const p0 = { x: cx, y: 0 };
-        const p1 = { x: cx + s0 * a, y: 0.25 * h };
-        const p2 = { x: cx + s0 * a, y: 0.75 * h };
-        const p3 = { x: cx, y: h };
-        stroke += `C${r(p1.x)} ${r(p1.y)} ${r(p2.x)} ${r(p2.y)} ${r(p3.x)} ${r(p3.y)}`;
-        cubics.push({ p0, p1, p2, p3 });
+      // Short sine-matched spans remove the center-crossing curvature jump while
+      // keeping the old half-wave Bezier's tuned 45px visual reach.
+      const SINE_SEGMENTS_PER_CYCLE = 8;
+      const TUNED_AMPLITUDE_SCALE = 0.75;
 
-        let prevP2 = p2;
-        let prevP3 = p3;
-        for (let i = 1; i < segs; i += 1) {
-          const sign = s0 * (i % 2 === 0 ? 1 : -1);
-          const cp1 = { x: 2 * prevP3.x - prevP2.x, y: 2 * prevP3.y - prevP2.y };
-          const cp2 = { x: cx + sign * a, y: i * h + 0.75 * h };
-          const end = { x: cx, y: (i + 1) * h };
-          stroke += `S${r(cp2.x)} ${r(cp2.y)} ${r(end.x)} ${r(end.y)}`;
-          cubics.push({ p0: prevP3, p1: cp1, p2: cp2, p3: end });
-          prevP2 = cp2;
-          prevP3 = end;
+      function columnPath(cx, s0, amp, wl, cycles) {
+        const a = amp * TUNED_AMPLITUDE_SCALE;
+        const segs = SINE_SEGMENTS_PER_CYCLE * cycles;
+        const segmentH = wl / SINE_SEGMENTS_PER_CYCLE;
+        const phaseStep = (Math.PI * 2) / SINE_SEGMENTS_PER_CYCLE;
+        let stroke = "";
+        const cubics = [];
+
+        for (let i = 0; i < segs; i += 1) {
+          const phase0 = i * phaseStep;
+          const phase1 = phase0 + phaseStep;
+          const y0 = i * segmentH;
+          const y1 = (i + 1) * segmentH;
+          const x0 = cx + s0 * a * Math.sin(phase0);
+          const x3 = cx + s0 * a * Math.sin(phase1);
+          const dx0 = s0 * a * Math.cos(phase0) * phaseStep;
+          const dx1 = s0 * a * Math.cos(phase1) * phaseStep;
+          const p0 = { x: x0, y: y0 };
+          const p1 = { x: x0 + dx0 / 3, y: y0 + segmentH / 3 };
+          const p2 = { x: x3 - dx1 / 3, y: y1 - segmentH / 3 };
+          const p3 = { x: x3, y: y1 };
+
+          if (i === 0) stroke = `M${r(p0.x)} ${r(p0.y)}`;
+          stroke += `C${r(p1.x)} ${r(p1.y)} ${r(p2.x)} ${r(p2.y)} ${r(p3.x)} ${r(p3.y)}`;
+          cubics.push({ p0, p1, p2, p3 });
         }
 
         return { stroke, cubics };
@@ -502,11 +511,9 @@
       // they stay in a cheap repeating <pattern>. Per-strip stepped shading can't
       // tile, so it's built separately as explicit geometry (buildSteppedStrips).
       function buildWave(amp, wl) {
-        const a = amp;
-        const h = wl / 2;
-        const segs = 2 * Math.round(params.cycles);
+        const cycles = Math.round(params.cycles);
         const S = Math.round(params.spacing);
-        const H = Math.round(params.cycles) * wl;
+        const H = cycles * wl;
         const cols = Math.round(params.columns);
         const tileW = S * cols;
         let strokeD = "";
@@ -514,7 +521,7 @@
         for (let c = 0; c < cols; c += 1) {
           const cx = S * c + S / 2;
           const s0 = params.stagger && c % 2 === 1 ? -1 : 1;
-          const col = columnPath(cx, s0, a, h, segs);
+          const col = columnPath(cx, s0, amp, wl, cycles);
           strokeD += col.stroke;
           fillD += lobeFill(col, cx, S * c, S * (c + 1), H);
         }
@@ -550,12 +557,10 @@
       // darker. Built as explicit paths because per-strip shades can't tile.
       function buildSteppedStrips(amp, wl, Wf, Hf) {
         if (!Wf || !Hf) return "";
-        const a = amp;
-        const h = wl / 2;
         const S = Math.round(params.spacing);
-        const segs = 2 * (Math.ceil(Hf / wl) + 1); // cover full field height + overscan
-        const totalH = segs * h;
-        const base = columnPath(0, 1, a, h, segs).cubics; // one wave centered at x=0
+        const cycles = Math.ceil(Hf / wl) + 1; // cover full field height + overscan
+        const totalH = cycles * wl;
+        const base = columnPath(0, 1, amp, wl, cycles).cubics; // one wave centered at x=0
         const kMax = Math.ceil(Wf / S) + 1;
         let out = "";
         for (let k = -1; k < kMax; k += 1) {
@@ -875,27 +880,30 @@
           `    var r = function (v) { return Number(Number(v).toFixed(3)); };\n` +
           `    var lerp = function (a, b, t) { return a + (b - a) * t; };\n` +
           `    var clamp01 = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };\n` +
-          `    function buildWave(amp, wl) {\n` +
-          `      var h = wl / 2, segs = 2 * Math.round(P.cycles), cols = Math.round(P.columns);\n` +
-          `      var tileW = Math.round(P.spacing) * cols, H = Math.round(P.cycles) * wl, d = "";\n` +
-          `      for (var c = 0; c < cols; c++) {\n` +
-          `        var cx = P.spacing * c + P.spacing / 2, s0 = P.stagger && c % 2 === 1 ? -1 : 1;\n` +
-          `        d += "M" + r(cx) + " 0C" + r(cx + s0 * amp) + " " + r(0.25 * h) + " " + r(cx + s0 * amp) + " " + r(0.75 * h) + " " + r(cx) + " " + r(h);\n` +
-          `        for (var i = 1; i < segs; i++) { var sn = s0 * (i % 2 === 0 ? 1 : -1); d += "S" + r(cx + sn * amp) + " " + r(i * h + 0.75 * h) + " " + r(cx) + " " + r((i + 1) * h); }\n` +
-          `      }\n` +
-          `      return { d: d, tileW: tileW, H: H };\n` +
-          `    }\n` +
-          `    function columnCubics(cx, s0, amp, h, segs) {\n` +
-          `      var cs = [{ p0: { x: cx, y: 0 }, p1: { x: cx + s0 * amp, y: 0.25 * h }, p2: { x: cx + s0 * amp, y: 0.75 * h }, p3: { x: cx, y: h } }];\n` +
-          `      var pP2 = cs[0].p2, pP3 = cs[0].p3;\n` +
-          `      for (var i = 1; i < segs; i++) {\n` +
-          `        var sn = s0 * (i % 2 === 0 ? 1 : -1);\n` +
-          `        var cp1 = { x: 2 * pP3.x - pP2.x, y: 2 * pP3.y - pP2.y };\n` +
-          `        var cp2 = { x: cx + sn * amp, y: i * h + 0.75 * h };\n` +
-          `        var end = { x: cx, y: (i + 1) * h };\n` +
-          `        cs.push({ p0: pP3, p1: cp1, p2: cp2, p3: end }); pP2 = cp2; pP3 = end;\n` +
+          `    var SP = 8, AS = 0.75;\n` +
+          `    function columnCubics(cx, s0, amp, wl, cycles) {\n` +
+          `      var a = amp * AS, segs = SP * cycles, sh = wl / SP, step = Math.PI * 2 / SP, cs = [];\n` +
+          `      for (var i = 0; i < segs; i++) {\n` +
+          `        var p0a = i * step, p1a = p0a + step, y0 = i * sh, y1 = (i + 1) * sh;\n` +
+          `        var x0 = cx + s0 * a * Math.sin(p0a), x3 = cx + s0 * a * Math.sin(p1a);\n` +
+          `        var dx0 = s0 * a * Math.cos(p0a) * step, dx1 = s0 * a * Math.cos(p1a) * step;\n` +
+          `        cs.push({ p0: { x: x0, y: y0 }, p1: { x: x0 + dx0 / 3, y: y0 + sh / 3 }, p2: { x: x3 - dx1 / 3, y: y1 - sh / 3 }, p3: { x: x3, y: y1 } });\n` +
           `      }\n` +
           `      return cs;\n` +
+          `    }\n` +
+          `    function cubicsPath(cs) {\n` +
+          `      var d = "M" + r(cs[0].p0.x) + " " + r(cs[0].p0.y);\n` +
+          `      for (var i = 0; i < cs.length; i++) { var c = cs[i]; d += "C" + r(c.p1.x) + " " + r(c.p1.y) + " " + r(c.p2.x) + " " + r(c.p2.y) + " " + r(c.p3.x) + " " + r(c.p3.y); }\n` +
+          `      return d;\n` +
+          `    }\n` +
+          `    function buildWave(amp, wl) {\n` +
+          `      var cycles = Math.round(P.cycles), cols = Math.round(P.columns);\n` +
+          `      var tileW = Math.round(P.spacing) * cols, H = cycles * wl, d = "";\n` +
+          `      for (var c = 0; c < cols; c++) {\n` +
+          `        var cx = P.spacing * c + P.spacing / 2, s0 = P.stagger && c % 2 === 1 ? -1 : 1;\n` +
+          `        d += cubicsPath(columnCubics(cx, s0, amp, wl, cycles));\n` +
+          `      }\n` +
+          `      return { d: d, tileW: tileW, H: H };\n` +
           `    }\n` +
           `    function shift(cs, dx) { return cs.map(function (c) { return { p0: { x: c.p0.x + dx, y: c.p0.y }, p1: { x: c.p1.x + dx, y: c.p1.y }, p2: { x: c.p2.x + dx, y: c.p2.y }, p3: { x: c.p3.x + dx, y: c.p3.y } }; }); }\n` +
           `    function stripPath(L, R, cxL, cxR, H) {\n` +
@@ -914,9 +922,8 @@
           `    }\n` +
           `    function buildStrips(amp, wl, W, Hh) {\n` +
           `      if (!W || !Hh) return "";\n` +
-          `      var h = wl / 2, S = Math.round(P.spacing);\n` +
-          `      var segs = 2 * (Math.ceil(Hh / wl) + 1), totalH = segs * h;\n` +
-          `      var base = columnCubics(0, 1, amp, h, segs), out = "", kMax = Math.ceil(W / S) + 1;\n` +
+          `      var S = Math.round(P.spacing), cycles = Math.ceil(Hh / wl) + 1, totalH = cycles * wl;\n` +
+          `      var base = columnCubics(0, 1, amp, wl, cycles), out = "", kMax = Math.ceil(W / S) + 1;\n` +
           `      for (var k = -1; k < kMax; k++) {\n` +
           `        var cxL = k * S + S / 2, cxR = cxL + S;\n` +
           `        var d = stripPath(shift(base, cxL), shift(base, cxR), cxL, cxR, totalH);\n` +

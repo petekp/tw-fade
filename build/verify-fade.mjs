@@ -11,12 +11,12 @@
  *   2. horizontal (fade-x), default size — left & right melt to background
  *   3. an overridden size (inline `--tw-fade-size`, exactly what `fade-size-[120px]`
  *      JIT-emits) — the fade band SCALES to the larger size, not the default
- *   4. a scoped edge size (`fade-size-b-lg`) — the bottom band scales without
+ *   4. a scoped edge size (`fade-size-bottom-lg`) — the bottom band scales without
  *      changing the top band
  *   5. nested isolation — a DEFAULT fade under an ancestor that sets a larger
  *      `--tw-fade-size` still renders the DEFAULT band, proving the `@property`
  *      `inherits: false` registration stops size/range leaking down (the cascade fix)
- *   6. mixed individual edges (fade-t fade-r) — arbitrary edge utilities compose
+ *   6. mixed individual edges (fade-top fade-end) — arbitrary edge utilities compose
  *   7. nested single edge under a faded ancestor — mask layers do not leak down
  *
  * Usage: node build/verify-fade.mjs [path-to-css]   (defaults to the shipped dist)
@@ -192,7 +192,7 @@ const bigCross = crossing(bigLum)
 const scopedLum = await profileLine({
   axis: 'y',
   innerSelector: '#scoped',
-  body: `<div id="scoped" data-scroll class="fade-y fade-size-b-lg panel-v">${blocks('vb', 40)}</div>`,
+  body: `<div id="scoped" data-scroll class="fade-y fade-size-bottom-lg panel-v">${blocks('vb', 40)}</div>`,
 })
 const scopedTopCross = crossing(scopedLum)
 const scopedBottomCross = crossing([...scopedLum].reverse())
@@ -204,22 +204,22 @@ const scopedBottomCross = crossing([...scopedLum].reverse())
 const nestLum = await profileLine({
   axis: 'y',
   innerSelector: '#inner',
-  body: `<div style="--tw-fade-size: 120px; --tw-fade-range: 96px"><div id="inner" data-scroll class="fade-y panel-v">${blocks('vb', 40)}</div></div>`,
+  body: `<div style="--tw-fade-size: 120px; --tw-fade-ramp: 96px"><div id="inner" data-scroll class="fade-y panel-v">${blocks('vb', 40)}</div></div>`,
 })
 const nestCross = crossing(nestLum)
 
 // 6. Mixed individual edges. This catches the cascade failure where one utility's
-//    animation shorthand used to overwrite the other edge's reveal animation.
+//    animation shorthand used to overwrite the other edge's ramp animation.
 const combo = await samplePanel({
   innerSelector: '#combo',
-  body: `<div id="combo" data-scroll class="fade-t fade-r panel-xy"><div class="xy-plane"></div></div>`,
+  body: `<div id="combo" data-scroll class="fade-top fade-end panel-xy"><div class="xy-plane"></div></div>`,
 })
 
 // 7. A page-level/body-level fade used to leak its mask layer variables into
 //    nested single-edge examples. The child should fade only at the top.
 const nestedSingle = await samplePanel({
   innerSelector: '#nested-single',
-  body: `<div class="fade-y" style="padding: 120px 0"><div id="nested-single" data-scroll class="fade-t panel-v">${blocks('vb', 40)}</div></div>`,
+  body: `<div class="fade-y" style="padding: 120px 0"><div id="nested-single" data-scroll class="fade-top panel-v">${blocks('vb', 40)}</div></div>`,
 })
 
 await browser.close()
@@ -257,12 +257,12 @@ const checks = [
     `inner≈${nestCross}px (default≈${vCross}px, leaked≈${bigCross}px)`,
   ],
 
-  ['mixed fade-t fade-r: top edge masked toward background', combo.top < 60, `top≈${combo.top.toFixed(0)}`],
-  ['mixed fade-t fade-r: right edge masked toward background', combo.right < 60, `right≈${combo.right.toFixed(0)}`],
-  ['mixed fade-t fade-r: middle stays bright', combo.mid > 200, `mid≈${combo.mid.toFixed(0)}`],
-  ['nested fade-t: top edge masked toward background', nestedSingle.top < 60, `top≈${nestedSingle.top.toFixed(0)}`],
-  ['nested fade-t: bottom edge remains unmasked', nestedSingle.bottom > 200, `bottom≈${nestedSingle.bottom.toFixed(0)}`],
-  ['nested fade-t: middle stays bright', nestedSingle.mid > 200, `mid≈${nestedSingle.mid.toFixed(0)}`],
+  ['mixed fade-top fade-end: top edge masked toward background', combo.top < 60, `top≈${combo.top.toFixed(0)}`],
+  ['mixed fade-top fade-end: right edge masked toward background', combo.right < 60, `right≈${combo.right.toFixed(0)}`],
+  ['mixed fade-top fade-end: middle stays bright', combo.mid > 200, `mid≈${combo.mid.toFixed(0)}`],
+  ['nested fade-top: top edge masked toward background', nestedSingle.top < 60, `top≈${nestedSingle.top.toFixed(0)}`],
+  ['nested fade-top: bottom edge remains unmasked', nestedSingle.bottom > 200, `bottom≈${nestedSingle.bottom.toFixed(0)}`],
+  ['nested fade-top: middle stays bright', nestedSingle.mid > 200, `mid≈${nestedSingle.mid.toFixed(0)}`],
 ]
 
 console.log(`CSS: ${path.relative(path.resolve(__dirname, '..'), cssPath)}`)
@@ -271,7 +271,7 @@ console.log(
     `horizontal — left:${hLeft.toFixed(0)} mid:${hMid.toFixed(0)} right:${hRight.toFixed(0)} | ` +
     `crossings — default:${vCross} big:${bigCross} scoped-top:${scopedTopCross} scoped-bottom:${scopedBottomCross} nested:${nestCross} | ` +
     `combo — top:${combo.top.toFixed(0)} right:${combo.right.toFixed(0)} mid:${combo.mid.toFixed(0)} | ` +
-    `nested fade-t — top:${nestedSingle.top.toFixed(0)} bottom:${nestedSingle.bottom.toFixed(0)} mid:${nestedSingle.mid.toFixed(0)}`,
+    `nested fade-top — top:${nestedSingle.top.toFixed(0)} bottom:${nestedSingle.bottom.toFixed(0)} mid:${nestedSingle.mid.toFixed(0)}`,
 )
 console.log('\n=== FADE PIXEL CHECKS ===')
 let pass = 0

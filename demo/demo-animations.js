@@ -85,12 +85,12 @@ const spring = {
     restDelta: 0.001,
   },
   swatch: {
-    // Background-picker thumbnails (ζ≈0.66): a single, lively overshoot on
+    // Background-picker thumbnails (ζ≈0.89): a restrained overshoot on
     // hover/press, and a pop on selection (driven by a transient over-target,
-    // not a velocity kick) that settles in one clean bounce.
+    // not a velocity kick) that settles without feeling rubbery.
     type: "spring",
-    stiffness: 560,
-    damping: 26,
+    stiffness: 520,
+    damping: 34,
     mass: 0.7,
     restDelta: 0.001,
   },
@@ -301,56 +301,66 @@ if (!prefersReducedMotion) {
     const round = (value) => Number(value.toFixed(3));
     const lerp = (from, to, amount) => from + (to - from) * amount;
     const clamp01 = (value) => (value < 0 ? 0 : value > 1 ? 1 : value);
+    // Short sine-matched spans remove the center-crossing curvature jump while
+    // keeping the old half-wave Bezier's tuned 45px visual reach.
+    const sineSegmentsPerCycle = 8;
+    const tunedAmplitudeScale = 0.75;
     const currentScrollProgress = () => {
       const max = scroller.scrollHeight - scroller.clientHeight;
       return max > 0 ? Math.min(1, Math.max(0, scroller.scrollTop / max)) : 0;
     };
+    const columnCubics = (centerX, sign0, amplitude, wavelength, cycleCount) => {
+      const visualAmplitude = amplitude * tunedAmplitudeScale;
+      const segmentCount = sineSegmentsPerCycle * cycleCount;
+      const segmentHeight = wavelength / sineSegmentsPerCycle;
+      const phaseStep = (Math.PI * 2) / sineSegmentsPerCycle;
+      const cubics = [];
+
+      for (let segment = 0; segment < segmentCount; segment += 1) {
+        const phase0 = segment * phaseStep;
+        const phase1 = phase0 + phaseStep;
+        const y0 = segment * segmentHeight;
+        const y1 = (segment + 1) * segmentHeight;
+        const x0 = centerX + sign0 * visualAmplitude * Math.sin(phase0);
+        const x3 = centerX + sign0 * visualAmplitude * Math.sin(phase1);
+        const dx0 = sign0 * visualAmplitude * Math.cos(phase0) * phaseStep;
+        const dx1 = sign0 * visualAmplitude * Math.cos(phase1) * phaseStep;
+
+        cubics.push({
+          p0: { x: x0, y: y0 },
+          p1: { x: x0 + dx0 / 3, y: y0 + segmentHeight / 3 },
+          p2: { x: x3 - dx1 / 3, y: y1 - segmentHeight / 3 },
+          p3: { x: x3, y: y1 },
+        });
+      }
+
+      return cubics;
+    };
+
+    const cubicsPath = (cubics) => {
+      let d = `M${round(cubics[0].p0.x)} ${round(cubics[0].p0.y)}`;
+      for (const c of cubics) {
+        d += `C${round(c.p1.x)} ${round(c.p1.y)} ${round(c.p2.x)} ${round(c.p2.y)} ${round(c.p3.x)} ${round(c.p3.y)}`;
+      }
+      return d;
+    };
+
     const buildWave = (amplitude, wavelength) => {
-      const halfWave = wavelength / 2;
-      const segmentCount = 2 * Math.round(params.cycles);
+      const cycleCount = Math.round(params.cycles);
       const columnCount = Math.round(params.columns);
       const tileWidth = Math.round(params.spacing) * columnCount;
-      const tileHeight = Math.round(params.cycles) * wavelength;
+      const tileHeight = cycleCount * wavelength;
       let d = "";
 
       for (let column = 0; column < columnCount; column += 1) {
         const centerX = params.spacing * column + params.spacing / 2;
         const initialSign = params.stagger && column % 2 === 1 ? -1 : 1;
-        d += `M${round(centerX)} 0`;
-        d += `C${round(centerX + initialSign * amplitude)} ${round(0.25 * halfWave)} ${round(centerX + initialSign * amplitude)} ${round(0.75 * halfWave)} ${round(centerX)} ${round(halfWave)}`;
-
-        for (let segment = 1; segment < segmentCount; segment += 1) {
-          const sign = initialSign * (segment % 2 === 0 ? 1 : -1);
-          d += `S${round(centerX + sign * amplitude)} ${round(segment * halfWave + 0.75 * halfWave)} ${round(centerX)} ${round((segment + 1) * halfWave)}`;
-        }
+        d += cubicsPath(
+          columnCubics(centerX, initialSign, amplitude, wavelength, cycleCount),
+        );
       }
 
       return { d, tileWidth, tileHeight };
-    };
-
-    // Explicit cubic segments for one wave column (same shape as the stroke
-    // path), so the negative-space strips trace the exact wave edges.
-    const columnCubics = (centerX, sign0, amplitude, halfWave, segmentCount) => {
-      const cubics = [
-        {
-          p0: { x: centerX, y: 0 },
-          p1: { x: centerX + sign0 * amplitude, y: 0.25 * halfWave },
-          p2: { x: centerX + sign0 * amplitude, y: 0.75 * halfWave },
-          p3: { x: centerX, y: halfWave },
-        },
-      ];
-      let prevP2 = cubics[0].p2;
-      let prevP3 = cubics[0].p3;
-      for (let segment = 1; segment < segmentCount; segment += 1) {
-        const sign = sign0 * (segment % 2 === 0 ? 1 : -1);
-        const cp1 = { x: 2 * prevP3.x - prevP2.x, y: 2 * prevP3.y - prevP2.y };
-        const cp2 = { x: centerX + sign * amplitude, y: segment * halfWave + 0.75 * halfWave };
-        const end = { x: centerX, y: (segment + 1) * halfWave };
-        cubics.push({ p0: prevP3, p1: cp1, p2: cp2, p3: end });
-        prevP2 = cp2;
-        prevP3 = end;
-      }
-      return cubics;
     };
 
     const shiftCubics = (cubics, dx) =>
@@ -392,11 +402,10 @@ if (!prefersReducedMotion) {
 
     const buildStrips = (amplitude, wavelength, fieldWidth, fieldHeight) => {
       if (!fieldWidth || !fieldHeight) return "";
-      const halfWave = wavelength / 2;
       const spacing = Math.round(params.spacing);
-      const segmentCount = 2 * (Math.ceil(fieldHeight / wavelength) + 1);
-      const totalHeight = segmentCount * halfWave;
-      const base = columnCubics(0, 1, amplitude, halfWave, segmentCount);
+      const cycleCount = Math.ceil(fieldHeight / wavelength) + 1;
+      const totalHeight = cycleCount * wavelength;
+      const base = columnCubics(0, 1, amplitude, wavelength, cycleCount);
       const columnMax = Math.ceil(fieldWidth / spacing) + 1;
       let markup = "";
       for (let column = -1; column < columnMax; column += 1) {
