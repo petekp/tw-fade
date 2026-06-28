@@ -200,6 +200,10 @@ html[data-surface] {
     --demo-inner-border-dark-alpha: 0.22;
     --demo-inner-border-opacity: 0.9;
     --demo-inner-border-blend-mode: soft-light;
+    /* Distance over which the top light / bottom shadow fade out as they wrap the
+       corners. ~2x the corner radius, so the highlight eases off just past the curve
+       instead of hard-stopping at the corner miter. */
+    --demo-inner-border-taper: 1.75rem;
 
     /* Color for the stepped wave-strip fills. Matches the white wave strokes
        on every (dark) surface; overridable per theme for a tinted gradation. */
@@ -1003,6 +1007,45 @@ h3 {
     isolation: isolate;
 }
 
+/* Inner bevel highlight, drawn as two uniform-color borders rather than one per-side
+   border. Why a border at all: a border is the only ring primitive that follows the box's
+   corner-shape — round OR superellipse(1.35) — so it tracks the squircle exactly (a mask /
+   box-shadow ring always corners as a circle and mismatches the host). corner-shape is NOT
+   inherited and border-radius: inherit copies only the radius, so corner-shape: inherit is
+   required here; unsupported browsers drop it and both host + highlight stay round.
+   Why two layers + masks: a per-side border meets its top/side/bottom colors at a hard
+   miter seam at each corner. Instead, ::before paints a uniform light border and ::after a
+   uniform dark one, each faded with a linear-gradient mask so the top catch and bottom
+   shadow taper off smoothly as they wrap the corner. */
+:is(
+        .install-snippet,
+        .social-icon-link,
+        .tuning-card,
+        .feature-column,
+        .support-tooltip,
+        .floating-surface-palette
+    )::before,
+:is(
+        .install-snippet,
+        .social-icon-link,
+        .tuning-card,
+        .feature-column,
+        .support-tooltip,
+        .floating-surface-palette
+    )::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    corner-shape: inherit;
+    pointer-events: none;
+    border: var(--demo-inner-border-size) solid transparent;
+    mix-blend-mode: var(--demo-inner-border-blend-mode);
+    opacity: var(--demo-inner-border-opacity);
+}
+
+/* Light catch on the top edge, easing out as it rounds the top corners. */
 :is(
         .install-snippet,
         .social-icon-link,
@@ -1011,30 +1054,29 @@ h3 {
         .support-tooltip,
         .floating-surface-palette
     )::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    padding: var(--demo-inner-border-size);
-    border-radius: inherit;
-    pointer-events: none;
-    background: linear-gradient(
-        180deg,
-        rgb(255 255 255 / var(--demo-inner-border-light-alpha)) 0%,
-        rgb(255 255 255 / var(--demo-inner-border-mid-alpha)) 38%,
-        rgb(0 0 0 / var(--demo-inner-border-mid-alpha)) 68%,
-        rgb(0 0 0 / var(--demo-inner-border-dark-alpha)) 100%
+    border-color: rgb(255 255 255 / var(--demo-inner-border-light-alpha));
+    mask-image: linear-gradient(
+        to bottom,
+        #000,
+        transparent var(--demo-inner-border-taper)
     );
-    mix-blend-mode: var(--demo-inner-border-blend-mode);
-    opacity: var(--demo-inner-border-opacity);
-    -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-    mask-composite: exclude;
+}
+
+/* Shadow on the bottom edge, easing out as it rounds the bottom corners. */
+:is(
+        .install-snippet,
+        .social-icon-link,
+        .tuning-card,
+        .feature-column,
+        .support-tooltip,
+        .floating-surface-palette
+    )::after {
+    border-color: rgb(0 0 0 / var(--demo-inner-border-dark-alpha));
+    mask-image: linear-gradient(
+        to top,
+        #000,
+        transparent var(--demo-inner-border-taper)
+    );
 }
 
 .tuning-card {
