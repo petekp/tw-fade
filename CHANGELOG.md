@@ -22,7 +22,10 @@ it also explains the [naming rationale](./MIGRATING.md#why-plain-directions).
 
 - **Breaking:** the public API is now plain directions — `fade`, `fade-y`, `fade-top`,
   `fade-bottom`, `fade-x`, `fade-start`, `fade-end` — replacing the old physical
-  `fade-t/b/l/r/x/y/xy` set.
+  `fade-t` / `fade-b` / `fade-l` / `fade-r` / `fade-xy` set.
+- **Breaking:** `fade-x` keeps its name but now fades the inline **start + end** edges
+  (direction-aware), not a fixed physical left + right — so it flips under RTL.
+  `fade-y` is unchanged (the block axis never flips with text direction).
 - **Breaking:** `fade-range-*` renamed to `fade-ramp-*` (and `--fade-range-*` →
   `--fade-ramp-*`).
 - **Breaking:** `fade-static` renamed to `fade-always`.

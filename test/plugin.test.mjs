@@ -212,6 +212,33 @@ test('prebuilt dist is generated from the current default compile output', () =>
   assert.equal(dist, css)
 })
 
+// Guards against a dormant retired utility name surviving in the shipped CSS.
+// The REJECTED_CLASSES checks only prove the *default* compile omits a name; a
+// stray @utility / @property / @keyframes / theme token for a retired name
+// ("range" -> "ramp", and the never-shipped intermediate "reveal") could still
+// ship undetected. Scan the source and prebuilt artifacts on disk. Scoped to
+// the CSS files only — README/MIGRATING/CHANGELOG legitimately reference the
+// old names when documenting the rename. Token-specific patterns, so the
+// English verb "reveal" in prose/comments is never matched.
+test('shipped CSS carries no retired reveal/range token names', () => {
+  const retired = [
+    /fade-reveal/,
+    /fade-range/,
+    /--fade-reveal/,
+    /--fade-range/,
+    /--tw-fade-reveal/,
+    /--tw-fade-range/,
+    /tw-fade-reveal/,
+    /tw-fade-range/,
+  ]
+  for (const file of ['src/tw-fade.css', 'dist/tw-fade.css']) {
+    const source = fs.readFileSync(path.join(root, file), 'utf8')
+    for (const pattern of retired) {
+      assert.equal(pattern.test(source), false, `${file} still contains retired token ${pattern}`)
+    }
+  }
+})
+
 test('leading and trailing keyframes include RTL horizontal variants', () => {
   const kf = (n) => block('@keyframes ' + n)
   assert.match(kf('tw-fade-ramp-t'), /from\s*\{[^}]*--tw-fade-t:\s*0/)
