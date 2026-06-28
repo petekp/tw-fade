@@ -1,0 +1,354 @@
+/* tw-fade debug harness — UI chrome only. The plugin CSS is inlined separately
+ * by scripts/build-debug.mjs. Nothing here touches the fade engine; it only
+ * frames the sample scrollers and the control panel. */
+
+:root {
+  --ui-bg: #0d0f14;
+  --ui-panel: #151922;
+  --ui-panel-2: #1c2230;
+  --ui-line: #2a3140;
+  --ui-text: #e6e9ef;
+  --ui-dim: #9aa4b5;
+  --ui-accent: #6ea8fe;
+  --ui-accent-2: #5be0c0;
+  --ui-warn: #ffb454;
+  --stage-bg: #f4f5f7;
+  --stage-card: #ffffff;
+  --stage-text: #1b2430;
+  --stage-dim: #5b6675;
+  --stage-line: #e2e5ea;
+  --scroller-h: 220px;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  font: 13px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--ui-accent); }
+
+/* ---- Control panel ---------------------------------------------------- */
+
+.panel {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--ui-panel) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--ui-line);
+  padding: 12px 16px;
+}
+
+.panel-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 10px;
+}
+.panel-title h1 { font-size: 14px; margin: 0; letter-spacing: 0.2px; }
+.panel-title .sub { color: var(--ui-dim); font-size: 12px; }
+.panel-title .spacer { flex: 1; }
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: flex-end;
+}
+
+.ctrl { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.ctrl > label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--ui-dim);
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ctrl > label .val { color: var(--ui-accent-2); font-variant-numeric: tabular-nums; }
+
+.ctrl input[type="range"] { width: 168px; accent-color: var(--ui-accent); margin: 4px 0 0; }
+.ctrl select,
+.ctrl input[type="text"] {
+  background: var(--ui-panel-2);
+  color: var(--ui-text);
+  border: 1px solid var(--ui-line);
+  border-radius: 6px;
+  padding: 5px 8px;
+  font: inherit;
+}
+
+.seg { display: inline-flex; gap: 0; border: 1px solid var(--ui-line); border-radius: 7px; overflow: hidden; }
+.seg button {
+  background: var(--ui-panel-2);
+  color: var(--ui-dim);
+  border: 0;
+  border-right: 1px solid var(--ui-line);
+  padding: 5px 9px;
+  font: inherit;
+  cursor: pointer;
+}
+.seg button:last-child { border-right: 0; }
+.seg button:hover { color: var(--ui-text); }
+.seg button[aria-pressed="true"] { background: var(--ui-accent); color: #06121f; font-weight: 600; }
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ui-panel-2);
+  border: 1px solid var(--ui-line);
+  border-radius: 7px;
+  padding: 5px 9px;
+  cursor: pointer;
+  user-select: none;
+}
+.toggle input { accent-color: var(--ui-accent); margin: 0; }
+.toggle.warn[data-on="true"] { border-color: var(--ui-warn); color: var(--ui-warn); }
+
+.btn {
+  background: var(--ui-panel-2);
+  color: var(--ui-text);
+  border: 1px solid var(--ui-line);
+  border-radius: 7px;
+  padding: 6px 11px;
+  font: inherit;
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--ui-accent); }
+.btn.primary { background: var(--ui-accent); color: #06121f; border-color: transparent; font-weight: 600; }
+
+.scrubrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.scrubrow .steps { display: inline-flex; gap: 4px; }
+.scrubrow .steps button {
+  background: var(--ui-panel-2);
+  color: var(--ui-dim);
+  border: 1px solid var(--ui-line);
+  border-radius: 6px;
+  padding: 4px 7px;
+  font: 11px/1 ui-monospace, monospace;
+  cursor: pointer;
+}
+.scrubrow .steps button:hover { color: var(--ui-text); border-color: var(--ui-accent); }
+
+.hint { color: var(--ui-dim); font-size: 11px; margin: 8px 0 0; }
+.hint code { color: var(--ui-accent-2); }
+
+/* ---- Stage (sample area) --------------------------------------------- */
+
+.stage { padding: 18px 16px 64px; }
+
+.stage.bg-light { background: var(--stage-bg); }
+.stage.bg-dark  { background: #11151c; }
+.stage.bg-check {
+  background:
+    repeating-conic-gradient(#dfe3ea 0 25%, #c5ccd8 0 50%) 0 0 / 22px 22px;
+}
+.stage.bg-photo {
+  background: linear-gradient(125deg, #ff9a9e, #fad0c4 30%, #a1c4fd 65%, #c2e9fb);
+}
+
+.section-h {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 26px 4px 12px;
+  color: var(--stage-text);
+}
+.stage.bg-dark .section-h, .stage.bg-photo .section-h { color: #fff; }
+.section-h h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+.section-h .desc { font-size: 12px; color: var(--stage-dim); font-weight: 400; text-transform: none; letter-spacing: 0; }
+.stage.bg-dark .section-h .desc, .stage.bg-photo .section-h .desc { color: rgba(255,255,255,0.8); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.grid.sweep { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+
+.card {
+  background: var(--stage-card);
+  border: 1px solid var(--stage-line);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--stage-line);
+  background: #fafbfc;
+}
+.card-label { font-weight: 600; font-size: 12px; color: var(--stage-text); }
+.card-tag {
+  font: 10px/1 ui-monospace, monospace;
+  background: #eef1f6;
+  color: #46506a;
+  padding: 3px 6px;
+  border-radius: 5px;
+}
+.card-head .readout {
+  margin-left: auto;
+  font: 10px/1 ui-monospace, monospace;
+  color: var(--stage-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.card-note {
+  padding: 7px 10px;
+  font-size: 11px;
+  color: var(--stage-dim);
+  border-top: 1px solid var(--stage-line);
+  background: #fafbfc;
+}
+
+/* The scroll container that actually carries a fade-* class. Position
+ * relative so the optional band overlay can pin to it. */
+.scroller {
+  position: relative;
+  height: var(--scroller-h);
+  overflow: auto;
+  background: var(--stage-card);
+  color: var(--stage-text);
+  scrollbar-width: thin;
+}
+.scroller.h { overflow: auto; }
+.scroller.short { height: 120px; }
+.scroller.tiny { height: 84px; }
+
+.stage.bg-dark .card, .stage.bg-dark .scroller { background: #1b2230; color: #dfe5ee; border-color: #2a3346; }
+.stage.bg-dark .card-head, .stage.bg-dark .card-note { background: #161d29; border-color: #2a3346; }
+.stage.bg-dark .card-label { color: #eef2f8; }
+
+/* ---- Sample content -------------------------------------------------- */
+
+.body-pad { padding: 14px 16px; }
+.body-pad p { margin: 0 0 11px; }
+.body-pad h3 { margin: 0 0 8px; font-size: 14px; }
+
+.lead-in { padding-top: 48px; padding-bottom: 48px; }
+
+.minilist { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+.minicard {
+  border: 1px solid var(--stage-line);
+  border-radius: 9px;
+  padding: 10px 12px;
+  background: #fbfcfe;
+}
+.minicard b { display: block; font-size: 12px; }
+.minicard span { color: var(--stage-dim); font-size: 11px; }
+.stage.bg-dark .minicard { background: #222a3a; border-color: #313b50; }
+
+.tilegrid { padding: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tile { aspect-ratio: 4 / 3; border-radius: 9px; }
+
+.code { margin: 0; padding: 12px 14px; font: 11.5px/1.7 ui-monospace, SFMono-Regular, monospace; white-space: pre; color: #2b3850; }
+.stage.bg-dark .code { color: #c7d2e6; }
+
+.dense { padding: 0; }
+.dense .row {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--stage-line);
+  font-size: 12px;
+}
+.dense .row span:last-child { color: var(--stage-dim); font-variant-numeric: tabular-nums; }
+
+/* Horizontal content */
+.scroller.h .track { display: inline-flex; gap: 10px; padding: 14px; white-space: nowrap; height: 100%; align-items: center; }
+.chip {
+  flex: 0 0 auto;
+  border: 1px solid var(--stage-line);
+  border-radius: 999px;
+  padding: 8px 16px;
+  background: #fbfcfe;
+  font-size: 12px;
+  font-weight: 500;
+}
+.stage.bg-dark .chip { background: #222a3a; border-color: #313b50; }
+.hcard {
+  flex: 0 0 180px;
+  height: 150px;
+  border-radius: 11px;
+  padding: 12px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  font-weight: 600;
+}
+
+/* 2D content for fade (all edges) */
+.plane { width: 760px; padding: 14px; }
+.plane .grid2d { display: grid; grid-template-columns: repeat(8, 84px); gap: 8px; }
+.plane .cell { height: 84px; border-radius: 8px; display: grid; place-items: center; color: #fff; font-weight: 600; }
+
+/* Sticky header inside a scroller */
+.sticky-h {
+  position: sticky;
+  top: 0;
+  background: color-mix(in srgb, var(--stage-card) 86%, transparent);
+  backdrop-filter: blur(4px);
+  padding: 8px 14px;
+  font-weight: 600;
+  font-size: 12px;
+  border-bottom: 1px solid var(--stage-line);
+}
+.stage.bg-dark .sticky-h { background: color-mix(in srgb, #1b2230 86%, transparent); }
+
+/* Nested scroller card */
+.nested-outer { padding: 14px; }
+.nested-inner {
+  height: 150px;
+  overflow: auto;
+  border: 1px dashed var(--stage-line);
+  border-radius: 9px;
+  margin: 10px 0;
+  background: #fbfcfe;
+}
+.stage.bg-dark .nested-inner { background: #222a3a; }
+
+/* Scroll-snap */
+.snap { scroll-snap-type: y mandatory; }
+.snap .snapitem {
+  scroll-snap-align: start;
+  height: 110px;
+  margin: 8px 12px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* Container shapes (applied to .scroller via JS shape class) */
+.shape-rounded .scroller { border-radius: 14px; }
+.shape-squircle .scroller { border-radius: 26px; corner-shape: superellipse(1.8); }
+.shape-sharp .scroller { border-radius: 0; }
+.shape-rounded .card, .shape-squircle .card { border-radius: 14px; }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 6px 4px 0;
+  font-size: 11px;
+  color: var(--stage-dim);
+}
+.stage.bg-dark .legend, .stage.bg-photo .legend { color: rgba(255,255,255,0.85); }
+.legend .sw { display: inline-block; width: 11px; height: 11px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; }

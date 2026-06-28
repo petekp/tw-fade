@@ -46,6 +46,7 @@
   "scripts": {
     "build": "node scripts/build-css.mjs",
     "build:demo": "tailwindcss -i demo/input.css -o demo/styles.css",
+    "debug": "node scripts/build-debug.mjs",
     "export:demo": "node scripts/export-demo-static.mjs",
     "ship-demo": "node scripts/ship-demo.mjs",
     "generate:seo": "node scripts/generate-seo-assets.mjs",
