@@ -22,10 +22,10 @@ const installCopyButton = document.querySelector("[data-copy-install]");
 const installCopyIconStack = document.querySelector(".install-copy-icon-stack");
 const installCopyStatus = document.querySelector("[data-copy-install-status]");
 const fadeDepthSlider = document.querySelector("[data-fade-depth-slider]");
-const fadeRampSlider = document.querySelector("[data-fade-ramp-slider]");
+const fadeTravelSlider = document.querySelector("[data-fade-travel-slider]");
 const fadeOptionLabel = document.querySelector("[data-fade-option-label]");
 const fadeDepthValue = document.querySelector("[data-fade-depth-value]");
-const fadeRampValue = document.querySelector("[data-fade-ramp-value]");
+const fadeTravelValue = document.querySelector("[data-fade-travel-value]");
 const fadeSpecimen = document.querySelector('[data-demo="type-specimen"]');
 const fadeEdgeButtons = Array.from(
   document.querySelectorAll("[data-fade-edge-toggle]"),
@@ -54,27 +54,27 @@ const fadeDepthSizes = [
     aria: "quadruple extra large",
   },
 ];
-const fadeRamps = [
-  { className: "fade-ramp-sm", value: "sm", aria: "small" },
-  { className: "fade-ramp-md", value: "md", aria: "medium" },
-  { className: "fade-ramp-lg", value: "lg", aria: "large" },
+const fadeTravels = [
+  { className: "fade-travel-sm", value: "sm", aria: "small" },
+  { className: "fade-travel-md", value: "md", aria: "medium" },
+  { className: "fade-travel-lg", value: "lg", aria: "large" },
   {
-    className: "fade-ramp-xl",
+    className: "fade-travel-xl",
     value: "xl",
     aria: "extra large",
   },
   {
-    className: "fade-ramp-2xl",
+    className: "fade-travel-2xl",
     value: "2xl",
     aria: "double extra large",
   },
   {
-    className: "fade-ramp-3xl",
+    className: "fade-travel-3xl",
     value: "3xl",
     aria: "triple extra large",
   },
   {
-    className: "fade-ramp-4xl",
+    className: "fade-travel-4xl",
     value: "4xl",
     aria: "quadruple extra large",
   },
@@ -890,7 +890,7 @@ function syncEdgeGradientDepth(depthIndex) {
 
 function fadeUtilityParts(className) {
   const prefix =
-    ["fade-size-", "fade-ramp-", "fade-"].find((candidate) =>
+    ["fade-size-", "fade-travel-", "fade-"].find((candidate) =>
       className.startsWith(candidate),
     ) ?? "";
   return {
@@ -948,16 +948,16 @@ function flashFadeOptionParts(parts) {
   }
 }
 
-function setFadeOptionLabel(edgeClasses, sizeClass, rampClass) {
+function setFadeOptionLabel(edgeClasses, sizeClass, travelClass) {
   const nextState = {
     edgeClasses: [...edgeClasses],
     sizeClass,
-    rampClass,
+    travelClass,
   };
   const previous = fadeOptionReadoutState;
   const flashTargets = [];
   const fragment = document.createDocumentFragment();
-  const fullClassName = [...edgeClasses, sizeClass, rampClass].join(" ");
+  const fullClassName = [...edgeClasses, sizeClass, travelClass].join(" ");
   const previousEdgeClasses = previous?.edgeClasses ?? [];
   const edgeStemChanged =
     previous &&
@@ -989,8 +989,8 @@ function setFadeOptionLabel(edgeClasses, sizeClass, rampClass) {
 
   appendToken(sizeClass, previous?.sizeClass === sizeClass ? "none" : "stem");
   appendToken(
-    rampClass,
-    previous?.rampClass === rampClass ? "none" : "stem",
+    travelClass,
+    previous?.travelClass === travelClass ? "none" : "stem",
   );
 
   fadeOptionLabel.replaceChildren(fragment);
@@ -1002,10 +1002,10 @@ function setFadeOptionLabel(edgeClasses, sizeClass, rampClass) {
 function setFadeControls() {
   if (
     !fadeDepthSlider ||
-    !fadeRampSlider ||
+    !fadeTravelSlider ||
     !fadeOptionLabel ||
     !fadeDepthValue ||
-    !fadeRampValue ||
+    !fadeTravelValue ||
     !fadeSpecimen
   )
     return;
@@ -1014,12 +1014,12 @@ function setFadeControls() {
     fadeDepthSizes.length - 1,
     Math.max(0, Number(fadeDepthSlider.value)),
   );
-  const rampIndex = Math.min(
-    fadeRamps.length - 1,
-    Math.max(0, Number(fadeRampSlider.value)),
+  const travelIndex = Math.min(
+    fadeTravels.length - 1,
+    Math.max(0, Number(fadeTravelSlider.value)),
   );
   const nextSize = fadeDepthSizes[depthIndex];
-  const nextRamp = fadeRamps[rampIndex];
+  const nextTravel = fadeTravels[travelIndex];
   const activeEdges = fadeEdgeOrder.filter((edge) => {
     const button = fadeEdgeButtons.find(
       (candidate) => candidate.dataset.fadeEdgeToggle === edge,
@@ -1030,7 +1030,7 @@ function setFadeControls() {
   const utilityClasses = [
     ...edgeClasses,
     nextSize.className,
-    nextRamp.className,
+    nextTravel.className,
   ];
 
   fadeSpecimen.classList.remove(
@@ -1039,16 +1039,16 @@ function setFadeControls() {
     "fade-y",
     "fade-x",
     ...fadeDepthSizes.map((size) => size.className),
-    ...fadeRamps.map((ramp) => ramp.className),
+    ...fadeTravels.map((travel) => travel.className),
   );
   fadeSpecimen.classList.add(...utilityClasses);
-  setFadeOptionLabel(edgeClasses, nextSize.className, nextRamp.className);
+  setFadeOptionLabel(edgeClasses, nextSize.className, nextTravel.className);
   fadeDepthValue.textContent = nextSize.value;
-  fadeRampValue.textContent = nextRamp.value;
+  fadeTravelValue.textContent = nextTravel.value;
   fadeDepthSlider.setAttribute("aria-valuetext", nextSize.aria);
-  fadeRampSlider.setAttribute("aria-valuetext", nextRamp.aria);
+  fadeTravelSlider.setAttribute("aria-valuetext", nextTravel.aria);
   syncSliderKnob(fadeDepthSlider);
-  syncSliderKnob(fadeRampSlider);
+  syncSliderKnob(fadeTravelSlider);
   syncEdgeGradientDepth(depthIndex);
 }
 
@@ -1357,7 +1357,7 @@ fadeDepthSlider?.addEventListener("input", (event) => {
   setFadeControls();
 });
 
-fadeRampSlider?.addEventListener("input", () => {
+fadeTravelSlider?.addEventListener("input", () => {
   setFadeControls();
 });
 

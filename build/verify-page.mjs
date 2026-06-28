@@ -49,7 +49,7 @@ const singleEdgeSpecimen = await page.evaluate(async () => {
   const specimen = document.querySelector('[data-demo="type-specimen"]')
   if (!specimen) return null
 
-  specimen.className = 'fade-top fade-size-2xl fade-ramp-md thin-scroll type-scale-sample h-64 overflow-auto p-5 sm:h-72'
+  specimen.className = 'fade-top fade-size-2xl fade-travel-md thin-scroll type-scale-sample h-64 overflow-auto p-5 sm:h-72'
   specimen.scrollTop = 96
   specimen.scrollLeft = 96
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))

@@ -26,8 +26,14 @@ it also explains the [naming rationale](./MIGRATING.md#why-plain-directions).
 - **Breaking:** `fade-x` keeps its name but now fades the inline **start + end** edges
   (direction-aware), not a fixed physical left + right — so it flips under RTL.
   `fade-y` is unchanged (the block axis never flips with text direction).
-- **Breaking:** `fade-range-*` renamed to `fade-ramp-*` (and `--fade-range-*` →
-  `--fade-ramp-*`).
+- **Breaking:** `fade-range-*` renamed to `fade-travel-*` (and `--fade-range-*` →
+  `--fade-travel-*`).
+- Edge transparency is now decoupled from the travel. The masked edge saturates to
+  fully transparent within `travel ÷ --tw-fade-onset` (default `8`) of scroll, so a
+  leading edge is no longer hard-clipped while the band is still widening over the
+  travel. `fade-travel-*` now controls only how fast the soft band eases open (cosmetic,
+  safe at any size). Tune edge speed with `--tw-fade-onset`.
+- The default travel is now `sm` (was `md`), for a snappier band open.
 - **Breaking:** `fade-static` renamed to `fade-always`.
 - The prebuilt CDN example in the README is pinned to a fixed version; unversioned
   URLs track latest and will receive breaking renames.

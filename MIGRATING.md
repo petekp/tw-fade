@@ -18,7 +18,7 @@ fade   fade-y   fade-top   fade-bottom   fade-x   fade-start   fade-end
 
 Search the whole project, not just `.html`. Tokens appear in `class` / `className` strings (HTML, JSX/TSX, Vue, Svelte, Astro, templates), `@apply` rules, `@theme` overrides (`--fade-range-*`), and inline custom properties (`style="--fade-clear-l: 2"`).
 
-**Match whole tokens only.** A token is bounded by a quote, whitespace, backtick, or Tailwind variant colon (`:`). Variant prefixes stay attached: `sm:fade-t` → `sm:fade-top`, `hover:fade-l` → `hover:fade-start`. Never replace a *prefix* of a longer class — `fade-r` must not match inside `fade-range-*` (or the new `fade-ramp-*`). The Step 2 family rules are self-protecting because each prefix ends in `-`.
+**Match whole tokens only.** A token is bounded by a quote, whitespace, backtick, or Tailwind variant colon (`:`). Variant prefixes stay attached: `sm:fade-t` → `sm:fade-top`, `hover:fade-l` → `hover:fade-start`. Never replace a *prefix* of a longer class — `fade-r` must not match inside `fade-range-*` (or the new `fade-travel-*`). The Step 2 family rules are self-protecting because each prefix ends in `-`.
 
 ---
 
@@ -67,7 +67,7 @@ The suffix may be a named scale (`-md`), a bare integer (`-2`), or an arbitrary 
 | `fade-size-b-` | `fade-size-bottom-` |
 | `fade-size-l-` | `fade-size-start-` |
 | `fade-size-r-` | `fade-size-end-` |
-| `fade-range-` | `fade-ramp-` |
+| `fade-range-` | `fade-travel-` |
 | `fade-clear-t-` | `fade-clear-top-` |
 | `fade-clear-b-` | `fade-clear-bottom-` |
 | `fade-clear-l-` | `fade-clear-start-` |
@@ -75,7 +75,7 @@ The suffix may be a named scale (`-md`), a bare integer (`-2`), or an arbitrary 
 | `fade-clear-xy-` | `fade-clear-` |
 | `fade-size-x-` · `fade-size-y-` · `fade-clear-x-` · `fade-clear-y-` | _unchanged_ |
 
-`range` → `ramp` controls how quickly the fade appears and disappears during scroll. `fade-ramp-*` is **global only** — no per-edge ramp utilities.
+`range` → `travel` controls how quickly the soft band eases open as you scroll (the masked edge itself is now covered almost immediately — see the [changelog](./CHANGELOG.md)). `fade-travel-*` is **global only** — no per-edge travel utilities.
 
 ---
 
@@ -83,7 +83,7 @@ The suffix may be a named scale (`-md`), a bare integer (`-2`), or an arbitrary 
 
 | Old | New |
 | --- | --- |
-| `--fade-range-*` (e.g. `--fade-range-md`) | `--fade-ramp-*` |
+| `--fade-range-*` (e.g. `--fade-range-md`) | `--fade-travel-*` |
 | `--fade-clear-t` | `--fade-clear-top` |
 | `--fade-clear-b` | `--fade-clear-bottom` |
 | `--fade-clear-l` | `--fade-clear-start` |

@@ -18,7 +18,7 @@ async function probe(selector, { top, left, noSnap } = {}) {
       // Some probes measure the fade as a pure function of scroll offset. Snap
       // would pull a small programmatic scroll to the nearest row center, so the
       // exact offset (and thus the partial fade) depends on row height rather
-      // than the plugin. Disable snap for those to test the ramp itself.
+      // than the plugin. Disable snap for those to test the travel itself.
       const prevSnap = el.style.scrollSnapType
       if (disableSnap) el.style.scrollSnapType = 'none'
       if (scrollTop != null) el.scrollTop = scrollTop
@@ -58,7 +58,7 @@ const listMax = listTop.maxScrollTop
 results.list_top = listTop
 results.list_mid = await probe('[data-demo="list"]', { top: Math.round(listMax / 2) })
 results.list_bottom = await probe('[data-demo="list"]', { top: listMax })
-// Measure the fade ramp at a small offset with snap off: this asserts the
+// Measure the fade travel at a small offset with snap off: this asserts the
 // plugin reveals the top edge progressively, independent of where snap would
 // settle (which shifts with row height).
 results.list_quarter = await probe('[data-demo="list"]', { top: 25, noSnap: true })
