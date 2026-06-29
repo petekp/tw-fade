@@ -621,6 +621,18 @@ h3 {
 
 .fade-option-label {
     color: var(--demo-text-subtle);
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    /* Multi-edge selections push the class list to ~60ch, too wide for one line
+       on phones. Below sm, drop the whole label onto its own full-width row under
+       "Advanced" and let it wrap there as a block — never orphaning the first
+       token beside the heading, and never overflowing the viewport. */
+    .fade-option-label {
+        flex-basis: 100%;
+        white-space: normal;
+    }
 }
 
 .fade-option-token {
