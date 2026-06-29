@@ -1,8 +1,9 @@
 @import "tailwindcss" source(none);
 @import "../src/tw-fade.css";
+@import "tw-shimmer";
 @import "./vendor/tw-glass.css";
 
 /* Scan the demo markup for utility classes. */
 @source "./index.html";
 /* The Advanced sides control composes these classes at runtime. */
-@source inline("fade-{t,b,l,r}");
+@source inline("fade-{top,bottom,start,end}");

@@ -9,6 +9,9 @@
  *   - the advanced specimen can switch to one edge without dragging in the
  *     other mask layers
  *   - the horizontal rail starts on Recede and still moves selection on click
+ *   - the advanced Direction control swaps fade-start/fade-end to the opposite
+ *     physical edge under RTL, and the safeguard activates a horizontal edge
+ *     when none is set
  *
  * Usage: node build/verify-page.mjs
  */
@@ -38,7 +41,7 @@ const structure = await page.evaluate(() => {
   }
 })
 
-const demoEdgeUtilities = ['fade-t', 'fade-b', 'fade-l', 'fade-r']
+const demoEdgeUtilities = ['fade-top', 'fade-bottom', 'fade-start', 'fade-end']
 const missingDemoEdgeUtilities = demoEdgeUtilities.filter((className) => {
   return !new RegExp(`\\.${className}\\s*\\{`).test(demoCss)
 })
@@ -46,7 +49,7 @@ const singleEdgeSpecimen = await page.evaluate(async () => {
   const specimen = document.querySelector('[data-demo="type-specimen"]')
   if (!specimen) return null
 
-  specimen.className = 'fade-t fade-size-2xl fade-range-md thin-scroll type-scale-sample h-64 overflow-auto p-5 sm:h-72'
+  specimen.className = 'fade-top fade-size-2xl fade-travel-md thin-scroll type-scale-sample h-64 overflow-auto p-5 sm:h-72'
   specimen.scrollTop = 96
   specimen.scrollLeft = 96
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
@@ -54,10 +57,10 @@ const singleEdgeSpecimen = await page.evaluate(async () => {
   const cs = getComputedStyle(specimen)
   return {
     maskComposite: cs.maskComposite || cs.webkitMaskComposite,
-    hasMaskT: cs.getPropertyValue('--tw-fade-mask-t').trim() !== '',
-    hasMaskB: cs.getPropertyValue('--tw-fade-mask-b').trim() !== '',
-    hasMaskL: cs.getPropertyValue('--tw-fade-mask-l').trim() !== '',
-    hasMaskR: cs.getPropertyValue('--tw-fade-mask-r').trim() !== '',
+    maskT: cs.getPropertyValue('--tw-fade-mask-t').trim(),
+    maskB: cs.getPropertyValue('--tw-fade-mask-b').trim(),
+    maskL: cs.getPropertyValue('--tw-fade-mask-l').trim(),
+    maskR: cs.getPropertyValue('--tw-fade-mask-r').trim(),
   }
 })
 
@@ -89,9 +92,69 @@ const railSelection = await page.evaluate(() => {
   }
 })
 
+// The advanced Direction control drives the real radios + edge toggles, not a
+// synthetic panel (verify-horizontal-rtl.mjs covers the CSS routing in
+// isolation). This asserts the demo wiring: flipping LTR -> RTL migrates the
+// `end` fade to the opposite physical edge, and the safeguard activates a
+// horizontal edge when none is set so the toggle never looks dead.
+const dirControl = await page.evaluate(async () => {
+  const specimen = document.querySelector('[data-demo="type-specimen"]')
+  const ltrRadio = document.querySelector('[data-fade-dir="ltr"]')
+  const rtlRadio = document.querySelector('[data-fade-dir="rtl"]')
+  const endToggle = document.querySelector('[data-fade-edge-toggle="end"]')
+  const startToggle = document.querySelector('[data-fade-edge-toggle="start"]')
+  if (!specimen || !ltrRadio || !rtlRadio || !endToggle || !startToggle) return null
+
+  const settle = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
+  const horizontalPressed = () =>
+    endToggle.getAttribute('aria-pressed') === 'true' ||
+    startToggle.getAttribute('aria-pressed') === 'true'
+  const masks = () => {
+    const cs = getComputedStyle(specimen)
+    return {
+      maskL: cs.getPropertyValue('--tw-fade-mask-l').trim(),
+      maskR: cs.getPropertyValue('--tw-fade-mask-r').trim(),
+    }
+  }
+  const scrollMid = () => {
+    const max = specimen.scrollWidth - specimen.clientWidth
+    specimen.scrollLeft = getComputedStyle(specimen).direction === 'rtl' ? -(max / 2) : max / 2
+  }
+
+  // LTR baseline: enable the `end` edge so a horizontal mask layer exists.
+  ltrRadio.click()
+  if (endToggle.getAttribute('aria-pressed') !== 'true') endToggle.click()
+  scrollMid()
+  await settle()
+  const ltr = { dir: specimen.getAttribute('dir'), ...masks() }
+
+  // Flip to RTL: the same `end` edge must migrate to the opposite physical side.
+  rtlRadio.click()
+  scrollMid()
+  await settle()
+  const rtl = { dir: specimen.getAttribute('dir'), ...masks() }
+
+  // Safeguard: from a clean no-horizontal-edge state, RTL auto-enables one.
+  ltrRadio.click()
+  if (endToggle.getAttribute('aria-pressed') === 'true') endToggle.click()
+  if (startToggle.getAttribute('aria-pressed') === 'true') startToggle.click()
+  await settle()
+  const horizontalBefore = horizontalPressed()
+  rtlRadio.click()
+  scrollMid()
+  await settle()
+  const safeguard = { horizontalBefore, horizontalAfter: horizontalPressed(), ...masks() }
+
+  return { ltr, rtl, safeguard }
+})
+
 await browser.close()
 
 const transparent = (c) => c === 'rgba(0, 0, 0, 0)' || c === 'transparent'
+// A horizontal mask layer is "active" when its gradient points inward:
+// physical-left fades "to right", physical-right fades "to left".
+const hasLeftMask = (m) => !!m && /to right/.test(m.maskL)
+const hasRightMask = (m) => !!m && /to left/.test(m.maskR)
 
 const checks = [
   ['demo build does not emit private .tw-fade-mask utility', !/\.tw-fade-mask\s*\{/.test(demoCss), '.tw-fade-mask absent'],
@@ -103,16 +166,16 @@ const checks = [
   ['body is the real scroll container', structure.bodyIsScroller, String(structure.bodyIsScroller)],
   ['surface is on <html> (non-transparent)', !transparent(structure.htmlBg), structure.htmlBg],
   ['body is transparent (mask reveals the surface)', transparent(structure.bodyBg), structure.bodyBg],
-  ['body does not own a page-level fade utility', !/\bfade-[tblrxy]/.test(structure.bodyClass), structure.bodyClass],
+  ['body does not own a page-level fade utility', !/\bfade(?:\b|-)/.test(structure.bodyClass), structure.bodyClass],
   [
     'advanced demo supports a single top fade',
-    singleEdgeSpecimen?.hasMaskT === true &&
-      singleEdgeSpecimen.hasMaskB === false &&
-      singleEdgeSpecimen.hasMaskL === false &&
-      singleEdgeSpecimen.hasMaskR === false &&
+    /to bottom/.test(singleEdgeSpecimen?.maskT || '') &&
+      !/to top/.test(singleEdgeSpecimen?.maskB || '') &&
+      !/to right/.test(singleEdgeSpecimen?.maskL || '') &&
+      !/to left/.test(singleEdgeSpecimen?.maskR || '') &&
       /intersect/.test(singleEdgeSpecimen.maskComposite || ''),
     singleEdgeSpecimen
-      ? `t:${singleEdgeSpecimen.hasMaskT} b:${singleEdgeSpecimen.hasMaskB} l:${singleEdgeSpecimen.hasMaskL} r:${singleEdgeSpecimen.hasMaskR}`
+      ? `t:${/to bottom/.test(singleEdgeSpecimen.maskT)} b:${/to top/.test(singleEdgeSpecimen.maskB)} l:${/to right/.test(singleEdgeSpecimen.maskL)} r:${/to left/.test(singleEdgeSpecimen.maskR)}`
       : 'missing specimen',
   ],
   [
@@ -130,6 +193,29 @@ const checks = [
       railSelection.before.filter(Boolean).length === 1 &&
       railSelection.after.filter(Boolean).length === 1,
     railSelection ? `${railSelection.count} cards, selected:${railSelection.selectedLabel}` : 'missing rail cards',
+  ],
+  [
+    'advanced Direction control swaps the end fade to the opposite edge in RTL',
+    dirControl &&
+      dirControl.ltr.dir === 'ltr' &&
+      hasRightMask(dirControl.ltr) &&
+      !hasLeftMask(dirControl.ltr) &&
+      dirControl.rtl.dir === 'rtl' &&
+      hasLeftMask(dirControl.rtl) &&
+      !hasRightMask(dirControl.rtl),
+    dirControl
+      ? `ltr(R:${hasRightMask(dirControl.ltr)} L:${hasLeftMask(dirControl.ltr)}) -> rtl(L:${hasLeftMask(dirControl.rtl)} R:${hasRightMask(dirControl.rtl)})`
+      : 'missing direction control',
+  ],
+  [
+    'advanced Direction RTL safeguard activates a horizontal edge when none is set',
+    dirControl &&
+      dirControl.safeguard.horizontalBefore === false &&
+      dirControl.safeguard.horizontalAfter === true &&
+      (hasLeftMask(dirControl.safeguard) || hasRightMask(dirControl.safeguard)),
+    dirControl
+      ? `before:${dirControl.safeguard.horizontalBefore} after:${dirControl.safeguard.horizontalAfter} mask(L:${hasLeftMask(dirControl.safeguard)} R:${hasRightMask(dirControl.safeguard)})`
+      : 'missing direction control',
   ],
 ]
 

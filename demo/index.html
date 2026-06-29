@@ -461,6 +461,27 @@
                 >
                     Elegant, scroll-driven edge masking. One class. Zero
                     JavaScript.
+                    <br />
+                    By one of the creators of
+                    <span class="creator-note-tooltip-root support-tooltip-root">
+                        <a
+                            class="creator-note-link shimmer"
+                            href="https://www.npmjs.com/package/tw-shimmer"
+                            rel="noreferrer"
+                            aria-describedby="tw-shimmer-tooltip"
+                            >tw-shimmer<span
+                                class="creator-note-underline shimmer shimmer-bg"
+                                aria-hidden="true"
+                            ></span></a
+                        >
+                        <span
+                            id="tw-shimmer-tooltip"
+                            class="creator-note-tooltip support-tooltip"
+                            role="tooltip"
+                            >CSS-only shimmer effects, with 500k+ weekly npm
+                            downloads.</span
+                        >
+                    </span>.
                 </p>
                 <div class="install-snippet ml-4" data-install-snippet>
                     <span
@@ -1099,83 +1120,77 @@
                                     >
                                         <div class="chat-msg chat-msg-in">
                                             <p class="chat-bubble">
-                                                hey! finally trying tw-fade 👋
+                                                this feed has a hard edge
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-out">
                                             <p class="chat-bubble">
-                                                oh nice — welcome
+                                                add fade-y to the scroll area
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-in">
                                             <p class="chat-bubble">
-                                                these scroll lists are slick
+                                                do i need another wrapper?
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-out">
                                             <p class="chat-bubble">
-                                                thanks, it’s all CSS
+                                                no. use the element that scrolls
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-in">
                                             <p class="chat-bubble">
-                                                this thread fades at the edges
-                                                while i scroll 👀
+                                                at the top, does the fade stay?
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-out">
                                             <p class="chat-bubble">
-                                                that’s tw-fade ✨
+                                                no, the top fade clears
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-in">
                                             <p class="chat-bubble">
-                                                some scroll library?
+                                                and at the end?
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-out">
                                             <p class="chat-bubble">
-                                                nope — a pure CSS mask
+                                                the bottom fade clears
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-out">
                                             <p class="chat-bubble">
-                                                zero JavaScript
+                                                the newest message stays clear
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-in">
                                             <p class="chat-bubble">
-                                                so how does it know i’m
-                                                scrolling?
+                                                horizontal tabs too?
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-out">
                                             <p class="chat-bubble">
-                                                scroll-driven CSS — the fade is
-                                                scroll-gated
+                                                use fade-x on the rail
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-in">
                                             <p class="chat-bubble">
-                                                does it soften both edges?
+                                                can i make the fade wider?
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-out">
                                             <p class="chat-bubble">
-                                                fade-y — one class on the
-                                                container
+                                                set a larger size
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-in">
                                             <p class="chat-bubble">
-                                                but the newest message stays
-                                                sharp 🔥
+                                                top edge by itself?
                                             </p>
                                         </div>
                                         <div class="chat-msg chat-msg-out">
                                             <p class="chat-bubble">
-                                                pinned to the bottom, yep — scroll
-                                                up and both edges dissolve ↕&#xFE0E;
+                                                use fade-top
                                             </p>
                                         </div>
                                     </div>
@@ -1199,15 +1214,15 @@
                         <code
                             class="fade-option-label mono-copy font-mono text-[1rem] font-normal leading-6"
                             data-fade-option-label
-                            aria-label="fade-xy fade-size-2xl fade-range-md"
+                            aria-label="fade-y fade-size-2xl fade-travel-2xl"
                             ><span
                                 class="fade-option-token"
-                                data-fade-option-token="fade-xy"
+                                data-fade-option-token="fade-y"
                                 ><span class="fade-option-part">fade-</span
                                 ><span
                                     class="fade-option-part"
                                     data-fade-option-stem
-                                    >xy</span
+                                    >y</span
                                 ></span
                             >
                             <span
@@ -1222,13 +1237,13 @@
                             >
                             <span
                                 class="fade-option-token"
-                                data-fade-option-token="fade-range-md"
+                                data-fade-option-token="fade-travel-2xl"
                                 ><span class="fade-option-part"
-                                    >fade-range-</span
+                                    >fade-travel-</span
                                 ><span
                                     class="fade-option-part"
                                     data-fade-option-stem
-                                    >md</span
+                                    >2xl</span
                                 ></span
                             ></code
                         >
@@ -1239,7 +1254,7 @@
                             <div class="option-card-body">
                                 <div class="option-demo-panel">
                                     <div
-                                        class="fade-xy fade-size-2xl fade-range-md thin-scroll type-scale-sample h-[26.25rem] overflow-auto sm:h-[29.375rem]"
+                                        class="fade-y fade-size-2xl fade-travel-2xl thin-scroll type-scale-sample h-[26.25rem] overflow-auto sm:h-[29.375rem]"
                                         data-demo="type-specimen"
                                     >
                                         <article
@@ -1383,68 +1398,6 @@
                                     </div>
                                 </div>
                                 <div class="option-controls-panel">
-                                    <label
-                                        class="option-control"
-                                        for="fade-depth-control"
-                                    >
-                                        <span class="option-control-heading">
-                                            <span
-                                                class="option-control-label select-none"
-                                                >Fade size</span
-                                            >
-                                            <output
-                                                class="fade-control-value mono-copy select-none font-mono"
-                                                for="fade-depth-control"
-                                                data-fade-depth-value
-                                                >2xl</output
-                                            >
-                                        </span>
-                                        <span class="option-slider-control">
-                                            <input
-                                                id="fade-depth-control"
-                                                class="fade-control-slider shrink-0"
-                                                type="range"
-                                                min="0"
-                                                max="6"
-                                                step="1"
-                                                value="4"
-                                                aria-valuetext="double extra large"
-                                                data-fade-depth-slider
-                                                data-fade-size-options="fade-size-sm fade-size-md fade-size-lg fade-size-xl fade-size-2xl fade-size-3xl fade-size-4xl"
-                                            />
-                                        </span>
-                                    </label>
-                                    <label
-                                        class="option-control"
-                                        for="fade-range-control"
-                                    >
-                                        <span class="option-control-heading">
-                                            <span
-                                                class="option-control-label select-none"
-                                                >Scroll range</span
-                                            >
-                                            <output
-                                                class="fade-control-value mono-copy select-none font-mono"
-                                                for="fade-range-control"
-                                                data-fade-range-value
-                                                >2xl</output
-                                            >
-                                        </span>
-                                        <span class="option-slider-control">
-                                            <input
-                                                id="fade-range-control"
-                                                class="fade-control-slider shrink-0"
-                                                type="range"
-                                                min="0"
-                                                max="6"
-                                                step="1"
-                                                value="4"
-                                                aria-valuetext="double extra large"
-                                                data-fade-range-slider
-                                                data-fade-range-options="fade-range-sm fade-range-md fade-range-lg fade-range-xl fade-range-2xl fade-range-3xl fade-range-4xl"
-                                            />
-                                        </span>
-                                    </label>
                                     <div class="option-control">
                                         <span
                                             class="option-control-label select-none"
@@ -1461,7 +1414,7 @@
                                                 type="button"
                                                 aria-pressed="true"
                                                 aria-label="Toggle top edge fade"
-                                                data-fade-edge-toggle="t"
+                                                data-fade-edge-toggle="top"
                                             >
                                                 <svg
                                                     class="edge-toggle-svg"
@@ -1504,8 +1457,8 @@
                                                 class="edge-toggle-button"
                                                 type="button"
                                                 aria-pressed="false"
-                                                aria-label="Toggle right edge fade"
-                                                data-fade-edge-toggle="r"
+                                                aria-label="Toggle end edge fade"
+                                                data-fade-edge-toggle="end"
                                             >
                                                 <svg
                                                     class="edge-toggle-svg"
@@ -1549,7 +1502,7 @@
                                                 type="button"
                                                 aria-pressed="true"
                                                 aria-label="Toggle bottom edge fade"
-                                                data-fade-edge-toggle="b"
+                                                data-fade-edge-toggle="bottom"
                                             >
                                                 <svg
                                                     class="edge-toggle-svg"
@@ -1592,8 +1545,8 @@
                                                 class="edge-toggle-button"
                                                 type="button"
                                                 aria-pressed="false"
-                                                aria-label="Toggle left edge fade"
-                                                data-fade-edge-toggle="l"
+                                                aria-label="Toggle start edge fade"
+                                                data-fade-edge-toggle="start"
                                             >
                                                 <svg
                                                     class="edge-toggle-svg"
@@ -1634,6 +1587,102 @@
                                             </button>
                                         </div>
                                     </div>
+                                    <div class="option-control">
+                                        <span
+                                            class="option-control-label select-none"
+                                            id="fade-dir-control-label"
+                                            >Direction</span
+                                        >
+                                        <div
+                                            class="dir-toggle-group select-none"
+                                            role="radiogroup"
+                                            aria-labelledby="fade-dir-control-label"
+                                            data-fade-dir-group
+                                        >
+                                            <button
+                                                class="dir-toggle-option"
+                                                type="button"
+                                                role="radio"
+                                                aria-checked="true"
+                                                aria-label="LTR, left to right"
+                                                data-fade-dir="ltr"
+                                            >
+                                                LTR
+                                            </button>
+                                            <button
+                                                class="dir-toggle-option"
+                                                type="button"
+                                                role="radio"
+                                                aria-checked="false"
+                                                aria-label="RTL, right to left"
+                                                data-fade-dir="rtl"
+                                            >
+                                                RTL
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <label
+                                        class="option-control"
+                                        for="fade-depth-control"
+                                    >
+                                        <span class="option-control-heading">
+                                            <span
+                                                class="option-control-label select-none"
+                                                >Fade size</span
+                                            >
+                                            <output
+                                                class="fade-control-value mono-copy select-none font-mono"
+                                                for="fade-depth-control"
+                                                data-fade-depth-value
+                                                >2xl</output
+                                            >
+                                        </span>
+                                        <span class="option-slider-control">
+                                            <input
+                                                id="fade-depth-control"
+                                                class="fade-control-slider shrink-0"
+                                                type="range"
+                                                min="0"
+                                                max="6"
+                                                step="1"
+                                                value="4"
+                                                aria-valuetext="double extra large"
+                                                data-fade-depth-slider
+                                                data-fade-size-options="fade-size-sm fade-size-md fade-size-lg fade-size-xl fade-size-2xl fade-size-3xl fade-size-4xl"
+                                            />
+                                        </span>
+                                    </label>
+                                    <label
+                                        class="option-control"
+                                        for="fade-travel-control"
+                                    >
+                                        <span class="option-control-heading">
+                                            <span
+                                                class="option-control-label select-none"
+                                                >Travel</span
+                                            >
+                                            <output
+                                                class="fade-control-value mono-copy select-none font-mono"
+                                                for="fade-travel-control"
+                                                data-fade-travel-value
+                                                >2xl</output
+                                            >
+                                        </span>
+                                        <span class="option-slider-control">
+                                            <input
+                                                id="fade-travel-control"
+                                                class="fade-control-slider shrink-0"
+                                                type="range"
+                                                min="0"
+                                                max="6"
+                                                step="1"
+                                                value="4"
+                                                aria-valuetext="double extra large"
+                                                data-fade-travel-slider
+                                                data-fade-travel-options="fade-travel-sm fade-travel-md fade-travel-lg fade-travel-xl fade-travel-2xl fade-travel-3xl fade-travel-4xl"
+                                            />
+                                        </span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -1994,14 +2043,14 @@
                                     x="91"
                                     y="84"
                                 >
-                                    xy
+                                    top
                                 </text>
                                 <text
                                     class="kin-line select-none kin-amb kin-tok kin-s-t"
                                     x="91"
                                     y="84"
                                 >
-                                    t
+                                    end
                                 </text>
                                 <text
                                     class="kin-line select-none kin-amb kin-tok kin-s-x"
@@ -2023,14 +2072,14 @@
                                     x="91"
                                     y="118"
                                 >
-                                    r
+                                    start
                                 </text>
                                 <text
                                     class="kin-line select-none kin-amb kin-tok kin-s-range"
                                     x="91"
                                     y="118"
                                 >
-                                    range-2xl
+                                    travel-2xl
                                 </text>
                                 <text
                                     class="kin-line select-none kin-amb kin-tok kin-s-size"
@@ -2047,7 +2096,7 @@
                             Composable
                         </h3>
                         <p class="mt-2 text-base leading-7 text-neutral-400">
-                            Axis, size, range, and clear-zone utilities compose
+                            Axis, size, travel, and clear-zone utilities compose
                             directly on the scroll container.
                         </p>
                     </article>
@@ -2149,9 +2198,9 @@
                         </button>
                     </div>
                 </div>
-                <div class="anybg-stage overflow-hidden rounded-lg">
+                <div class="anybg-stage overflow-hidden">
                     <svg
-                        class="anybg-pattern fade-xy fade-static"
+                        class="anybg-pattern fade fade-always fade-size-2xl"
                         aria-hidden="true"
                         focusable="false"
                     >
@@ -2170,6 +2219,7 @@
                                 width="41.57"
                                 height="72"
                                 patternUnits="userSpaceOnUse"
+                                patternTransform="scale(1.45)"
                             >
                                 <path
                                     d="M20.78 30L3.46 40M41.57 42L20.78 30M20.78 30L20.78 6M20.78 6L41.57 -6M0 -6L20.78 6M41.57 42L24.25 32M24.25 76L41.57 66M20.78 10L20.78 30M20.78 6L20.78 26M20.78 6L3.46 -4M0 62L0 46M41.57 42L41.57 66M0 66L0 46M20.78 78L41.57 66M0 66L20.78 78M20.78 30L0 42"
@@ -2188,6 +2238,7 @@
                                 width="40"
                                 height="69.28"
                                 patternUnits="userSpaceOnUse"
+                                patternTransform="scale(1.45)"
                             >
                                 <path
                                     d="M20.00 -34.64L0.00 0.00M0.00 0.00L-20.00 -34.64M0.00 0.00L0.00 -23.09M-40.00 0.00L0.00 0.00M0.00 0.00L-20.00 -11.55M60.00 -34.64L40.00 0.00M40.00 0.00L20.00 -34.64M40.00 0.00L40.00 -23.09M0.00 0.00L40.00 0.00M0.00 0.00L20.00 -11.55M40.00 0.00L20.00 -11.55M40.00 0.00L80.00 0.00M40.00 0.00L60.00 -11.55M0.00 0.00L-20.00 34.64M0.00 0.00L-20.00 11.55M-20.00 34.64L20.00 34.64M20.00 34.64L0.00 0.00M-20.00 34.64L0.00 23.09M20.00 34.64L0.00 23.09M0.00 0.00L0.00 23.09M40.00 0.00L20.00 34.64M0.00 0.00L20.00 11.55M40.00 0.00L20.00 11.55M20.00 34.64L20.00 11.55M20.00 34.64L60.00 34.64M60.00 34.64L40.00 0.00M20.00 34.64L40.00 23.09M60.00 34.64L40.00 23.09M40.00 0.00L40.00 23.09M40.00 0.00L60.00 11.55M20.00 34.64L0.00 69.28M0.00 69.28L-20.00 34.64M-20.00 34.64L0.00 46.19M20.00 34.64L0.00 46.19M0.00 69.28L0.00 46.19M-40.00 69.28L0.00 69.28M0.00 69.28L-20.00 57.74M60.00 34.64L40.00 69.28M40.00 69.28L20.00 34.64M20.00 34.64L40.00 46.19M60.00 34.64L40.00 46.19M40.00 69.28L40.00 46.19M0.00 69.28L40.00 69.28M0.00 69.28L20.00 57.74M40.00 69.28L20.00 57.74M20.00 34.64L20.00 57.74M40.00 69.28L80.00 69.28M40.00 69.28L60.00 57.74M0.00 69.28L-20.00 103.92M0.00 69.28L-20.00 80.83M20.00 103.92L0.00 69.28M0.00 69.28L0.00 92.38M40.00 69.28L20.00 103.92M0.00 69.28L20.00 80.83M40.00 69.28L20.00 80.83M60.00 103.92L40.00 69.28M40.00 69.28L40.00 92.38M40.00 69.28L60.00 80.83"
@@ -2210,6 +2261,7 @@
                                 width="102"
                                 height="58"
                                 patternUnits="userSpaceOnUse"
+                                patternTransform="scale(1.45)"
                             >
                                 <path
                                     d="M -152.23 -87 A 58 58 0 0 1 -51.77 -87 M -136.39 -84.63 A 43.5 43.5 0 0 1 -67.61 -84.63 M -122.6 -78.42 A 29 29 0 0 1 -81.4 -78.42 M -111.17 -69.23 A 14.5 14.5 0 0 1 -92.83 -69.23 M -50.23 -87 A 58 58 0 0 1 50.23 -87 M -34.39 -84.63 A 43.5 43.5 0 0 1 34.39 -84.63 M -20.6 -78.42 A 29 29 0 0 1 20.6 -78.42 M -9.17 -69.23 A 14.5 14.5 0 0 1 9.17 -69.23 M 51.77 -87 A 58 58 0 0 1 152.23 -87 M 67.61 -84.63 A 43.5 43.5 0 0 1 136.39 -84.63 M 81.4 -78.42 A 29 29 0 0 1 122.6 -78.42 M 92.83 -69.23 A 14.5 14.5 0 0 1 111.17 -69.23 M 153.77 -87 A 58 58 0 0 1 254.23 -87 M 169.61 -84.63 A 43.5 43.5 0 0 1 238.39 -84.63 M 183.4 -78.42 A 29 29 0 0 1 224.6 -78.42 M 194.83 -69.23 A 14.5 14.5 0 0 1 213.17 -69.23 M -101.23 -58 A 58 58 0 0 1 -0.77 -58 M -85.39 -55.63 A 43.5 43.5 0 0 1 -16.61 -55.63 M -71.6 -49.42 A 29 29 0 0 1 -30.4 -49.42 M -60.17 -40.23 A 14.5 14.5 0 0 1 -41.83 -40.23 M 0.77 -58 A 58 58 0 0 1 101.23 -58 M 16.61 -55.63 A 43.5 43.5 0 0 1 85.39 -55.63 M 30.4 -49.42 A 29 29 0 0 1 71.6 -49.42 M 41.83 -40.23 A 14.5 14.5 0 0 1 60.17 -40.23 M 102.77 -58 A 58 58 0 0 1 203.23 -58 M 118.61 -55.63 A 43.5 43.5 0 0 1 187.39 -55.63 M 132.4 -49.42 A 29 29 0 0 1 173.6 -49.42 M 143.83 -40.23 A 14.5 14.5 0 0 1 162.17 -40.23 M -152.23 -29 A 58 58 0 0 1 -51.77 -29 M -136.39 -26.63 A 43.5 43.5 0 0 1 -67.61 -26.63 M -122.6 -20.42 A 29 29 0 0 1 -81.4 -20.42 M -111.17 -11.23 A 14.5 14.5 0 0 1 -92.83 -11.23 M -50.23 -29 A 58 58 0 0 1 50.23 -29 M -34.39 -26.63 A 43.5 43.5 0 0 1 34.39 -26.63 M -20.6 -20.42 A 29 29 0 0 1 20.6 -20.42 M -9.17 -11.23 A 14.5 14.5 0 0 1 9.17 -11.23 M 51.77 -29 A 58 58 0 0 1 152.23 -29 M 67.61 -26.63 A 43.5 43.5 0 0 1 136.39 -26.63 M 81.4 -20.42 A 29 29 0 0 1 122.6 -20.42 M 92.83 -11.23 A 14.5 14.5 0 0 1 111.17 -11.23 M 153.77 -29 A 58 58 0 0 1 254.23 -29 M 169.61 -26.63 A 43.5 43.5 0 0 1 238.39 -26.63 M 183.4 -20.42 A 29 29 0 0 1 224.6 -20.42 M 194.83 -11.23 A 14.5 14.5 0 0 1 213.17 -11.23 M -101.23 0 A 58 58 0 0 1 -0.77 0 M -85.39 2.37 A 43.5 43.5 0 0 1 -16.61 2.37 M -71.6 8.58 A 29 29 0 0 1 -30.4 8.58 M -60.17 17.77 A 14.5 14.5 0 0 1 -41.83 17.77 M 0.77 0 A 58 58 0 0 1 101.23 0 M 16.61 2.37 A 43.5 43.5 0 0 1 85.39 2.37 M 30.4 8.58 A 29 29 0 0 1 71.6 8.58 M 41.83 17.77 A 14.5 14.5 0 0 1 60.17 17.77 M 102.77 0 A 58 58 0 0 1 203.23 0 M 118.61 2.37 A 43.5 43.5 0 0 1 187.39 2.37 M 132.4 8.58 A 29 29 0 0 1 173.6 8.58 M 143.83 17.77 A 14.5 14.5 0 0 1 162.17 17.77 M -152.23 29 A 58 58 0 0 1 -51.77 29 M -136.39 31.37 A 43.5 43.5 0 0 1 -67.61 31.37 M -122.6 37.58 A 29 29 0 0 1 -81.4 37.58 M -111.17 46.77 A 14.5 14.5 0 0 1 -92.83 46.77 M -50.23 29 A 58 58 0 0 1 50.23 29 M -34.39 31.37 A 43.5 43.5 0 0 1 34.39 31.37 M -20.6 37.58 A 29 29 0 0 1 20.6 37.58 M -9.17 46.77 A 14.5 14.5 0 0 1 9.17 46.77 M 51.77 29 A 58 58 0 0 1 152.23 29 M 67.61 31.37 A 43.5 43.5 0 0 1 136.39 31.37 M 81.4 37.58 A 29 29 0 0 1 122.6 37.58 M 92.83 46.77 A 14.5 14.5 0 0 1 111.17 46.77 M 153.77 29 A 58 58 0 0 1 254.23 29 M 169.61 31.37 A 43.5 43.5 0 0 1 238.39 31.37 M 183.4 37.58 A 29 29 0 0 1 224.6 37.58 M 194.83 46.77 A 14.5 14.5 0 0 1 213.17 46.77 M -101.23 58 A 58 58 0 0 1 -0.77 58 M -85.39 60.37 A 43.5 43.5 0 0 1 -16.61 60.37 M -71.6 66.58 A 29 29 0 0 1 -30.4 66.58 M -60.17 75.77 A 14.5 14.5 0 0 1 -41.83 75.77 M 0.77 58 A 58 58 0 0 1 101.23 58 M 16.61 60.37 A 43.5 43.5 0 0 1 85.39 60.37 M 30.4 66.58 A 29 29 0 0 1 71.6 66.58 M 41.83 75.77 A 14.5 14.5 0 0 1 60.17 75.77 M 102.77 58 A 58 58 0 0 1 203.23 58 M 118.61 60.37 A 43.5 43.5 0 0 1 187.39 60.37 M 132.4 66.58 A 29 29 0 0 1 173.6 66.58 M 143.83 75.77 A 14.5 14.5 0 0 1 162.17 75.77 M -152.23 87 A 58 58 0 0 1 -51.77 87 M -136.39 89.37 A 43.5 43.5 0 0 1 -67.61 89.37 M -122.6 95.58 A 29 29 0 0 1 -81.4 95.58 M -111.17 104.77 A 14.5 14.5 0 0 1 -92.83 104.77 M -50.23 87 A 58 58 0 0 1 50.23 87 M -34.39 89.37 A 43.5 43.5 0 0 1 34.39 89.37 M -20.6 95.58 A 29 29 0 0 1 20.6 95.58 M -9.17 104.77 A 14.5 14.5 0 0 1 9.17 104.77 M 51.77 87 A 58 58 0 0 1 152.23 87 M 67.61 89.37 A 43.5 43.5 0 0 1 136.39 89.37 M 81.4 95.58 A 29 29 0 0 1 122.6 95.58 M 92.83 104.77 A 14.5 14.5 0 0 1 111.17 104.77 M 153.77 87 A 58 58 0 0 1 254.23 87 M 169.61 89.37 A 43.5 43.5 0 0 1 238.39 89.37 M 183.4 95.58 A 29 29 0 0 1 224.6 95.58 M 194.83 104.77 A 14.5 14.5 0 0 1 213.17 104.77"
@@ -2229,6 +2281,7 @@
                                 width="56"
                                 height="56"
                                 patternUnits="userSpaceOnUse"
+                                patternTransform="scale(1.45)"
                             >
                                 <path
                                     d="M-28.00 -44.40L-67.60 -28.00L-84.00 -67.60L-44.40 -84.00ZM-44.40 -28.00L-84.00 -44.40L-67.60 -84.00L-28.00 -67.60ZM-28.00 11.60L-67.60 28.00L-84.00 -11.60L-44.40 -28.00ZM-44.40 28.00L-84.00 11.60L-67.60 -28.00L-28.00 -11.60ZM-28.00 67.60L-67.60 84.00L-84.00 44.40L-44.40 28.00ZM-44.40 84.00L-84.00 67.60L-67.60 28.00L-28.00 44.40ZM28.00 -44.40L-11.60 -28.00L-28.00 -67.60L11.60 -84.00ZM11.60 -28.00L-28.00 -44.40L-11.60 -84.00L28.00 -67.60ZM28.00 11.60L-11.60 28.00L-28.00 -11.60L11.60 -28.00ZM11.60 28.00L-28.00 11.60L-11.60 -28.00L28.00 -11.60ZM28.00 67.60L-11.60 84.00L-28.00 44.40L11.60 28.00ZM11.60 84.00L-28.00 67.60L-11.60 28.00L28.00 44.40ZM84.00 -44.40L44.40 -28.00L28.00 -67.60L67.60 -84.00ZM67.60 -28.00L28.00 -44.40L44.40 -84.00L84.00 -67.60ZM84.00 11.60L44.40 28.00L28.00 -11.60L67.60 -28.00ZM67.60 28.00L28.00 11.60L44.40 -28.00L84.00 -11.60ZM84.00 67.60L44.40 84.00L28.00 44.40L67.60 28.00ZM67.60 84.00L28.00 67.60L44.40 28.00L84.00 44.40ZM-11.60 -28.00L-28.00 -11.60L-44.40 -28.00L-28.00 -44.40ZM-11.60 28.00L-28.00 44.40L-44.40 28.00L-28.00 11.60ZM44.40 -28.00L28.00 -11.60L11.60 -28.00L28.00 -44.40ZM44.40 28.00L28.00 44.40L11.60 28.00L28.00 11.60Z"
@@ -2249,7 +2302,7 @@
                         />
                     </svg>
                     <div
-                        class="anybg-rail fade-x fade-range-sm fade-size-xl thin-scroll overflow-x-auto"
+                        class="anybg-rail fade-x fade-travel-sm fade-size-2xl thin-scroll overflow-x-auto"
                         data-demo="anybg"
                         role="group"
                         aria-label="Words dissolving over a patterned background"
@@ -2372,7 +2425,7 @@
                                 data-side="top"
                                 role="tooltip"
                                 >Partial support in stable Firefox: the mask
-                                renders, but the reveal falls back to a static
+                                renders, but the travel falls back to a static
                                 always-on fade.</span
                             >
                         </span>

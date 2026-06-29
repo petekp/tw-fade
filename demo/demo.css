@@ -190,7 +190,20 @@ modern wide-gamut OKLCH/P3 color syntax. */
 }
 
 html[data-surface] {
-    --demo-wave-fallback: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'128'%20height%3D'1629'%20viewBox%3D'0%200%20128%201629'%3E%3Cpath%20d%3D'M64%200C124%2067.875%20124%20203.625%2064%20271.5S4%20475.125%2064%20543S124%20746.625%2064%20814.5S4%201018.125%2064%201086S124%201289.625%2064%201357.5S4%201561.125%2064%201629'%20fill%3D'none'%20stroke%3D'%23ffffff'%20stroke-opacity%3D'0.075'%20stroke-width%3D'1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%20shape-rendering%3D'geometricPrecision'%2F%3E%3C%2Fsvg%3E");
+    --demo-wave-fallback: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22128%22%20height%3D%221629%22%20viewBox%3D%220%200%20128%201629%22%3E%3Cpath%20d%3D%22M64%200C75.781%2022.625%2087.489%2045.25%2095.82%2067.875C104.15%2090.5%20109%20113.125%20109%20135.75C109%20158.375%20104.15%20181%2095.82%20203.625C87.489%20226.25%2075.781%20248.875%2064%20271.5C52.219%20294.125%2040.511%20316.75%2032.18%20339.375C23.85%20362%2019%20384.625%2019%20407.25C19%20429.875%2023.85%20452.5%2032.18%20475.125C40.511%20497.75%2052.219%20520.375%2064%20543C75.781%20565.625%2087.489%20588.25%2095.82%20610.875C104.15%20633.5%20109%20656.125%20109%20678.75C109%20701.375%20104.15%20724%2095.82%20746.625C87.489%20769.25%2075.781%20791.875%2064%20814.5C52.219%20837.125%2040.511%20859.75%2032.18%20882.375C23.85%20905%2019%20927.625%2019%20950.25C19%20972.875%2023.85%20995.5%2032.18%201018.125C40.511%201040.75%2052.219%201063.375%2064%201086C75.781%201108.625%2087.489%201131.25%2095.82%201153.875C104.15%201176.5%20109%201199.125%20109%201221.75C109%201244.375%20104.15%201267%2095.82%201289.625C87.489%201312.25%2075.781%201334.875%2064%201357.5C52.219%201380.125%2040.511%201402.75%2032.18%201425.375C23.85%201448%2019%201470.625%2019%201493.25C19%201515.875%2023.85%201538.5%2032.18%201561.125C40.511%201583.75%2052.219%201606.375%2064%201629%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.075%22%20stroke-width%3D%221%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20shape-rendering%3D%22geometricPrecision%22%2F%3E%3C%2Fsvg%3E");
+    --demo-container-shadow:
+        0 1px 1px rgb(0 0 0 / 0.161),
+        0 5px 10px -9px rgb(0 0 0 / 0.23);
+    --demo-inner-border-size: 1px;
+    --demo-inner-border-light-alpha: 0.18;
+    --demo-inner-border-mid-alpha: 0.045;
+    --demo-inner-border-dark-alpha: 0.22;
+    --demo-inner-border-opacity: 0.9;
+    --demo-inner-border-blend-mode: soft-light;
+    /* Distance over which the top light / bottom shadow fade out as they wrap the
+       corners. ~2x the corner radius, so the highlight eases off just past the curve
+       instead of hard-stopping at the corner miter. */
+    --demo-inner-border-taper: 1.75rem;
 
     /* Color for the stepped wave-strip fills. Matches the white wave strokes
        on every (dark) surface; overridable per theme for a tinted gradation. */
@@ -529,6 +542,83 @@ h3 {
     font-variant-numeric: tabular-nums slashed-zero;
 }
 
+.creator-note-link {
+    --shimmer-color: var(--demo-text-strong);
+    --shimmer-speed: 40;
+    --shimmer-repeat-delay: 1400;
+    --shimmer-spread: 96px;
+    --shimmer-track-width: 220px;
+    position: relative;
+    display: inline-block;
+    color: color-mix(in oklab, var(--demo-text-primary) 68%, transparent);
+    text-decoration: none;
+    transition:
+        color 160ms ease;
+}
+
+.creator-note-link:hover {
+    color: color-mix(in oklab, var(--demo-text-primary) 82%, transparent);
+}
+
+.creator-note-tooltip-root {
+    vertical-align: baseline;
+}
+
+.creator-note-tooltip {
+    left: 50%;
+    width: min(16rem, calc(100vw - 2rem));
+    transform: translateX(-50%) translateY(0.25rem);
+}
+
+.creator-note-tooltip-root:hover .creator-note-tooltip,
+.creator-note-tooltip-root:focus-within .creator-note-tooltip {
+    transform: translateX(-50%) translateY(0);
+}
+
+.creator-note-underline {
+    --shimmer-color: color-mix(
+        in oklab,
+        var(--demo-text-strong) 48%,
+        transparent
+    );
+    --shimmer-speed: 40;
+    --shimmer-repeat-delay: 1400;
+    --shimmer-spread: 96px;
+    --shimmer-track-width: 220px;
+    position: absolute;
+    right: 0;
+    bottom: 0.08em;
+    left: 0;
+    height: 1px;
+    border-radius: 999px;
+    background-color: color-mix(
+        in oklab,
+        var(--demo-text-primary) 18%,
+        transparent
+    );
+    color: var(--demo-text-primary);
+    pointer-events: none;
+}
+
+.creator-note-link:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--demo-focus) 78%, transparent);
+    outline-offset: 3px;
+    border-radius: 0.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .creator-note-link.shimmer {
+        animation: none;
+        background: none;
+        -webkit-text-fill-color: currentColor;
+    }
+
+    .creator-note-underline.shimmer-bg {
+        background-image: none;
+        animation: none;
+    }
+}
+
 .fade-option-label {
     color: var(--demo-text-subtle);
 }
@@ -560,6 +650,8 @@ h3 {
 }
 
 .install-snippet {
+    --demo-inner-border-light-alpha: 0.2;
+    --demo-inner-border-dark-alpha: 0.2;
     position: relative;
     display: inline-flex;
     align-self: flex-start;
@@ -582,9 +674,11 @@ h3 {
             95%,
         transparent
     );
-    box-shadow: none;
+    box-shadow: var(--demo-container-shadow);
     isolation: isolate;
-    transition: background-color 180ms ease;
+    transition:
+        background-color 180ms ease,
+        box-shadow 180ms ease;
 }
 
 .install-snippet-sweep {
@@ -820,19 +914,38 @@ h3 {
 }
 
 .social-icon-link {
+    --demo-inner-border-light-alpha: 0.2;
+    --demo-inner-border-dark-alpha: 0.2;
+    --social-icon-bg: color-mix(
+        in oklab,
+        color-mix(
+                in oklab,
+                var(--demo-page-bg) 92%,
+                var(--demo-text-primary) 8%
+            )
+            96%,
+        transparent
+    );
+    --social-icon-bg-hover: color-mix(
+        in oklab,
+        color-mix(
+                in oklab,
+                var(--demo-page-bg) 84%,
+                var(--demo-text-primary) 16%
+            )
+            96%,
+        transparent
+    );
     position: relative;
     display: grid;
     width: 2.25rem;
     height: 2.25rem;
     flex: 0 0 2.25rem;
     place-items: center;
-    border: 1px solid var(--demo-border);
+    border: 0;
     border-radius: 9999px;
-    background-color: color-mix(
-        in oklab,
-        var(--demo-panel-bg) 54%,
-        transparent
-    );
+    background-color: var(--social-icon-bg);
+    box-shadow: var(--demo-container-shadow);
     color: color-mix(in oklab, var(--demo-text-strong) 68%, transparent);
     backdrop-filter: blur(12px);
     cursor: pointer;
@@ -841,16 +954,17 @@ h3 {
     transition:
         color 180ms ease,
         background-color 180ms ease,
-        border-color 180ms ease;
+        box-shadow 180ms ease;
 }
 
 .social-icon-link:hover {
-    border-color: var(--demo-border-strong);
-    background-color: var(--demo-panel-strong);
+    background-color: var(--social-icon-bg-hover);
     color: var(--demo-text-strong);
 }
 
 .social-icon-link svg {
+    position: relative;
+    z-index: 2;
     width: 1rem;
     height: 1rem;
     fill: currentColor;
@@ -881,7 +995,93 @@ h3 {
         border-color 180ms ease;
 }
 
+:is(
+        .install-snippet,
+        .social-icon-link,
+        .tuning-card,
+        .feature-column,
+        .support-tooltip,
+        .floating-surface-palette
+    ) {
+    position: relative;
+    isolation: isolate;
+}
+
+/* Inner bevel highlight, drawn as two uniform-color borders rather than one per-side
+   border. Why a border at all: a border is the only ring primitive that follows the box's
+   corner-shape — round OR superellipse(1.35) — so it tracks the squircle exactly (a mask /
+   box-shadow ring always corners as a circle and mismatches the host). corner-shape is NOT
+   inherited and border-radius: inherit copies only the radius, so corner-shape: inherit is
+   required here; unsupported browsers drop it and both host + highlight stay round.
+   Why two layers + masks: a per-side border meets its top/side/bottom colors at a hard
+   miter seam at each corner. Instead, ::before paints a uniform light border and ::after a
+   uniform dark one, each faded with a linear-gradient mask so the top catch and bottom
+   shadow taper off smoothly as they wrap the corner. */
+:is(
+        .install-snippet,
+        .social-icon-link,
+        .tuning-card,
+        .feature-column,
+        .support-tooltip,
+        .floating-surface-palette
+    )::before,
+:is(
+        .install-snippet,
+        .social-icon-link,
+        .tuning-card,
+        .feature-column,
+        .support-tooltip,
+        .floating-surface-palette
+    )::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    corner-shape: inherit;
+    pointer-events: none;
+    border: var(--demo-inner-border-size) solid transparent;
+    mix-blend-mode: var(--demo-inner-border-blend-mode);
+    opacity: var(--demo-inner-border-opacity);
+}
+
+/* Light catch on the top edge, easing out as it rounds the top corners. */
+:is(
+        .install-snippet,
+        .social-icon-link,
+        .tuning-card,
+        .feature-column,
+        .support-tooltip,
+        .floating-surface-palette
+    )::before {
+    border-color: rgb(255 255 255 / var(--demo-inner-border-light-alpha));
+    mask-image: linear-gradient(
+        to bottom,
+        #000,
+        transparent var(--demo-inner-border-taper)
+    );
+}
+
+/* Shadow on the bottom edge, easing out as it rounds the bottom corners. */
+:is(
+        .install-snippet,
+        .social-icon-link,
+        .tuning-card,
+        .feature-column,
+        .support-tooltip,
+        .floating-surface-palette
+    )::after {
+    border-color: rgb(0 0 0 / var(--demo-inner-border-dark-alpha));
+    mask-image: linear-gradient(
+        to top,
+        #000,
+        transparent var(--demo-inner-border-taper)
+    );
+}
+
 .tuning-card {
+    --demo-inner-border-light-alpha: 0.2;
+    --demo-inner-border-dark-alpha: 0.2;
     border: 0;
     background-color: color-mix(
         in oklab,
@@ -893,7 +1093,7 @@ h3 {
             95%,
         transparent
     );
-    box-shadow: 0 18px 48px rgb(0 0 0 / 0.22);
+    box-shadow: var(--demo-container-shadow);
     transition:
         background-color 180ms ease,
         box-shadow 180ms ease;
@@ -1034,6 +1234,7 @@ h3 {
     align-self: center;
     min-width: 0;
     color: var(--demo-text-soft);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 0.875rem;
     line-height: 1.4;
     opacity: 0.34;
@@ -1084,7 +1285,7 @@ h3 {
     }
 }
 
-/* Messages thread — the fade-t companion to the lexicon. It starts pinned to
+/* Messages thread — the fade-y companion to the lexicon. It starts pinned to
    the bottom (newest reply crisp) so scrolling up dissolves older messages into
    the top edge only. Height matches the lexicon so the two cards balance. */
 .chat-thread {
@@ -1139,6 +1340,8 @@ h3 {
    words dissolve and the pattern shows straight through their edges. A static
    gradient overlay can only paint one flat color and would leave a band here. */
 .anybg-stage {
+    --anybg-stage-height: 26rem;
+
     position: relative;
     /* Transparent base so the page background (and its wave) shows through every
        gap in the lattice above. */
@@ -1154,12 +1357,12 @@ h3 {
    A plane-filling lattice can never present only whole motifs behind a hard
    rectangular edge — any straight container edge cuts through them at almost
    every size. So rather than hard-clip, we DISSOLVE the pattern's own four edges
-   using the plugin itself: the SVG carries `fade-xy fade-static`, which pins a
+   using the plugin itself: the SVG carries `fade fade-always`, which pins a
    permanent all-edge fade (no scroll needed). A motif the box slices is already
    transparent at the cut, so it feathers out instead of being chopped — at any
    width/height and through live resize, zero JS, and it dogfoods tw-fade. The
-   default md fade size (3rem) matches the rail's fade-x, so the pattern and the
-   words dissolve along one shared edge. */
+   shared 2xl fade size matches the rail's fade-x, so the pattern and the words
+   dissolve along one shared edge. */
 .anybg-pattern {
     position: absolute;
     inset: 0;
@@ -1175,9 +1378,9 @@ h3 {
     z-index: 1;
     display: flex;
     align-items: center;
-    gap: 2.75rem;
-    height: 13rem;
-    padding: 0 2.25rem;
+    gap: clamp(4rem, 7vw, 6.5rem);
+    height: var(--anybg-stage-height);
+    padding: 0 clamp(3rem, 6vw, 5rem);
     background: transparent;
 }
 
@@ -1186,9 +1389,9 @@ h3 {
     color: #fafafa;
     font-family: "Zalando Sans SemiExpanded", ui-sans-serif, system-ui,
         sans-serif;
-    font-size: clamp(2.5rem, 1.5rem + 3.2vw, 4rem);
+    font-size: clamp(4.75rem, 2.75rem + 6.5vw, 8rem);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
     line-height: 1;
     white-space: nowrap;
     user-select: none;
@@ -1268,6 +1471,10 @@ h3 {
 }
 
 .floating-surface-palette {
+    --demo-inner-border-light-alpha: 0.2;
+    --demo-inner-border-mid-alpha: 0.04;
+    --demo-inner-border-dark-alpha: 0.24;
+    --demo-inner-border-opacity: 0.736;
     --palette-glass-filter: url(#palette-glass-filter);
     --palette-glass-blur: 3px;
     --palette-glass-brightness: 1.12;
@@ -1285,10 +1492,8 @@ h3 {
     isolation: isolate;
     background: rgb(255 255 255 / 0.05);
     box-shadow:
-        inset 0 0 0 1px rgb(255 255 255 / 0.1),
-        inset 0 1px 0 rgb(255 255 255 / 0.15),
-        inset 0 -18px 28px rgb(255 255 255 / 0.02),
-        0 12px 36px rgb(0 0 0 / 0.16);
+        0 1px 1px rgb(0 0 0 / 0.14),
+        0 5px 10px -9px rgb(0 0 0 / 0.18);
     -webkit-backdrop-filter: var(--palette-glass-filter)
         blur(var(--palette-glass-blur))
         brightness(var(--palette-glass-brightness))
@@ -1449,6 +1654,10 @@ h3 {
 }
 
 .support-tooltip {
+    --demo-inner-border-light-alpha: 0.22;
+    --demo-inner-border-mid-alpha: 0.04;
+    --demo-inner-border-dark-alpha: 0.22;
+    --demo-inner-border-opacity: 0.828;
     position: absolute;
     bottom: calc(100% + 0.5rem);
     left: 0;
@@ -1456,8 +1665,11 @@ h3 {
     width: min(13rem, calc(100vw - 2rem));
     pointer-events: none;
     border-radius: var(--demo-radius-sm);
-    border: 1px solid var(--demo-border);
+    border: 0;
     background: var(--demo-panel-strong);
+    box-shadow:
+        0 1px 1px rgb(0 0 0 / 0.14),
+        0 5px 10px -9px rgb(0 0 0 / 0.2);
     padding: 0.625rem 0.75rem;
     color: var(--demo-text-primary);
     font-size: 0.75rem;
@@ -1891,31 +2103,31 @@ label.option-control {
         inset 0 0 0 4px color-mix(in oklab, var(--demo-focus) 62%, transparent);
 }
 
-.edge-toggle-button[data-fade-edge-toggle="t"] {
+.edge-toggle-button[data-fade-edge-toggle="top"] {
     clip-path: polygon(0 0, 100% 0, 50% 50%);
 }
 
-.edge-toggle-button[data-fade-edge-toggle="r"] {
+.edge-toggle-button[data-fade-edge-toggle="end"] {
     clip-path: polygon(100% 0, 100% 100%, 50% 50%);
 }
 
-.edge-toggle-button[data-fade-edge-toggle="b"] {
+.edge-toggle-button[data-fade-edge-toggle="bottom"] {
     clip-path: polygon(100% 100%, 0 100%, 50% 50%);
 }
 
-.edge-toggle-button[data-fade-edge-toggle="l"] {
+.edge-toggle-button[data-fade-edge-toggle="start"] {
     clip-path: polygon(0 100%, 0 0, 50% 50%);
 }
 
-.edge-toggle-button[data-fade-edge-toggle="r"] .edge-toggle-svg {
+.edge-toggle-button[data-fade-edge-toggle="end"] .edge-toggle-svg {
     --edge-rotation: 90deg;
 }
 
-.edge-toggle-button[data-fade-edge-toggle="b"] .edge-toggle-svg {
+.edge-toggle-button[data-fade-edge-toggle="bottom"] .edge-toggle-svg {
     --edge-rotation: 180deg;
 }
 
-.edge-toggle-button[data-fade-edge-toggle="l"] .edge-toggle-svg {
+.edge-toggle-button[data-fade-edge-toggle="start"] .edge-toggle-svg {
     --edge-rotation: -90deg;
 }
 
@@ -1972,6 +2184,56 @@ label.option-control {
     );
 }
 
+.dir-toggle-group {
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    width: min(100%, 10rem);
+    gap: 0.1875rem;
+    padding: 0.1875rem;
+    border: 1px solid
+        color-mix(in oklab, var(--demo-border-strong) 34%, transparent);
+    border-radius: 0.5rem;
+    background: color-mix(in oklab, var(--demo-page-bg) 35%, transparent);
+}
+
+.dir-toggle-option {
+    border: 0;
+    border-radius: 0.375rem;
+    padding: 0.375rem 0;
+    background: transparent;
+    color: var(--demo-text-muted);
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-align: center;
+    cursor: pointer;
+    transition:
+        color 160ms ease,
+        background-color 160ms ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.dir-toggle-option[aria-checked="true"] {
+    color: var(--demo-accent-text);
+    background: color-mix(in oklab, var(--demo-accent-text) 16%, transparent);
+}
+
+.dir-toggle-option:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px var(--demo-page-bg),
+        0 0 0 4px color-mix(in oklab, var(--demo-focus) 62%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dir-toggle-option {
+        transition: none;
+    }
+}
+
 .type-scale-sample {
     container-type: inline-size;
     padding: 2.5rem;
@@ -1980,7 +2242,9 @@ label.option-control {
 .type-scale-content {
     width: max-content;
     min-width: 100%;
-    padding-right: 5rem;
+    /* Trailing breathing room follows the inline direction so the fade
+       dissolves over space, not glyphs, in both LTR and RTL. */
+    padding-inline-end: 5rem;
 }
 
 .type-scale-row {
@@ -1999,6 +2263,10 @@ label.option-control {
 }
 
 .feature-column {
+    --demo-inner-border-light-alpha: 0.16;
+    --demo-inner-border-mid-alpha: 0.035;
+    --demo-inner-border-dark-alpha: 0.18;
+    --demo-inner-border-opacity: 0.828;
     --feature-card-bg: color-mix(
         in oklab,
         color-mix(
@@ -2059,7 +2327,7 @@ label.option-control {
     padding: 1.5rem;
     border-radius: var(--demo-radius-lg);
     background-color: var(--feature-card-bg);
-    box-shadow: 0 18px 48px rgb(0 0 0 / 0.22);
+    box-shadow: var(--demo-container-shadow);
     transition:
         background-color 180ms ease,
         box-shadow 180ms ease;
@@ -2282,7 +2550,7 @@ class drawers up from below when composed / drops away when removed. */
     }
 
     .type-scale-content {
-        padding-right: 3rem;
+        padding-inline-end: 3rem;
     }
 }
 

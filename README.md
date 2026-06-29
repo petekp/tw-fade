@@ -1,209 +1,118 @@
 # tw-fade
 
-Scroll-aware edge fades for Tailwind CSS v4. Mask the edges of any scroll container so content dissolves into its surface. All CSS. Zero JavaScript.
+Scroll-aware edge fades for Tailwind CSS v4. Mask the edges of any scroll container so content dissolves into the surface behind it. All CSS. No runtime JavaScript.
 
-**[Live demo →](https://pete.design/tw-fade)**
+**[Live demo](https://pete.design/tw-fade)**
 
 ```html
-<div class="fade-y overflow-y-auto h-64">
+<div class="fade-y h-64 overflow-y-auto">
   <!-- long content; top and bottom fade as you scroll -->
 </div>
 ```
 
-The fade reveals as you scroll into content and recedes as you reach the ends.
-
----
+The fade appears only when there is content beyond that edge, then recedes again when you reach the start or end.
 
 ## Why
 
-A static edge scrim (a gradient overlay pinned to the top of a scroll area) is always on. It dims content even when nothing is scrolled out of view, and it sits *in front of* your content as a separate element.
+A static gradient overlay is always on. It dims content even when nothing is hidden beyond the edge, and it sits in front of your content as another layer.
 
-`tw-fade` fixes both:
+`tw-fade` uses a CSS mask on the scroll container itself:
 
-- **Scroll-gated.** The fade appears only when content has scrolled past the edge, and retracts when you reach the start or end. It never dims content you can already see in full.
-- **Masks the container itself.** The effect is a `mask-image` on the scroll container: no extra DOM, no stacking-context juggling. It reveals whatever surface sits behind the element instead of painting a fixed color on top.
-
-Add `fade-t`, `fade-b`, `fade-x`, `fade-y`, or `fade-xy` to a scrollable element and you're done.
-
-### Highlights
-
-- **No runtime JavaScript.** CSS scroll-driven animations (`animation-timeline: scroll()`) drive the reveal; the fade itself is a composited `mask-image`.
-- **Composable per edge.** Fade one edge, an axis, or all four. The utilities compose (`fade-t fade-r` works) instead of overwriting each other, and nested fades stay isolated.
-- **Tunable.** Set band thickness, reveal distance, and clearance zones for sticky headers and footers through utilities or theme tokens, with arbitrary values on the Tailwind source path.
-- **Smooth curve.** The fade follows an eased sigmoid (S-curve) alpha ramp instead of a flat linear gradient, so opacity changes faster through the middle and eases at the ends.
-- **Graceful fallback.** On engines without scroll-driven animations, the effect degrades to a permanent static fade via `@supports`, so content stays readable rather than stranded behind a half-applied mask.
-
----
-
-## Requirements
-
-| Use it as… | You need |
-| --- | --- |
-| Tailwind v4 source utilities (full JIT, arbitrary values) | Tailwind CSS **v4.0.0+** |
-| Prebuilt framework-free stylesheet (`<link>` / CDN, fixed utility set) | **nothing** (no Tailwind, no build step) |
-
-The package ships a precompiled, self-contained `dist/tw-fade.css` with only the `fade-*` utilities and their `@property` foundations. No Tailwind Preflight, no reset, no Tailwind core `--tw-*` variables.
-
----
+- **Scroll-aware.** The fade is gated by the element's own scroll position.
+- **No extra DOM.** The mask lives on the scroll container.
+- **Surface-neutral.** The mask reveals whatever is behind the element instead of painting a fake background color.
+- **Composable.** Direction, size, travel distance, and clear zones are separate utilities.
+- **Graceful fallback.** Browsers without scroll-driven animations get a static fade instead of a broken mask.
 
 ## Install
 
-### Tailwind v4 (CSS-first source path)
+### Tailwind v4 source path
 
-Use this if you already build with Tailwind v4. You get the full JIT, including arbitrary values like `fade-size-[2rem]`.
+Use this when your app already builds with Tailwind v4. This path supports arbitrary values like `fade-size-[2rem]`.
 
 ```bash
 npm install tw-fade
 ```
-
-In your Tailwind entry CSS:
 
 ```css
 @import "tailwindcss";
 @import "tw-fade";
 ```
 
-The bare `@import "tw-fade"` resolves to the package's `src/tw-fade.css`, authored for v4's CSS-first pipeline and compiled by *your* Tailwind build.
+### Prebuilt CSS
 
-### Prebuilt drop-in (no Tailwind required)
-
-Use the precompiled stylesheet directly in plain HTML, over a CDN, or through a bundler.
+Use this for plain HTML, CDN usage, or bundlers that import CSS directly.
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/tw-fade/dist/tw-fade.css" />
+<link rel="stylesheet" href="https://unpkg.com/tw-fade@0.7.0/dist/tw-fade.css" />
 ```
 
 ```js
-// or, via a JS/bundler import:
 import "tw-fade/css";
 ```
 
-The drop-in ships a fixed, enumerated set of utilities: the named scale only, no arbitrary bracket values. See [Source path vs. prebuilt](#source-path-vs-prebuilt).
+The prebuilt file includes only the named utility set. Arbitrary bracket values need Tailwind's source path.
 
----
+If you use an unversioned CDN URL, you receive the latest package and any breaking API changes that come with it. Pin a version when you need stable HTML.
 
 ## Usage
 
-`tw-fade` is plain CSS classes. Apply them however your framework sets `class`.
+Put the fade utility on the element that actually scrolls.
 
 ```html
-<!-- Fade top and bottom as you scroll a vertical list -->
-<div class="fade-y overflow-y-auto h-80">…</div>
+<!-- Top and bottom -->
+<div class="fade-y h-80 overflow-y-auto">...</div>
 
-<!-- Fade only the left and right edge of a horizontal rail -->
-<div class="fade-x overflow-x-auto flex">…</div>
+<!-- All four edges -->
+<div class="fade h-80 overflow-auto">...</div>
 
-<!-- Fade all four edges -->
-<div class="fade-xy overflow-auto">…</div>
+<!-- Horizontal rail, direction-aware -->
+<div class="fade-x overflow-x-auto">...</div>
 
-<!-- Compose individual edges -->
-<div class="fade-t fade-r overflow-auto">…</div>
+<!-- Compose single edges -->
+<div class="fade-top fade-end h-80 overflow-auto">...</div>
 
-<!-- Larger band on the bottom only, longer reveal distance -->
-<div class="fade-b fade-size-lg fade-range-xl overflow-y-auto">…</div>
+<!-- Tune the band and travel distance -->
+<div class="fade-y fade-size-lg fade-travel-xl h-80 overflow-y-auto">...</div>
 ```
 
-The fade keys off the element's **own** scroll position, so put the utility on the element that scrolls (the one with `overflow-*: auto/scroll`), not a parent.
+## Direction Utilities
 
----
-
-## API reference
-
-### Direction utilities
-
-Each utility masks one or more physical edges. Vertical edges track the element's vertical scroll; horizontal edges track its horizontal scroll.
-
-| Utility | Edges masked |
+| Utility | Edges |
 | --- | --- |
-| `fade-t` | top |
-| `fade-b` | bottom |
-| `fade-l` | left |
-| `fade-r` | right |
+| `fade` | all four edges |
 | `fade-y` | top + bottom |
-| `fade-x` | left + right |
-| `fade-xy` | all four |
-| `fade-static` | pins the selected fade(s) fully on, always (see below) |
+| `fade-top` | top |
+| `fade-bottom` | bottom |
+| `fade-x` | horizontal start + horizontal end |
+| `fade-start` | horizontal start |
+| `fade-end` | horizontal end |
 
-`fade-static` forces the fade on regardless of scroll and disables the scroll-driven reveal. It sets only the fade *amounts*, not which edges are masked, so pair it with a direction utility: `fade-y fade-static` renders a permanent top and bottom fade. (It pins all four edge amounts internally, but only edges selected by a direction utility render a mask.)
+`start` and `end` are **horizontal only** and follow semantic reading direction. In LTR, start is the left edge and end is the right edge; in RTL, start is the right edge and end is the left edge. For the top or bottom edge use `fade-top` / `fade-bottom` — there is no `fade-block-start`. Use the HTML `dir` attribute on the scroll container or an ancestor; a CSS-only `direction: rtl` rule does not trigger RTL routing.
 
-### Size: fade band thickness
+Vertical names stay physical (`top` / `bottom`) because the block axis is not affected by text direction. This split — physical vertical, direction-aware horizontal — mirrors how Tailwind itself ships physical `top`/`bottom` insets alongside logical `ps`/`pe`. See [Why plain directions](./MIGRATING.md#why-plain-directions) for the naming rationale.
 
-Controls how thick the faded band is. Accepts the [named scale](#named-scale), a `[length]`, or a `[percentage]`.
+## Size
 
-| Utility | Affects |
-| --- | --- |
-| `fade-size-*` | global band thickness (all edges) |
-| `fade-size-t-*` / `-b-*` / `-l-*` / `-r-*` | a single edge |
-| `fade-size-y-*` | both vertical edges |
-| `fade-size-x-*` | both horizontal edges |
-
-```html
-<div class="fade-xy fade-size-md fade-size-t-2xl overflow-auto">…</div>
-```
-
-Resolution runs **edge → axis → global → default** (`fade-size-md`, i.e. `3rem`): a per-edge value beats an axis value, which beats the global value, which falls back to the default. See [Resolution precedence](#resolution-precedence).
-
-### Range: scroll reveal distance
-
-Controls the scroll distance over which a fade reveals (as you scroll in) or retracts (as you reach the end). Accepts the named scale, a `[length]`, or a `[percentage]`.
+Size controls how thick the fade band is.
 
 | Utility | Affects |
 | --- | --- |
-| `fade-range-*` | reveal distance (default `fade-range-md`, i.e. `3rem`) |
-
-A short range snaps the fade in; a long range eases it over more scroll travel.
-
-### Clear: clearance zone before the fade
-
-An opaque, unfaded band held at the edge before the fade ramp begins. Use it behind a sticky header or footer so the pinned UI stays fully visible while content fades beneath it.
-
-| Utility | Affects |
-| --- | --- |
-| `fade-clear-t-*` / `-b-*` / `-l-*` / `-r-*` | a single edge |
-| `fade-clear-y-*` | both vertical edges |
-| `fade-clear-x-*` | both horizontal edges |
-| `fade-clear-xy-*` | all four edges |
-
-The `*` accepts the named scale, a bare integer (`N` = `spacing × N`, e.g. `fade-clear-t-4` = `1rem`), a `[length]`, or a `[percentage]`. Default clearance is `0`.
+| `fade-size-*` | all edges |
+| `fade-size-y-*` | top + bottom |
+| `fade-size-x-*` | start + end |
+| `fade-size-top-*` | top |
+| `fade-size-bottom-*` | bottom |
+| `fade-size-start-*` | horizontal start |
+| `fade-size-end-*` | horizontal end |
 
 ```html
-<!-- 56px sticky header stays fully opaque; content fades below it -->
-<div class="fade-t fade-clear-t-[56px] overflow-y-auto h-80">
-  <header class="sticky top-0 h-14">…</header>
-  …
-</div>
+<div class="fade fade-size-md fade-size-top-2xl overflow-auto">...</div>
 ```
 
-> On macOS, rubber-band overscroll can briefly reveal a gap between a sticky element and the clear zone, because the mask stays fixed to the scroll container while the sticky element rubber-bands with the content. If that matters, fade only the opposite edge (e.g. `fade-b` under a top-pinned header).
+Resolution is edge, then axis, then global, then the default. For example, top uses `fade-size-top-*` first, then `fade-size-y-*`, then `fade-size-*`.
 
-#### Dynamic clear zones (`-var`)
-
-Every clear utility has a `-var` form that reads the clearance from a CSS custom property you set, so you can drive it from JS or layout-dependent values:
-
-`fade-clear-t-var`, `fade-clear-b-var`, `fade-clear-l-var`, `fade-clear-r-var`, `fade-clear-y-var`, `fade-clear-x-var`, `fade-clear-xy-var`.
-
-Each resolves its property along an **edge → axis → xy → `0px`** chain. The public custom properties you can set:
-
-| Property | Read by |
-| --- | --- |
-| `--fade-clear-t` / `-b` / `-l` / `-r` | the matching per-edge `-var` |
-| `--fade-clear-y` / `-x` | the matching axis `-var` (and per-edge as a fallback) |
-| `--fade-clear-xy` | all `-var` utilities (final fallback before `0px`) |
-
-```html
-<div class="fade-t fade-clear-t-var overflow-y-auto" style="--fade-clear-t: 56px">…</div>
-```
-
-```js
-// e.g. keep clearance in sync with a measured sticky header
-el.style.setProperty("--fade-clear-t", header.offsetHeight + "px");
-```
-
-> The `-var` family is the only one with a dynamic form. `fade-range` has no `-var` variant.
-
-### Named scale
-
-Used by every `fade-size-*`, `fade-range-*`, and named `fade-clear-*` utility. Values derive from Tailwind's spacing unit (`--spacing`, default `0.25rem`).
+The default size is capped at `min(12%, 3rem)`, so small scroll areas do not get swallowed by the fade. Named sizes derive from Tailwind's spacing unit, `--spacing`, with `0.25rem` as the fallback.
 
 | Step | Value | Step | Value |
 | --- | --- | --- | --- |
@@ -212,156 +121,222 @@ Used by every `fade-size-*`, `fade-range-*`, and named `fade-clear-*` utility. V
 | `md` | `3rem` | `3xl` | `8rem` |
 | `lg` | `4rem` | `4xl` | `10rem` |
 
-Read or override them as theme tokens: `--fade-size-{step}`, `--fade-range-{step}`, `--fade-clear-{step}`.
+You can override the tokens:
 
-### Resolution precedence
-
-For each edge, the band **size** resolves from most specific to least:
-
-```
-edge-specific  →  axis  →  global  →  default
-fade-size-t-*  →  fade-size-y-*  →  fade-size-*  →  3rem (fade-size-md)
+```css
+@theme {
+  --fade-size-md: 2.5rem;
+}
 ```
 
-The top edge takes its top value if set, else the vertical-axis value, else the global value, else the default `3rem`. Horizontal edges follow the same chain through the x-axis value.
-
-Dynamic **clearance** (`-var`) resolves `edge → axis → xy → 0px`.
-
----
-
-## Fading the whole page
-
-To dissolve content into the top and bottom of the **viewport** as the page scrolls, fade the element that scrolls. Make `<body>` the scroll container over a surface on `<html>`:
+On the Tailwind source path, size accepts named values, lengths, and percentages:
 
 ```html
-<!-- surface lives on <html>; overflow-hidden stops it escaping to the viewport -->
+<div class="fade-y fade-size-[15%]">...</div>
+```
+
+The prebuilt CSS includes the named sizes only.
+
+## Travel Distance
+
+Travel distance controls how far you scroll before the soft band eases open to its full width.
+
+| Utility | Affects |
+| --- | --- |
+| `fade-travel-*` | all selected edges |
+
+```html
+<div class="fade-y fade-travel-sm overflow-y-auto">...</div>
+<div class="fade-y fade-travel-[80px] overflow-y-auto">...</div>
+```
+
+A smaller travel distance opens the band faster; a larger one eases it over more scroll. Either way the **edge is masked almost immediately** — the band's transparency saturates within `travel ÷ 8` of scroll, so content is never hard-clipped at the scroll edge while the band is still widening. The travel is purely the cosmetic open-speed; it is safe at any size.
+
+The named travel scale is the same as the size scale (default `sm`) and can be overridden with `--fade-travel-{step}`. Arbitrary travel values are source-path only. To change how fast the edge itself goes transparent, set `--tw-fade-onset` (default `8`; higher = snappier).
+
+## Clear Zones
+
+Clear zones keep a fully opaque strip before the fade starts. Use them for sticky headers, sticky footers, or fixed controls inside the scroll container.
+
+| Utility | Affects |
+| --- | --- |
+| `fade-clear-*` | all edges |
+| `fade-clear-y-*` | top + bottom |
+| `fade-clear-x-*` | start + end |
+| `fade-clear-top-*` | top |
+| `fade-clear-bottom-*` | bottom |
+| `fade-clear-start-*` | horizontal start |
+| `fade-clear-end-*` | horizontal end |
+
+```html
+<div class="fade-top fade-clear-top-[56px] h-80 overflow-y-auto">
+  <header class="sticky top-0 h-14">...</header>
+  ...
+</div>
+```
+
+Clear utilities accept named values, lengths, percentages, and bare integers on the Tailwind source path. A bare integer maps to `--spacing * N`, so `fade-clear-top-4` is `1rem` with the default spacing unit.
+
+The prebuilt CSS includes named clear values and `-var` forms, not arbitrary values or integer forms.
+
+### Dynamic Clear Zones
+
+Use `-var` when the clear zone depends on runtime layout:
+
+```html
+<div class="fade-top fade-clear-top-var" style="--fade-clear-top: 56px">
+  ...
+</div>
+```
+
+Available forms:
+
+```txt
+fade-clear-var
+fade-clear-y-var
+fade-clear-x-var
+fade-clear-top-var
+fade-clear-bottom-var
+fade-clear-start-var
+fade-clear-end-var
+```
+
+The fallback chain is edge, then axis, then global, then `0px`.
+
+```css
+--fade-clear-top: 56px;
+--fade-clear-y: 24px;
+--fade-clear: 0px;
+```
+
+## Force Or Disable A Fade
+
+These utilities change only the active fade amount. They do not select edges on their own, so pair them with a direction utility.
+
+| Utility | Effect |
+| --- | --- |
+| `fade-none` | disables all selected fades |
+| `fade-none-y` | disables selected vertical fades |
+| `fade-none-x` | disables selected horizontal fades |
+| `fade-always` | pins all selected fades fully on |
+| `fade-always-y` | pins selected vertical fades fully on |
+| `fade-always-x` | pins selected horizontal fades fully on |
+
+```html
+<div class="fade-y fade-always-y overflow-y-auto">...</div>
+<div class="fade fade-none-x overflow-auto">...</div>
+```
+
+## Fading The Whole Page
+
+Fade the element that scrolls. For a full-page fade, make `<body>` the scroll container and keep the surface behind it on `<html>`.
+
+```html
 <html class="h-full overflow-hidden bg-neutral-950">
-  <!-- body is the real scroll container, transparent so the mask reveals the surface -->
   <body class="fade-y h-full overflow-y-auto bg-transparent">
-    …
+    ...
   </body>
 </html>
 ```
 
-Two requirements people miss:
+Two details matter:
 
-1. **`<body>` must be the scroll container.** `scroll(self y)` tracks only the element's own scrollport. Give `<body>` `height: 100%` and `overflow-y: auto`, and set `overflow: hidden` on `<html>`. Otherwise the browser propagates the body's overflow up to the viewport, `<body>` never becomes a scroller, and the fade does nothing.
-2. **Put a surface behind the mask.** A mask also masks the element's own background, so something has to sit behind `<body>` to reveal. Keep the surface color on `<html>` (or a fixed backdrop) and make `<body>` transparent.
+1. `<body>` must have a fixed height and `overflow-y-auto`, otherwise the viewport scrolls instead.
+2. The scroll container should be transparent if you want the mask to reveal the page surface behind it.
 
-Masking `<body>` also establishes a stacking context on it, which can change the `z-index` layering of fixed and absolute descendants.
+## Source Path Vs. Prebuilt
 
----
-
-## Troubleshooting
-
-- **Is the class on the scrollable element?** The fade has to live on the element that overflows and scrolls, not a parent. See [Usage](#usage).
-- **Can it scroll?** With no overflow on an axis, that axis's timeline stays inactive and the amount holds at its `0` base, so no fade. This is intentional: don't fade what you can't scroll.
-- **Is there a contrasting surface behind it?** A mask reveals whatever sits behind the element. With nothing there, or no contrast, there's nothing to fade into.
-- **RTL plus horizontal?** See [Writing direction](#writing-direction-rtl).
-
----
-
-## How it works
-
-The element gets a `mask-image` built from four comma-separated layers, one per physical edge, combined with `mask-composite: intersect`:
-
-```css
-mask-image:
-  /* top */    var(--tw-fade-mask-t, linear-gradient(#000, #000)),
-  /* bottom */ var(--tw-fade-mask-b, linear-gradient(#000, #000)),
-  /* left */   var(--tw-fade-mask-l, linear-gradient(#000, #000)),
-  /* right */  var(--tw-fade-mask-r, linear-gradient(#000, #000));
-mask-composite: intersect;
-```
-
-When an edge is active, its layer holds a real `linear-gradient`. Otherwise it falls back to the opaque identity gradient `linear-gradient(#000, #000)`, which masks nothing. `intersect` is mandatory: the CSS default `add` (union) lets one opaque layer cancel another's transparency and erase the fade. Each direction utility sets only its own edge's layer, so classes compose cleanly.
-
-**The amount drives both alpha and length.** Each active edge carries a numeric amount from `0` to `1` that controls the gradient's opacity (at `0`, every stop is fully opaque, so the layer is a no-op) and the band's length (at `0`, the band collapses to zero). At `1` you get the full fade over the full band thickness.
-
-**The curve.** After the clearance zone, the active gradient is a 13-stop ramp. The alpha stops follow an eased, symmetric sigmoid sequence while their positions stay evenly spaced across the band. Eased opacity against linear positions yields a smooth S-curve: denser opacity change near the middle, gentler at the ends.
-
-**Scroll gating.** Inside `@supports (animation-timeline: scroll())`, each utility binds the four edge amounts to scroll-driven animations: vertical edges to `scroll(self y)`, horizontal edges to `scroll(self x)`. Leading edges (top, left) reveal `0 → 1` over the first `fade-range` of scroll; trailing edges (bottom, right) retract `1 → 0` over the last. When an axis can't scroll, its amount holds at the `0` base, so no fade. That is the "don't fade what you can't scroll past" guard.
-
-**Fallback.** Inside `@supports not (animation-timeline: scroll())`, all amounts pin to `1`, so every selected edge renders its full static fade instead of disappearing.
-
-> **Public vs. internal surface.** The supported API is the `fade-*` utilities, the `--fade-*` theme tokens, and the `--fade-clear-*` dynamic vars above. The `--tw-fade-*` custom properties in this section are internal implementation details. They register with `inherits: false` so nested fades stay isolated, and they are not a surface to target directly.
-
----
-
-## Writing direction (RTL)
-
-Behavior keys off **physical** axes, not inline text direction.
-
-- **Vertical fades (`fade-t`, `fade-b`, `fade-y`) are RTL-safe.** The vertical axis and the top and bottom gradients stay identical regardless of text direction.
-- **Horizontal fades assume LTR.** `fade-l` acts as the leading edge (reveals as you scroll in) and `fade-r` as the trailing edge (retracts at the end). Because the timeline uses the physical `scroll(self x)` axis, an RTL context flips the leading and trailing semantics relative to reading order. For an order-neutral horizontal scroller, set `dir="ltr"` on the scroll container.
-
----
-
-## Accessibility
-
-`tw-fade` is a visual mask only. It animates the opacity and length of an edge gradient, never the position of content, and it adds no scrolling motion beyond the scroll you already perform. Like any edge scrim, it lowers the contrast of content right at the masked edges, so keep band sizes modest where edge text must stay legible, and use `fade-clear-*` to hold critical content fully opaque.
-
----
-
-## Source path vs. prebuilt
-
-| | `@import "tw-fade"` (source) | `tw-fade/css` (prebuilt) |
+| | `@import "tw-fade"` | `tw-fade/css` |
 | --- | --- | --- |
-| Requires Tailwind v4 | yes (compiles through your build) | no |
-| Direction / `fade-static` | yes | yes |
-| Named-scale utilities (`xs`–`4xl`) | yes | yes |
-| Per-edge & axis size/clear utilities | yes | yes |
-| `fade-clear-*-var` dynamic forms | yes | yes |
-| **Arbitrary values** (`fade-size-[6rem]`, `fade-range-[80px]`, `fade-clear-t-[56px]`) | **yes** | **no** |
+| Needs Tailwind v4 | yes | no |
+| Direction utilities | yes | yes |
+| Named size/travel/clear utilities | yes | yes |
+| `fade-clear-*-var` | yes | yes |
+| Arbitrary values like `fade-size-[6rem]` | yes | no |
+| Integer clear values like `fade-clear-top-14` | yes | no |
 
-The prebuilt drop-in compiles only `tailwindcss/utilities.css`, so it carries no Preflight, no reset, and no Tailwind core `--tw-*` defaults. Just the enumerated `fade-*` utilities and their `@property` registrations. Arbitrary bracket values need Tailwind's JIT and exist only on the source path.
+The prebuilt file is generated from an explicit safelist. It does not include Tailwind Preflight, core Tailwind utilities, arbitrary values, or integer `fade-clear-*` classes.
 
-### Exports
+## Exports
 
 | Specifier | Resolves to |
 | --- | --- |
-| `tw-fade` (`.`) | `./src/tw-fade.css` (v4 CSS-first source) |
-| `tw-fade/css` | `./dist/tw-fade.css` (prebuilt drop-in) |
-| `tw-fade/dist/tw-fade.css` | `./dist/tw-fade.css` (explicit path) |
+| `tw-fade` | `./src/tw-fade.css` |
+| `tw-fade/css` | `./dist/tw-fade.css` |
+| `tw-fade/dist/tw-fade.css` | `./dist/tw-fade.css` |
 
-`tailwindcss >=4.0.0` is an **optional** peer dependency. Consumers using only the prebuilt drop-in don't need it; the source path still needs Tailwind v4 to compile.
+`tailwindcss >=4.0.0` is an optional peer dependency. You need it for the source path, but not for the prebuilt CSS.
 
----
+## How It Works
 
-## Browser support
+Each faded element gets a four-layer `mask-image`, one layer per physical edge. Inactive layers fall back to an opaque identity mask. Active layers use a 13-stop eased gradient.
 
-Two CSS features carry different support floors:
+The public API uses plain direction names, but the internal engine still keeps four physical edge amounts. Those internal properties are typed numbers, do not inherit, and are driven by scroll animations. Keeping the engine physical makes the mask predictable; the public `start` and `end` utilities route to the correct physical side for LTR or RTL in browsers that support the `:dir()` selector (see [Browser Support](#browser-support)).
 
-- **CSS masking** (`mask-image`, `mask-composite`, unprefixed). Interoperable across every current evergreen browser. See [caniuse: mask-image](https://caniuse.com/mdn-css_properties_mask-image).
-- **Scroll-driven animations** (`animation-timeline: scroll()`). Shipped by default in every major engine except Firefox. See [caniuse: scroll-driven animations](https://caniuse.com/mdn-css_properties_animation-timeline_scroll).
+Inside browsers with scroll-driven animation support:
 
-| Engine | Masking | Scroll-driven animation | Result |
-| --- | --- | --- | --- |
-| Chrome / Edge | 120+ | 115+ | Full scroll-gated fade |
-| Safari (WebKit) | 15.4+ / iOS 15.4+ | **26.0+** | Full on 26+; static fade fallback below |
-| Firefox (release/beta) | 53+ | **not by default** | Static always-on fade |
-| Opera | 106+ | 101+ | Full scroll-gated fade |
-| Samsung Internet | 25+ | 23+ | Full scroll-gated fade |
+- vertical fades use `scroll(self y)`;
+- horizontal fades use `scroll(self inline)`;
+- leading edges reveal from `0` to `1` near the start of scroll;
+- trailing edges retract from `1` to `0` near the end of scroll.
 
-**Firefox.** Scroll-driven animations are implemented but sit behind the `layout.css.scroll-driven-animations.enabled` flag, default-on only in Nightly (since 136) and default-off in Release, Beta, and Developer Edition. Firefox release users get the static `@supports` fallback (the fade renders fully on, always). Masking works regardless (Firefox 53+).
+If an axis cannot scroll, that axis stays at `0`, so the fade does not show. This is intentional.
 
-**Safari.** Scroll-driven animations shipped by default in Safari 26.0; 17.x and 18.x get the static fallback. Older WebKit may also need `-webkit-mask-*`, so run the prebuilt CSS through Autoprefixer if you target it.
+In browsers without scroll-driven animations, selected fades pin fully on as a static fallback.
 
-The practical masking floor is Chrome/Edge 120, the last major engine to drop the `-webkit-` prefix requirement; Safari and Firefox were already ahead. In every case the `@supports` fallback degrades the effect to a permanent static fade rather than breaking.
+The supported public surface is the `fade-*` utilities, the public `--fade-*` tokens described above, and `--tw-fade-onset` (the edge-speed knob documented under [Travel Distance](#travel-distance)). Treat the rest of the `--tw-fade-*` namespace as internal implementation detail.
 
----
+## RTL
+
+Horizontal fades are direction-aware:
+
+```html
+<div dir="rtl" class="fade-start overflow-x-auto">...</div>
+```
+
+In that example, `fade-start` selects the right edge because the scroll container is RTL. `fade-end` selects the left edge. `fade-x` selects both.
+
+RTL routing follows semantic direction through `dir`, not a CSS-only `direction: rtl` declaration. It relies on the `:dir()` selector, so on the narrow band of Chromium that supports scroll-driven animations but not `:dir()` (Chrome 115–119), RTL scrollers fall back to LTR edge mapping — see [Browser Support](#browser-support). LTR is unaffected.
+
+Vertical fades are unchanged by text direction.
+
+## Accessibility
+
+`tw-fade` is visual only. It does not move content, add scroll behavior, or change focus order. Like any edge fade, it lowers contrast near the masked edge, so keep band sizes modest and use clear zones for sticky controls or critical text.
+
+## Browser Support
+
+Three CSS features carry different support floors:
+
+- **CSS masking** (`mask-image`, `mask-composite`). Interoperable across current evergreen browsers.
+- **Scroll-driven animations** (`animation-timeline: scroll()`). Shipped by default in every major engine except Firefox release.
+- **The `:dir()` selector**, used to route `start` / `end` to the correct physical edge under RTL.
+
+| Engine | Masking | Scroll-driven animation | `:dir()` | Result |
+| --- | --- | --- | --- | --- |
+| Chrome / Edge | 120+ | 115+ | 120+ | Full scroll-gated, direction-aware fade |
+| Safari (WebKit) | 15.4+ | 26.0+ | 16.4+ | Full on 26+; static fade fallback below |
+| Firefox (release) | 53+ | not by default | 49+ | Static always-on fade |
+
+**Scroll-driven fallback.** Browsers without scroll-driven animations still render selected fades, but as always-on static fades. Safari 17.x / 18.x and Firefox release get this fallback (Firefox keeps scroll-driven animations behind a flag, default-on only in Nightly).
+
+**RTL routing floor.** Direction-aware `start` / `end` routing additionally needs `:dir()`. On the narrow band of Chromium that has scroll-driven animations but not `:dir()` (Chrome 115–119), RTL scrollers fall back to LTR physical-edge mapping — the fade still renders, but `start` / `end` map to the wrong side. LTR is unaffected, and that band is effectively gone on auto-updating Chromium.
+
+**Older WebKit** may also need `-webkit-mask-*`; run the prebuilt CSS through Autoprefixer if you target it.
+
+## Migrating
+
+Upgrading from `0.6.x`? [MIGRATING.md](./MIGRATING.md) is written as a step-by-step
+procedure you can hand straight to a coding agent ("upgrade this project to tw-fade
+0.7.0 using MIGRATING.md") — ordered renames, the physical→logical RTL caveats to
+review by hand, and a one-line grep to verify nothing was missed. It reads fine for
+humans too.
 
 ## Development
 
 ```bash
-npm test       # compiled-CSS unit tests, no browser required
-npm run build  # regenerate dist/tw-fade.css from src/tw-fade.css
+npm test
+npm run build
+npm run build:demo
+npm run verify
 ```
-
-`dist/tw-fade.css` is generated. Don't edit it by hand.
-
----
-
-## License
-
-MIT © Pete Petrash
