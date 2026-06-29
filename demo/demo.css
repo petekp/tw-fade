@@ -637,6 +637,11 @@ h3 {
 
 .fade-option-token {
     display: inline-flex;
+    /* Align the prefix/stem parts on their text baseline so the token reports a
+       glyph baseline to the line. Without this, a bare `fade` token (empty
+       prefix part) derives its baseline from the empty first flex item and
+       floats ~7px above its neighbors. */
+    align-items: baseline;
     white-space: nowrap;
 }
 
