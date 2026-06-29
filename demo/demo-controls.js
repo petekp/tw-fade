@@ -35,7 +35,7 @@ const edgeGradientTipStops = Array.from(
 );
 const fadeDepthSizes = [
   { className: "fade-size-sm", value: "sm", aria: "small" },
-  { className: "fade-size-md", value: "md", aria: "medium" },
+  { className: "fade-size-md", value: "md", aria: "medium", default: true },
   { className: "fade-size-lg", value: "lg", aria: "large" },
   { className: "fade-size-xl", value: "xl", aria: "extra large" },
   {
@@ -55,7 +55,7 @@ const fadeDepthSizes = [
   },
 ];
 const fadeTravels = [
-  { className: "fade-travel-sm", value: "sm", aria: "small" },
+  { className: "fade-travel-sm", value: "sm", aria: "small", default: true },
   { className: "fade-travel-md", value: "md", aria: "medium" },
   { className: "fade-travel-lg", value: "lg", aria: "large" },
   {
@@ -957,7 +957,9 @@ function setFadeOptionLabel(edgeClasses, sizeClass, travelClass) {
   const previous = fadeOptionReadoutState;
   const flashTargets = [];
   const fragment = document.createDocumentFragment();
-  const fullClassName = [...edgeClasses, sizeClass, travelClass].join(" ");
+  const fullClassName = [...edgeClasses, sizeClass, travelClass]
+    .filter(Boolean)
+    .join(" ");
   const previousEdgeClasses = previous?.edgeClasses ?? [];
   const edgeStemChanged =
     previous &&
@@ -987,11 +989,16 @@ function setFadeOptionLabel(edgeClasses, sizeClass, travelClass) {
     appendToken(className, flashMode);
   }
 
-  appendToken(sizeClass, previous?.sizeClass === sizeClass ? "none" : "stem");
-  appendToken(
-    travelClass,
-    previous?.travelClass === travelClass ? "none" : "stem",
-  );
+  // A default control contributes no token — sizeClass/travelClass is null then.
+  if (sizeClass) {
+    appendToken(sizeClass, previous?.sizeClass === sizeClass ? "none" : "stem");
+  }
+  if (travelClass) {
+    appendToken(
+      travelClass,
+      previous?.travelClass === travelClass ? "none" : "stem",
+    );
+  }
 
   fadeOptionLabel.replaceChildren(fragment);
   fadeOptionLabel.setAttribute("aria-label", fullClassName);
@@ -1027,11 +1034,12 @@ function setFadeControls() {
     return button?.getAttribute("aria-pressed") === "true";
   });
   const edgeClasses = edgeUtilities(activeEdges);
-  const utilityClasses = [
-    ...edgeClasses,
-    nextSize.className,
-    nextTravel.className,
-  ];
+  // A control sitting at its plugin default needs no class — bare `fade` already
+  // implies `md` size and `sm` travel — so drop it from both the specimen and
+  // the label. The class string then shows exactly what you'd actually type.
+  const sizeClass = nextSize.default ? null : nextSize.className;
+  const travelClass = nextTravel.default ? null : nextTravel.className;
+  const utilityClasses = [...edgeClasses, sizeClass, travelClass].filter(Boolean);
 
   fadeSpecimen.classList.remove(
     ...fadeEdgeClassNames,
@@ -1042,7 +1050,7 @@ function setFadeControls() {
     ...fadeTravels.map((travel) => travel.className),
   );
   fadeSpecimen.classList.add(...utilityClasses);
-  setFadeOptionLabel(edgeClasses, nextSize.className, nextTravel.className);
+  setFadeOptionLabel(edgeClasses, sizeClass, travelClass);
   fadeDepthValue.textContent = nextSize.value;
   fadeTravelValue.textContent = nextTravel.value;
   fadeDepthSlider.setAttribute("aria-valuetext", nextSize.aria);
