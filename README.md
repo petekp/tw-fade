@@ -255,7 +255,7 @@ Two details matter:
 | Arbitrary values like `fade-size-[6rem]` | yes | no |
 | Integer clear values like `fade-clear-top-14` | yes | no |
 
-The prebuilt file is generated from an explicit safelist. It does not include Tailwind Preflight, core Tailwind utilities, arbitrary values, or integer `fade-size-*` classes.
+The prebuilt file is generated from an explicit safelist. It does not include Tailwind Preflight, core Tailwind utilities, arbitrary values, or integer `fade-clear-*` classes.
 
 ## Exports
 
@@ -284,7 +284,7 @@ If an axis cannot scroll, that axis stays at `0`, so the fade does not show. Thi
 
 In browsers without scroll-driven animations, selected fades pin fully on as a static fallback.
 
-The supported public surface is the `fade-*` utilities and the public `--fade-*` tokens described above. Treat `--tw-fade-*` as internal implementation detail.
+The supported public surface is the `fade-*` utilities, the public `--fade-*` tokens described above, and `--tw-fade-onset` (the edge-speed knob documented under [Travel Distance](#travel-distance)). Treat the rest of the `--tw-fade-*` namespace as internal implementation detail.
 
 ## RTL
 

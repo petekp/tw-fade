@@ -75,7 +75,7 @@ The suffix may be a named scale (`-md`), a bare integer (`-2`), or an arbitrary 
 | `fade-clear-xy-` | `fade-clear-` |
 | `fade-size-x-` · `fade-size-y-` · `fade-clear-x-` · `fade-clear-y-` | _unchanged_ |
 
-`range` → `travel` controls how quickly the soft band eases open as you scroll (the masked edge itself is now covered almost immediately — see the [changelog](./CHANGELOG.md)). `fade-travel-*` is **global only** — no per-edge travel utilities.
+`range` → `travel` controls how quickly the soft band eases open as you scroll (the masked edge itself is now covered almost immediately — see the [changelog](./CHANGELOG.md)). `fade-travel-*` is **global only** — no per-edge travel utilities. The default travel is now `sm` (was `md`), so a surface that relied on the implicit default gets a slightly snappier band open — purely cosmetic, no action needed.
 
 ---
 
