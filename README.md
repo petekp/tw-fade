@@ -284,6 +284,74 @@ If an axis cannot scroll, that axis stays at `0`, so the fade does not show. Thi
 
 In browsers without scroll-driven animations, selected fades pin fully on as a static fallback.
 
+### Dynamic content on a stable scrollport
+
+If you replace the contents of a faded scrollport without replacing the scrollport itself, the browser has to invalidate the element's scroll-driven animation state. For example: a tabbed mobile list keeps one `.fade-y` node mounted, scrolls a long tab, then swaps in a short tab whose content no longer overflows.
+
+Current `tw-fade` mitigates this in Chromium. The expected post-swap state is:
+
+- `scrollTop` / `scrollLeft` is clamped back to `0`;
+- the axis no longer overflows;
+- the selected fade amounts return to `0`.
+
+WebKit can still retain a stale sampled scroll-animation value in this exact shape, especially after collapsing content from the bottom/end of the scroll range. If a user reports a fade that stays visible after a content swap, advise them in this order:
+
+1. Upgrade to the latest `tw-fade`.
+2. Key/remount the scrollport by content identity when practical.
+3. If remounting is awkward, restart the fade animation after the content swap.
+4. If the app already knows the content cannot overflow, add `fade-none-y` or `fade-none-x` for that state.
+
+React remount pattern:
+
+```tsx
+<div key={activeTabId} className="fade-y overflow-y-auto">
+  {items.map((item) => (
+    <ListItem key={item.id} item={item} />
+  ))}
+</div>
+```
+
+Animation reset helper:
+
+```js
+function resetTwFade(el) {
+  const previous = el.style.animation
+  el.style.animation = 'none'
+  void el.offsetHeight
+  requestAnimationFrame(() => {
+    el.style.animation = previous
+  })
+}
+```
+
+React reset pattern:
+
+```tsx
+const scrollRef = useRef(null)
+
+useLayoutEffect(() => {
+  if (scrollRef.current) resetTwFade(scrollRef.current)
+}, [activeTabId])
+
+return (
+  <div ref={scrollRef} className="fade-y overflow-y-auto">
+    {items.map((item) => (
+      <ListItem key={item.id} item={item} />
+    ))}
+  </div>
+)
+```
+
+Known no-overflow escape hatch:
+
+```tsx
+<div className={canOverflow ? 'fade-y overflow-y-auto' : 'fade-y fade-none-y overflow-y-auto'}>
+  {items.map((item) => (
+    <ListItem key={item.id} item={item} />
+  ))}
+</div>
+```
+
 The supported public surface is the `fade-*` utilities, the public `--fade-*` tokens described above, and `--tw-fade-onset` (the edge-speed knob documented under [Travel Distance](#travel-distance)). Treat the rest of the `--tw-fade-*` namespace as internal implementation detail.
 
 ## RTL

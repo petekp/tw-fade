@@ -48,6 +48,10 @@ function declValue(body, prop) {
   return m ? m[1].trim() : undefined
 }
 
+function compact(value) {
+  return value?.replace(/\s+/g, ' ')
+}
+
 function classSelectors(source = css) {
   return new Set(
     [...source.matchAll(/\.(-?[_a-zA-Z][\w-]*)/g)]
@@ -276,15 +280,26 @@ test('the shared mask setup owns four physical layers and scroll animation wirin
 })
 
 test('direction classes select the expected layers and central RTL routing', () => {
+  const shared = block(SHARED_SELECTOR)
+  assert.equal(declValue(shared, '--tw-fade-scroll-epsilon'), '0.1px')
+
   const top = block(TOP_SELECTOR)
   assert.equal(declValue(top, '--tw-fade-mask-t'), 'var(--tw-fade-gradient-t)')
   assert.equal(declValue(top, '--tw-fade-animation-t'), 'tw-fade-travel-t')
   assert.equal(declValue(top, '--tw-fade-timeline-t'), 'scroll(self y)')
+  assert.equal(
+    compact(declValue(top, '--tw-fade-animation-range-t')),
+    'var(--tw-fade-scroll-epsilon) max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active))',
+  )
 
   const bottom = block(BOTTOM_SELECTOR)
   assert.equal(declValue(bottom, '--tw-fade-mask-b'), 'var(--tw-fade-gradient-b)')
   assert.equal(declValue(bottom, '--tw-fade-animation-b'), 'tw-fade-travel-b')
   assert.equal(declValue(bottom, '--tw-fade-timeline-b'), 'scroll(self y)')
+  assert.equal(
+    compact(declValue(bottom, '--tw-fade-animation-range-b')),
+    'min( calc(100% - var(--tw-fade-travel-active)), calc(100% - var(--tw-fade-scroll-epsilon)) ) calc(100% - var(--tw-fade-scroll-epsilon))',
+  )
 
   const start = block(START_SELECTOR)
   assert.equal(declValue(start, '--tw-fade-ltr-start-layer'), 'var(--tw-fade-gradient-l)')
@@ -293,12 +308,28 @@ test('direction classes select the expected layers and central RTL routing', () 
   assert.equal(declValue(start, '--tw-fade-rtl-start-animation'), 'tw-fade-travel-r-leading')
   assert.equal(declValue(start, '--tw-fade-ltr-start-timeline'), 'scroll(self inline)')
   assert.equal(declValue(start, '--tw-fade-rtl-start-timeline'), 'scroll(self inline)')
+  assert.equal(
+    compact(declValue(start, '--tw-fade-ltr-start-animation-range')),
+    'var(--tw-fade-scroll-epsilon) max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active))',
+  )
+  assert.equal(
+    compact(declValue(start, '--tw-fade-rtl-start-animation-range')),
+    'var(--tw-fade-scroll-epsilon) max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active))',
+  )
 
   const end = block(END_SELECTOR)
   assert.equal(declValue(end, '--tw-fade-ltr-end-layer'), 'var(--tw-fade-gradient-r)')
   assert.equal(declValue(end, '--tw-fade-rtl-end-layer'), 'var(--tw-fade-gradient-l)')
   assert.equal(declValue(end, '--tw-fade-ltr-end-animation'), 'tw-fade-travel-r')
   assert.equal(declValue(end, '--tw-fade-rtl-end-animation'), 'tw-fade-travel-l-trailing')
+  assert.equal(
+    compact(declValue(end, '--tw-fade-ltr-end-animation-range')),
+    'min( calc(100% - var(--tw-fade-travel-active)), calc(100% - var(--tw-fade-scroll-epsilon)) ) calc(100% - var(--tw-fade-scroll-epsilon))',
+  )
+  assert.equal(
+    compact(declValue(end, '--tw-fade-rtl-end-animation-range')),
+    'min( calc(100% - var(--tw-fade-travel-active)), calc(100% - var(--tw-fade-scroll-epsilon)) ) calc(100% - var(--tw-fade-scroll-epsilon))',
+  )
 
   const rtl = block(RTL_SELECTOR)
   assert.ok(rtl, 'missing central RTL routing block')

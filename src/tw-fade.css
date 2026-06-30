@@ -328,6 +328,12 @@ fades from leaking size, travel, clearance, mask, or routing state.
     .fade-end {
         --tw-fade-size-default: min(12%, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12)));
         --tw-fade-travel-active: var(--tw-fade-travel, var(--fade-travel-sm, calc(var(--spacing, 0.25rem) * 8)));
+        /*
+        Keep scroll animation ranges off the exact 0% / 100% endpoints. Chromium
+        can otherwise retain a sampled leading fade when a mounted scrollport's
+        content collapses from scrollable to non-scrollable.
+        */
+        --tw-fade-scroll-epsilon: 0.1px;
         --tw-fade-identity-mask: linear-gradient(#000, #000);
         --tw-fade-edge-size-t: var(--tw-fade-size-top, var(--tw-fade-size-y, var(--tw-fade-size, var(--tw-fade-size-default))));
         --tw-fade-edge-size-b: var(--tw-fade-size-bottom, var(--tw-fade-size-y, var(--tw-fade-size, var(--tw-fade-size-default))));
@@ -528,7 +534,8 @@ fades from leaking size, travel, clearance, mask, or routing state.
         --tw-fade-mask-t: var(--tw-fade-gradient-t);
         --tw-fade-animation-t: tw-fade-travel-t;
         --tw-fade-timeline-t: scroll(self y);
-        --tw-fade-animation-range-t: 0 var(--tw-fade-travel-active);
+        --tw-fade-animation-range-t: var(--tw-fade-scroll-epsilon)
+            max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active));
     }
 
     .fade,
@@ -537,7 +544,11 @@ fades from leaking size, travel, clearance, mask, or routing state.
         --tw-fade-mask-b: var(--tw-fade-gradient-b);
         --tw-fade-animation-b: tw-fade-travel-b;
         --tw-fade-timeline-b: scroll(self y);
-        --tw-fade-animation-range-b: calc(100% - var(--tw-fade-travel-active)) 100%;
+        --tw-fade-animation-range-b: min(
+                calc(100% - var(--tw-fade-travel-active)),
+                calc(100% - var(--tw-fade-scroll-epsilon))
+            )
+            calc(100% - var(--tw-fade-scroll-epsilon));
     }
 
     .fade,
@@ -549,8 +560,10 @@ fades from leaking size, travel, clearance, mask, or routing state.
         --tw-fade-rtl-start-animation: tw-fade-travel-r-leading;
         --tw-fade-ltr-start-timeline: scroll(self inline);
         --tw-fade-rtl-start-timeline: scroll(self inline);
-        --tw-fade-ltr-start-animation-range: 0 var(--tw-fade-travel-active);
-        --tw-fade-rtl-start-animation-range: 0 var(--tw-fade-travel-active);
+        --tw-fade-ltr-start-animation-range: var(--tw-fade-scroll-epsilon)
+            max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active));
+        --tw-fade-rtl-start-animation-range: var(--tw-fade-scroll-epsilon)
+            max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active));
     }
 
     .fade,
@@ -562,8 +575,16 @@ fades from leaking size, travel, clearance, mask, or routing state.
         --tw-fade-rtl-end-animation: tw-fade-travel-l-trailing;
         --tw-fade-ltr-end-timeline: scroll(self inline);
         --tw-fade-rtl-end-timeline: scroll(self inline);
-        --tw-fade-ltr-end-animation-range: calc(100% - var(--tw-fade-travel-active)) 100%;
-        --tw-fade-rtl-end-animation-range: calc(100% - var(--tw-fade-travel-active)) 100%;
+        --tw-fade-ltr-end-animation-range: min(
+                calc(100% - var(--tw-fade-travel-active)),
+                calc(100% - var(--tw-fade-scroll-epsilon))
+            )
+            calc(100% - var(--tw-fade-scroll-epsilon));
+        --tw-fade-rtl-end-animation-range: min(
+                calc(100% - var(--tw-fade-travel-active)),
+                calc(100% - var(--tw-fade-scroll-epsilon))
+            )
+            calc(100% - var(--tw-fade-scroll-epsilon));
     }
 
     @supports (animation-timeline: scroll()) {

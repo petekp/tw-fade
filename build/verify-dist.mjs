@@ -107,7 +107,10 @@ const checks = [
   ['dist: mid → both fades (t≈1,b≈1)', approx(r.mid.t, 1) && approx(r.mid.b, 1)],
   ['dist: bottom → full top fade (t≈1)', approx(r.bottom.t, 1)],
   ['dist: bottom → no bottom fade (b≈0)', approx(r.bottom.b, 0)],
-  ['dist: fade-travel-2xl resolves into the selected vertical animation range', /^96px, 100%, normal, normal$/.test(r.travel.animationRangeEnd)],
+  [
+    'dist: fade-travel-2xl resolves into the selected vertical animation range',
+    /^96px, calc\(100% - 0\.1px\), normal, normal$/.test(r.travel.animationRangeEnd),
+  ],
   ['dist: not scrollable → no fade (t≈0,b≈0)', approx(r.short.t, 0) && approx(r.short.b, 0)],
   ['dist: mixed fade-top fade-end composes (t≈1,r≈1)', approx(r.combo.t, 1) && approx(r.combo.r, 1)],
   ['dist: mixed fade-top fade-end keeps four travel animations', r.combo.animationNames.length === 4],

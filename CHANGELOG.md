@@ -4,6 +4,19 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Nudged scroll-driven animation ranges away from exact start/end endpoints so
+  Chromium resets fade amounts when mounted scrollports swap from overflowing to
+  non-overflowing content.
+
+### Documented
+
+- Added support guidance for dynamic content swaps on stable scrollport nodes,
+  including remount, reset-helper, and `fade-none-*` escape-hatch patterns.
+
 ## [0.7.0] - 2026-06-28
 
 Breaking rename to a plain direction API. [MIGRATING.md](./MIGRATING.md) is an
@@ -44,4 +57,5 @@ it also explains the [naming rationale](./MIGRATING.md#why-plain-directions).
   `fade-size-*` / `fade-range-*` / `fade-clear-*` families). No public physical
   horizontal utility (`fade-left` / `fade-right`) is provided.
 
+[Unreleased]: https://github.com/petekp/tw-fade/compare/v0.7.0...HEAD
 [0.7.0]: https://github.com/petekp/tw-fade/releases/tag/v0.7.0
