@@ -99,6 +99,7 @@ let installCommandFlashTimer = 0;
 let installIconStackSpringControl = null;
 const surfaceSpringControls = new WeakMap();
 const surfaceInteractionState = new WeakMap();
+const surfaceLastPointerType = new WeakMap();
 const swatchSpringControls = new WeakMap();
 const swatchInteractionState = new WeakMap();
 const edgeToggleSpringControls = new WeakMap();
@@ -647,15 +648,15 @@ function initRailLetterLayers() {
   }
 }
 
-function setSurface(nextSurface, sourceButton = null) {
+function setSurface(nextSurface, sourceButton = null, { animated = true } = {}) {
   document.documentElement.dataset.surface = nextSurface;
   scheduleThemeFaviconUpdate();
   for (const button of surfaceButtons) {
     const checked = button.dataset.surfaceOption === nextSurface;
     button.setAttribute("aria-checked", String(checked));
-    syncSurfaceButtonSpring(button, true);
+    syncSurfaceButtonSpring(button, animated);
   }
-  if (sourceButton) springSurfaceSelection(sourceButton);
+  if (sourceButton && animated) springSurfaceSelection(sourceButton);
 }
 
 function selectRailCard(nextCard, animated = true) {
@@ -1144,8 +1145,13 @@ for (const button of surfaceButtons) {
   syncSurfaceButtonSpring(button, false);
 
   attachHoverPressSprings(button, surfaceStateFor, syncSurfaceButtonSpring);
+  button.addEventListener("pointerdown", (event) => {
+    surfaceLastPointerType.set(button, event.pointerType);
+  });
   button.addEventListener("click", () => {
-    setSurface(button.dataset.surfaceOption, button);
+    const animated = surfaceLastPointerType.get(button) !== "touch";
+    surfaceLastPointerType.delete(button);
+    setSurface(button.dataset.surfaceOption, button, { animated });
   });
   button.addEventListener("keydown", (event) => {
     const direction =

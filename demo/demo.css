@@ -1492,7 +1492,6 @@ h3 {
     --demo-inner-border-mid-alpha: 0.04;
     --demo-inner-border-dark-alpha: 0.24;
     --demo-inner-border-opacity: 0.736;
-    --palette-glass-filter: url(#palette-glass-filter);
     --palette-glass-blur: 3px;
     --palette-glass-brightness: 1.12;
     --palette-glass-saturation: 1.65;
@@ -1511,11 +1510,10 @@ h3 {
     box-shadow:
         0 1px 1px rgb(0 0 0 / 0.14),
         0 5px 10px -9px rgb(0 0 0 / 0.18);
-    -webkit-backdrop-filter: var(--palette-glass-filter)
-        blur(var(--palette-glass-blur))
+    -webkit-backdrop-filter: blur(var(--palette-glass-blur))
         brightness(var(--palette-glass-brightness))
         saturate(var(--palette-glass-saturation));
-    backdrop-filter: var(--palette-glass-filter) blur(var(--palette-glass-blur))
+    backdrop-filter: blur(var(--palette-glass-blur))
         brightness(var(--palette-glass-brightness))
         saturate(var(--palette-glass-saturation));
     opacity: 0;
@@ -1554,6 +1552,7 @@ h3 {
         0 1px 2px rgb(0 0 0 / 0.4);
     cursor: default;
     outline: none;
+    touch-action: manipulation;
     transform: translateZ(0) scale(var(--surface-button-scale));
     transition:
         background-color 160ms ease,

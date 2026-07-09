@@ -202,6 +202,61 @@ async function checkTouchHoverInert(page, label) {
   assert(result.tapSelected, `${label}: tap still selects a lexicon row`)
 }
 
+async function checkTouchSurfacePickerIsSteady(page, label) {
+  const result = await page.evaluate(async () => {
+    const palette = document.querySelector('[data-floating-surface-palette]')
+    const cobalt = document.querySelector('[data-surface-option="cobalt"]')
+    if (!palette || !cobalt) return null
+
+    palette.dataset.visible = 'true'
+    palette.setAttribute('aria-hidden', 'false')
+    for (const button of palette.querySelectorAll('[data-surface-option]')) {
+      button.tabIndex = 0
+    }
+
+    const readScale = () => ({
+      button: parseFloat(getComputedStyle(cobalt).getPropertyValue('--surface-button-scale')) || 1,
+      swatch: parseFloat(getComputedStyle(cobalt).getPropertyValue('--surface-swatch-scale')) || 0,
+    })
+    const frame = () => new Promise((resolve) => requestAnimationFrame(resolve))
+
+    cobalt.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'touch', bubbles: true }))
+    cobalt.click()
+
+    const first = readScale()
+    let maxButtonDrift = 0
+    let maxSwatchDrift = 0
+    for (let i = 0; i < 18; i++) {
+      await frame()
+      const current = readScale()
+      maxButtonDrift = Math.max(maxButtonDrift, Math.abs(current.button - first.button))
+      maxSwatchDrift = Math.max(maxSwatchDrift, Math.abs(current.swatch - first.swatch))
+    }
+
+    return {
+      surface: document.documentElement.dataset.surface,
+      checked: cobalt.getAttribute('aria-checked'),
+      buttonScale: first.button,
+      swatchScale: first.swatch,
+      maxButtonDrift,
+      maxSwatchDrift,
+    }
+  })
+
+  assert(result, `${label}: touch surface picker exists`)
+  if (!result) return
+  assert(
+    result.surface === 'cobalt' && result.checked === 'true',
+    `${label}: touch tap changes surface`,
+    JSON.stringify(result),
+  )
+  assert(
+    result.maxButtonDrift < 0.005 && result.maxSwatchDrift < 0.005,
+    `${label}: touch tap keeps surface picker scale steady`,
+    JSON.stringify(result),
+  )
+}
+
 async function smokePage(browser, options) {
   const {
     label,
@@ -318,6 +373,7 @@ async function smokePage(browser, options) {
   await page.waitForTimeout(120)
 
   await checkTouchHoverInert(page, label)
+  await checkTouchSurfacePickerIsSteady(page, label)
 
   if (checkKeyboard) await runInteractions(page, label)
   await context.close()
