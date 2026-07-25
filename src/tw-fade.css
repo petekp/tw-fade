@@ -897,6 +897,31 @@ answers differ by 4x. Refusing the ambiguous form is better than picking a side.
     the block axis, and setting it on an x-only scroller would reserve an inline
     gutter for a vertical bar the author just said they do not have.
     */
+    /*
+    THE WHOLE UTILITY REQUIRES SCROLL GATING. Not just the strip -- the pin too.
+
+    Without animation-timeline: scroll() the plugin takes its static fallback,
+    which pins every selected fade ON regardless of whether the container
+    overflows (see the @supports not (animation-timeline: scroll()) block). A
+    faded container with no overflow has no reserved gutter, so the strip lands
+    on content: measured in WebKit, a plain overflow-auto fade-y container whose
+    content does not overflow renders the inline-end fade to fully transparent
+    and then a hard 15px opaque band of content beyond it -- the exact inversion
+    of what this utility is for, on markup that never mentions fade-always.
+
+    Dropping only the strip is not enough, because the pin is what makes the bar
+    classic in the first place. Pinned-but-unshielded is strictly worse than not
+    opting in at all: on macOS it manufactures a space-consuming bar and then
+    lets the fade dim it, converting a platform with no bug into one with the
+    bug. So the entire opt-in stands down together, and those engines get their
+    native behaviour -- overlay bars on macOS, which the mask never touches.
+
+    This costs nothing where the feature works: every engine that can shield a
+    scrollbar (Blink, WebKit 26+) supports scroll-driven animations. It removes
+    the feature on Safari 17.x / 18.x and on release Firefox with the
+    scroll-driven-animation pref off, where it could only have done harm.
+    */
+    @supports (animation-timeline: scroll()) {
     .fade-scrollbar-safe-y,
     .fade-scrollbar-safe-xy {
         /*
@@ -905,6 +930,13 @@ answers differ by 4x. Refusing the ambiguous form is better than picking a side.
         and a bright slab over content when it doesn't. Note this only takes
         effect once the pin below has made the bar classic -- scrollbar-gutter
         reserves nothing for overlay bars, which consume no space to begin with.
+
+        Blink honours this for custom bars and reserves the gutter even when the
+        content does not overflow. WebKit does not: measured, gutter 0 on a
+        non-overflowing container while the strip is still 15px wide. That
+        residual is documented, and an author can close it with
+        overflow-y: scroll, which forces the gutter in WebKit too (measured 15px,
+        strip landing exactly on the track).
         */
         scrollbar-gutter: stable;
     }
@@ -985,5 +1017,6 @@ answers differ by 4x. Refusing the ambiguous form is better than picking a side.
             scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent))
                 transparent;
         }
+    }
     }
 }

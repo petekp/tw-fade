@@ -27,6 +27,20 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   strip width, default `15px`). RTL-aware and inert until applied. Not supported
   in Firefox, which ignores `::-webkit-scrollbar` and whose overlay/classic mode
   can't be detected.
+- The opt-in is gated on `@supports (animation-timeline: scroll())` in its
+  entirety — the `::-webkit-scrollbar` pin included, not just the mask strip.
+  Without scroll gating the plugin's static fallback pins every selected fade on
+  regardless of overflow, and a faded container with no overflow has no reserved
+  gutter for the strip to land on: measured in WebKit, a plain
+  `overflow-auto fade-y fade-scrollbar-safe-y` whose content did not overflow
+  faded its inline end to fully transparent and then painted a hard 15px opaque
+  band of content beyond it, on markup that never mentions `fade-always`.
+  Standing down only the strip would be worse than useless, because the pin is
+  what makes the bar classic to begin with — pinned-but-unshielded manufactures
+  a space-consuming bar on macOS and then lets the fade dim it. So Safari
+  17.x/18.x and release Firefox keep their native scrollbars instead. The branch
+  is unreachable in any engine the harness can run, so it is verified by
+  rewriting the feature query in the shipped CSS.
 - The three axes are independent rather than nested, because the strips have
   different preconditions. The block gutter is only reserved when content actually
   overflows horizontally — no `scrollbar-gutter` value reserves it unconditionally

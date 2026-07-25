@@ -369,6 +369,45 @@ test('fade-scrollbar-safe-y pins the bar geometry rather than guessing it', () =
   assert.match(compact(css), /@supports not selector\(::-webkit-scrollbar\)/)
 })
 
+test('the whole opt-in, pin included, sits inside the scroll-gating feature query', () => {
+  // Without animation-timeline: scroll() the plugin takes the static fallback,
+  // which pins every selected fade ON regardless of overflow -- and a faded
+  // container that is not overflowing has no reserved gutter, so the strip lands
+  // on content. Measured in WebKit: a plain overflow-auto fade-y container with
+  // non-overflowing content faded its inline end to fully transparent and then
+  // painted a hard 15px opaque band of content beyond it.
+  //
+  // Gating only the STRIP would be worse than useless: the pin is what makes the
+  // bar classic, so pinned-but-unshielded manufactures a space-consuming bar on
+  // macOS -- a platform with no bug -- and then lets the fade dim it. Both move
+  // together or neither does.
+  const gate = '@supports (animation-timeline: scroll())'
+  const bodies = []
+  for (let at = css.indexOf(gate + ' {'); at !== -1; at = css.indexOf(gate + ' {', at + 1)) {
+    bodies.push(block(gate, css.slice(at)))
+  }
+  assert.ok(bodies.length >= 2, 'expected a scroll-gated block for the animations and one for the scrollbars')
+
+  const gated = bodies.filter((b) => b.includes('.fade-scrollbar-safe-y'))
+  assert.equal(gated.length, 1, 'the scrollbar opt-in must live in exactly one scroll-gated block')
+
+  // Everything the opt-in does has to be in there: the gutter reservation, the
+  // strip widths for both axes, and the pin itself.
+  assert.match(gated[0], /scrollbar-gutter:\s*stable/)
+  assert.match(gated[0], /--tw-fade-scrollbar:\s*var\(--tw-fade-scrollbar-width, 15px\)/)
+  assert.match(gated[0], /--tw-fade-scrollbar-block:\s*var\(--tw-fade-scrollbar-width, 15px\)/)
+  assert.match(gated[0], /::-webkit-scrollbar\b/)
+
+  // ...and nothing the opt-in does may sit outside it. A stray rule here is the
+  // exact regression this test exists for, since no engine we can run reaches
+  // the ungated path.
+  const outside = bodies.reduce((rest, b) => rest.replace(b, ''), css)
+  assert.ok(
+    !/\.fade-scrollbar-safe-[xy]/.test(outside),
+    'a fade-scrollbar-safe rule escaped the scroll-gating feature query',
+  )
+})
+
 test('the block-axis strip is a separate opt-in, because that gutter is not reservable', () => {
   // scrollbar-gutter:stable reserves the inline gutter unconditionally, but
   // measured across Chromium and WebKit the block gutter stays 0 unless content

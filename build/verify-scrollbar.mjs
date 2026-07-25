@@ -34,10 +34,15 @@
  *      scroller from notching, since -x reserves no inline gutter
  *   9. the fade survives with @property stripped out, so the strips never make
  *      a registered property load-bearing for the whole plugin
+ *  10. the entire opt-in -- pin included -- stands down on an engine without
+ *      scroll gating, where the static fallback would otherwise pin fades on
+ *      regardless of overflow and drop the strip onto content
+ *  11. WebKit's non-overflowing residual is still exactly as documented, and
+ *      overflow-y: scroll still closes it
  *
  * Usage: node build/verify-scrollbar.mjs [path-to-css]   (defaults to dist)
  */
-import { chromium } from 'playwright'
+import { chromium, webkit } from 'playwright'
 import { fileURLToPath } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -713,7 +718,137 @@ console.log('\nthe fade survives without @property')
   )
 }
 
+/* ------------------------------------------------------------------ *
+ * 10. The whole opt-in stands down when scroll gating is unavailable.
+ *
+ * Without animation-timeline: scroll() the plugin takes its static fallback,
+ * which pins every selected fade ON regardless of overflow. A faded container
+ * that is not overflowing has no reserved gutter, so the strip lands on content:
+ * measured in WebKit before this gate existed, a plain `overflow-auto fade-y
+ * fade-scrollbar-safe-y` whose content did not overflow faded its inline end to
+ * fully transparent and then painted a hard 15px opaque band of content beyond
+ * it -- on markup that never mentions fade-always.
+ *
+ * Dropping only the strip is not enough. The pin is what makes the bar classic,
+ * so pinned-but-unshielded is worse than never opting in: it manufactures a
+ * space-consuming bar on macOS and then lets the fade dim it. The entire
+ * utility therefore stands down together.
+ *
+ * No engine reachable from here lacks scroll-driven animations, so the branch is
+ * unreachable at runtime and would otherwise ship untested. Rewriting the
+ * feature query in the shipped CSS makes every @supports gate on it flip at
+ * once -- one substitution puts a modern engine into the old engine's branch.
+ * ------------------------------------------------------------------ */
+console.log('\nthe opt-in stands down without scroll gating')
+{
+  // Only ever appears inside @supports conditions; the real declaration uses
+  // var(--tw-fade-timeline-*), so this touches nothing but the feature queries.
+  const gates = (css.match(/animation-timeline: scroll\(\)/g) || []).length
+  const noSda = css.replace(/animation-timeline: scroll\(\)/g, 'animation-timeline: tw-fade-no-such-timeline()')
+  const page = await browser.newPage({ viewport: { width: 300, height: 260 }, deviceScaleFactor: 1 })
+  await page.setContent(
+    `<!doctype html><html><head><meta charset="utf-8"><style>${HARNESS}${noSda}</style></head>` +
+      `<body><div class="panel fade-y fade-scrollbar-safe-y" id="sd">` +
+      `<div style="width:100%;height:20px;background:#fff"></div></div></body></html>`,
+    { waitUntil: 'load' },
+  )
+  await page.waitForTimeout(120)
+  const got = await page.evaluate(() => {
+    const el = document.getElementById('sd')
+    const cs = getComputedStyle(el)
+    return {
+      gutter: el.offsetWidth - el.clientWidth,
+      maskSize: cs.maskSize,
+      scrollbarGutter: cs.scrollbarGutter,
+      // the fallback is expected to still pin the fade on -- that is the
+      // premise this gate exists to defuse, so assert it rather than assume it
+      amounts: ['t', 'b', 'l', 'r'].map((k) => cs.getPropertyValue(`--tw-fade-${k}`).trim()).join('/'),
+    }
+  })
+  await page.close()
+
+  check(gates >= 2, 'the feature query is present to flip', `found ${gates} occurrences — the substitution is a no-op`)
+  check(
+    got.amounts === '1/1/1/1',
+    'the static fallback still pins fades on regardless of overflow',
+    `amounts were ${got.amounts} — the premise of this section no longer holds, re-derive it`,
+  )
+  check(
+    got.scrollbarGutter === 'auto',
+    'no gutter is reserved without scroll gating',
+    `scrollbar-gutter computed to "${got.scrollbarGutter}" — the opt-in did not stand down`,
+  )
+  check(
+    got.gutter === 0,
+    'the bar is not pinned classic without scroll gating',
+    `the container reserved ${got.gutter}px — a pinned but unshielded bar is worse than no opt-in`,
+  )
+  check(
+    !got.maskSize.includes(`${PIN}px`),
+    'no strip is declared without scroll gating',
+    `mask-size computed to "${got.maskSize}" — a strip is live on an engine that cannot reserve a gutter for it`,
+  )
+}
+
 await browser.close()
+
+/* ------------------------------------------------------------------ *
+ * 11. WebKit: the residual, and the escape hatch that closes it.
+ *
+ * Blink honours scrollbar-gutter: stable for a custom bar and reserves the
+ * gutter even when the content does not overflow. WebKit does not, so a
+ * container that is faded but not currently overflowing has a 15px strip and no
+ * gutter for it to land on. That residual cannot be fixed in CSS -- the gutter's
+ * existence is not queryable -- so it is documented, and this section pins BOTH
+ * halves of that documentation so neither can rot:
+ *
+ *   - overflow-y: scroll forces the gutter in WebKit too, which is the mitigation
+ *     the README hands the reader
+ *   - overflow-y: auto on a non-overflowing container does NOT, which is the
+ *     limitation the README admits to
+ *
+ * Playwright's WebKit is a WebKit build, not Safari -- the same category of
+ * error as reading Firefox behaviour off Nightly. It is the right tool for
+ * pinning engine mechanics; it does not speak for a shipping Safari version.
+ * ------------------------------------------------------------------ */
+console.log('\nWebKit: the non-overflowing residual')
+{
+  const wk = await webkit.launch()
+  const page = await wk.newPage({ viewport: { width: 700, height: 300 }, deviceScaleFactor: 1 })
+  const shortPanel = (id, extra) =>
+    `<div class="panel fade-y fade-always-y fade-scrollbar-safe-y" id="${id}" style="${extra}">` +
+    `<div style="width:100%;height:20px;background:#fff"></div></div>`
+  await page.setContent(
+    `<!doctype html><html><head><meta charset="utf-8"><style>${HARNESS}body{display:flex;gap:20px}${css}</style></head>` +
+      `<body>${shortPanel('wkauto', 'overflow:auto')}${shortPanel('wkscroll', 'overflow-y:scroll')}</body></html>`,
+    { waitUntil: 'load' },
+  )
+  await page.waitForTimeout(150)
+  const got = await page.evaluate(() => ({
+    sda: CSS.supports('animation-timeline', 'scroll()'),
+    auto: (() => { const e = document.getElementById('wkauto'); return e.offsetWidth - e.clientWidth })(),
+    scroll: (() => { const e = document.getElementById('wkscroll'); return e.offsetWidth - e.clientWidth })(),
+  }))
+  await wk.close()
+
+  check(
+    got.sda,
+    'this WebKit build gates on scroll, so the utility is live in it',
+    'WebKit reported no scroll-driven animations — section 10 covers that path, not this one',
+  )
+  check(
+    got.auto === 0,
+    'WebKit still reserves no gutter for a non-overflowing overflow-auto container',
+    `it reserved ${got.auto}px — WebKit now honours scrollbar-gutter: stable for custom bars, so the ` +
+      `README's Safari limitation is stale and should be relaxed`,
+  )
+  check(
+    got.scroll === PIN,
+    'overflow-y: scroll closes the residual in WebKit',
+    `overflow-y: scroll reserved ${got.scroll}px, expected ${PIN} — the mitigation the README ` +
+      `recommends to Safari users no longer works`,
+  )
+}
 
 if (notes.length) {
   console.log(`\nr,g,b across the last 14px, deep in the top fade band (track is ${TRACK.join(',')}):`)

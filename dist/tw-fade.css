@@ -913,37 +913,39 @@
     --tw-fade-l: 1 !important;
     --tw-fade-r: 1 !important;
   }
-  .fade-scrollbar-safe-y, .fade-scrollbar-safe-xy {
-    scrollbar-gutter: stable;
-  }
-  @supports selector(::-webkit-scrollbar) {
+  @supports (animation-timeline: scroll()) {
     .fade-scrollbar-safe-y, .fade-scrollbar-safe-xy {
-      --tw-fade-scrollbar: var(--tw-fade-scrollbar-width, 15px);
+      scrollbar-gutter: stable;
     }
-    .fade-scrollbar-safe-x, .fade-scrollbar-safe-xy {
-      --tw-fade-scrollbar-block: var(--tw-fade-scrollbar-width, 15px);
-    }
-    .fade-scrollbar-safe-y::-webkit-scrollbar, .fade-scrollbar-safe-x::-webkit-scrollbar, .fade-scrollbar-safe-xy::-webkit-scrollbar {
-      width: var(--tw-fade-scrollbar-width, 15px);
-      height: var(--tw-fade-scrollbar-width, 15px);
-    }
-    .fade-scrollbar-safe-y::-webkit-scrollbar-track, .fade-scrollbar-safe-x::-webkit-scrollbar-track, .fade-scrollbar-safe-xy::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .fade-scrollbar-safe-y::-webkit-scrollbar-thumb, .fade-scrollbar-safe-x::-webkit-scrollbar-thumb, .fade-scrollbar-safe-xy::-webkit-scrollbar-thumb {
-      background: var(--tw-fade-scrollbar-thumb, currentColor);
-      @supports (color: color-mix(in lab, red, red)) {
-        background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent));
+    @supports selector(::-webkit-scrollbar) {
+      .fade-scrollbar-safe-y, .fade-scrollbar-safe-xy {
+        --tw-fade-scrollbar: var(--tw-fade-scrollbar-width, 15px);
       }
-      border-radius: 999px;
+      .fade-scrollbar-safe-x, .fade-scrollbar-safe-xy {
+        --tw-fade-scrollbar-block: var(--tw-fade-scrollbar-width, 15px);
+      }
+      .fade-scrollbar-safe-y::-webkit-scrollbar, .fade-scrollbar-safe-x::-webkit-scrollbar, .fade-scrollbar-safe-xy::-webkit-scrollbar {
+        width: var(--tw-fade-scrollbar-width, 15px);
+        height: var(--tw-fade-scrollbar-width, 15px);
+      }
+      .fade-scrollbar-safe-y::-webkit-scrollbar-track, .fade-scrollbar-safe-x::-webkit-scrollbar-track, .fade-scrollbar-safe-xy::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .fade-scrollbar-safe-y::-webkit-scrollbar-thumb, .fade-scrollbar-safe-x::-webkit-scrollbar-thumb, .fade-scrollbar-safe-xy::-webkit-scrollbar-thumb {
+        background: var(--tw-fade-scrollbar-thumb, currentColor);
+        @supports (color: color-mix(in lab, red, red)) {
+          background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent));
+        }
+        border-radius: 999px;
+      }
     }
-  }
-  @supports not selector(::-webkit-scrollbar) {
-    .fade-scrollbar-safe-y, .fade-scrollbar-safe-x, .fade-scrollbar-safe-xy {
-      scrollbar-width: thin;
-      scrollbar-color: var(--tw-fade-scrollbar-thumb, currentColor) transparent;
-      @supports (color: color-mix(in lab, red, red)) {
-        scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)) transparent;
+    @supports not selector(::-webkit-scrollbar) {
+      .fade-scrollbar-safe-y, .fade-scrollbar-safe-x, .fade-scrollbar-safe-xy {
+        scrollbar-width: thin;
+        scrollbar-color: var(--tw-fade-scrollbar-thumb, currentColor) transparent;
+        @supports (color: color-mix(in lab, red, red)) {
+          scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)) transparent;
+        }
       }
     }
   }
