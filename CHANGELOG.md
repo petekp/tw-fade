@@ -6,7 +6,71 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `fade-scrollbar-safe-y` / `-x` / `-xy`: opt-in utilities that keep a classic
+  (space-consuming) scrollbar from fading with the content. Each adds an opaque
+  mask strip over the scrollbar's column or row, unioned onto the fade via
+  `mask-composite: add`; `-y` and `-xy` also reserve a stable inline gutter. **The
+  suffix is the scroll axis, not the faded edge** — `-y` follows `overflow-y` and
+  shields the vertical bar at the inline end, which is the opposite convention
+  from this plugin's own `fade-y` (top + bottom edges). In practice the two agree:
+  a y-scroller wants `fade-y` and `fade-scrollbar-safe-y`. Because CSS offers no
+  way to measure the reserved gutter from the element the mask is on, the
+  utilities **pin** the bar with
+  `::-webkit-scrollbar` and sizes the strip from the same custom property, so bar
+  and strip agree by construction and stay aligned under page zoom. The trade is
+  that the bar becomes classic on every platform, including macOS. Also gives the
+  bar a transparent track and a `currentColor`-derived thumb so the gutter
+  doesn't read as a separate panel; override via `--tw-fade-scrollbar-thumb`
+  (color) and `fade-scrollbar-width-*` / `--tw-fade-scrollbar-width` (bar and
+  strip width, default `15px`). RTL-aware and inert until applied. Not supported
+  in Firefox, which ignores `::-webkit-scrollbar` and whose overlay/classic mode
+  can't be detected.
+- The three axes are independent rather than nested, because the strips have
+  different preconditions. The block gutter is only reserved when content actually
+  overflows horizontally — no `scrollbar-gutter` value reserves it unconditionally
+  — so a block strip applied blind would paint an opaque band over content on
+  every vertical-only scroller; hence `-x` and `-xy` rather than a block strip in
+  the base class. Conversely only `-y` and `-xy` set `scrollbar-gutter: stable`,
+  since `-x` says the container has no vertical bar and reserving an inline gutter
+  for it would put the strip on content. `-xy` is needed because pinning the bar
+  is a per-element opt-in rather than a per-axis one: a two-axis scroller gets a
+  classic horizontal bar whether or not the utility asks for one.
+- `fade-scrollbar-width-sm|md|lg` (`11px` / `15px` / `17px`), backed by the
+  `--fade-scrollbar-width-*` theme namespace. A pure setter: on its own it turns
+  nothing on, because only the `fade-scrollbar-safe-*` utilities read it. The
+  underlying property inherits, so its most useful home is an ancestor —
+  `<body class="fade-scrollbar-width-lg">` states a house style once for every
+  opted-in scroller below. Absolute px rather than the spacing ramp (a scrollbar
+  is device chrome, not typographic rhythm), and `[length]` only — a bare integer
+  would read as px here and as spacing steps everywhere else in the plugin.
+
 ### Fixed
+
+- The inline-end fade now reaches transparent at the content edge on containers
+  with a classic scrollbar. Mask percentages resolve against a box that includes
+  the reserved gutter while content stops at the scrollport edge, so an
+  inline-end ramp authored to hit zero at `100%` hit zero inside the gutter and
+  never finished over real content — measured at 40/255 still opaque on the last
+  content pixel with a 60px band and the 15px default bar, and 161/255 under a
+  26px band, versus 0/255 and 1/255 once the layer is inset by the pinned width.
+  Tighter bands are hit harder, since the gutter eats a larger share of the ramp.
+  Inert at the `0px` default.
+- The scrollbar strips no longer make `@property` load-bearing for the whole
+  plugin. `mask-size` references `--tw-fade-scrollbar`, which is only declared
+  inside `@supports selector(::-webkit-scrollbar)`; everywhere else its value came
+  solely from the `@property` initial value. On an engine without `@property`
+  (Safari 15.4–16.3, Firefox < 128) that reference is guaranteed-invalid, which
+  invalidated the entire `mask-size` declaration at computed-value time — all six
+  layers fell back to `auto`, the two `0px` strips became full-size opaque layers,
+  and the fade disappeared completely. Every reference now carries an explicit
+  fallback. Verified by re-rendering the shipped CSS with the `@property` blocks
+  stripped out.
+- The scrollbar strip is anchored to the padding box rather than the border box,
+  so it tracks the gutter on a scroll container with a border. Anchored to the
+  border box it was displaced outward and straddled the border, shielding the
+  border while leaving that many pixels of scrollbar still faded.
 
 - Nudged scroll-driven animation ranges away from exact start/end endpoints so
   Chromium resets fade amounts when mounted scrollports swap from overflowing to

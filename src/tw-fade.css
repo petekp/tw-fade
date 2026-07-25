@@ -87,6 +87,79 @@ fades from leaking size, travel, clearance, mask, or routing state.
     syntax: "*";
     inherits: false;
 }
+/*
+Opt-in scrollbar protection. Width of the opaque mask strip that shields a
+space-consuming (classic) scrollbar's inline-end column from the fade. Default
+0px = inert (no extra coverage), so base fades are byte-for-byte unchanged.
+fade-scrollbar-safe-y / -xy set it; users may also set --tw-fade-scrollbar directly.
+
+Typed <length>, unlike the "*" properties above, because this one is substituted
+into mask-size -- and a single bad component makes the WHOLE declaration invalid
+at computed-value time, so all five layers fall back to `auto`, which on a
+gradient means the full positioning area. An opaque layer then covers the entire
+element and the fade vanishes. A typed property with an initial value can't do
+that: a value that doesn't parse as a <length> (`11` instead of `11px`) is
+dropped at computed-value time and, with inherits:false, the property falls back
+to its initial value. So the failure mode of a typo is an inert strip rather
+than a silently disabled plugin.
+*/
+@property --tw-fade-scrollbar {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+}
+/*
+Block-axis counterpart, for the horizontal bar along the block end. Separate
+from --tw-fade-scrollbar and separately opt-in because the two gutters are NOT
+equally knowable. scrollbar-gutter:stable reserves the inline gutter whether or
+not the box currently overflows, so the inline strip is safe to apply blind.
+It reserves nothing on the block axis: measured across Chromium and WebKit, the
+block gutter is 0 unless content actually overflows horizontally, and no
+scrollbar-gutter value changes that. A blind block strip would therefore paint
+an opaque band over real CONTENT on every vertical-only scroller.
+
+CSS cannot detect horizontal overflow, but the author knows. So this stays 0
+until fade-scrollbar-safe-x / -xy (or a direct declaration) assert it -- the same
+move as pinning the width: declare the one bit that cannot be derived.
+*/
+@property --tw-fade-scrollbar-block {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+}
+/*
+Public knob for the pinned bar size. Registered rather than left as a bare
+custom property so a malformed value degrades to the initial value instead of
+reaching ::-webkit-scrollbar { width: <garbage> } -- which would drop that
+declaration, un-pin the bar, and leave the strip shielding a column of the
+wrong width.
+
+inherits:true is REQUIRED here, unlike every other property in this file.
+::-webkit-scrollbar is a pseudo-element, and pseudo-elements only see a custom
+property through inheritance from their originating element. Registered with
+inherits:false the pin silently reads the INITIAL value instead of the author's:
+measured, declaring 24px produced an 11px bar in both Chromium and WebKit while
+the strip -- read from the element itself, where the declaration is visible --
+correctly became 24px. That is a 13px opaque slab over content, which is exactly
+the misalignment the pin exists to make impossible.
+
+Inheriting is also what makes fade-scrollbar-width-* useful on an ancestor --
+set it once on <body> and every opted-in scroller below picks it up. The cost of
+that reach is real and worth stating: a nested scroller that has opted in gets
+retuned by an ancestor's setting, since it inherits the value like any other
+custom property. It is inert on elements that never read it (no fade-scrollbar
+utility => no pin, no strip), so the blast radius is "scrollers you already
+opted in", not "the whole page". Override it on the nested scroller to opt out.
+
+15px matches the macOS classic bar. The pin REPLACES the native bar rather than
+decorating it, so this value is the actual hit target the user gets; defaulting
+below native trades pointer accuracy for looks, which is not a default's call.
+*/
+@property --tw-fade-scrollbar-width {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 15px;
+}
 @property --tw-fade-mask-t {
     syntax: "*";
     inherits: false;
@@ -193,6 +266,21 @@ fades from leaking size, travel, clearance, mask, or routing state.
     --fade-clear-2xl: calc(var(--spacing, 0.25rem) * 24);
     --fade-clear-3xl: calc(var(--spacing, 0.25rem) * 32);
     --fade-clear-4xl: calc(var(--spacing, 0.25rem) * 40);
+    /*
+    Absolute px, not the spacing ramp the scales above use: a scrollbar is device
+    chrome, not typographic rhythm, and it should not resize with the root font.
+    Three steps, each a real native bar width, because there are only about three
+    defensible widths for a scrollbar.
+
+    Deliberately NOT named thin / auto / none. Those are the literal keywords of
+    the real scrollbar-width property -- which this plugin must never set, since
+    setting it makes Blink discard ::-webkit-scrollbar and cancels the pin. A
+    token named `thin` would read like that property and do something else.
+    Unmatched suffixes emit nothing, so fade-scrollbar-width-thin is inert.
+    */
+    --fade-scrollbar-width-sm: 11px; /* slim, below native, for dense chrome */
+    --fade-scrollbar-width-md: 15px; /* the default; macOS classic          */
+    --fade-scrollbar-width-lg: 17px; /* Windows classic / Fluent            */
 }
 
 @keyframes tw-fade-travel-t {
@@ -316,6 +404,21 @@ fades from leaking size, travel, clearance, mask, or routing state.
 }
 @utility fade-clear-end-var {
     --tw-fade-clear-end: var(--fade-clear-end, var(--fade-clear-x, var(--fade-clear, 0px)));
+}
+/*
+Sets the pinned bar size. A pure setter: on its own it turns nothing on, because
+nothing reads --tw-fade-scrollbar-width unless a fade-scrollbar-safe-* class is.
+That split is deliberate. The property inherits, so its most useful home is an
+ancestor -- <body class="fade-scrollbar-width-lg"> to set a house style once. A
+setter that also enabled would pin and gutter the page's own scrollbar as a side
+effect of stating a preference.
+
+[length] only, with no --value(integer) branch. Elsewhere a bare integer means
+spacing steps; here it would read as pixels to anyone typing it, and the two
+answers differ by 4x. Refusing the ambiguous form is better than picking a side.
+*/
+@utility fade-scrollbar-width-* {
+    --tw-fade-scrollbar-width: --value(--fade-scrollbar-width-*, [length]);
 }
 
 @layer utilities {
@@ -497,14 +600,79 @@ fades from leaking size, travel, clearance, mask, or routing state.
         --tw-fade-timeline-b: none;
         --tw-fade-animation-range-t: normal;
         --tw-fade-animation-range-b: normal;
+        /*
+        Scrollbar-protection strip (opt-in, inert by default). An extra opaque
+        mask layer covering only the inline-end scrollbar column, unioned onto
+        the fade via mask-composite:add. Union can only ADD opacity, so it
+        restores that column to fully opaque -- shielding a classic scrollbar
+        from the fade -- while leaving the content fade untouched. Width defaults
+        to 0px (covers nothing => no-op); fade-scrollbar-safe-y widens it. Position
+        is inline-end (right in LTR; the :dir(rtl) block flips it to left).
+        */
+        --tw-fade-scrollbar-pos: 100% 0%;
+        /*
+        The inline-end gradient is inset by the same width, which fixes a second,
+        quieter symptom of the same root cause. Mask percentages resolve against
+        the border box (gutter included) while content stops at the scrollport
+        edge, so a right-edge ramp authored to reach zero at 100% reaches zero
+        inside the GUTTER -- and over real content it only ever gets
+        (size - gutter)/size of the way down. Measured with a 60px band and the
+        15px default bar, the last content pixel is still 40/255 opaque, and
+        161/255 under a 26px band: the fade visibly fails to complete, leaving a
+        hard edge exactly where it should have dissolved. Tighter bands are hit
+        harder, since the gutter eats a larger share of the ramp. Sizing the layer to
+        calc(100% - scrollbar) lands the ramp's end on the content edge instead,
+        and the strip restores the gutter column afterwards.
+
+        This is only expressible because the width is pinned rather than guessed;
+        at the 0px default calc(100% - 0px) is 100% and nothing changes.
+        */
+        --tw-fade-mask-size-l: 100% 100%;
+        --tw-fade-mask-size-r: calc(100% - var(--tw-fade-scrollbar, 0px)) 100%;
+        --tw-fade-mask-pos-l: 0% 0%;
+        --tw-fade-mask-pos-r: 0% 0%;
+        /*
+        Mask layers accumulate bottom-to-top: the LAST listed layer seeds the
+        stack and each earlier layer composites onto what's below it. So the four
+        edge gradients sit at the bottom and intersect among themselves, and the
+        strips must be listed FIRST with add to union onto that intersection --
+        add can only raise opacity, restoring the scrollbar columns. A 0px strip
+        covers nothing, so add contributes nothing and base fades are unchanged.
+        */
         mask-image:
+            var(--tw-fade-identity-mask),
+            var(--tw-fade-identity-mask),
             var(--tw-fade-mask-t, var(--tw-fade-identity-mask)),
             var(--tw-fade-mask-b, var(--tw-fade-identity-mask)),
             var(--tw-fade-mask-l, var(--tw-fade-identity-mask)),
             var(--tw-fade-mask-r, var(--tw-fade-identity-mask));
-        mask-composite: intersect;
+        mask-composite: add, add, intersect, intersect, intersect, intersect;
         mask-repeat: no-repeat;
-        mask-size: 100% 100%;
+        /*
+        The strips use padding-box origin; the gradients keep the default
+        border-box. The gutter sits between the padding and border edges, so a
+        border-box-anchored strip is pushed outward by the border and straddles
+        it: measured on a 5px border with an 11px bar, the strip covered the
+        border plus only 6 of the 11 gutter pixels, leaving 5px of scrollbar
+        still faded. Padding-box is exactly right because CSS Overflow 3 5.1
+        folds the reserved gutter INTO the padding area for painting purposes,
+        so the padding box's inline-end edge is the gutter's outer edge.
+        */
+        mask-origin: padding-box, padding-box, border-box, border-box, border-box, border-box;
+        mask-size:
+            100% var(--tw-fade-scrollbar-block, 0px),
+            var(--tw-fade-scrollbar, 0px) 100%,
+            100% 100%,
+            100% calc(100% - var(--tw-fade-scrollbar-block, 0px)),
+            var(--tw-fade-mask-size-l),
+            var(--tw-fade-mask-size-r);
+        mask-position:
+            0% 100%,
+            var(--tw-fade-scrollbar-pos),
+            0% 0%,
+            0% 0%,
+            var(--tw-fade-mask-pos-l),
+            var(--tw-fade-mask-pos-r);
     }
 
     .fade:where(:dir(rtl)),
@@ -518,6 +686,18 @@ fades from leaking size, travel, clearance, mask, or routing state.
         --tw-fade-edge-size-r: var(--tw-fade-size-start, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))));
         --tw-fade-edge-clear-l: var(--tw-fade-clear-end, var(--tw-fade-clear-x, var(--tw-fade-clear, 0px)));
         --tw-fade-edge-clear-r: var(--tw-fade-clear-start, var(--tw-fade-clear-x, var(--tw-fade-clear, 0px)));
+        /*
+        RTL puts the vertical scrollbar on the left, so the shield moves there
+        and the INLINE-END inset swaps to the left layer with it. The inset layer
+        is right-aligned (100% 0%) so it occupies everything to the right of the
+        gutter, putting the ramp's transparent end on the content's left edge.
+        At the 0px default the layer is full-size and the alignment is moot.
+        */
+        --tw-fade-scrollbar-pos: 0% 0%;
+        --tw-fade-mask-size-l: calc(100% - var(--tw-fade-scrollbar, 0px)) 100%;
+        --tw-fade-mask-size-r: 100% 100%;
+        --tw-fade-mask-pos-l: 100% 0%;
+        --tw-fade-mask-pos-r: 0% 0%;
         --tw-fade-mask-l: var(--tw-fade-rtl-end-layer, var(--tw-fade-identity-mask));
         --tw-fade-mask-r: var(--tw-fade-rtl-start-layer, var(--tw-fade-identity-mask));
         --tw-fade-animation-l: var(--tw-fade-rtl-end-animation, none);
@@ -660,5 +840,150 @@ fades from leaking size, travel, clearance, mask, or routing state.
     .fade-always-x {
         --tw-fade-l: 1 !important;
         --tw-fade-r: 1 !important;
+    }
+
+    /*
+    Opt-in: keep a classic (space-consuming) scrollbar out of the fade.
+
+    Why a mask hits the scrollbar at all: masking applies to the element after it
+    and its descendants are drawn to one temporary canvas, and a "visible
+    scrolling mechanism" is part of that canvas. Filter Effects says so in as
+    many words for filter, CSS Masking says so for clip-path, and mask inherits
+    it structurally. Overlay scrollbars (macOS/iOS/Android default) are composited
+    separately and escape -- which is why this is invisible on a Mac and obvious
+    on Windows.
+
+    Why the strip's width can't be derived: the reserved gutter sits inside the
+    mask's reference boxes by normative reference (CSS Overflow 3 folds it into
+    the padding area for background positioning; CSS Masking defines the mask
+    boxes as the background boxes), so no <coord-box> isolates it. Container
+    query units DO measure it -- 100cqi excludes the gutter -- but cq units
+    resolve against an ancestor container, so only descendants can read them,
+    never the masked element itself. The width is therefore knowable everywhere
+    except where it is needed.
+
+    So it is not derived, it is DECLARED. ::-webkit-scrollbar pins the bar to
+    exactly --tw-fade-scrollbar-width in Blink and WebKit on every platform, and
+    the strip is set from the same custom property, so bar and strip are equal by
+    construction rather than by coincidence. That also survives page zoom: a
+    native bar holds a constant physical size, so its width in CSS px drifts as
+    1/zoom (15 -> 12 -> 7.5 from 1x to 2x), while two author-declared lengths
+    scale together and stay aligned.
+
+    scrollbar-width and scrollbar-color are deliberately NOT set here: specifying
+    either one makes Blink discard ::-webkit-scrollbar customization entirely
+    (scrollbar-width does the same in WebKit), which would cancel the pin and
+    take the gutter to 0 while leaving a 15px strip sitting on top of content.
+    They are confined to the Gecko branch below, where they are the only levers
+    that exist. The same collision applies to Tailwind's own utilities that set
+    those properties -- scrollbar-thin / -auto / -none for the width, and
+    scrollbar-thumb-* / scrollbar-track-* for the colour (there is no
+    scrollbar-color-* utility) -- so putting any of them on the same element
+    cancels the pin. Use fade-scrollbar-width-* for the size and
+    ::-webkit-scrollbar-track / -thumb for the colours, which is why the width
+    utility exists at all.
+    */
+    /*
+    THE SUFFIX IS THE SCROLL AXIS, NOT THE FADED EDGE. -y is the bar you get
+    from scrolling on y: the VERTICAL bar, at the inline end. -x is the
+    horizontal bar along the block end. This follows overflow-y / overflow-x,
+    which is the model an author already has, and it deliberately does NOT
+    follow this plugin's own fade-y (top+bottom edges) -- the noun differs, and
+    in practice the two agree anyway: a y-scroller wants fade-y and
+    fade-scrollbar-safe-y, and all three axes line up.
+
+    Only -y stabilizes a gutter, because only the inline axis has one to
+    stabilize. -x deliberately omits it: scrollbar-gutter reserves nothing on
+    the block axis, and setting it on an x-only scroller would reserve an inline
+    gutter for a vertical bar the author just said they do not have.
+    */
+    .fade-scrollbar-safe-y,
+    .fade-scrollbar-safe-xy {
+        /*
+        Required, not cosmetic: without a stable gutter the bar appears only
+        while the content overflows, so the strip would be right when it does
+        and a bright slab over content when it doesn't. Note this only takes
+        effect once the pin below has made the bar classic -- scrollbar-gutter
+        reserves nothing for overlay bars, which consume no space to begin with.
+        */
+        scrollbar-gutter: stable;
+    }
+
+    @supports selector(::-webkit-scrollbar) {
+        .fade-scrollbar-safe-y,
+        .fade-scrollbar-safe-xy {
+            --tw-fade-scrollbar: var(--tw-fade-scrollbar-width, 15px);
+        }
+
+        /*
+        The block axis, for the horizontal bar. Only safe when the container
+        really does overflow horizontally: unlike the inline gutter, this one is
+        reserved only while a bar is actually present, and no scrollbar-gutter
+        value changes that -- see the --tw-fade-scrollbar-block registration for
+        the measurements. CSS cannot detect horizontal overflow; the author can.
+        That is the whole reason the axis is named rather than inferred.
+        */
+        .fade-scrollbar-safe-x,
+        .fade-scrollbar-safe-xy {
+            --tw-fade-scrollbar-block: var(--tw-fade-scrollbar-width, 15px);
+        }
+
+        /*
+        The pin. Declaring a width here forces a classic, space-consuming bar of
+        exactly this size on every platform -- including macOS, where the default
+        would otherwise be an overlay bar. That is the trade this utility makes:
+        it takes ownership of the scrollbar's geometry in exchange for being
+        exact rather than approximate.
+
+        Both dimensions are pinned on all three classes, even though -y shields
+        only the inline bar. Both engines treat the custom-scrollbar opt-in as
+        per-ELEMENT, not per-axis: an unscoped ::-webkit-scrollbar rule turns the
+        horizontal bar classic too, whether or not this rule mentions height.
+        Omitting height therefore does not restore the overlay bar, it just
+        surrenders the size -- measured, the manufactured horizontal bar grows
+        from 11px to the 16px UA default while remaining equally faded. Pinning
+        it keeps that bar small and, more importantly, keeps it a known quantity
+        that -x and -xy can shield exactly.
+        */
+        .fade-scrollbar-safe-y::-webkit-scrollbar,
+        .fade-scrollbar-safe-x::-webkit-scrollbar,
+        .fade-scrollbar-safe-xy::-webkit-scrollbar {
+            width: var(--tw-fade-scrollbar-width, 15px);
+            height: var(--tw-fade-scrollbar-width, 15px);
+        }
+
+        .fade-scrollbar-safe-y::-webkit-scrollbar-track,
+        .fade-scrollbar-safe-x::-webkit-scrollbar-track,
+        .fade-scrollbar-safe-xy::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .fade-scrollbar-safe-y::-webkit-scrollbar-thumb,
+        .fade-scrollbar-safe-x::-webkit-scrollbar-thumb,
+        .fade-scrollbar-safe-xy::-webkit-scrollbar-thumb {
+            background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent));
+            border-radius: 999px;
+        }
+    }
+
+    /*
+    Gecko ignores ::-webkit-scrollbar, so its bar cannot be pinned -- and its
+    overlay-vs-classic mode cannot be detected either (there is no media feature
+    for it; @media (-moz-overlay-scrollbars) is dropped as unknown, and no
+    combination of scrollbar-width / -color / -gutter forces a classic bar on
+    macOS). A strip here would be correct on Windows and Linux and a hard opaque
+    slab over content on macOS, with no way to tell which. Since a missed strip
+    damages content while the bug it prevents only dims chrome, Gecko gets no
+    strip: the bar is merely made thin, and the fade over it remains a documented
+    limitation.
+    */
+    @supports not selector(::-webkit-scrollbar) {
+        .fade-scrollbar-safe-y,
+        .fade-scrollbar-safe-x,
+        .fade-scrollbar-safe-xy {
+            scrollbar-width: thin;
+            scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent))
+                transparent;
+        }
     }
 }

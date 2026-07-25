@@ -265,9 +265,23 @@ test('leading and trailing keyframes include RTL horizontal variants', () => {
 test('the shared mask setup owns four physical layers and scroll animation wiring', () => {
   const shared = block(SHARED_SELECTOR)
   assert.ok(shared, 'missing shared direction block')
-  assert.equal(declValue(shared, 'mask-composite'), 'intersect')
+  // Four edge gradients (intersect) preceded by two scrollbar-protection strips
+  // (add), block axis then inline axis. The strips are listed first so they
+  // union onto the intersection; both default to 0px and stay inert. See the
+  // mask block in src/tw-fade.css.
+  assert.equal(declValue(shared, 'mask-composite'), 'add, add, intersect, intersect, intersect, intersect')
   assert.equal(declValue(shared, 'mask-repeat'), 'no-repeat')
-  assert.equal(declValue(shared, 'mask-size'), '100% 100%')
+  assert.equal(
+    compact(declValue(shared, 'mask-size')),
+    '100% var(--tw-fade-scrollbar-block, 0px), var(--tw-fade-scrollbar, 0px) 100%, 100% 100%, ' +
+      '100% calc(100% - var(--tw-fade-scrollbar-block, 0px)), var(--tw-fade-mask-size-l), var(--tw-fade-mask-size-r)',
+  )
+  // The strips anchor to the padding box because the reserved gutter is folded
+  // into the padding area for painting; the gradients keep the border box.
+  assert.equal(
+    compact(declValue(shared, 'mask-origin')),
+    'padding-box, padding-box, border-box, border-box, border-box, border-box',
+  )
   const maskImage = declValue(shared, 'mask-image')
   for (const v of MASK_VARS) assert.match(maskImage, new RegExp(`var\\(${v.replaceAll('-', '\\-')}`), `${v} in mask-image`)
 
@@ -277,6 +291,188 @@ test('the shared mask setup owns four physical layers and scroll animation wirin
   assert.equal((declValue(animated, 'animation').match(/auto linear both/g) || []).length, 4)
   assert.equal((declValue(animated, 'animation-timeline').match(/var\(--tw-fade-timeline-/g) || []).length, 4)
   assert.equal((declValue(animated, 'animation-range').match(/var\(--tw-fade-animation-range-/g) || []).length, 4)
+})
+
+test('the scrollbar strip is inert until opted in, and typed so a bad value stays inert', () => {
+  const shared = block(SHARED_SELECTOR)
+  assert.equal(declValue(shared, '--tw-fade-scrollbar-pos'), '100% 0%')
+
+  // Typed <length> with an initial value, NOT syntax:"*". This one is
+  // substituted into mask-size, where a single unparseable component invalidates
+  // the whole declaration -- all five layers fall back to `auto`, which on a
+  // gradient covers the full positioning area and silently disables the fade.
+  // The registration makes `11` (no unit) degrade to the 0px initial value.
+  const prop = property('--tw-fade-scrollbar')
+  assert.equal(prop.syntax, '"<length>"')
+  assert.equal(prop.inherits, 'false')
+  assert.equal(prop['initial-value'], '0px')
+
+  // RTL moves the vertical scrollbar to the inline-start edge, so the strip and
+  // the inline-end ramp inset both flip with it.
+  const rtl = block(RTL_SELECTOR)
+  assert.equal(declValue(rtl, '--tw-fade-scrollbar-pos'), '0% 0%')
+  assert.equal(compact(declValue(rtl, '--tw-fade-mask-size-l')), 'calc(100% - var(--tw-fade-scrollbar, 0px)) 100%')
+  assert.equal(compact(declValue(rtl, '--tw-fade-mask-size-r')), '100% 100%')
+})
+
+test('fade-scrollbar-safe-y pins the bar geometry rather than guessing it', () => {
+  const safe = block('.fade-scrollbar-safe-y, .fade-scrollbar-safe-xy')
+  assert.ok(safe, 'missing .fade-scrollbar-safe-y rule')
+
+  // Required, not cosmetic: without a reserved gutter the bar exists only while
+  // content overflows, so the strip would land on content when it doesn't.
+  assert.equal(declValue(safe, 'scrollbar-gutter'), 'stable')
+
+  // scrollbar-width / scrollbar-color must NOT be set unconditionally: either
+  // one makes Blink discard ::-webkit-scrollbar customization (scrollbar-width
+  // does the same in WebKit), which cancels the pin and takes the gutter to 0
+  // while leaving the strip sitting on content.
+  assert.equal(declValue(safe, 'scrollbar-width'), undefined)
+  assert.equal(declValue(safe, 'scrollbar-color'), undefined)
+
+  // Blink/WebKit branch: declare the bar width, and size the strip from the very
+  // same custom property so bar and strip agree by construction.
+  const pinned = block(
+    '.fade-scrollbar-safe-y::-webkit-scrollbar, .fade-scrollbar-safe-x::-webkit-scrollbar, ' +
+      '.fade-scrollbar-safe-xy::-webkit-scrollbar',
+  )
+  assert.ok(pinned, 'missing ::-webkit-scrollbar pin')
+  // Fallbacks on every reference, not decoration: --tw-fade-scrollbar-width is
+  // only ever DECLARED by an author, so without @property support (Safari
+  // 15.4-16.3, Firefox < 128) a bare var() is guaranteed-invalid and takes the
+  // whole declaration down with it. In mask-size that silently deletes the fade.
+  assert.equal(declValue(pinned, 'width'), 'var(--tw-fade-scrollbar-width, 15px)')
+  // height is pinned too: the custom-scrollbar opt-in is per-element, so an
+  // unscoped ::-webkit-scrollbar rule turns the horizontal bar classic whether
+  // or not height is mentioned. Omitting it surrenders the size (measured: 11px
+  // -> the 16px UA default) without restoring the overlay bar.
+  assert.equal(declValue(pinned, 'height'), 'var(--tw-fade-scrollbar-width, 15px)')
+  assert.match(css, /@supports selector\(::-webkit-scrollbar\)/)
+  assert.match(compact(css), /--tw-fade-scrollbar: var\(--tw-fade-scrollbar-width, 15px\)/)
+
+  // The public knob is registered, so a malformed value degrades to 15px rather
+  // than dropping the pin and leaving the strip a different width to the bar.
+  const width = property('--tw-fade-scrollbar-width')
+  assert.equal(width.syntax, '"<length>"')
+  // The pin REPLACES the native bar, so the default is the user's actual hit
+  // target: match the macOS classic bar rather than defaulting to something
+  // slimmer and prettier.
+  assert.equal(width['initial-value'], '15px')
+  // Must INHERIT, unlike everything else here. ::-webkit-scrollbar is a
+  // pseudo-element and only sees a custom property by inheriting it from its
+  // originating element; with inherits:false the pin reads the 15px initial
+  // value while the strip reads the author's, which is a slab over content.
+  assert.equal(width.inherits, 'true')
+
+  // Gecko branch: it ignores ::-webkit-scrollbar and its overlay mode is not
+  // detectable, so it gets a thin styled bar but deliberately NO strip.
+  assert.match(compact(css), /@supports not selector\(::-webkit-scrollbar\)/)
+})
+
+test('the block-axis strip is a separate opt-in, because that gutter is not reservable', () => {
+  // scrollbar-gutter:stable reserves the inline gutter unconditionally, but
+  // measured across Chromium and WebKit the block gutter stays 0 unless content
+  // actually overflows horizontally -- and no scrollbar-gutter value changes
+  // that. A blind block strip would paint over content on vertical-only
+  // scrollers, so it waits for the author to assert horizontal overflow.
+  const prop = property('--tw-fade-scrollbar-block')
+  assert.equal(prop.syntax, '"<length>"')
+  assert.equal(prop.inherits, 'false')
+  assert.equal(prop['initial-value'], '0px')
+
+  const webkit = block('@supports selector(::-webkit-scrollbar)')
+  assert.ok(webkit, 'missing webkit support block')
+
+  // -y owns the inline strip and must NOT reach the block axis.
+  const inline = block('.fade-scrollbar-safe-y, .fade-scrollbar-safe-xy', webkit)
+  assert.ok(inline, 'missing inline-axis opt-in block')
+  assert.equal(declValue(inline, '--tw-fade-scrollbar'), 'var(--tw-fade-scrollbar-width, 15px)')
+  assert.equal(declValue(inline, '--tw-fade-scrollbar-block'), undefined, '-y must not set the block strip')
+
+  // -x owns the block strip and must NOT reach the inline axis.
+  const blockAxis = block('.fade-scrollbar-safe-x, .fade-scrollbar-safe-xy', webkit)
+  assert.ok(blockAxis, 'missing block-axis opt-in block')
+  assert.equal(declValue(blockAxis, '--tw-fade-scrollbar-block'), 'var(--tw-fade-scrollbar-width, 15px)')
+  assert.equal(declValue(blockAxis, '--tw-fade-scrollbar'), undefined, '-x must not set the inline strip')
+})
+
+test('the axis suffix names the SCROLL axis, and only -y stabilizes a gutter', () => {
+  // The one thing about this API that can be misread. -y is the bar you get from
+  // scrolling on y -- the VERTICAL bar at the inline end -- following overflow-y,
+  // NOT this plugin's own fade-y (which means the top and bottom edges).
+  const gutter = block('.fade-scrollbar-safe-y, .fade-scrollbar-safe-xy')
+  assert.ok(gutter, 'missing the gutter-stabilizing rule')
+  assert.equal(declValue(gutter, 'scrollbar-gutter'), 'stable')
+
+  // -x must never stabilize a gutter. scrollbar-gutter only reserves on the
+  // INLINE axis, so on an x-only scroller it would reserve space for a vertical
+  // bar the author just said is absent -- and Chromium reserves it even with
+  // overflow-y:hidden, which puts the inline strip on content. That notch is
+  // exactly what naming the axis is supposed to avoid; rendering proof is in
+  // build/verify-scrollbar.mjs (sections 4 and 4b, which compare -y vs -x on the
+  // same container).
+  const xOnly = [...css.matchAll(/\n\s*\.fade-scrollbar-safe-x \{([^}]*)\}/g)]
+  for (const m of xOnly) {
+    assert.equal(declValue(m[1], 'scrollbar-gutter'), undefined, '-x must not set scrollbar-gutter')
+  }
+  // And it is genuinely absent from the -x-only selector list, not merely
+  // unmatched by the regex above.
+  assert.equal(
+    /\.fade-scrollbar-safe-x[,\s][^{]*\{[^}]*scrollbar-gutter/.test(css.replace(/-xy/g, '-ZZ')),
+    false,
+    'scrollbar-gutter reached a selector list containing -x',
+  )
+})
+
+test('scrollbar vars never appear without a fallback, so @property stays optional', () => {
+  // The three scrollbar properties are only ever DECLARED inside
+  // @supports selector(::-webkit-scrollbar) (the first two) or by the author
+  // (the third). Everywhere else their value comes solely from the @property
+  // initial-value. On an engine without @property -- Safari 15.4-16.3, Firefox
+  // < 128 -- a bare var() to an undeclared property is a guaranteed-invalid
+  // value, and since these are substituted into mask-size that takes the WHOLE
+  // declaration down at computed-value time: all six layers fall back to
+  // `auto`, the two 0px strips become full-size opaque layers, `add` paints
+  // over everything, and the fade silently disappears. 0.7.1 rendered fine on
+  // those engines; the strips are what introduced the dependency.
+  //
+  // Rendering proof lives in build/verify-scrollbar.mjs (it strips the
+  // @property blocks and re-renders). This is the cheap build-time guard.
+  const bare = [...css.matchAll(/var\((--tw-fade-scrollbar(?:-block|-width)?)\s*([,)])/g)].filter(
+    (m) => m[2] === ')',
+  )
+  assert.deepEqual(
+    bare.map((m) => m[0]),
+    [],
+    'every scrollbar var() must carry a fallback, e.g. var(--tw-fade-scrollbar, 0px)',
+  )
+})
+
+test('fade-scrollbar-width-* is a pure setter over an absolute-px scale', () => {
+  // Three steps, real native bar widths. Absolute px, not the spacing ramp the
+  // other scales use: a scrollbar is device chrome and should not resize with
+  // the root font.
+  const theme = block(':root, :host')
+  for (const [name, px] of [['sm', '11px'], ['md', '15px'], ['lg', '17px']]) {
+    assert.equal(declValue(theme, `--fade-scrollbar-width-${name}`), px)
+    const rule = block(`.fade-scrollbar-width-${name}`)
+    assert.ok(rule, `missing .fade-scrollbar-width-${name}`)
+    assert.equal(declValue(rule, '--tw-fade-scrollbar-width'), `var(--fade-scrollbar-width-${name})`)
+    // Sets ONE property and nothing else. The utility is meant to go on
+    // ancestors (<body class="fade-scrollbar-width-lg">) so a house style can be
+    // stated once; if it also enabled, it would pin and gutter the page itself.
+    assert.equal(declValue(rule, 'scrollbar-gutter'), undefined)
+    assert.equal(declValue(rule, '--tw-fade-scrollbar'), undefined)
+    assert.equal(declValue(rule, '--tw-fade-scrollbar-block'), undefined)
+  }
+
+  // No --value(integer) branch: elsewhere a bare integer means spacing steps,
+  // here it would read as px, and the two answers differ by 4x.
+  const bare = compileCss({ classes: 'fade-scrollbar-width-4 fade-scrollbar-width-thin' })
+  assert.equal(block('.fade-scrollbar-width-4', bare), null, 'a bare integer must not compile')
+  // And the scale is deliberately not named after scrollbar-width's keywords --
+  // that property must never be set here, since it cancels the pin.
+  assert.equal(block('.fade-scrollbar-width-thin', bare), null, 'must not shadow the real keyword')
 })
 
 test('direction classes select the expected layers and central RTL routing', () => {
