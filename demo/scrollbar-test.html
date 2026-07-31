@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>fade-scrollbar-safe-* · test</title>
+  <link rel="stylesheet" href="../dist/tw-fade.css">
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      background: #0d0d10; color: #e6e6ea; margin: 0;
+      min-height: 100vh; padding: 40px; box-sizing: border-box;
+    }
+    h1 { font-size: 18px; margin: 0 0 4px; }
+    p.lede { color: #8a8a97; font-size: 13px; margin: 0 0 24px; max-width: 680px; line-height: 1.5; }
+    code { color: #b8c4ee; }
+    .controls { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 28px; font-size: 13px; }
+    .controls label { display: flex; gap: 7px; align-items: center; cursor: pointer; user-select: none; }
+    .grid { display: flex; gap: 40px; flex-wrap: wrap; }
+    .col h2 { font-size: 12px; font-weight: 600; color: #9aa7d0; margin: 0 0 8px; letter-spacing: .01em; }
+
+    .box {
+      width: 300px; height: 300px;
+      border-radius: 14px; background: #181820; padding: 0 18px;
+      box-shadow: 0 1px 0 rgba(255,255,255,.04) inset;
+    }
+    .box.v { overflow-y: auto; overflow-x: hidden; }
+    .box.h { overflow-x: auto; overflow-y: hidden; white-space: nowrap; padding: 0; }
+    .box.both { overflow: auto; }
+
+    .item { padding: 12px 2px; border-bottom: 1px solid #2b2b34; font-size: 14px; }
+    .item:last-child { border-bottom: 0; }
+    .box.h .item { display: inline-block; border-bottom: 0; border-right: 1px solid #2b2b34; padding: 140px 22px; }
+    .box.both .row { white-space: nowrap; }
+    .box.both .cell { display: inline-block; width: 120px; padding: 12px 2px; font-size: 14px; border-bottom: 1px solid #2b2b34; }
+
+    .hint { font-size: 11px; color: #6a6a77; margin-top: 10px; max-width: 300px; line-height: 1.5; }
+
+    /*
+    NOTE: do not add scrollbar-width or scrollbar-color here. Either one makes
+    Blink discard ::-webkit-scrollbar entirely, which cancels the plugin's pin
+    and drops the gutter to 0 -- leaving the opaque strip sitting on content.
+    Size the bar with fade-scrollbar-width-* instead; colour it with
+    ::-webkit-scrollbar-track / -thumb.
+    */
+    .box::-webkit-scrollbar-thumb {
+      background: #55556a; border-radius: 8px;
+      border: 3px solid #181820; background-clip: padding-box;
+    }
+    .box:hover::-webkit-scrollbar-thumb { background: #6f6f88; }
+  </style>
+</head>
+<body>
+  <h1>fade-scrollbar-safe-*</h1>
+  <p class="lede">
+    The suffix is the <strong>scroll axis</strong>, not the faded edge: <code>-y</code> shields the
+    vertical bar you get from scrolling on y. Scroll each container to the middle and watch the
+    thumb's ends. The utility pins the bar classic on every platform, so the effect shows on macOS
+    overlay-scrollbar defaults too — which is why the unprotected control has no visible bar there.
+  </p>
+
+  <div class="controls">
+    <label><input type="checkbox" id="always"> Pin fades always-on (<code>fade-always</code>)</label>
+    <label>
+      Bar width on <code>&lt;body&gt;</code>:
+      <select id="width">
+        <option value="">(none — 15px default)</option>
+        <option value="fade-scrollbar-width-sm">fade-scrollbar-width-sm (11px)</option>
+        <option value="fade-scrollbar-width-md">fade-scrollbar-width-md (15px)</option>
+        <option value="fade-scrollbar-width-lg">fade-scrollbar-width-lg (17px)</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="grid">
+    <div class="col">
+      <h2>fade-y &nbsp;— scrollbar fades (before)</h2>
+      <div class="box v fade-y" id="a"></div>
+      <p class="hint">Thumb ends dim in and out with the content.</p>
+    </div>
+    <div class="col">
+      <h2>fade-y fade-scrollbar-safe-y &nbsp;— protected</h2>
+      <div class="box v fade-y fade-scrollbar-safe-y" id="b"></div>
+      <p class="hint">Content still fades; the bar stays crisp.</p>
+    </div>
+    <div class="col">
+      <h2>fade-x fade-scrollbar-safe-x &nbsp;— horizontal</h2>
+      <div class="box h fade-x fade-scrollbar-safe-x" id="c"></div>
+      <p class="hint">
+        <code>-x</code> shields the bottom bar and reserves no inline gutter — the wrong class
+        here (<code>-y</code>) would notch the fading edge.
+      </p>
+    </div>
+    <div class="col">
+      <h2>fade fade-scrollbar-safe-xy &nbsp;— both axes</h2>
+      <div class="box both fade fade-scrollbar-safe-xy" id="d"></div>
+      <p class="hint">Pinning is per element, not per axis: a two-axis scroller needs both strips.</p>
+    </div>
+  </div>
+
+  <script>
+    const boxes = ['a', 'b', 'c', 'd'].map(id => document.getElementById(id));
+    const [a, b, c, d] = boxes;
+
+    function rows(el, n) {
+      el.innerHTML = '';
+      for (let i = 1; i <= n; i++) {
+        const row = document.createElement('div');
+        row.className = 'item';
+        row.textContent = 'Row ' + i;
+        el.appendChild(row);
+      }
+    }
+    function grid(el, r, cols) {
+      el.innerHTML = '';
+      for (let i = 1; i <= r; i++) {
+        const row = document.createElement('div');
+        row.className = 'row';
+        for (let j = 1; j <= cols; j++) {
+          const cell = document.createElement('span');
+          cell.className = 'cell';
+          cell.textContent = 'R' + i + 'C' + j;
+          row.appendChild(cell);
+        }
+        el.appendChild(row);
+      }
+    }
+
+    rows(a, 30); rows(b, 30); rows(c, 12); grid(d, 30, 8);
+    [a, b].forEach(el => { el.scrollTop = 240; });
+    [c, d].forEach(el => { el.scrollLeft = 240; });
+    d.scrollTop = 240;
+
+    document.getElementById('always').addEventListener('change', e => {
+      boxes.forEach(el => el.classList.toggle('fade-always', e.target.checked));
+    });
+    document.getElementById('width').addEventListener('change', e => {
+      document.body.className = e.target.value;
+    });
+  </script>
+</body>
+</html>

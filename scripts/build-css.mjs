@@ -42,7 +42,7 @@ const outFile = path.join(root, 'dist', 'tw-fade.css')
 // the prebuilt drop-in.
 const SCALE = 'xs,sm,md,lg,xl,2xl,3xl,4xl'
 const CLASSES =
-  `fade fade-{x,y,top,bottom,start,end} fade-none fade-none-{x,y} fade-always fade-always-{x,y} fade-size-{${SCALE}} fade-size-{x,y,top,bottom,start,end}-{${SCALE}} fade-travel-{${SCALE}} fade-clear-{${SCALE},var} fade-clear-{x,y,top,bottom,start,end}-{${SCALE},var}`
+  `fade fade-{x,y,top,bottom,start,end} fade-none fade-none-{x,y} fade-always fade-always-{x,y} fade-size-{${SCALE}} fade-size-{x,y,top,bottom,start,end}-{${SCALE}} fade-travel-{${SCALE}} fade-clear-{${SCALE},var} fade-clear-{x,y,top,bottom,start,end}-{${SCALE},var} fade-scrollbar-width-{sm,md,lg}`
 
 const BANNER =
   '/*! tw-fade — framework-free build for plain HTML / CDN.\n' +

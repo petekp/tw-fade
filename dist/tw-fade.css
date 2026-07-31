@@ -190,6 +190,15 @@
 .fade-clear-y-xs {
   --tw-fade-clear-y: var(--fade-clear-xs);
 }
+.fade-scrollbar-width-lg {
+  --tw-fade-scrollbar-width: var(--fade-scrollbar-width-lg);
+}
+.fade-scrollbar-width-md {
+  --tw-fade-scrollbar-width: var(--fade-scrollbar-width-md);
+}
+.fade-scrollbar-width-sm {
+  --tw-fade-scrollbar-width: var(--fade-scrollbar-width-sm);
+}
 .fade-size-2xl {
   --tw-fade-size: var(--fade-size-2xl);
 }
@@ -462,6 +471,21 @@
   syntax: "*";
   inherits: false;
 }
+@property --tw-fade-scrollbar {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --tw-fade-scrollbar-block {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --tw-fade-scrollbar-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 15px;
+}
 @property --tw-fade-mask-t {
   syntax: "*";
   inherits: false;
@@ -567,6 +591,9 @@
   --fade-clear-2xl: calc(var(--spacing, 0.25rem) * 24);
   --fade-clear-3xl: calc(var(--spacing, 0.25rem) * 32);
   --fade-clear-4xl: calc(var(--spacing, 0.25rem) * 40);
+  --fade-scrollbar-width-sm: 11px;
+  --fade-scrollbar-width-md: 15px;
+  --fade-scrollbar-width-lg: 17px;
 }
 @keyframes tw-fade-travel-t {
   from {
@@ -765,16 +792,28 @@
     --tw-fade-timeline-b: none;
     --tw-fade-animation-range-t: normal;
     --tw-fade-animation-range-b: normal;
-    mask-image: var(--tw-fade-mask-t, var(--tw-fade-identity-mask)), var(--tw-fade-mask-b, var(--tw-fade-identity-mask)), var(--tw-fade-mask-l, var(--tw-fade-identity-mask)), var(--tw-fade-mask-r, var(--tw-fade-identity-mask));
-    mask-composite: intersect;
+    --tw-fade-scrollbar-pos: 100% 0%;
+    --tw-fade-mask-size-l: 100% 100%;
+    --tw-fade-mask-size-r: calc(100% - var(--tw-fade-scrollbar, 0px)) 100%;
+    --tw-fade-mask-pos-l: 0% 0%;
+    --tw-fade-mask-pos-r: 0% 0%;
+    mask-image: var(--tw-fade-identity-mask), var(--tw-fade-identity-mask), var(--tw-fade-mask-t, var(--tw-fade-identity-mask)), var(--tw-fade-mask-b, var(--tw-fade-identity-mask)), var(--tw-fade-mask-l, var(--tw-fade-identity-mask)), var(--tw-fade-mask-r, var(--tw-fade-identity-mask));
+    mask-composite: add, add, intersect, intersect, intersect, intersect;
     mask-repeat: no-repeat;
-    mask-size: 100% 100%;
+    mask-origin: padding-box, padding-box, border-box, border-box, border-box, border-box;
+    mask-size: 100% var(--tw-fade-scrollbar-block, 0px), var(--tw-fade-scrollbar, 0px) 100%, 100% 100%, 100% calc(100% - var(--tw-fade-scrollbar-block, 0px)), var(--tw-fade-mask-size-l), var(--tw-fade-mask-size-r);
+    mask-position: 0% 100%, var(--tw-fade-scrollbar-pos), 0% 0%, 0% 0%, var(--tw-fade-mask-pos-l), var(--tw-fade-mask-pos-r);
   }
   .fade:where(:dir(rtl)), .fade-y:where(:dir(rtl)), .fade-top:where(:dir(rtl)), .fade-bottom:where(:dir(rtl)), .fade-x:where(:dir(rtl)), .fade-start:where(:dir(rtl)), .fade-end:where(:dir(rtl)) {
     --tw-fade-edge-size-l: var(--tw-fade-size-end, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))));
     --tw-fade-edge-size-r: var(--tw-fade-size-start, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))));
     --tw-fade-edge-clear-l: var(--tw-fade-clear-end, var(--tw-fade-clear-x, var(--tw-fade-clear, 0px)));
     --tw-fade-edge-clear-r: var(--tw-fade-clear-start, var(--tw-fade-clear-x, var(--tw-fade-clear, 0px)));
+    --tw-fade-scrollbar-pos: 0% 0%;
+    --tw-fade-mask-size-l: calc(100% - var(--tw-fade-scrollbar, 0px)) 100%;
+    --tw-fade-mask-size-r: 100% 100%;
+    --tw-fade-mask-pos-l: 100% 0%;
+    --tw-fade-mask-pos-r: 0% 0%;
     --tw-fade-mask-l: var(--tw-fade-rtl-end-layer, var(--tw-fade-identity-mask));
     --tw-fade-mask-r: var(--tw-fade-rtl-start-layer, var(--tw-fade-identity-mask));
     --tw-fade-animation-l: var(--tw-fade-rtl-end-animation, none);
@@ -874,9 +913,48 @@
     --tw-fade-l: 1 !important;
     --tw-fade-r: 1 !important;
   }
+  @supports (animation-timeline: scroll()) {
+    .fade-scrollbar-safe-y, .fade-scrollbar-safe-xy {
+      scrollbar-gutter: stable;
+    }
+    @supports selector(::-webkit-scrollbar) {
+      .fade-scrollbar-safe-y, .fade-scrollbar-safe-xy {
+        --tw-fade-scrollbar: max(0px, var(--tw-fade-scrollbar-width, 15px));
+      }
+      .fade-scrollbar-safe-x, .fade-scrollbar-safe-xy {
+        --tw-fade-scrollbar-block: max(0px, var(--tw-fade-scrollbar-width, 15px));
+      }
+      .fade-scrollbar-safe-y::-webkit-scrollbar, .fade-scrollbar-safe-x::-webkit-scrollbar, .fade-scrollbar-safe-xy::-webkit-scrollbar {
+        width: max(0px, var(--tw-fade-scrollbar-width, 15px));
+        height: max(0px, var(--tw-fade-scrollbar-width, 15px));
+      }
+      .fade-scrollbar-safe-y::-webkit-scrollbar-track, .fade-scrollbar-safe-x::-webkit-scrollbar-track, .fade-scrollbar-safe-xy::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .fade-scrollbar-safe-y::-webkit-scrollbar-thumb, .fade-scrollbar-safe-x::-webkit-scrollbar-thumb, .fade-scrollbar-safe-xy::-webkit-scrollbar-thumb {
+        background: var(--tw-fade-scrollbar-thumb, currentColor);
+        @supports (color: color-mix(in lab, red, red)) {
+          background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent));
+        }
+        border-radius: 999px;
+      }
+    }
+    @supports not selector(::-webkit-scrollbar) {
+      .fade-scrollbar-safe-y, .fade-scrollbar-safe-x, .fade-scrollbar-safe-xy {
+        scrollbar-width: thin;
+        scrollbar-color: var(--tw-fade-scrollbar-thumb, currentColor) transparent;
+        @supports (color: color-mix(in lab, red, red)) {
+          scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)) transparent;
+        }
+      }
+    }
+  }
 }
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    :root, :host {
+      --tw-fade-scrollbar-width: 15px;
+    }
     *, ::before, ::after, ::backdrop {
       --tw-fade-t: 0;
       --tw-fade-b: 0;
@@ -897,6 +975,8 @@
       --tw-fade-clear-bottom: initial;
       --tw-fade-clear-start: initial;
       --tw-fade-clear-end: initial;
+      --tw-fade-scrollbar: 0px;
+      --tw-fade-scrollbar-block: 0px;
       --tw-fade-mask-t: initial;
       --tw-fade-mask-b: initial;
       --tw-fade-mask-l: initial;

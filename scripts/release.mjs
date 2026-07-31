@@ -3,11 +3,14 @@ import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { prepareReleaseBump } from './release-metadata.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const npmBin = process.platform === 'win32' ? 'npm.cmd' : 'npm'
 const packagePath = path.join(root, 'package.json')
 const lockfilePath = path.join(root, 'package-lock.json')
+const readmePath = path.join(root, 'README.md')
+const changelogPath = path.join(root, 'CHANGELOG.md')
 
 const usage = `Usage:
   npm run release -- <patch|minor|major|x.y.z> [options]
@@ -143,17 +146,26 @@ function parseArgs(argv) {
   return options
 }
 
-function updatePackageVersions(version) {
-  const pkg = readJson(packagePath)
-  pkg.version = version
-  writeJson(packagePath, pkg)
-
-  if (fs.existsSync(lockfilePath)) {
-    const lockfile = readJson(lockfilePath)
-    lockfile.version = version
-    if (lockfile.packages?.['']) lockfile.packages[''].version = version
-    writeJson(lockfilePath, lockfile)
+function updateReleaseFiles(version) {
+  let prepared
+  try {
+    prepared = prepareReleaseBump({
+      packageJson: readJson(packagePath),
+      lockfile: readJson(lockfilePath),
+      readme: fs.readFileSync(readmePath, 'utf8'),
+      changelog: fs.readFileSync(changelogPath, 'utf8'),
+      targetVersion: version,
+      date: new Date().toISOString().slice(0, 10),
+    })
+  } catch (error) {
+    fail(error instanceof Error ? error.message : String(error))
   }
+
+  // Every transformation above has succeeded. Only now write any release file.
+  writeJson(packagePath, prepared.packageJson)
+  writeJson(lockfilePath, prepared.lockfile)
+  fs.writeFileSync(readmePath, prepared.readme)
+  fs.writeFileSync(changelogPath, prepared.changelog)
 }
 
 function npmPublishArgs({ distTag, dryRun, otp }) {
@@ -213,7 +225,7 @@ if (options.publish) {
 
 if (!options.noBump) {
   console.log(`Bumping ${pkg.name} from ${pkg.version} to ${targetVersion}`)
-  updatePackageVersions(targetVersion)
+  updateReleaseFiles(targetVersion)
 } else {
   console.log(`Using existing ${pkg.name} version ${targetVersion}`)
 }
@@ -236,7 +248,7 @@ if (options.publish) {
 
 console.log('')
 console.log('Recommended git follow-up:')
-console.log('  git add package.json package-lock.json dist/tw-fade.css demo/styles.css')
+console.log('  git add package.json package-lock.json README.md CHANGELOG.md dist/tw-fade.css demo/styles.css')
 console.log(`  git commit -m "Release ${targetVersion}"`)
 console.log(`  git tag v${targetVersion}`)
 console.log('  git push && git push origin --tags')
