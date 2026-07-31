@@ -41,7 +41,7 @@ test('a version bump prepares every release metadata update together', () => {
 
   assert.match(
     prepared.changelog,
-    /## \[Unreleased\]\n\n## \[1\.3\.0\] - 2026-07-31\n\n### Added\n\n- Added the new release feature\./,
+    /## \[Unreleased\]\n\n\*\*Migration:\*\* None\.\n\n## \[1\.3\.0\] - 2026-07-31\n\n\*\*Migration:\*\* None\.\n\n### Added\n\n- Added the new release feature\./,
   )
   assert.match(prepared.changelog, /## \[1\.2\.3\] - 2026-07-01/)
   assert.match(
@@ -86,6 +86,48 @@ test('a bump rejects stale inputs before returning any files to write', async (t
       ),
     })
     assert.throws(() => prepareReleaseBump(fixture), /Unreleased section has no notes/)
+  })
+
+  await t.test('missing Unreleased migration status', () => {
+    const fixture = releaseFixture({
+      changelog: readFixture('CHANGELOG.md').replace('**Migration:** None.\n\n', ''),
+    })
+    assert.throws(
+      () => prepareReleaseBump(fixture),
+      /Unreleased section must contain exactly one \*\*Migration:\*\* line/,
+    )
+  })
+
+  await t.test('misplaced Unreleased migration status', () => {
+    const fixture = releaseFixture({
+      changelog: readFixture('CHANGELOG.md')
+        .replace('**Migration:** None.\n\n', '')
+        .replace('### Added\n\n', '### Added\n\n**Migration:** None.\n\n'),
+    })
+    assert.throws(
+      () => prepareReleaseBump(fixture),
+      /\*\*Migration:\*\* must be the first content under Unreleased/,
+    )
+  })
+
+  await t.test('migration status without change notes', () => {
+    const fixture = releaseFixture({
+      changelog: readFixture('CHANGELOG.md').replace(
+        /### Added[\s\S]*?(?=## \[1\.2\.3\])/,
+        '',
+      ),
+    })
+    assert.throws(() => prepareReleaseBump(fixture), /no change-note bullet to release/)
+  })
+
+  await t.test('change heading without a bullet', () => {
+    const fixture = releaseFixture({
+      changelog: readFixture('CHANGELOG.md').replace(
+        /### Added[\s\S]*?(?=## \[1\.2\.3\])/,
+        '### Added\n\n',
+      ),
+    })
+    assert.throws(() => prepareReleaseBump(fixture), /no change-note bullet to release/)
   })
 
   await t.test('stale Unreleased comparison base', () => {

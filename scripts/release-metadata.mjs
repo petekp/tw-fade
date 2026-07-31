@@ -74,6 +74,21 @@ function updateChangelog({ changelog, currentVersion, targetVersion, date }) {
     throw new Error('CHANGELOG.md Unreleased section has no notes to release')
   }
 
+  const migrationLines = [...notes.matchAll(/^\*\*Migration:\*\*[ \t]+\S.*$/gm)]
+  if (migrationLines.length !== 1) {
+    throw new Error(
+      `CHANGELOG.md Unreleased section must contain exactly one **Migration:** line; ` +
+        `found ${migrationLines.length}`,
+    )
+  }
+  if (migrationLines[0].index !== 0) {
+    throw new Error('CHANGELOG.md **Migration:** must be the first content under Unreleased')
+  }
+  const changeNotes = notes.slice(migrationLines[0][0].length).trim()
+  if (!/^- \S.*$/m.test(changeNotes)) {
+    throw new Error('CHANGELOG.md Unreleased section has no change-note bullet to release')
+  }
+
   const unreleasedLink = requireSingleMatch(
     changelog,
     /^\[Unreleased\]:[ \t]*(\S+)[ \t]*$/gm,
@@ -104,7 +119,8 @@ function updateChangelog({ changelog, currentVersion, targetVersion, date }) {
   const releaseStart = currentRelease.index
   const withRelease =
     changelog.slice(0, headingStart) +
-    `## [Unreleased]\n\n## [${targetVersion}] - ${date}\n\n${notes}\n\n` +
+    `## [Unreleased]\n\n**Migration:** None.\n\n` +
+    `## [${targetVersion}] - ${date}\n\n${notes}\n\n` +
     changelog.slice(releaseStart)
 
   return withRelease.replace(unreleasedLink[0], nextLinks)

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+**Migration:** None.
+
 ### Added
 
 - Added the new release feature.
