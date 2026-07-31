@@ -60,6 +60,7 @@ async function probe(sel, top) {
         animationRangeEnd: cs.animationRangeEnd,
         maskComposite: cs.maskComposite,
         maskImage: cs.maskImage.slice(0, 40),
+        maskLayerCount: (cs.maskImage.match(/linear-gradient/g) || []).length,
       }
     },
     [sel, top],
@@ -115,7 +116,7 @@ const checks = [
   ['dist: mixed fade-top fade-end composes (t≈1,r≈1)', approx(r.combo.t, 1) && approx(r.combo.r, 1)],
   ['dist: mixed fade-top fade-end keeps four travel animations', r.combo.animationNames.length === 4],
   ['dist: mask-composite intersect', /intersect/.test(r.top.maskComposite)],
-  ['dist: mask-image has 4 layers', (r.top.maskImage.match(/gradient/g) || []).length >= 1],
+  ['dist: mask-image has 6 layers', r.top.maskLayerCount === 6],
 ]
 
 console.log(JSON.stringify(r, null, 2))

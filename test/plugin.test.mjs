@@ -299,7 +299,7 @@ test('the scrollbar strip is inert until opted in, and typed so a bad value stay
 
   // Typed <length> with an initial value, NOT syntax:"*". This one is
   // substituted into mask-size, where a single unparseable component invalidates
-  // the whole declaration -- all five layers fall back to `auto`, which on a
+  // the whole declaration -- all six layers fall back to `auto`, which on a
   // gradient covers the full positioning area and silently disables the fade.
   // The registration makes `11` (no unit) degrade to the 0px initial value.
   const prop = property('--tw-fade-scrollbar')
@@ -341,17 +341,17 @@ test('fade-scrollbar-safe-y pins the bar geometry rather than guessing it', () =
   // only ever DECLARED by an author, so without @property support (Safari
   // 15.4-16.3, Firefox < 128) a bare var() is guaranteed-invalid and takes the
   // whole declaration down with it. In mask-size that silently deletes the fade.
-  assert.equal(declValue(pinned, 'width'), 'var(--tw-fade-scrollbar-width, 15px)')
+  assert.equal(declValue(pinned, 'width'), 'max(0px, var(--tw-fade-scrollbar-width, 15px))')
   // height is pinned too: the custom-scrollbar opt-in is per-element, so an
   // unscoped ::-webkit-scrollbar rule turns the horizontal bar classic whether
   // or not height is mentioned. Omitting it surrenders the size (measured: 11px
   // -> the 16px UA default) without restoring the overlay bar.
-  assert.equal(declValue(pinned, 'height'), 'var(--tw-fade-scrollbar-width, 15px)')
+  assert.equal(declValue(pinned, 'height'), 'max(0px, var(--tw-fade-scrollbar-width, 15px))')
   assert.match(css, /@supports selector\(::-webkit-scrollbar\)/)
-  assert.match(compact(css), /--tw-fade-scrollbar: var\(--tw-fade-scrollbar-width, 15px\)/)
+  assert.match(compact(css), /--tw-fade-scrollbar: max\(0px, var\(--tw-fade-scrollbar-width, 15px\)\)/)
 
-  // The public knob is registered, so a malformed value degrades to 15px rather
-  // than dropping the pin and leaving the strip a different width to the bar.
+  // The public knob is registered, so an unparseable value degrades to 15px;
+  // well-typed negative lengths are clamped at every consumption point below.
   const width = property('--tw-fade-scrollbar-width')
   assert.equal(width.syntax, '"<length>"')
   // The pin REPLACES the native bar, so the default is the user's actual hit
@@ -394,8 +394,8 @@ test('the whole opt-in, pin included, sits inside the scroll-gating feature quer
   // Everything the opt-in does has to be in there: the gutter reservation, the
   // strip widths for both axes, and the pin itself.
   assert.match(gated[0], /scrollbar-gutter:\s*stable/)
-  assert.match(gated[0], /--tw-fade-scrollbar:\s*var\(--tw-fade-scrollbar-width, 15px\)/)
-  assert.match(gated[0], /--tw-fade-scrollbar-block:\s*var\(--tw-fade-scrollbar-width, 15px\)/)
+  assert.match(gated[0], /--tw-fade-scrollbar:\s*max\(0px, var\(--tw-fade-scrollbar-width, 15px\)\)/)
+  assert.match(gated[0], /--tw-fade-scrollbar-block:\s*max\(0px, var\(--tw-fade-scrollbar-width, 15px\)\)/)
   assert.match(gated[0], /::-webkit-scrollbar\b/)
 
   // ...and nothing the opt-in does may sit outside it. A stray rule here is the
@@ -425,13 +425,16 @@ test('the block-axis strip is a separate opt-in, because that gutter is not rese
   // -y owns the inline strip and must NOT reach the block axis.
   const inline = block('.fade-scrollbar-safe-y, .fade-scrollbar-safe-xy', webkit)
   assert.ok(inline, 'missing inline-axis opt-in block')
-  assert.equal(declValue(inline, '--tw-fade-scrollbar'), 'var(--tw-fade-scrollbar-width, 15px)')
+  assert.equal(declValue(inline, '--tw-fade-scrollbar'), 'max(0px, var(--tw-fade-scrollbar-width, 15px))')
   assert.equal(declValue(inline, '--tw-fade-scrollbar-block'), undefined, '-y must not set the block strip')
 
   // -x owns the block strip and must NOT reach the inline axis.
   const blockAxis = block('.fade-scrollbar-safe-x, .fade-scrollbar-safe-xy', webkit)
   assert.ok(blockAxis, 'missing block-axis opt-in block')
-  assert.equal(declValue(blockAxis, '--tw-fade-scrollbar-block'), 'var(--tw-fade-scrollbar-width, 15px)')
+  assert.equal(
+    declValue(blockAxis, '--tw-fade-scrollbar-block'),
+    'max(0px, var(--tw-fade-scrollbar-width, 15px))',
+  )
   assert.equal(declValue(blockAxis, '--tw-fade-scrollbar'), undefined, '-x must not set the inline strip')
 })
 
@@ -512,6 +515,31 @@ test('fade-scrollbar-width-* is a pure setter over an absolute-px scale', () => 
   // And the scale is deliberately not named after scrollbar-width's keywords --
   // that property must never be set here, since it cancels the pin.
   assert.equal(block('.fade-scrollbar-width-thin', bare), null, 'must not shadow the real keyword')
+})
+
+test('negative arbitrary scrollbar widths compile but every geometry consumer clamps them to zero', () => {
+  // Tailwind correctly accepts this because -5px is a valid <length>. The
+  // plugin has to sanitize it where the value becomes scrollbar or mask
+  // geometry: a negative mask-size component invalidates the whole six-layer
+  // declaration and silently removes the fade.
+  const negative = compileCss({ classes: 'fade-scrollbar-width-[-5px]' })
+  const setter = block('.fade-scrollbar-width-\\[-5px\\]', negative)
+  assert.ok(setter, 'the negative arbitrary length should compile')
+  assert.equal(declValue(setter, '--tw-fade-scrollbar-width'), '-5px')
+
+  const webkit = block('@supports selector(::-webkit-scrollbar)', negative)
+  const inline = block('.fade-scrollbar-safe-y, .fade-scrollbar-safe-xy', webkit)
+  const blockAxis = block('.fade-scrollbar-safe-x, .fade-scrollbar-safe-xy', webkit)
+  const pinned = block(
+    '.fade-scrollbar-safe-y::-webkit-scrollbar, .fade-scrollbar-safe-x::-webkit-scrollbar, ' +
+      '.fade-scrollbar-safe-xy::-webkit-scrollbar',
+    webkit,
+  )
+  const clamped = 'max(0px, var(--tw-fade-scrollbar-width, 15px))'
+  assert.equal(declValue(inline, '--tw-fade-scrollbar'), clamped)
+  assert.equal(declValue(blockAxis, '--tw-fade-scrollbar-block'), clamped)
+  assert.equal(declValue(pinned, 'width'), clamped)
+  assert.equal(declValue(pinned, 'height'), clamped)
 })
 
 test('direction classes select the expected layers and central RTL routing', () => {

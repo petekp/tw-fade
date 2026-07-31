@@ -39,6 +39,8 @@
  *      regardless of overflow and drop the strip onto content
  *  11. WebKit's non-overflowing residual is still exactly as documented, and
  *      overflow-y: scroll still closes it
+ *  12. negative direct, theme-token, and arbitrary-utility widths clamp to 0px
+ *      in both Chromium and WebKit, leaving mask-size valid and the fade intact
  *
  * Usage: node build/verify-scrollbar.mjs [path-to-css]   (defaults to dist)
  */
@@ -106,13 +108,24 @@ const browser = await chromium.launch(HEADED)
  * un-faded middle of the panel, content and strip are both opaque and a misfire
  * is invisible.
  */
-async function sample({ body, ids, yOff = 6, n = 24, zoom = 1, xOff = 6, m = 24, layout = '' }) {
+async function sample({
+  body,
+  ids,
+  yOff = 6,
+  n = 24,
+  zoom = 1,
+  xOff = 6,
+  m = 24,
+  layout = '',
+  extraCss = '',
+  browserInstance = browser,
+}) {
   // `layout` exists so a section that samples near a panel's BLOCK END can lay
   // the panels out in a row. Stacked, the third panel falls below the 400px
   // viewport and getImageData returns zeros — which read as "not content" and
   // pass vacuously. Same false-green shape as running this file headless.
-  const html = `<!doctype html><html><head><meta charset="utf-8"><style>${HARNESS}${css}${layout}</style></head><body>${body}</body></html>`
-  const page = await browser.newPage({ viewport: { width: 1000, height: 400 }, deviceScaleFactor: 1 })
+  const html = `<!doctype html><html><head><meta charset="utf-8"><style>${HARNESS}${css}${extraCss}${layout}</style></head><body>${body}</body></html>`
+  const page = await browserInstance.newPage({ viewport: { width: 1000, height: 400 }, deviceScaleFactor: 1 })
   await page.setContent(html, { waitUntil: 'load' })
   if (zoom !== 1) await page.evaluate((z) => { document.documentElement.style.zoom = String(z) }, zoom)
   await page.evaluate(async (list) => {
@@ -138,12 +151,14 @@ async function sample({ body, ids, yOff = 6, n = 24, zoom = 1, xOff = 6, m = 24,
       const probe = el.querySelector('[data-probe]')
       const zoomFactor = parseFloat(document.documentElement.style.zoom || '1')
       const exact = probe ? (r.width - probe.getBoundingClientRect().width) / zoomFactor : null
+      const style = getComputedStyle(el)
       o[id] = {
         x: r.x, y: r.y, w: r.width, h: r.height,
         gutter: Math.round((el.offsetWidth - el.clientWidth) * 1000) / 1000,
         exactGutter: exact === null ? null : Math.round(exact * 1000) / 1000,
-        maskSize: getComputedStyle(el).maskSize,
-        scrollbarGutter: getComputedStyle(el).scrollbarGutter,
+        maskSize: style.maskSize,
+        scrollbarGutter: style.scrollbarGutter,
+        scrollbarStrip: style.getPropertyValue('--tw-fade-scrollbar').trim(),
       }
     }
     return o
@@ -174,14 +189,20 @@ async function sample({ body, ids, yOff = 6, n = 24, zoom = 1, xOff = 6, m = 24,
         // vertical bar's column or the scrollbar corner.
         const col = []
         for (let i = mCount - 1; i >= 0; i--) col.push(rgb(g[id].x + xo, g[id].y + g[id].h - 1 - i))
-        o[id] = { row, col }
+        const center = rgb(g[id].x + g[id].w / 2, g[id].y + yo)
+        o[id] = { row, col, center }
       }
       return o
     },
     [shot.toString('base64'), geo, ids, yOff, n, xOff, m],
   )
   await page.close()
-  return { geo, prof: mapVals(prof, (v) => v.row), col: mapVals(prof, (v) => v.col) }
+  return {
+    geo,
+    prof: mapVals(prof, (v) => v.row),
+    col: mapVals(prof, (v) => v.col),
+    center: mapVals(prof, (v) => v.center),
+  }
 }
 
 const mapVals = (o, f) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, f(v)]))
@@ -196,6 +217,65 @@ const trackDelta = (px) =>
   Math.max(Math.abs(px[0] - TRACK[0]), Math.abs(px[1] - TRACK[1]), Math.abs(px[2] - TRACK[2]))
 const isContent = (px) => px[0] > 200 && px[1] > 200 && px[2] > 200
 const fmt = (row) => row.map((p) => p.join(',')).join('  ')
+
+/*
+Tailwind accepts -5px as an arbitrary [length], so the runtime must sanitize it
+rather than relying on the compiler or @property to reject it. The unit test
+proves Tailwind emits this exact setter; the verifier repeats it here because the
+framework-free dist intentionally excludes arbitrary utilities.
+*/
+const NEGATIVE_ARBITRARY_CSS =
+  '.fade-scrollbar-width-\\[-5px\\] { --tw-fade-scrollbar-width: -5px; }'
+
+async function verifyNegativeWidths(browserInstance, engine) {
+  const cases = [
+    ['negative-direct', 'direct --tw-fade-scrollbar-width'],
+    ['negative-theme', 'negative --fade-scrollbar-width-md theme token'],
+    ['negative-arbitrary', 'negative arbitrary width utility'],
+  ]
+  const common = 'fade-y fade-always-y fade-scrollbar-safe-y'
+  const { geo, center } = await sample({
+    body:
+      panel('zero', common, '--tw-fade-scrollbar-width:0px') +
+      panel('negative-direct', common, '--tw-fade-scrollbar-width:-5px') +
+      panel('negative-theme', `${common} fade-scrollbar-width-md`, '--fade-scrollbar-width-md:-5px') +
+      panel('negative-arbitrary', `${common} fade-scrollbar-width-[-5px]`),
+    ids: ['zero', ...cases.map(([id]) => id)],
+    layout: 'body { display: flex; }',
+    extraCss: NEGATIVE_ARBITRARY_CSS,
+    browserInstance,
+  })
+
+  // White content over a blue page: the center pixel's red channel is the
+  // rendered mask alpha, sampled well away from the scrollbar.
+  // Assert the baseline is genuinely faded before comparing the negative cases
+  // to it, or an all-opaque false green would pass every equality below.
+  const baseline = center.zero[0]
+  check(
+    baseline < 160,
+    `${engine}: the zero-width control still renders the fade`,
+    `control center pixel was ${baseline}/255 red — the control is opaque, so comparisons prove nothing`,
+  )
+
+  for (const [id, label] of cases) {
+    check(
+      geo[id].scrollbarStrip === '0px' && geo[id].gutter === 0,
+      `${engine}: ${label} clamps bar and strip to 0px`,
+      `strip computed to "${geo[id].scrollbarStrip}" and gutter to ${geo[id].gutter}px`,
+    )
+    check(
+      !geo[id].maskSize.includes('auto'),
+      `${engine}: ${label} leaves the six-layer mask-size valid`,
+      `mask-size computed to "${geo[id].maskSize}" — one negative component invalidated every layer`,
+    )
+    const rendered = center[id][0]
+    check(
+      Math.abs(rendered - baseline) <= 4,
+      `${engine}: ${label} leaves the fade intact`,
+      `center pixel was ${rendered}/255 red vs the ${baseline}/255 zero-width control`,
+    )
+  }
+}
 
 /* ------------------------------------------------------------------ *
  * 1 + 2. The pin holds, and the bar itself survives the fade.
@@ -790,6 +870,9 @@ console.log('\nthe opt-in stands down without scroll gating')
   )
 }
 
+console.log('\nnegative public widths clamp safely in Chromium')
+await verifyNegativeWidths(browser, 'Chromium')
+
 await browser.close()
 
 /* ------------------------------------------------------------------ *
@@ -829,7 +912,7 @@ console.log('\nWebKit: the non-overflowing residual')
     auto: (() => { const e = document.getElementById('wkauto'); return e.offsetWidth - e.clientWidth })(),
     scroll: (() => { const e = document.getElementById('wkscroll'); return e.offsetWidth - e.clientWidth })(),
   }))
-  await wk.close()
+  await page.close()
 
   check(
     got.sda,
@@ -848,6 +931,10 @@ console.log('\nWebKit: the non-overflowing residual')
     `overflow-y: scroll reserved ${got.scroll}px, expected ${PIN} — the mitigation the README ` +
       `recommends to Safari users no longer works`,
   )
+
+  console.log('\nnegative public widths clamp safely in WebKit')
+  await verifyNegativeWidths(wk, 'WebKit')
+  await wk.close()
 }
 
 if (notes.length) {

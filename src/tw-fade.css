@@ -95,7 +95,7 @@ fade-scrollbar-safe-y / -xy set it; users may also set --tw-fade-scrollbar direc
 
 Typed <length>, unlike the "*" properties above, because this one is substituted
 into mask-size -- and a single bad component makes the WHOLE declaration invalid
-at computed-value time, so all five layers fall back to `auto`, which on a
+at computed-value time, so all six layers fall back to `auto`, which on a
 gradient means the full positioning area. An opaque layer then covers the entire
 element and the fade vanishes. A typed property with an initial value can't do
 that: a value that doesn't parse as a <length> (`11` instead of `11px`) is
@@ -133,6 +133,13 @@ custom property so a malformed value degrades to the initial value instead of
 reaching ::-webkit-scrollbar { width: <garbage> } -- which would drop that
 declaration, un-pin the bar, and leave the strip shielding a column of the
 wrong width.
+
+<length> still admits negative values. That is harmless for the property itself
+but invalid in mask-size, where one negative layer invalidates the whole six-layer
+declaration and silently removes the fade. Every consumption therefore clamps
+the public value with max(0px, ...) -- the bar and both strips all read the same
+sanitized length, so a negative arbitrary utility, theme token, or direct value
+degrades to an inert 0px bar/strip instead.
 
 inherits:true is REQUIRED here, unlike every other property in this file.
 ::-webkit-scrollbar is a pseudo-element, and pseudo-elements only see a custom
@@ -416,6 +423,8 @@ effect of stating a preference.
 [length] only, with no --value(integer) branch. Elsewhere a bare integer means
 spacing steps; here it would read as pixels to anyone typing it, and the two
 answers differ by 4x. Refusing the ambiguous form is better than picking a side.
+Arbitrary negative lengths still compile because they are valid <length> values;
+the scrollbar consumers clamp them to 0px before they reach geometry or masks.
 */
 @utility fade-scrollbar-width-* {
     --tw-fade-scrollbar-width: --value(--fade-scrollbar-width-*, [length]);
@@ -944,7 +953,7 @@ answers differ by 4x. Refusing the ambiguous form is better than picking a side.
     @supports selector(::-webkit-scrollbar) {
         .fade-scrollbar-safe-y,
         .fade-scrollbar-safe-xy {
-            --tw-fade-scrollbar: var(--tw-fade-scrollbar-width, 15px);
+            --tw-fade-scrollbar: max(0px, var(--tw-fade-scrollbar-width, 15px));
         }
 
         /*
@@ -957,7 +966,7 @@ answers differ by 4x. Refusing the ambiguous form is better than picking a side.
         */
         .fade-scrollbar-safe-x,
         .fade-scrollbar-safe-xy {
-            --tw-fade-scrollbar-block: var(--tw-fade-scrollbar-width, 15px);
+            --tw-fade-scrollbar-block: max(0px, var(--tw-fade-scrollbar-width, 15px));
         }
 
         /*
@@ -980,8 +989,8 @@ answers differ by 4x. Refusing the ambiguous form is better than picking a side.
         .fade-scrollbar-safe-y::-webkit-scrollbar,
         .fade-scrollbar-safe-x::-webkit-scrollbar,
         .fade-scrollbar-safe-xy::-webkit-scrollbar {
-            width: var(--tw-fade-scrollbar-width, 15px);
-            height: var(--tw-fade-scrollbar-width, 15px);
+            width: max(0px, var(--tw-fade-scrollbar-width, 15px));
+            height: max(0px, var(--tw-fade-scrollbar-width, 15px));
         }
 
         .fade-scrollbar-safe-y::-webkit-scrollbar-track,
@@ -1005,9 +1014,10 @@ answers differ by 4x. Refusing the ambiguous form is better than picking a side.
     combination of scrollbar-width / -color / -gutter forces a classic bar on
     macOS). A strip here would be correct on Windows and Linux and a hard opaque
     slab over content on macOS, with no way to tell which. Since a missed strip
-    damages content while the bug it prevents only dims chrome, Gecko gets no
-    strip: the bar is merely made thin, and the fade over it remains a documented
-    limitation.
+    damages content while the bug it prevents only dims chrome, a Gecko build
+    that passes the outer scroll-animation gate gets no strip: its bar is merely
+    made thin, and the fade over it remains a documented limitation. Release
+    Firefox fails that gate and skips the whole opt-in, keeping its native bar.
     */
     @supports not selector(::-webkit-scrollbar) {
         .fade-scrollbar-safe-y,

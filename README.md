@@ -44,7 +44,7 @@ npm install tw-fade
 Use this for plain HTML, CDN usage, or bundlers that import CSS directly.
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/tw-fade@0.7.0/dist/tw-fade.css" />
+<link rel="stylesheet" href="https://unpkg.com/tw-fade@0.8.0/dist/tw-fade.css" />
 ```
 
 ```js
@@ -269,7 +269,7 @@ The named widths come from the `--fade-scrollbar-width-*` theme namespace and ov
 }
 ```
 
-On the Tailwind source path the utility also takes any length — `fade-scrollbar-width-[13px]`. A bare integer is deliberately rejected: everywhere else in this plugin an integer means spacing steps, and here it would have to mean pixels.
+On the Tailwind source path the utility also takes any length — `fade-scrollbar-width-[13px]`. A bare integer is deliberately rejected: everywhere else in this plugin an integer means spacing steps, and here it would have to mean pixels. Any width that reaches the plugin is clamped at `0px`, whether it comes from an arbitrary utility, a theme-token override, or a direct `--tw-fade-scrollbar-width` declaration. Negative lengths therefore behave as `0px` instead of invalidating the mask.
 
 ### The trade it makes
 
@@ -286,7 +286,7 @@ It also fixes a quieter symptom of the same root cause. Mask percentages resolve
 The reserved gutter shouldn't read as a separate panel, so the utility also gives the bar a **transparent track** and a subtle thumb derived from the container's `currentColor` (adapts to light and dark). Knobs:
 
 - `--tw-fade-scrollbar-thumb` — the thumb color. Defaults to `color-mix(in srgb, currentColor 30%, transparent)`.
-- `--tw-fade-scrollbar-width` — what `fade-scrollbar-width-*` sets, for a value off the scale. Defaults to `15px`, matching a macOS classic bar. Set this rather than `--tw-fade-scrollbar`: it drives the bar and the strip together, so they can't disagree. The pin *replaces* the native bar rather than decorating it, so this is your users' actual hit target — going much below native trades pointer accuracy for looks.
+- `--tw-fade-scrollbar-width` — what `fade-scrollbar-width-*` sets, for a value off the scale. Defaults to `15px`, matching a macOS classic bar, and clamps negative values to `0px`. Set this rather than `--tw-fade-scrollbar`: it drives the bar and the strip together, so they can't disagree. The pin *replaces* the native bar rather than decorating it, so this is your users' actual hit target — going much below native trades pointer accuracy for looks.
 
 ```html
 <div class="fade-y fade-scrollbar-safe-y overflow-y-auto" style="--tw-fade-scrollbar-thumb: #888">...</div>
@@ -298,7 +298,7 @@ Do **not** set `scrollbar-width` or `scrollbar-color` on a `fade-scrollbar-safe-
 
 - RTL is handled automatically — the strip follows the vertical bar to the inline-start edge.
 - **Pinning the bar is per-element, not per-axis.** Opting in makes *both* bars classic, so a container that scrolls both ways gets a classic horizontal bar whether or not you asked for one — which is why `-xy` exists, and why the axis suffix is worth getting right. The block strip can't just be on by default: unlike the inline gutter, the block gutter is only reserved when content actually overflows horizontally, so a blind block strip would slab an opaque band over content on every vertical-only scroller.
-- **Firefox is not covered.** It ignores `::-webkit-scrollbar`, so its bar can't be pinned, and whether it's using overlay or classic bars can't be detected either. A guessed strip would be right on Windows/Linux and an opaque slab over content on macOS, with no way to tell which — and a missed strip damages content, while the bug it prevents only dims chrome. Firefox gets a thin styled bar and no strip.
+- **Firefox is not covered.** It ignores `::-webkit-scrollbar`, so its bar can't be pinned, and whether it's using overlay or classic bars can't be detected either. A guessed strip would be right on Windows/Linux and an opaque slab over content on macOS, with no way to tell which — and a missed strip damages content, while the bug it prevents only dims chrome. Firefox gets a thin styled bar and no strip only when scroll-driven animations are enabled. Release Firefox fails that feature gate, so this opt-in leaves its native scrollbar unchanged.
 - **In Safari, a container that isn't currently overflowing on the block axis has no gutter** (WebKit doesn't honor `scrollbar-gutter: stable`'s reserve-anyway behavior for custom bars), so the inline strip lands on content — an opaque band exactly where the fade just finished. It shows when such a container is faded anyway: with `fade-always*`, or with a live fade on the *other* axis (a two-axis scroller currently overflowing only horizontally). **Fix it with `overflow-y-scroll` instead of `overflow-y-auto`** — a permanent bar means a permanent gutter, in WebKit too (measured: 15px reserved, strip landing exactly on the track). Or apply the class only on a state that actually overflows.
 - **The whole opt-in requires scroll-driven animations, and stands down without them.** On Safari 17.x / 18.x and on release Firefox, the plugin falls back to pinning fades on regardless of overflow — and a faded container with no overflow is precisely the case above. Rather than shield a bar on those engines, the utility declines to pin one, so they keep their native scrollbars: overlay on macOS, which the mask never touches. Pinning without shielding would be worse than not opting in at all — it manufactures a space-consuming bar and then lets the fade dim it.
 - On overlay-scrollbar platforms the bar already paints above the mask and is never faded, so nothing is needed there — the utility trades that away deliberately in exchange for a bar it can shield exactly.

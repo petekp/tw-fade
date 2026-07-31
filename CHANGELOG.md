@@ -6,6 +6,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-07-31
+
 ### Added
 
 - `fade-scrollbar-safe-y` / `-x` / `-xy`: opt-in utilities that keep a classic
@@ -59,6 +61,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   opted-in scroller below. Absolute px rather than the spacing ramp (a scrollbar
   is device chrome, not typographic rhythm), and `[length]` only — a bare integer
   would read as px here and as spacing steps everywhere else in the plugin.
+  Widths from arbitrary utilities, theme overrides, and direct
+  `--tw-fade-scrollbar-width` declarations are clamped at `0px`, so a negative
+  length cannot invalidate the mask.
 
 ### Fixed
 
@@ -85,6 +90,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   so it tracks the gutter on a scroll container with a border. Anchored to the
   border box it was displaced outward and straddled the border, shielding the
   border while leaving that many pixels of scrollbar still faded.
+- Scrollbar widths are clamped before they reach either the pinned bar or the
+  mask strips. A negative arbitrary value such as
+  `fade-scrollbar-width-[-5px]`, or a negative direct custom-property value, no
+  longer invalidates the complete `mask-size` declaration and disables the fade.
+
+## [0.7.1] - 2026-06-29
+
+### Fixed
 
 - Nudged scroll-driven animation ranges away from exact start/end endpoints so
   Chromium resets fade amounts when mounted scrollports swap from overflowing to
@@ -135,5 +148,7 @@ it also explains the [naming rationale](./MIGRATING.md#why-plain-directions).
   `fade-size-*` / `fade-range-*` / `fade-clear-*` families). No public physical
   horizontal utility (`fade-left` / `fade-right`) is provided.
 
-[Unreleased]: https://github.com/petekp/tw-fade/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/petekp/tw-fade/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/petekp/tw-fade/compare/v0.7.1...v0.8.0
+[0.7.1]: https://github.com/petekp/tw-fade/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/petekp/tw-fade/releases/tag/v0.7.0

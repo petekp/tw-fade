@@ -31,4 +31,6 @@ jobs:
         run: npm test
 
       - name: Browser verify chain
-        run: npm run verify
+        # verify-scrollbar stays headed so Chromium paints the bars it samples.
+        # The Linux runner has no display, so provide one with Playwright's Xvfb.
+        run: xvfb-run -a npm run verify

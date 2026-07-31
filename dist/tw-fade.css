@@ -919,14 +919,14 @@
     }
     @supports selector(::-webkit-scrollbar) {
       .fade-scrollbar-safe-y, .fade-scrollbar-safe-xy {
-        --tw-fade-scrollbar: var(--tw-fade-scrollbar-width, 15px);
+        --tw-fade-scrollbar: max(0px, var(--tw-fade-scrollbar-width, 15px));
       }
       .fade-scrollbar-safe-x, .fade-scrollbar-safe-xy {
-        --tw-fade-scrollbar-block: var(--tw-fade-scrollbar-width, 15px);
+        --tw-fade-scrollbar-block: max(0px, var(--tw-fade-scrollbar-width, 15px));
       }
       .fade-scrollbar-safe-y::-webkit-scrollbar, .fade-scrollbar-safe-x::-webkit-scrollbar, .fade-scrollbar-safe-xy::-webkit-scrollbar {
-        width: var(--tw-fade-scrollbar-width, 15px);
-        height: var(--tw-fade-scrollbar-width, 15px);
+        width: max(0px, var(--tw-fade-scrollbar-width, 15px));
+        height: max(0px, var(--tw-fade-scrollbar-width, 15px));
       }
       .fade-scrollbar-safe-y::-webkit-scrollbar-track, .fade-scrollbar-safe-x::-webkit-scrollbar-track, .fade-scrollbar-safe-xy::-webkit-scrollbar-track {
         background: transparent;
