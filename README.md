@@ -1,6 +1,6 @@
 # tw-fade
 
-Scroll-aware edge fades for Tailwind CSS v4. Mask the edges of any scroll container so content dissolves into the surface behind it. All CSS. No runtime JavaScript.
+Scroll-aware edge fades for Tailwind CSS v4. Add a utility to a scroll container. The fade appears while content remains beyond an edge and clears when you reach it.
 
 **[Live demo](https://pete.design/tw-fade)**
 
@@ -10,25 +10,13 @@ Scroll-aware edge fades for Tailwind CSS v4. Mask the edges of any scroll contai
 </div>
 ```
 
-The fade appears only when there is content beyond that edge, then recedes again when you reach the start or end.
-
-## Why
-
-A static gradient overlay is always on. It dims content even when nothing is hidden beyond the edge, and it sits in front of your content as another layer.
-
-`tw-fade` uses a CSS mask on the scroll container itself:
-
-- **Scroll-aware.** The fade is gated by the element's own scroll position.
-- **No extra DOM.** The mask lives on the scroll container.
-- **Surface-neutral.** The mask reveals whatever is behind the element instead of painting a fake background color.
-- **Composable.** Direction, size, travel distance, and clear zones are separate utilities.
-- **Graceful fallback.** Browsers without scroll-driven animations get a static fade instead of a broken mask.
+`tw-fade` masks the scroll container itself, so your existing surface shows through. It requires no wrapper or runtime JavaScript. You can compose direction, size, travel, and clear-zone utilities. Browsers without scroll-driven animations show a static fade.
 
 ## Install
 
 ### Tailwind v4 source path
 
-Use this when your app already builds with Tailwind v4. This path supports arbitrary values like `fade-size-[2rem]`.
+Use the source path in a Tailwind v4 app. It supports bracket values such as `fade-size-[2rem]`.
 
 ```bash
 npm install tw-fade
@@ -41,7 +29,7 @@ npm install tw-fade
 
 ### Prebuilt CSS
 
-Use this for plain HTML, CDN usage, or bundlers that import CSS directly.
+Use the prebuilt file with plain HTML, a CDN, or a bundler that imports CSS.
 
 ```html
 <link rel="stylesheet" href="https://unpkg.com/tw-fade@0.8.0/dist/tw-fade.css" />
@@ -51,13 +39,11 @@ Use this for plain HTML, CDN usage, or bundlers that import CSS directly.
 import "tw-fade/css";
 ```
 
-The prebuilt file includes only the named utility set. Arbitrary bracket values need Tailwind's source path.
-
-If you use an unversioned CDN URL, you receive the latest package and any breaking API changes that come with it. Pin a version when you need stable HTML.
+The prebuilt file contains the named utility set. Bracket values require Tailwind's source path. Pin CDN imports to a version to avoid breaking changes.
 
 ## Usage
 
-Put the fade utility on the element that actually scrolls.
+Apply the fade utility to the scrolling element.
 
 ```html
 <!-- Top and bottom -->
@@ -88,9 +74,13 @@ Put the fade utility on the element that actually scrolls.
 | `fade-start` | horizontal start |
 | `fade-end` | horizontal end |
 
-`start` and `end` are **horizontal only** and follow semantic reading direction. In LTR, start is the left edge and end is the right edge; in RTL, start is the right edge and end is the left edge. For the top or bottom edge use `fade-top` / `fade-bottom` — there is no `fade-block-start`. Use the HTML `dir` attribute on the scroll container or an ancestor; a CSS-only `direction: rtl` rule does not trigger RTL routing.
+`start` and `end` name horizontal edges and follow the HTML `dir` attribute. In LTR, start is left and end is right. RTL reverses them. `top` and `bottom` stay physical.
 
-Vertical names stay physical (`top` / `bottom`) because the block axis is not affected by text direction. This split — physical vertical, direction-aware horizontal — mirrors how Tailwind itself ships physical `top`/`bottom` insets alongside logical `ps`/`pe`. See [Why plain directions](./MIGRATING.md#why-plain-directions) for the naming rationale.
+Set `dir` on the scroll container or an ancestor. A CSS `direction: rtl` rule does not trigger RTL routing. See [Why plain directions](./MIGRATING.md#why-plain-directions) for the naming rationale.
+
+```html
+<div dir="rtl" class="fade-start overflow-x-auto">...</div>
+```
 
 ## Size
 
@@ -110,9 +100,9 @@ Size controls how thick the fade band is.
 <div class="fade fade-size-md fade-size-top-2xl overflow-auto">...</div>
 ```
 
-Resolution is edge, then axis, then global, then the default. For example, top uses `fade-size-top-*` first, then `fade-size-y-*`, then `fade-size-*`.
+Size precedence runs from edge to axis to global to default. For example, `fade-size-top-*` overrides `fade-size-y-*`, which overrides `fade-size-*`.
 
-The default size is capped at `min(12%, 3rem)`, so small scroll areas do not get swallowed by the fade. Named sizes derive from Tailwind's spacing unit, `--spacing`, with `0.25rem` as the fallback.
+`tw-fade` caps the default at `min(12%, 3rem)`. Named sizes use Tailwind's `--spacing` token, with `0.25rem` as the fallback.
 
 | Step | Value | Step | Value |
 | --- | --- | --- | --- |
@@ -129,34 +119,24 @@ You can override the tokens:
 }
 ```
 
-On the Tailwind source path, size accepts named values, lengths, and percentages:
-
-```html
-<div class="fade-y fade-size-[15%]">...</div>
-```
-
-The prebuilt CSS includes the named sizes only.
+The source path accepts named values, lengths, and percentages, including `fade-size-[15%]`.
 
 ## Travel Distance
 
-Travel distance controls how far you scroll before the soft band eases open to its full width.
-
-| Utility | Affects |
-| --- | --- |
-| `fade-travel-*` | all selected edges |
+`fade-travel-*` controls how far you scroll before the band reaches full width.
 
 ```html
 <div class="fade-y fade-travel-sm overflow-y-auto">...</div>
 <div class="fade-y fade-travel-[80px] overflow-y-auto">...</div>
 ```
 
-A smaller travel distance opens the band faster; a larger one eases it over more scroll. Either way the **edge is masked almost immediately** — the band's transparency saturates within `travel ÷ 8` of scroll, so content is never hard-clipped at the scroll edge while the band is still widening. The travel is purely the cosmetic open-speed; it is safe at any size.
+Smaller values open the band sooner. The edge reaches full transparency after about `travel ÷ 8` while the band continues to widen. Set `--tw-fade-onset` to change that ratio; the default is `8`. Higher values make the edge transparent sooner.
 
-The named travel scale is the same as the size scale (default `sm`) and can be overridden with `--fade-travel-{step}`. Arbitrary travel values are source-path only. To change how fast the edge itself goes transparent, set `--tw-fade-onset` (default `8`; higher = snappier).
+Travel uses the same named steps as size through its own `--fade-travel-*` tokens, and defaults to `sm`. The source path also accepts bracket values such as `fade-travel-[80px]`.
 
 ## Clear Zones
 
-Clear zones keep a fully opaque strip before the fade starts. Use them for sticky headers, sticky footers, or fixed controls inside the scroll container.
+Clear zones keep an opaque strip before the fade starts. Use them for sticky headers, sticky footers, or fixed controls inside the scroll container.
 
 | Utility | Affects |
 | --- | --- |
@@ -175,13 +155,11 @@ Clear zones keep a fully opaque strip before the fade starts. Use them for stick
 </div>
 ```
 
-Clear utilities accept named values, lengths, percentages, and bare integers on the Tailwind source path. A bare integer maps to `--spacing * N`, so `fade-clear-top-4` is `1rem` with the default spacing unit.
-
-The prebuilt CSS includes named clear values and `-var` forms, not arbitrary values or integer forms.
+The source path accepts named values, lengths, percentages, and bare integers. An integer uses `--spacing * N`, so `fade-clear-top-4` resolves to `1rem` with the default spacing unit.
 
 ### Dynamic Clear Zones
 
-Use `-var` when the clear zone depends on runtime layout:
+Append `-var` when the clear zone depends on runtime layout:
 
 ```html
 <div class="fade-top fade-clear-top-var" style="--fade-clear-top: 56px">
@@ -189,19 +167,7 @@ Use `-var` when the clear zone depends on runtime layout:
 </div>
 ```
 
-Available forms:
-
-```txt
-fade-clear-var
-fade-clear-y-var
-fade-clear-x-var
-fade-clear-top-var
-fade-clear-bottom-var
-fade-clear-start-var
-fade-clear-end-var
-```
-
-The fallback chain is edge, then axis, then global, then `0px`.
+Use `fade-clear-var`, an axis form such as `fade-clear-y-var`, or an edge form such as `fade-clear-top-var`. Values fall back from edge to axis to global to `0px`.
 
 ```css
 --fade-clear-top: 56px;
@@ -211,16 +177,16 @@ The fallback chain is edge, then axis, then global, then `0px`.
 
 ## Force Or Disable A Fade
 
-These utilities change only the active fade amount. They do not select edges on their own, so pair them with a direction utility.
+These utilities set active fade amounts. Pair them with a direction utility because they do not select edges.
 
 | Utility | Effect |
 | --- | --- |
 | `fade-none` | disables all selected fades |
 | `fade-none-y` | disables selected vertical fades |
 | `fade-none-x` | disables selected horizontal fades |
-| `fade-always` | pins all selected fades fully on |
-| `fade-always-y` | pins selected vertical fades fully on |
-| `fade-always-x` | pins selected horizontal fades fully on |
+| `fade-always` | pins all selected fades at full strength |
+| `fade-always-y` | pins selected vertical fades at full strength |
+| `fade-always-x` | pins selected horizontal fades at full strength |
 
 ```html
 <div class="fade-y fade-always-y overflow-y-auto">...</div>
@@ -229,79 +195,50 @@ These utilities change only the active fade amount. They do not select edges on 
 
 ## Scrollbars
 
-The fade is a mask on the scroll container, and a mask can't distinguish content from the container's own scrollbar. Whether that matters depends on how the browser paints the scrollbar:
+Classic scrollbars sit inside the scroll container's box, so the mask can fade their ends. Overlay scrollbars on macOS, iOS, and Android paint above the mask and need no change.
 
-- **Overlay scrollbars** — the default on macOS, iOS, and Android — paint in a separate layer on top of the element, so the mask never touches them. Nothing to do.
-- **Classic (space-consuming) scrollbars** — the default on Windows and Linux, on macOS with *Show scroll bars → Always*, and any bar you style with `::-webkit-scrollbar` — paint inside the element's box, so the fade dims the scrollbar's ends along with the content.
-
-If the container doesn't need a visible scrollbar, the shortest fix is to remove it — Tailwind's `scrollbar-none` (or `scrollbar-width: none`) takes the bar out of the box entirely and there is nothing left to fade. Reach for that first; it costs nothing and works everywhere.
-
-When you *do* want the bar visible, add the `fade-scrollbar-safe-*` class for the axis you scroll. It shields the scrollbar's column with an opaque strip in the mask, so the content still fades while the scrollbar stays fully opaque.
+If you can hide the scrollbar, use `scrollbar-none` or `scrollbar-width: none`. To keep a classic scrollbar visible, add a `fade-scrollbar-safe-*` class for the scroll axis:
 
 | Utility | Effect |
 | --- | --- |
-| `fade-scrollbar-safe-y` | shields the **vertical** bar (from scrolling on y) |
-| `fade-scrollbar-safe-x` | shields the **horizontal** bar (from scrolling on x) |
-| `fade-scrollbar-safe-xy` | both |
-| `fade-scrollbar-width-sm\|md\|lg` | sets the bar width: `11px` / `15px` (default) / `17px` |
+| `fade-scrollbar-safe-y` | shields the vertical bar |
+| `fade-scrollbar-safe-x` | shields the horizontal bar |
+| `fade-scrollbar-safe-xy` | shields both bars |
+| `fade-scrollbar-width-sm\|md\|lg` | sets `11px`, `15px` (default), or `17px` |
 
-**The suffix is the scroll axis, not the faded edge.** `-y` follows `overflow-y` — it's the vertical bar at the inline end. It deliberately does *not* follow this plugin's own `fade-y` (top + bottom edges). In practice the two agree, which is why it reads cleanly:
+Choose the suffix from the scroll axis. Use `-y` with `overflow-y` and `-x` with `overflow-x`:
 
 ```html
 <div class="overflow-y-auto fade-y fade-scrollbar-safe-y">...</div>
 ```
 
-Match the class to the axis that actually scrolls. Putting `-y` on a horizontal-only scroller reserves a gutter for a vertical bar that never appears, and the strip then lands on your content — a bright notch at the fading edge. `-x` is the correct class there, and it reserves nothing.
+The wrong suffix can place the opaque shield over content.
 
-`fade-scrollbar-width-*` is a setter, not a switch — on its own it turns nothing on. It also inherits, so the usual place for it is an ancestor:
+`fade-scrollbar-width-*` sets an opted-in scroller's width and inherits, so you can place it on the scroller or an ancestor. It does not enable protection by itself:
 
 ```html
 <body class="fade-scrollbar-width-lg">
-  <!-- every opted-in container below picks up 17px -->
+  <!-- protected descendants use 17px bars -->
 </body>
 ```
 
-The named widths come from the `--fade-scrollbar-width-*` theme namespace and override like any other token:
+Override named widths through the `--fade-scrollbar-width-*` theme tokens. The source path accepts lengths such as `fade-scrollbar-width-[13px]`; bare integers do not compile. The plugin clamps negative widths to `0px`.
 
-```css
-@theme {
-  --fade-scrollbar-width-md: 13px;
-}
-```
+In Blink and WebKit, the safe utilities pin the scrollbar width and add a mask strip of the same size. The pin applies to the element, so both scrollbar axes become classic, including on macOS. The vertical strip follows the bar under RTL.
 
-On the Tailwind source path the utility also takes any length — `fade-scrollbar-width-[13px]`. A bare integer is deliberately rejected: everywhere else in this plugin an integer means spacing steps, and here it would have to mean pixels. Any width that reaches the plugin is clamped at `0px`, whether it comes from an arbitrary utility, a theme-token override, or a direct `--tw-fade-scrollbar-width` declaration. Negative lengths therefore behave as `0px` instead of invalidating the mask.
-
-### The trade it makes
-
-For the strip to line up with the scrollbar, the plugin has to know the bar's width — and CSS gives it no way to ask. The reserved gutter sits *inside* every box the mask can reference, so no `mask-clip` value excludes it; container query units can measure it but only descendants can read them, and the mask is on the container itself.
-
-So `fade-scrollbar-safe-*` doesn't measure the bar, it **declares** it. It pins the bar via `::-webkit-scrollbar` and sizes the strip from the same custom property, which makes them equal by construction rather than by luck — including under page zoom, where a native bar's width in CSS px drifts but two declared lengths scale together.
-
-The cost: pinning the bar makes it **classic on every platform**, including macOS, where you'd otherwise get an overlay bar and no bug at all. Apply it when your users see classic scrollbars, or when you want a consistent bar everywhere — not by default.
-
-It also fixes a quieter symptom of the same root cause. Mask percentages resolve against a box that includes the gutter, while content stops at the scrollport edge, so an inline-end fade authored to reach transparent at `100%` reaches it *inside the gutter* — over real content it never finishes. How badly depends on the ratio: with a 15px bar the last content pixel measured 40/255 opaque under a 60px band, and 161/255 under a 26px one — the tighter the band, the larger the share of it spent inside the gutter. Pinning the width lets the plugin inset that layer so the ramp lands on the content edge instead (0/255 and 1/255 respectively).
-
-### Styling
-
-The reserved gutter shouldn't read as a separate panel, so the utility also gives the bar a **transparent track** and a subtle thumb derived from the container's `currentColor` (adapts to light and dark). Knobs:
-
-- `--tw-fade-scrollbar-thumb` — the thumb color. Defaults to `color-mix(in srgb, currentColor 30%, transparent)`.
-- `--tw-fade-scrollbar-width` — what `fade-scrollbar-width-*` sets, for a value off the scale. Defaults to `15px`, matching a macOS classic bar, and clamps negative values to `0px`. Set this rather than `--tw-fade-scrollbar`: it drives the bar and the strip together, so they can't disagree. The pin *replaces* the native bar rather than decorating it, so this is your users' actual hit target — going much below native trades pointer accuracy for looks.
+Use `--tw-fade-scrollbar-width` for a custom width and `--tw-fade-scrollbar-thumb` for the thumb color:
 
 ```html
 <div class="fade-y fade-scrollbar-safe-y overflow-y-auto" style="--tw-fade-scrollbar-thumb: #888">...</div>
 ```
 
-Do **not** set `scrollbar-width` or `scrollbar-color` on a `fade-scrollbar-safe-*` container — including via Tailwind's own `scrollbar-thin`, `scrollbar-auto`, `scrollbar-none`, `scrollbar-thumb-*`, and `scrollbar-track-*`. Either property makes Blink discard `::-webkit-scrollbar` styling entirely (`scrollbar-width` does the same in WebKit), which cancels the pin and takes the gutter to `0` — leaving a 15px opaque strip sitting on your content. Use `fade-scrollbar-width-*` for the size, and `::-webkit-scrollbar-track` / `::-webkit-scrollbar-thumb` for the colors.
+Do not combine a safe utility with `scrollbar-width`, `scrollbar-color`, or Tailwind's `scrollbar-thin`, `scrollbar-auto`, `scrollbar-none`, `scrollbar-thumb-*`, and `scrollbar-track-*` utilities. Both properties cancel the pin in Blink; `scrollbar-width` also cancels it in WebKit. The mask strip remains in place. Use `fade-scrollbar-width-*` for size and `::-webkit-scrollbar-track` or `::-webkit-scrollbar-thumb` for colors.
 
 ### Limits
 
-- RTL is handled automatically — the strip follows the vertical bar to the inline-start edge.
-- **Pinning the bar is per-element, not per-axis.** Opting in makes *both* bars classic, so a container that scrolls both ways gets a classic horizontal bar whether or not you asked for one — which is why `-xy` exists, and why the axis suffix is worth getting right. The block strip can't just be on by default: unlike the inline gutter, the block gutter is only reserved when content actually overflows horizontally, so a blind block strip would slab an opaque band over content on every vertical-only scroller.
-- **Firefox is not covered.** It ignores `::-webkit-scrollbar`, so its bar can't be pinned, and whether it's using overlay or classic bars can't be detected either. A guessed strip would be right on Windows/Linux and an opaque slab over content on macOS, with no way to tell which — and a missed strip damages content, while the bug it prevents only dims chrome. Firefox gets a thin styled bar and no strip only when scroll-driven animations are enabled. Release Firefox fails that feature gate, so this opt-in leaves its native scrollbar unchanged.
-- **In Safari, a container that isn't currently overflowing on the block axis has no gutter** (WebKit doesn't honor `scrollbar-gutter: stable`'s reserve-anyway behavior for custom bars), so the inline strip lands on content — an opaque band exactly where the fade just finished. It shows when such a container is faded anyway: with `fade-always*`, or with a live fade on the *other* axis (a two-axis scroller currently overflowing only horizontally). **Fix it with `overflow-y-scroll` instead of `overflow-y-auto`** — a permanent bar means a permanent gutter, in WebKit too (measured: 15px reserved, strip landing exactly on the track). Or apply the class only on a state that actually overflows.
-- **The whole opt-in requires scroll-driven animations, and stands down without them.** On Safari 17.x / 18.x and on release Firefox, the plugin falls back to pinning fades on regardless of overflow — and a faded container with no overflow is precisely the case above. Rather than shield a bar on those engines, the utility declines to pin one, so they keep their native scrollbars: overlay on macOS, which the mask never touches. Pinning without shielding would be worse than not opting in at all — it manufactures a space-consuming bar and then lets the fade dim it.
-- On overlay-scrollbar platforms the bar already paints above the mask and is never faded, so nothing is needed there — the utility trades that away deliberately in exchange for a bar it can shield exactly.
+- Firefox ignores `::-webkit-scrollbar`, so the safe utilities cannot shield its bars.
+- Safari can place the vertical shield over content when `overflow-y-auto` has no vertical overflow. Use `overflow-y-scroll` or add `fade-scrollbar-safe-y` when vertical overflow exists.
+- The safe utilities require scroll-driven animations. They leave native scrollbars unchanged in Safari 17.x, Safari 18.x, and Firefox release.
 
 ## Fading The Whole Page
 
@@ -314,8 +251,6 @@ Fade the element that scrolls. For a full-page fade, make `<body>` the scroll co
   </body>
 </html>
 ```
-
-Two details matter:
 
 1. `<body>` must have a fixed height and `overflow-y-auto`, otherwise the viewport scrolls instead.
 2. The scroll container should be transparent if you want the mask to reveal the page surface behind it.
@@ -332,7 +267,7 @@ Two details matter:
 | Arbitrary values like `fade-size-[6rem]` | yes | no |
 | Integer clear values like `fade-clear-top-14` | yes | no |
 
-The prebuilt file is generated from an explicit safelist. It does not include Tailwind Preflight, core Tailwind utilities, arbitrary values, or integer `fade-clear-*` classes.
+The release build generates the prebuilt file from an explicit safelist. It excludes Tailwind Preflight, core Tailwind utilities, arbitrary values, and integer `fade-clear-*` classes.
 
 ## Exports
 
@@ -346,39 +281,18 @@ The prebuilt file is generated from an explicit safelist. It does not include Ta
 
 ## How It Works
 
-Each faded element gets a six-layer `mask-image`: four edge gradients, one per physical edge, combined with `intersect`, plus two scrollbar-shield strips unioned in front of them with `add`. Inactive edge layers fall back to an opaque identity mask; active ones use a 13-stop eased gradient. The strips are `0px` by default and inert — a union can only raise opacity — until a [`fade-scrollbar-safe-*`](#scrollbars) class widens one.
+Each faded element uses four gradient mask layers and two dormant scrollbar-shield strips. Scroll timelines drive the physical edge layers with `scroll(self y)` and `scroll(self inline)`. The `:dir()` selector routes `start` and `end` to the correct horizontal layer.
 
-The public API uses plain direction names, but the internal engine still keeps four physical edge amounts. Those internal properties are typed numbers, do not inherit, and are driven by scroll animations. Keeping the engine physical makes the mask predictable; the public `start` and `end` utilities route to the correct physical side for LTR or RTL in browsers that support the `:dir()` selector (see [Browser Support](#browser-support)).
-
-Inside browsers with scroll-driven animation support:
-
-- vertical fades use `scroll(self y)`;
-- horizontal fades use `scroll(self inline)`;
-- leading edges reveal from `0` to `1` near the start of scroll;
-- trailing edges retract from `1` to `0` near the end of scroll.
-
-If an axis cannot scroll, that axis stays at `0`, so the fade does not show. This is intentional.
-
-In browsers without scroll-driven animations, selected fades pin fully on as a static fallback.
+An edge amount stays at `0` when its axis cannot scroll. Browsers without scroll-driven animations pin selected fades on as a static fallback.
 
 ### Dynamic content on a stable scrollport
 
-If you replace the contents of a faded scrollport without replacing the scrollport itself, the browser has to invalidate the element's scroll-driven animation state. For example: a tabbed mobile list keeps one `.fade-y` node mounted, scrolls a long tab, then swaps in a short tab whose content no longer overflows.
-
-Current `tw-fade` mitigates this in Chromium. The expected post-swap state is:
-
-- `scrollTop` / `scrollLeft` is clamped back to `0`;
-- the axis no longer overflows;
-- the selected fade amounts return to `0`.
-
-WebKit can still retain a stale sampled scroll-animation value in this exact shape, especially after collapsing content from the bottom/end of the scroll range. If a user reports a fade that stays visible after a content swap, advise them in this order:
+WebKit can retain a stale fade when a mounted scrollport swaps long content for short content. The common case starts with the scroll position at the end. Try these fixes in order:
 
 1. Upgrade to the latest `tw-fade`.
-2. Key/remount the scrollport by content identity when practical.
-3. If remounting is awkward, restart the fade animation after the content swap.
-4. If the app already knows the content cannot overflow, add `fade-none-y` or `fade-none-x` for that state.
-
-React remount pattern:
+2. Remount or key the scrollport by content identity.
+3. Restart the fade animation after the content swap.
+4. Add `fade-none-y` or `fade-none-x` when your app knows that axis cannot overflow.
 
 ```tsx
 <div key={activeTabId} className="fade-y overflow-y-auto">
@@ -388,7 +302,7 @@ React remount pattern:
 </div>
 ```
 
-Animation reset helper:
+Use this helper after the DOM update when remounting would discard useful element state:
 
 ```js
 function resetTwFade(el) {
@@ -401,61 +315,13 @@ function resetTwFade(el) {
 }
 ```
 
-React reset pattern:
-
-```tsx
-const scrollRef = useRef(null)
-
-useLayoutEffect(() => {
-  if (scrollRef.current) resetTwFade(scrollRef.current)
-}, [activeTabId])
-
-return (
-  <div ref={scrollRef} className="fade-y overflow-y-auto">
-    {items.map((item) => (
-      <ListItem key={item.id} item={item} />
-    ))}
-  </div>
-)
-```
-
-Known no-overflow escape hatch:
-
-```tsx
-<div className={canOverflow ? 'fade-y overflow-y-auto' : 'fade-y fade-none-y overflow-y-auto'}>
-  {items.map((item) => (
-    <ListItem key={item.id} item={item} />
-  ))}
-</div>
-```
-
-The supported public surface is the `fade-*` utilities, the public `--fade-*` theme tokens described above (`--fade-size-*`, `--fade-travel-*`, `--fade-clear-*`, `--fade-scrollbar-width-*`), and three author knobs: `--tw-fade-onset` (the edge-speed knob under [Travel Distance](#travel-distance)) plus `--tw-fade-scrollbar-width` and `--tw-fade-scrollbar-thumb` (both under [Scrollbars](#scrollbars)). Treat the rest of the `--tw-fade-*` namespace — including `--tw-fade-scrollbar` and `--tw-fade-scrollbar-block` — as internal implementation detail.
-
-## RTL
-
-Horizontal fades are direction-aware:
-
-```html
-<div dir="rtl" class="fade-start overflow-x-auto">...</div>
-```
-
-In that example, `fade-start` selects the right edge because the scroll container is RTL. `fade-end` selects the left edge. `fade-x` selects both.
-
-RTL routing follows semantic direction through `dir`, not a CSS-only `direction: rtl` declaration. It relies on the `:dir()` selector, so on the narrow band of Chromium that supports scroll-driven animations but not `:dir()` (Chrome 115–119), RTL scrollers fall back to LTR edge mapping — see [Browser Support](#browser-support). LTR is unaffected.
-
-Vertical fades are unchanged by text direction.
+The public CSS API includes the `fade-*` utilities and the `--fade-size-*`, `--fade-travel-*`, `--fade-clear-*`, and `--fade-scrollbar-width-*` theme tokens. The three author properties are `--tw-fade-onset`, `--tw-fade-scrollbar-width`, and `--tw-fade-scrollbar-thumb`. Treat other `--tw-fade-*` properties as internal.
 
 ## Accessibility
 
-`tw-fade` is visual only. It does not move content, add scroll behavior, or change focus order. Like any edge fade, it lowers contrast near the masked edge, so keep band sizes modest and use clear zones for sticky controls or critical text.
+`tw-fade` changes appearance without moving content or changing focus order. Masking lowers contrast near an edge, so use modest bands and clear zones around controls or critical text.
 
 ## Browser Support
-
-Three CSS features carry different support floors:
-
-- **CSS masking** (`mask-image`, `mask-composite`). Interoperable across current evergreen browsers.
-- **Scroll-driven animations** (`animation-timeline: scroll()`). Shipped by default in every major engine except Firefox release.
-- **The `:dir()` selector**, used to route `start` / `end` to the correct physical edge under RTL.
 
 | Engine | Masking | Scroll-driven animation | `:dir()` | Result |
 | --- | --- | --- | --- | --- |
@@ -463,19 +329,15 @@ Three CSS features carry different support floors:
 | Safari (WebKit) | 15.4+ | 26.0+ | 16.4+ | Full on 26+; static fade fallback below |
 | Firefox (release) | 53+ | not by default | 49+ | Static always-on fade |
 
-**Scroll-driven fallback.** Browsers without scroll-driven animations still render selected fades, but as always-on static fades. Safari 17.x / 18.x and Firefox release get this fallback (Firefox keeps scroll-driven animations behind a flag, default-on only in Nightly).
+Browsers without scroll-driven animations render selected fades as static, always-on masks. Safari 17.x, Safari 18.x, and Firefox release use this fallback.
 
-**RTL routing floor.** Direction-aware `start` / `end` routing additionally needs `:dir()`. On the narrow band of Chromium that has scroll-driven animations but not `:dir()` (Chrome 115–119), RTL scrollers fall back to LTR physical-edge mapping — the fade still renders, but `start` / `end` map to the wrong side. LTR is unaffected, and that band is effectively gone on auto-updating Chromium.
+Chrome 115 through 119 map RTL `start` and `end` to LTR edges. LTR scrollers are unaffected.
 
-**Older WebKit** may also need `-webkit-mask-*`; run the prebuilt CSS through Autoprefixer if you target it.
+Older WebKit may need `-webkit-mask-*`. Run the prebuilt CSS through Autoprefixer if you support it.
 
 ## Migrating
 
-Upgrading from `0.6.x`? [MIGRATING.md](./MIGRATING.md) is written as a step-by-step
-procedure you can hand straight to a coding agent ("upgrade this project to tw-fade
-0.7.0 using MIGRATING.md") — ordered renames, the physical→logical RTL caveats to
-review by hand, and a one-line grep to verify nothing was missed. It reads fine for
-humans too.
+Upgrading from `0.6.x`? Follow [MIGRATING.md](./MIGRATING.md) for the `0.7.0` renames and RTL checks.
 
 ## Development
 
