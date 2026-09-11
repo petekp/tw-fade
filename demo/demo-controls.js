@@ -893,11 +893,35 @@ function setFadeOptionLabel(edgeClasses, sizeClass, travelClass) {
     .filter(Boolean)
     .join(" ");
 
-  if (!fadeOptionMorph) {
-    fadeOptionMorph = new window.Torph.TextMorph({ element: fadeOptionLabel });
+  const isFirstRender = !fadeOptionMorph;
+  if (isFirstRender) {
+    fadeOptionMorph = new window.Torph.TextMorph({
+      element: fadeOptionLabel,
+      onAnimationComplete: clearFadeOptionFlash,
+      onAnimationCancel: clearFadeOptionFlash,
+    });
   }
+  const previousParts = new Set(fadeOptionLabel.querySelectorAll("[torph-item]"));
   fadeOptionMorph.update(fullClassName);
   fadeOptionLabel.setAttribute("aria-label", fullClassName);
+
+  if (isFirstRender) return;
+  // Torph builds the spans for entering segments synchronously in update(), so
+  // anything not present beforehand is a part of the class string that changed.
+  const enteringParts = [
+    ...fadeOptionLabel.querySelectorAll("[torph-item]:not([torph-exiting])"),
+  ].filter((part) => !previousParts.has(part));
+  // Entering segments fade in from zero opacity, so the accent holds until the
+  // morph settles (or is interrupted) and only then starts its slow decay.
+  for (const part of enteringParts) {
+    part.classList.add("is-flashing");
+  }
+}
+
+function clearFadeOptionFlash() {
+  for (const part of fadeOptionLabel.querySelectorAll(".is-flashing")) {
+    part.classList.remove("is-flashing");
+  }
 }
 
 function setFadeControls() {

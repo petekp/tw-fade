@@ -624,6 +624,16 @@ h3 {
     white-space: nowrap;
 }
 
+/* Torph renders each morph segment as a [torph-item] span. Entering segments get a
+   brief accent flash that decays over the long color transition. */
+.fade-option-label [torph-item] {
+    transition: color 1800ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fade-option-label [torph-item].is-flashing {
+    color: var(--demo-accent-text-strong);
+}
+
 @media (max-width: 640px) {
     /* Multi-edge selections push the class list to ~60ch, too wide for one line
        on phones. Below sm, drop the whole label onto its own full-width row under
