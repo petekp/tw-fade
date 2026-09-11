@@ -6,6 +6,7 @@ This demo is intentionally static: opening `index.html` directly from disk shoul
 - `styles.css` is generated Tailwind utility output from `demo/input.css`.
 - `demo.css` is hand-authored theme, component, and graphic styling.
 - `demo.css` also owns the static fallback for the background wave field.
+- `torph.js` is the vendored [torph](https://github.com/lochie/torph) text-morph library wrapped for a classic script (`window.Torph`). It must load before `demo-controls.js`, which morphs the Advanced class readout with it.
 - `demo-animations.js` owns the local spring runtime, decorative SVG animations, and the scroll-modulated SVG wave path. It must run before `demo-controls.js`.
 - `demo-controls.js` owns user-facing controls: theme switching, rail card selection, install-command copy state, advanced fade controls, and edge toggles.
 - `hero-lab.html` and `wave-lab.html` are noindex design scratchpads. They are intentionally excluded from the production `/tw-fade` static export and should be treated as source references, not shipped demo code.

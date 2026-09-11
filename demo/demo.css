@@ -635,25 +635,6 @@ h3 {
     }
 }
 
-.fade-option-token {
-    display: inline-flex;
-    /* Align the prefix/stem parts on their text baseline so the token reports a
-       glyph baseline to the line. Without this, a bare `fade` token (empty
-       prefix part) derives its baseline from the empty first flex item and
-       floats ~7px above its neighbors. */
-    align-items: baseline;
-    white-space: nowrap;
-}
-
-.fade-option-part {
-    color: var(--demo-text-subtle);
-    transition: color 1800ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.fade-option-part.is-flashing {
-    color: var(--demo-accent-text-strong);
-}
-
 .visually-hidden {
     position: absolute;
     width: 1px;

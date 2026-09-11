@@ -12,6 +12,7 @@ export const demoStaticFiles = [
   'index.html',
   'styles.css',
   'demo.css',
+  'torph.js',
   'demo-animations.js',
   'demo-controls.js',
   'favicon.ico',

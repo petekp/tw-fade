@@ -110,8 +110,7 @@ const railInteractionState = new WeakMap();
 const lexiconWordSpringControls = new WeakMap();
 const lexiconBarSpringControls = new WeakMap();
 const lexiconInteractionState = new WeakMap();
-const fadeOptionFlashControls = new WeakMap();
-let fadeOptionReadoutState = null;
+let fadeOptionMorph = null;
 
 function prefersReducedSurfaceMotion() {
   return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -889,122 +888,16 @@ function syncEdgeGradientDepth(depthIndex) {
   }
 }
 
-function fadeUtilityParts(className) {
-  const prefix =
-    ["fade-size-", "fade-travel-", "fade-"].find((candidate) =>
-      className.startsWith(candidate),
-    ) ?? "";
-  return {
-    prefix,
-    stem: prefix ? className.slice(prefix.length) : className,
-  };
-}
-
-function createFadeOptionToken(className, flashMode, flashTargets) {
-  const token = document.createElement("span");
-  const { prefix, stem } = fadeUtilityParts(className);
-
-  token.className = "fade-option-token";
-  token.dataset.fadeOptionToken = className;
-
-  const prefixPart = document.createElement("span");
-  prefixPart.className = "fade-option-part";
-  prefixPart.textContent = prefix;
-  token.append(prefixPart);
-
-  const stemPart = document.createElement("span");
-  stemPart.className = "fade-option-part";
-  stemPart.dataset.fadeOptionStem = "";
-  stemPart.textContent = stem;
-  token.append(stemPart);
-
-  if (flashMode === "token") {
-    flashTargets.push(prefixPart, stemPart);
-  } else if (flashMode === "stem") {
-    flashTargets.push(stemPart);
-  }
-
-  return token;
-}
-
-function flashFadeOptionParts(parts) {
-  if (!parts.length) return;
-
-  for (const part of parts) {
-    const existing = fadeOptionFlashControls.get(part);
-    window.clearTimeout(existing);
-
-    if (prefersReducedSurfaceMotion()) {
-      part.classList.remove("is-flashing");
-      fadeOptionFlashControls.delete(part);
-      continue;
-    }
-
-    part.classList.add("is-flashing");
-    const timer = window.setTimeout(() => {
-      part.classList.remove("is-flashing");
-      fadeOptionFlashControls.delete(part);
-    }, 160);
-    fadeOptionFlashControls.set(part, timer);
-  }
-}
-
 function setFadeOptionLabel(edgeClasses, sizeClass, travelClass) {
-  const nextState = {
-    edgeClasses: [...edgeClasses],
-    sizeClass,
-    travelClass,
-  };
-  const previous = fadeOptionReadoutState;
-  const flashTargets = [];
-  const fragment = document.createDocumentFragment();
   const fullClassName = [...edgeClasses, sizeClass, travelClass]
     .filter(Boolean)
     .join(" ");
-  const previousEdgeClasses = previous?.edgeClasses ?? [];
-  const edgeStemChanged =
-    previous &&
-    previousEdgeClasses.length === 1 &&
-    edgeClasses.length === 1 &&
-    previousEdgeClasses[0] !== edgeClasses[0];
 
-  const appendToken = (className, flashMode) => {
-    if (fragment.childNodes.length) {
-      fragment.append(document.createTextNode(" "));
-    }
-    fragment.append(
-      createFadeOptionToken(
-        className,
-        previous ? flashMode : "none",
-        flashTargets,
-      ),
-    );
-  };
-
-  for (const className of edgeClasses) {
-    const flashMode = edgeStemChanged
-      ? "stem"
-      : previousEdgeClasses.includes(className)
-        ? "none"
-        : "token";
-    appendToken(className, flashMode);
+  if (!fadeOptionMorph) {
+    fadeOptionMorph = new window.Torph.TextMorph({ element: fadeOptionLabel });
   }
-
-  // A default control contributes no token — sizeClass/travelClass is null then.
-  if (sizeClass) {
-    appendToken(sizeClass, previous?.sizeClass === sizeClass ? "none" : "stem");
-  }
-  if (travelClass) {
-    appendToken(
-      travelClass,
-      previous?.travelClass === travelClass ? "none" : "stem",
-    );
-  }
-
-  fadeOptionLabel.replaceChildren(fragment);
+  fadeOptionMorph.update(fullClassName);
   fadeOptionLabel.setAttribute("aria-label", fullClassName);
-  fadeOptionReadoutState = nextState;
-  flashFadeOptionParts(flashTargets);
 }
 
 function setFadeControls() {

@@ -84,7 +84,7 @@ check(
 )
 check(
   'demo loads scripts in dependency order',
-  scriptRefs.join(' ') === './demo-animations.js ./demo-controls.js',
+  scriptRefs.join(' ') === './torph.js ./demo-animations.js ./demo-controls.js',
   scriptRefs.join(' '),
 )
 check('demo has no inline classic scripts', inlineScripts.length === 0)
