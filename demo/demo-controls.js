@@ -97,7 +97,7 @@ const themedFaviconCells = createThemedFaviconCells();
 let installCopyResetTimer = 0;
 let installCommandFlashTimer = 0;
 let installIconStackSpringControl = null;
-const surfaceSpringControls = new WeakMap();
+const surfaceMotionState = new WeakMap();
 const surfaceInteractionState = new WeakMap();
 const surfaceLastPointerType = new WeakMap();
 const swatchSpringControls = new WeakMap();
@@ -286,37 +286,53 @@ function surfaceStateFor(button) {
 }
 
 function setSurfaceScale(button, buttonScale, swatchScale, animated = true) {
-  const control = surfaceSpringControls.get(button);
-  control?.stop?.();
-
   const values = {
     "--surface-button-scale": buttonScale,
     "--surface-swatch-scale": swatchScale,
   };
-  const animation = window.demoAnimations;
+  const motion = window.Motion;
 
-  if (!animated || prefersReducedSurfaceMotion() || !animation?.animate) {
+  if (!motion) {
     for (const [property, value] of Object.entries(values)) {
       button.style.setProperty(property, String(value));
     }
-    surfaceSpringControls.delete(button);
     return;
   }
 
-  surfaceSpringControls.set(
-    button,
-    animation.animate(
-      button,
-      values,
-      animation.spring?.surface ?? {
+  let motionState = surfaceMotionState.get(button);
+  if (!motionState) {
+    const styles = getComputedStyle(button);
+    motionState = Object.fromEntries(
+      Object.keys(values).map((property) => {
+        const value = motion.motionValue(
+          parseFloat(styles.getPropertyValue(property)),
+        );
+        value.on("change", (latest) => {
+          button.style.setProperty(property, String(latest));
+        });
+        return [property, { value, target: value.get() }];
+      }),
+    );
+    surfaceMotionState.set(button, motionState);
+  }
+
+  const immediate = !animated || prefersReducedSurfaceMotion();
+  for (const [property, target] of Object.entries(values)) {
+    const state = motionState[property];
+    if (immediate) {
+      state.value.jump(target);
+    } else if (state.target !== target) {
+      motion.animate(state.value, target, {
         type: "spring",
-        stiffness: 520,
-        damping: 46,
-        mass: 0.72,
+        stiffness: 500,
+        damping: 24,
+        mass: 0.8,
         restDelta: 0.001,
-      },
-    ),
-  );
+        restSpeed: 0.02,
+      });
+    }
+    state.target = target;
+  }
 }
 
 function syncSurfaceButtonSpring(button, animated = true) {
@@ -342,17 +358,7 @@ function syncSurfaceButtonSpring(button, animated = true) {
   setSurfaceScale(button, buttonScale, swatchScale, animated);
 }
 
-function springSurfaceSelection(button) {
-  setSurfaceScale(button, 1.12, 1, true);
-  window.setTimeout(() => {
-    syncSurfaceButtonSpring(button, true);
-  }, 120);
-}
-
-// ── Background-picker thumbnails ───────────────────────────────────────────
-// The anybg pattern swatches get the same spring treatment as the surface
-// buttons: hover/press/select drive a CSS-var scale (--swatch-scale) through
-// the shared spring engine instead of a flat CSS transition.
+// Background-picker thumbnails use the local spring runtime.
 function swatchStateFor(swatch) {
   const existing = swatchInteractionState.get(swatch);
   if (existing) return existing;
@@ -647,7 +653,7 @@ function initRailLetterLayers() {
   }
 }
 
-function setSurface(nextSurface, sourceButton = null, { animated = true } = {}) {
+function setSurface(nextSurface, { animated = true } = {}) {
   document.documentElement.dataset.surface = nextSurface;
   scheduleThemeFaviconUpdate();
   for (const button of surfaceButtons) {
@@ -655,7 +661,6 @@ function setSurface(nextSurface, sourceButton = null, { animated = true } = {}) 
     button.setAttribute("aria-checked", String(checked));
     syncSurfaceButtonSpring(button, animated);
   }
-  if (sourceButton && animated) springSurfaceSelection(sourceButton);
 }
 
 function selectRailCard(nextCard, animated = true) {
@@ -1068,7 +1073,7 @@ for (const button of surfaceButtons) {
   button.addEventListener("click", () => {
     const animated = surfaceLastPointerType.get(button) !== "touch";
     surfaceLastPointerType.delete(button);
-    setSurface(button.dataset.surfaceOption, button, { animated });
+    setSurface(button.dataset.surfaceOption, { animated });
   });
   button.addEventListener("keydown", (event) => {
     const direction =
@@ -1088,10 +1093,7 @@ for (const button of surfaceButtons) {
       (groupButtons.indexOf(button) + direction + groupButtons.length) %
       groupButtons.length;
     groupButtons[nextIndex].focus();
-    setSurface(
-      groupButtons[nextIndex].dataset.surfaceOption,
-      groupButtons[nextIndex],
-    );
+    setSurface(groupButtons[nextIndex].dataset.surfaceOption);
   });
 }
 
@@ -1377,6 +1379,11 @@ if (dirGroup && fadeSpecimen) {
     dirOptions.find((option) => option.getAttribute("aria-checked") === "true")
       ?.dataset.fadeDir ?? "ltr";
   fadeSpecimen.setAttribute("dir", initialDir);
+}
+
+if (fadeSpecimen) {
+  fadeSpecimen.scrollLeft = 100;
+  fadeSpecimen.scrollTop = 100;
 }
 
 function syncFloatingPalette() {

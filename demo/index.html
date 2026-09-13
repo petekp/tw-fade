@@ -1294,8 +1294,8 @@
                         <code
                             class="fade-option-label mono-copy font-mono text-[1rem] font-normal leading-6"
                             data-fade-option-label
-                            aria-label="fade-y"
-                            >fade-y</code
+                            aria-label="fade fade-size-2xl fade-travel-lg"
+                            >fade fade-size-2xl fade-travel-lg</code
                         >
                     </h2>
 
@@ -1304,7 +1304,7 @@
                             <div class="option-card-body">
                                 <div class="option-demo-panel">
                                     <div
-                                        class="fade-y thin-scroll type-scale-sample h-[26.25rem] overflow-auto sm:h-[29.375rem]"
+                                        class="fade fade-size-2xl fade-travel-lg thin-scroll type-scale-sample h-[26.25rem] overflow-auto sm:h-[29.375rem]"
                                         data-demo="type-specimen"
                                     >
                                         <article
@@ -1506,7 +1506,7 @@
                                             <button
                                                 class="edge-toggle-button"
                                                 type="button"
-                                                aria-pressed="false"
+                                                aria-pressed="true"
                                                 aria-label="Toggle end edge fade"
                                                 data-fade-edge-toggle="end"
                                             >
@@ -1594,7 +1594,7 @@
                                             <button
                                                 class="edge-toggle-button"
                                                 type="button"
-                                                aria-pressed="false"
+                                                aria-pressed="true"
                                                 aria-label="Toggle start edge fade"
                                                 data-fade-edge-toggle="start"
                                             >
@@ -1684,7 +1684,7 @@
                                                 class="fade-control-value mono-copy select-none font-mono"
                                                 for="fade-depth-control"
                                                 data-fade-depth-value
-                                                >md</output
+                                                >2xl</output
                                             >
                                         </span>
                                         <span class="option-slider-control">
@@ -1695,8 +1695,8 @@
                                                 min="0"
                                                 max="6"
                                                 step="1"
-                                                value="1"
-                                                aria-valuetext="medium"
+                                                value="4"
+                                                aria-valuetext="double extra large"
                                                 data-fade-depth-slider
                                                 data-fade-size-options="fade-size-sm fade-size-md fade-size-lg fade-size-xl fade-size-2xl fade-size-3xl fade-size-4xl"
                                             />
@@ -1715,7 +1715,7 @@
                                                 class="fade-control-value mono-copy select-none font-mono"
                                                 for="fade-travel-control"
                                                 data-fade-travel-value
-                                                >sm</output
+                                                >lg</output
                                             >
                                         </span>
                                         <span class="option-slider-control">
@@ -1726,8 +1726,8 @@
                                                 min="0"
                                                 max="6"
                                                 step="1"
-                                                value="0"
-                                                aria-valuetext="small"
+                                                value="2"
+                                                aria-valuetext="large"
                                                 data-fade-travel-slider
                                                 data-fade-travel-options="fade-travel-sm fade-travel-md fade-travel-lg fade-travel-xl fade-travel-2xl fade-travel-3xl fade-travel-4xl"
                                             />
@@ -2374,7 +2374,7 @@
             <footer class="footer-social mt-[9rem]">
                 <div class="footer-row">
                     <div
-                        class="footer-browser-support select-none"
+                        class="footer-browser-support select-none font-mono"
                         aria-label="Browser support"
                     >
                         <span class="support-tooltip-root" data-slot="tooltip">
@@ -2625,6 +2625,10 @@
 
         <script src="./torph.js"></script>
         <script src="./demo-animations.js"></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/motion@13.2.0/dist/motion.js"
+            defer
+        ></script>
         <script src="./demo-controls.js"></script>
     </body>
 </html>

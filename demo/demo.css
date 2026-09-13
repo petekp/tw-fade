@@ -2274,6 +2274,8 @@ label.option-control {
 .type-scale-sample {
     container-type: inline-size;
     padding: 2.5rem;
+    /* Keep the chosen scroll offset when the display font loads. */
+    overflow-anchor: none;
 }
 
 .type-scale-content {

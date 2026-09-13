@@ -123,6 +123,7 @@ const dirControl = await page.evaluate(async () => {
 
   // LTR baseline: enable the `end` edge so a horizontal mask layer exists.
   ltrRadio.click()
+  if (startToggle.getAttribute('aria-pressed') === 'true') startToggle.click()
   if (endToggle.getAttribute('aria-pressed') !== 'true') endToggle.click()
   scrollMid()
   await settle()

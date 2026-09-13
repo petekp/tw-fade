@@ -1,4 +1,4 @@
-// Motion runtime and decorative SVG animations for demo/index.html.
+// Local spring runtime and decorative SVG animations for demo/index.html.
 // This file sets window.demoAnimations before demo-controls.js runs.
 
 const prefersReducedMotion = window.matchMedia?.(
@@ -45,13 +45,6 @@ const spring = {
     damping: 10,
     mass: 0.8,
     velocity: 10,
-    restDelta: 0.001,
-  },
-  surface: {
-    type: "spring",
-    stiffness: 520,
-    damping: 46,
-    mass: 0.72,
     restDelta: 0.001,
   },
   edge: {

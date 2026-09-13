@@ -95,6 +95,8 @@ async function readPageState(page) {
       recedeLeftFromRail: railRect && recedeRect ? Number((recedeRect.left - railRect.left).toFixed(2)) : null,
       verticalRows: document.querySelectorAll('[data-demo="list"] .lexicon-row').length,
       advancedLabel: document.querySelector('[data-fade-option-label]')?.getAttribute('aria-label') ?? '',
+      advancedScrollLeft: document.querySelector('[data-demo="type-specimen"]')?.scrollLeft,
+      advancedScrollTop: document.querySelector('[data-demo="type-specimen"]')?.scrollTop,
       edgePressed: Array.from(document.querySelectorAll('[data-fade-edge-toggle]'))
         .map((button) => button.getAttribute('aria-pressed'))
         .join(','),
@@ -257,6 +259,121 @@ async function checkTouchSurfacePickerIsSteady(page, label) {
   )
 }
 
+async function checkSurfacePickerMotion(browser, url, {
+  label,
+  slowFrames = false,
+  motionUnavailable = false,
+}) {
+  const context = await browser.newContext({ viewport: { width: 900, height: 700 } })
+  if (slowFrames) {
+    await context.addInitScript(() => {
+      window.requestAnimationFrame = (callback) => {
+        return window.setTimeout(() => callback(performance.now()), 1000 / 30)
+      }
+      window.cancelAnimationFrame = (id) => window.clearTimeout(id)
+    })
+  }
+  if (motionUnavailable) {
+    await context.route('https://cdn.jsdelivr.net/npm/motion@*/dist/motion.js', (route) => {
+      return route.fulfill({ contentType: 'application/javascript', body: '' })
+    })
+  }
+  const page = await context.newPage()
+  try {
+    await page.goto(url, { waitUntil: 'load' })
+    await exposePalette(page)
+    const result = await page.evaluate(async () => {
+      const buttons = [...document.querySelectorAll('[data-surface-option]')]
+      const find = (theme) => buttons.find((button) => button.dataset.surfaceOption === theme)
+      const cobalt = find('cobalt')
+      const read = (button) => {
+        const style = getComputedStyle(button)
+        return {
+          button: Number(style.getPropertyValue('--surface-button-scale')),
+          swatch: Number(style.getPropertyValue('--surface-swatch-scale')),
+        }
+      }
+      const pointer = (button, type, pointerType = 'mouse') => {
+        button.dispatchEvent(new PointerEvent(type, { pointerType, bubbles: true }))
+      }
+      const mouseSelect = (button) => {
+        buttons
+          .filter((other) => other !== button)
+          .forEach((other) => pointer(other, 'pointerleave'))
+        pointer(button, 'pointerenter')
+        pointer(button, 'pointerdown')
+        pointer(button, 'pointerup')
+        button.click()
+      }
+      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+      const samples = []
+      let frame = 0
+      const sample = () => {
+        samples.push(...buttons.map(read))
+        frame = requestAnimationFrame(sample)
+      }
+      sample()
+      try {
+        mouseSelect(cobalt)
+        await wait(550)
+        pointer(cobalt, 'pointerleave')
+        pointer(find('pine'), 'pointerdown', 'touch')
+        find('pine').click()
+
+        const hoverStart = read(cobalt).swatch
+        const hoverSamples = []
+        pointer(cobalt, 'pointerenter')
+        for (let i = 0; i < 9; i++) {
+          await new Promise((resolve) => requestAnimationFrame(resolve))
+          hoverSamples.push(read(cobalt).swatch)
+        }
+
+        for (const theme of ['berry', 'graphite', 'pine', 'cobalt']) {
+          mouseSelect(find(theme))
+          await wait(55)
+        }
+        await wait(700)
+        return {
+          motionLoaded: typeof window.Motion?.animate === 'function',
+          stable: samples.every(({ button, swatch }) => (
+            Number.isFinite(button) && button > 0.85 && button < 1.18 &&
+            Number.isFinite(swatch) && swatch > 0.4 && swatch < 1.15
+          )),
+          scaleRange: {
+            button: [
+              Math.min(...samples.map((sample) => sample.button)),
+              Math.max(...samples.map((sample) => sample.button)),
+            ],
+            swatch: [
+              Math.min(...samples.map((sample) => sample.swatch)),
+              Math.max(...samples.map((sample) => sample.swatch)),
+            ],
+          },
+          hoverResumesFromTouch: Math.abs(hoverStart - 0.54) < 0.005 &&
+            hoverSamples.every((value) => value >= 0.53 && value <= 0.72),
+          hoverAnimated: Math.max(...hoverSamples) - Math.min(...hoverSamples) > 0.002,
+          finalSurface: document.documentElement.dataset.surface,
+          settled: buttons.every((button) => {
+            const current = read(button)
+            const selected = button.getAttribute('aria-checked') === 'true'
+            return Math.abs(current.button - (selected ? 1.05 : 1)) < 0.005 &&
+              Math.abs(current.swatch - (selected ? 0.92 : 0.54)) < 0.005
+          }),
+        }
+      } finally {
+        cancelAnimationFrame(frame)
+      }
+    })
+    assert(result.motionLoaded === !motionUnavailable, `${label}: Motion availability matches the scenario`, JSON.stringify(result))
+    assert(result.stable, `${label}: rapid selections keep scales bounded`, JSON.stringify(result))
+    assert(result.hoverResumesFromTouch, `${label}: mouse hover resumes from the visible touch state`, JSON.stringify(result))
+    assert(result.hoverAnimated === !motionUnavailable, `${label}: hover animates when Motion is available`, JSON.stringify(result))
+    assert(result.finalSurface === 'cobalt' && result.settled, `${label}: final selection settles correctly`, JSON.stringify(result))
+  } finally {
+    await context.close()
+  }
+}
+
 async function smokePage(browser, options) {
   const {
     label,
@@ -304,8 +421,9 @@ async function smokePage(browser, options) {
     )
   }
   assert(state.verticalRows >= 5, `${label}: vertical list rendered`, String(state.verticalRows))
-  assert(state.advancedLabel === 'fade-y', `${label}: advanced controls initialize class readout`, state.advancedLabel)
-  assert(state.edgePressed === 'true,false,true,false', `${label}: top and bottom edge toggles initialize on`, state.edgePressed)
+  assert(state.advancedLabel === 'fade fade-size-2xl fade-travel-lg', `${label}: advanced controls initialize class readout`, state.advancedLabel)
+  assert(state.edgePressed === 'true,true,true,true', `${label}: all edge toggles initialize on`, state.edgePressed)
+  assert(state.advancedScrollLeft === 100 && state.advancedScrollTop === 100, `${label}: advanced content starts scrolled 100px on both axes`, `${state.advancedScrollLeft},${state.advancedScrollTop}`)
   assert(state.easedLine && state.scrollAwareThumb && state.composableTokens >= 3, `${label}: key animated graphics rendered`)
   assert(state.documentOverflowX <= 1, `${label}: no document-level horizontal overflow`, String(state.documentOverflowX))
   assert(state.duplicateIdCount === 0, `${label}: no duplicate IDs`, String(state.duplicateIdCount))
@@ -420,6 +538,16 @@ try {
       checkRailInset: false,
       checkKeyboard: false,
     })
+    for (const [engine, label] of [[browser, 'Chromium'], [webkitBrowser, 'WebKit']]) {
+      await checkSurfacePickerMotion(engine, `${baseUrl}/tw-fade`, {
+        label: `${label} theme picker at 30 fps`,
+        slowFrames: true,
+      })
+      await checkSurfacePickerMotion(engine, `${baseUrl}/tw-fade`, {
+        label: `${label} theme picker without Motion`,
+        motionUnavailable: true,
+      })
+    }
   })
 } finally {
   await browser.close()
@@ -434,4 +562,4 @@ if (failures.length) {
   process.exit(1)
 }
 
-console.log('PASS  file, exported, mobile, WebKit iPhone, reduced-motion, keyboard, accessibility, and compositing checks')
+console.log('PASS  file, exported, mobile, WebKit iPhone, reduced-motion, keyboard, accessibility, compositing, and theme-picker Motion checks')

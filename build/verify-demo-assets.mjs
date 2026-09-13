@@ -83,8 +83,8 @@ check(
   missingLocalAssets.join(', '),
 )
 check(
-  'demo loads scripts in dependency order',
-  scriptRefs.join(' ') === './torph.js ./demo-animations.js ./demo-controls.js',
+  'demo loads local scripts in dependency order',
+  scriptRefs.filter((src) => src.startsWith('./')).join(' ') === './torph.js ./demo-animations.js ./demo-controls.js',
   scriptRefs.join(' '),
 )
 check('demo has no inline classic scripts', inlineScripts.length === 0)
