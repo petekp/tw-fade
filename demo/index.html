@@ -93,7 +93,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Bokor&family=Climate+Crisis&family=Zalando+Sans+SemiExpanded:wght@400;500;600;700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Bokor&family=Zalando+Sans+SemiExpanded:wght@400;500;600;700&display=swap"
             rel="stylesheet"
         />
         <link rel="stylesheet" href="./styles.css" />
@@ -240,6 +240,7 @@
                     <h1
                         class="hero-title hero-title-stack select-none text-neutral-50"
                         aria-label="tw-fade"
+                        data-hero-entrance
                     >
                         <span
                             class="hero-title-depth"
@@ -254,8 +255,15 @@
                                 filter: blur(0.017em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <!-- Climate Crisis outlines keep every layer independent of font loading. -->
+                                <defs>
+                                    <path id="hero-wordmark-shape" d="M365 517Q377 471 388.5 426.0Q400 381 411.5 335.5Q423 290 434 245H629V517ZM22 604Q22 518 22.0 423.0Q22 328 22 243L364 161Q364 210 364.0 261.0Q364 312 364 363Q364 400 364.0 437.0Q364 474 364 510Q364 511 364.0 511.0Q364 511 364 512Q364 531 372.5 545.0Q381 559 396.5 568.5Q412 578 433.0 583.0Q454 588 480 588Q509 588 539.0 579.0Q569 570 593.5 554.0Q618 538 629 517V821Q586 855 518.0 871.5Q450 888 382 888Q279 888 197.5 854.5Q116 821 69.0 757.5Q22 694 22 604ZM1805 245Q1781 348 1757.0 451.5Q1733 555 1709.0 658.0Q1685 761 1661 865H1276L1220 593Q1219 589 1218.5 586.5Q1218 584 1217.0 583.0Q1216 582 1215.0 582.5Q1214 583 1213.5 585.5Q1213 588 1212 593L1160 865H792Q768 761 744.0 658.0Q720 555 696.0 451.5Q672 348 648 245H980Q992 343 1004.5 436.5Q1017 530 1029 628Q1029 630 1029.5 631.5Q1030 633 1030.5 634.0Q1031 635 1031.0 634.5Q1031 634 1031.5 632.5Q1032 631 1032 628L1095 245H1381L1439 632Q1439 634 1439.5 635.5Q1440 637 1440.0 637.0Q1440 637 1440.5 637.0Q1441 637 1441.5 635.5Q1442 634 1442 632Q1451 567 1459.0 502.5Q1467 438 1475.5 373.5Q1484 309 1492 245ZM1824 402H2194V662H1824ZM2671 85Q2554 85 2468.0 126.0Q2382 167 2335.0 241.5Q2288 316 2288 415V425Q2275 463 2262.5 502.0Q2250 541 2237.0 579.5Q2224 618 2211 657H2287Q2288 657 2288.0 657.0Q2288 657 2288 658Q2288 698 2288.0 729.5Q2288 761 2288.0 793.0Q2288 825 2288 865H2637Q2637 825 2637.0 793.0Q2637 761 2637.0 729.5Q2637 698 2637 658Q2637 657 2637.0 657.0Q2637 657 2638 657H2749L2821 425H2638Q2638 425 2637.5 425.0Q2637 425 2637.0 424.5Q2637 424 2637 424Q2637 409 2641.0 397.0Q2645 385 2652.5 376.0Q2660 367 2671.0 361.5Q2682 356 2696.0 353.0Q2710 350 2726 350Q2761 350 2791.0 368.5Q2821 387 2821 425L2911 138Q2888 124 2848.0 112.0Q2808 100 2761.5 92.5Q2715 85 2671 85ZM2898 281V520Q2943 491 3003.0 476.0Q3063 461 3122 461Q3160 461 3194.5 468.0Q3229 475 3255.5 489.5Q3282 504 3297.5 526.5Q3313 549 3313 580Q3313 581 3313.0 582.5Q3313 584 3313.0 585.5Q3313 587 3313 589Q3298 569 3274.5 553.0Q3251 537 3221.5 526.0Q3192 515 3159.0 509.5Q3126 504 3091 504Q3037 504 2995.0 514.5Q2953 525 2922.5 544.0Q2892 563 2872.0 588.0Q2852 613 2842.0 641.0Q2832 669 2832 698Q2832 746 2852.0 782.0Q2872 818 2906.5 842.0Q2941 866 2984.5 878.5Q3028 891 3075 891Q3114 891 3153.5 883.5Q3193 876 3229 858Q3250 809 3271.5 760.0Q3293 711 3314 662Q3302 691 3279.0 698.0Q3256 705 3238 705Q3201 705 3181.0 689.5Q3161 674 3161 655Q3161 636 3180.5 621.0Q3200 606 3238 606Q3255 606 3272.0 610.5Q3289 615 3301.0 626.0Q3313 637 3313 655Q3313 707 3313.0 759.5Q3313 812 3313 865Q3348 865 3383.0 865.0Q3418 865 3453.0 865.0Q3488 865 3523.0 865.0Q3558 865 3593.0 865.0Q3628 865 3663 865Q3663 768 3663.0 671.0Q3663 574 3663 477Q3663 411 3627.0 362.0Q3591 313 3529.5 280.0Q3468 247 3390.0 231.0Q3312 215 3228 215Q3142 215 3056.5 231.5Q2971 248 2898 281ZM4276 865Q4276 811 4276.0 757.5Q4276 704 4276.0 650.5Q4276 597 4276 544Q4276 525 4266.0 511.0Q4256 497 4239.0 488.0Q4222 479 4201.0 474.5Q4180 470 4157 470Q4099 470 4070.5 493.0Q4042 516 4042 544Q4042 565 4054.5 582.0Q4067 599 4092.5 609.5Q4118 620 4157 620Q4199 620 4232.0 605.0Q4265 590 4275 556L4195 865Q4163 873 4134.0 876.5Q4105 880 4067 880Q3990 880 3922.0 858.5Q3854 837 3802.5 795.0Q3751 753 3721.5 693.0Q3692 633 3692 556Q3692 490 3713.0 437.5Q3734 385 3770.5 346.0Q3807 307 3855.0 281.0Q3903 255 3957.5 242.5Q4012 230 4068 230Q4091 230 4115.0 232.0Q4139 234 4162.0 238.0Q4185 242 4205.5 249.0Q4226 256 4243.5 266.0Q4261 276 4274 289Q4275 290 4275.5 289.5Q4276 289 4276 288Q4276 248 4276.0 201.5Q4276 155 4276 115H4622Q4622 211 4622.0 307.5Q4622 404 4622 500Q4622 591 4622.0 682.0Q4622 773 4622 865ZM5104 639Q5157 639 5186.0 620.0Q5215 601 5216 568L5525 669Q5507 732 5448.5 783.5Q5390 835 5301.0 865.0Q5212 895 5102 895Q5008 895 4926.5 874.0Q4845 853 4783.5 810.5Q4722 768 4687.0 704.0Q4652 640 4652 555Q4652 470 4687.0 406.0Q4722 342 4783.5 299.5Q4845 257 4927.0 236.0Q5009 215 5102 215Q5197 215 5276.5 236.0Q5356 257 5413.5 300.5Q5471 344 5502.5 410.5Q5534 477 5534 568H4989Q4989 568 4988.5 568.0Q4988 568 4988.0 568.0Q4988 568 4988 569Q4988 584 4996.0 597.0Q5004 610 5018.5 619.5Q5033 629 5054.5 634.0Q5076 639 5104 639ZM5102 468Q5053 468 5021.0 485.5Q4989 503 4989 535Q4989 536 4989.0 536.5Q4989 537 4989.0 537.0Q4989 537 4989.5 537.0Q4990 537 4990 537H5213Q5214 537 5214.0 536.5Q5214 536 5214 535Q5214 519 5205.5 506.5Q5197 494 5182.0 485.5Q5167 477 5146.5 472.5Q5126 468 5102 468Z" />
+                                </defs>
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span
                             class="hero-title-depth"
                             style="
@@ -269,8 +277,11 @@
                                 filter: blur(0.01715em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span
                             class="hero-title-depth"
                             style="
@@ -284,8 +295,11 @@
                                 filter: blur(0.01731em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span
                             class="hero-title-depth"
                             style="
@@ -299,8 +313,11 @@
                                 filter: blur(0.01746em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span
                             class="hero-title-depth"
                             style="
@@ -314,8 +331,11 @@
                                 filter: blur(0.01762em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span
                             class="hero-title-depth"
                             style="
@@ -329,8 +349,11 @@
                                 filter: blur(0.01777em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span
                             class="hero-title-depth"
                             style="
@@ -344,8 +367,11 @@
                                 filter: blur(0.01792em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span
                             class="hero-title-depth"
                             style="
@@ -359,8 +385,11 @@
                                 filter: blur(0.01808em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span
                             class="hero-title-depth"
                             style="
@@ -374,8 +403,11 @@
                                 filter: blur(0.01823em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span
                             class="hero-title-depth"
                             style="
@@ -389,8 +421,11 @@
                                 filter: blur(0.01838em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span
                             class="hero-title-depth"
                             style="
@@ -404,8 +439,11 @@
                                 filter: blur(0.01854em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span
                             class="hero-title-depth"
                             style="
@@ -419,8 +457,11 @@
                                 filter: blur(0.01869em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span
                             class="hero-title-depth"
                             style="
@@ -434,8 +475,11 @@
                                 filter: blur(0.01885em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span
                             class="hero-title-depth"
                             style="
@@ -449,11 +493,17 @@
                                 filter: blur(0.019em);
                             "
                             aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                         <span class="hero-title-main" aria-hidden="true"
-                            >tw-fade</span
-                        >
+                            >
+                            <svg class="hero-wordmark" viewBox="0 0 5542 920" fill="currentColor" aria-hidden="true">
+                                <use href="#hero-wordmark-shape" />
+                            </svg>
+                        </span>
                     </h1>
                 </div>
                 <p
