@@ -148,7 +148,7 @@
         </script>
     </head>
     <body
-        class="thin-scroll h-full overflow-y-auto bg-transparent text-neutral-200 antialiased"
+        class="thin-scroll h-full overflow-y-auto text-neutral-200 antialiased"
     >
         <div class="demo-wave-field" data-demo-wave-field aria-hidden="true">
             <svg class="demo-wave-svg" focusable="false">
@@ -178,6 +178,7 @@
                     data-demo-wave-strips
                 ></g>
                 <rect
+                    class="demo-wave-lines"
                     width="100%"
                     height="100%"
                     fill="url(#demo-wave-pattern)"
@@ -190,7 +191,7 @@
                 class="flex min-h-[75vh] max-w-[45rem] flex-col justify-center"
             >
                 <div class="masthead-lockup ml-4">
-                    <div class="masthead-top-row">
+                    <div class="masthead-top-row" data-hero-reveal="0">
                         <p class="masthead-plugin-label select-none">
                             <svg
                                 width="26"
@@ -274,7 +275,7 @@
                                 --depth-scroll-y: 0.20392em;
                                 --depth-scroll-scale: 0.0315;
                                 --depth-scroll-opacity: 0.03708;
-                                filter: blur(0.01715em);
+                                filter: blur(0.01585em);
                             "
                             aria-hidden="true"
                             >
@@ -292,7 +293,7 @@
                                 --depth-scroll-y: 0.18785em;
                                 --depth-scroll-scale: 0.029;
                                 --depth-scroll-opacity: 0.03415;
-                                filter: blur(0.01731em);
+                                filter: blur(0.01469em);
                             "
                             aria-hidden="true"
                             >
@@ -310,7 +311,7 @@
                                 --depth-scroll-y: 0.17177em;
                                 --depth-scroll-scale: 0.0265;
                                 --depth-scroll-opacity: 0.03123;
-                                filter: blur(0.01746em);
+                                filter: blur(0.01354em);
                             "
                             aria-hidden="true"
                             >
@@ -328,7 +329,7 @@
                                 --depth-scroll-y: 0.15569em;
                                 --depth-scroll-scale: 0.024;
                                 --depth-scroll-opacity: 0.02831;
-                                filter: blur(0.01762em);
+                                filter: blur(0.01238em);
                             "
                             aria-hidden="true"
                             >
@@ -346,7 +347,7 @@
                                 --depth-scroll-y: 0.13962em;
                                 --depth-scroll-scale: 0.0215;
                                 --depth-scroll-opacity: 0.02538;
-                                filter: blur(0.01777em);
+                                filter: blur(0.01123em);
                             "
                             aria-hidden="true"
                             >
@@ -364,7 +365,7 @@
                                 --depth-scroll-y: 0.12354em;
                                 --depth-scroll-scale: 0.019;
                                 --depth-scroll-opacity: 0.02246;
-                                filter: blur(0.01792em);
+                                filter: blur(0.01008em);
                             "
                             aria-hidden="true"
                             >
@@ -382,7 +383,7 @@
                                 --depth-scroll-y: 0.10746em;
                                 --depth-scroll-scale: 0.0165;
                                 --depth-scroll-opacity: 0.01954;
-                                filter: blur(0.01808em);
+                                filter: blur(0.00892em);
                             "
                             aria-hidden="true"
                             >
@@ -400,7 +401,7 @@
                                 --depth-scroll-y: 0.09138em;
                                 --depth-scroll-scale: 0.014;
                                 --depth-scroll-opacity: 0.01662;
-                                filter: blur(0.01823em);
+                                filter: blur(0.00777em);
                             "
                             aria-hidden="true"
                             >
@@ -418,7 +419,7 @@
                                 --depth-scroll-y: 0.07531em;
                                 --depth-scroll-scale: 0.0115;
                                 --depth-scroll-opacity: 0.01369;
-                                filter: blur(0.01838em);
+                                filter: blur(0.00662em);
                             "
                             aria-hidden="true"
                             >
@@ -436,7 +437,7 @@
                                 --depth-scroll-y: 0.05923em;
                                 --depth-scroll-scale: 0.009;
                                 --depth-scroll-opacity: 0.01077;
-                                filter: blur(0.01854em);
+                                filter: blur(0.00546em);
                             "
                             aria-hidden="true"
                             >
@@ -454,7 +455,7 @@
                                 --depth-scroll-y: 0.04315em;
                                 --depth-scroll-scale: 0.0065;
                                 --depth-scroll-opacity: 0.00785;
-                                filter: blur(0.01869em);
+                                filter: blur(0.00431em);
                             "
                             aria-hidden="true"
                             >
@@ -472,7 +473,7 @@
                                 --depth-scroll-y: 0.02708em;
                                 --depth-scroll-scale: 0.004;
                                 --depth-scroll-opacity: 0.00492;
-                                filter: blur(0.01885em);
+                                filter: blur(0.00315em);
                             "
                             aria-hidden="true"
                             >
@@ -490,7 +491,7 @@
                                 --depth-scroll-y: 0.011em;
                                 --depth-scroll-scale: 0.0015;
                                 --depth-scroll-opacity: 0.002;
-                                filter: blur(0.019em);
+                                filter: blur(0.002em);
                             "
                             aria-hidden="true"
                             >
@@ -508,6 +509,7 @@
                 </div>
                 <p
                     class="ml-4 mt-11 max-w-[40rem] text-balance text-lg leading-8 text-neutral-300/85 sm:text-xl"
+                    data-hero-reveal="0"
                 >
                     Elegant, scroll-driven edge masking. One class. Zero
                     JavaScript.
@@ -533,7 +535,7 @@
                         >
                     </span>.
                 </p>
-                <div class="install-snippet ml-4" data-install-snippet>
+                <div class="install-snippet ml-4" data-install-snippet data-hero-reveal="1">
                     <span
                         class="install-snippet-sweep"
                         aria-hidden="true"
@@ -587,6 +589,7 @@
                     <section
                         class="space-y-4"
                         aria-label="Horizontal item list demo"
+                        data-hero-reveal="2"
                     >
                         <div class="flex items-baseline justify-between gap-4">
                             <div>

@@ -232,6 +232,141 @@ document.addEventListener("tw-fade:copy-sweep", () => {
   motionAnimations.copySweep();
 });
 
+function initHeroEntrance() {
+  const hero = document.querySelector(".hero-title-stack[data-hero-entrance]");
+  if (!hero) return;
+  const surroundings = Array.from(document.querySelectorAll("[data-hero-reveal]"));
+  const show = (element) => {
+    element.removeAttribute("data-hero-reveal");
+    element.style.removeProperty("opacity");
+  };
+  const complete = () => {
+    hero.dataset.heroEntrance = "complete";
+    hero.style.removeProperty("--hero-entrance-progress");
+  };
+  if (prefersReducedMotion || !window.Motion) {
+    complete();
+    surroundings.forEach(show);
+    return;
+  }
+
+  let surroundingsStarted = false;
+  const revealSurroundings = () => {
+    if (surroundingsStarted) return;
+    surroundingsStarted = true;
+    for (const element of surroundings) {
+      window.Motion.animate(element, { opacity: [0, 1] }, {
+        duration: 0.65,
+        delay: Number(element.dataset.heroReveal) * 0.1,
+        ease: [0.22, 0.68, 0.24, 1],
+        onComplete: () => show(element),
+      });
+    }
+  };
+
+  // CSS combines this progress with each layer's current scroll offset.
+  window.Motion.animate(0, 1, {
+    type: "spring",
+    stiffness: 160,
+    damping: 34,
+    mass: 1,
+    delay: 0.2,
+    restDelta: 0.001,
+    restSpeed: 0.001,
+    onUpdate: (progress) => {
+      hero.style.setProperty("--hero-entrance-progress", String(progress));
+      if (progress >= 0.8) revealSurroundings();
+    },
+    onComplete: complete,
+  });
+}
+
+// Motion's deferred script has loaded or failed before DOMContentLoaded.
+document.addEventListener("DOMContentLoaded", initHeroEntrance, { once: true });
+
+function initHeroPointer() {
+  const hero = document.querySelector(".hero-title-stack[data-hero-entrance]");
+  if (!hero || !window.Motion) return;
+  const pointerMotion = window.matchMedia(
+    "(prefers-reduced-motion: no-preference) and (any-hover: hover) and (any-pointer: fine)",
+  );
+  const layers = Array.from(hero.querySelectorAll(":scope > span"));
+  layers.forEach((layer, index) => {
+    layer.style.setProperty("--hero-layer-depth", String(index / (layers.length - 1)));
+  });
+
+  const axes = ["x", "y"].map((axis) => {
+    const value = window.Motion.motionValue(0);
+    value.on("change", (latest) => {
+      hero.style.setProperty(`--hero-pointer-${axis}`, String(latest));
+    });
+    return { value, target: 0 };
+  });
+  const move = (targets, immediate = false) => {
+    axes.forEach((axis, index) => {
+      const target = targets[index];
+      if (immediate) {
+        axis.value.jump(target);
+      } else if (axis.target !== target) {
+        window.Motion.animate(axis.value, target, {
+          type: "spring",
+          stiffness: 140,
+          damping: 30,
+          mass: 1,
+          restDelta: 0.001,
+          restSpeed: 0.001,
+        });
+      }
+      axis.target = target;
+    });
+  };
+
+  let pointer = null;
+  let frame = 0;
+  const reset = (immediate = false) => {
+    pointer = null;
+    cancelAnimationFrame(frame);
+    frame = 0;
+    move([0, 0], immediate);
+  };
+  const update = () => {
+    frame = 0;
+    if (!pointer) return;
+    // The stack stays still; measuring it avoids feedback from the moving layers.
+    const rect = hero.getBoundingClientRect();
+    if (rect.bottom <= 0 || rect.top >= window.innerHeight) {
+      reset();
+      return;
+    }
+    const radius = Math.max(rect.width * 0.6, 300);
+    const clamp = (value) => Math.max(-1, Math.min(1, value / radius));
+    move([
+      clamp(pointer.x - rect.left - rect.width / 2),
+      clamp(pointer.y - rect.top - rect.height / 2),
+    ]);
+  };
+  const schedule = () => {
+    if (pointer && !frame) frame = requestAnimationFrame(update);
+  };
+  window.addEventListener("pointermove", (event) => {
+    if (event.pointerType !== "mouse" || !pointerMotion.matches) return;
+    pointer = { x: event.clientX, y: event.clientY };
+    schedule();
+  }, { passive: true });
+  window.addEventListener("pointerdown", (event) => {
+    if (event.pointerType !== "mouse") reset();
+  }, { passive: true });
+  document.documentElement.addEventListener("pointerleave", () => reset());
+  window.addEventListener("blur", () => reset());
+  window.addEventListener("scroll", schedule, { passive: true });
+  window.addEventListener("resize", schedule, { passive: true });
+  pointerMotion.addEventListener("change", () => {
+    if (!pointerMotion.matches) reset(true);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initHeroPointer, { once: true });
+
 if (!prefersReducedMotion) {
   function initCopySweep() {
     const sweep = document.querySelector("[data-install-sweep]");
@@ -394,13 +529,12 @@ if (!prefersReducedMotion) {
     };
 
     const buildStrips = (amplitude, wavelength, fieldWidth, fieldHeight) => {
-      if (!fieldWidth || !fieldHeight) return "";
+      if (!strips || !fieldWidth || !fieldHeight) return;
       const spacing = Math.round(params.spacing);
       const cycleCount = Math.ceil(fieldHeight / wavelength) + 1;
       const totalHeight = cycleCount * wavelength;
       const base = columnCubics(0, 1, amplitude, wavelength, cycleCount);
       const columnMax = Math.ceil(fieldWidth / spacing) + 1;
-      let markup = "";
       for (let column = -1; column < columnMax; column += 1) {
         const cxLeft = column * spacing + spacing / 2;
         const cxRight = cxLeft + spacing;
@@ -412,9 +546,18 @@ if (!prefersReducedMotion) {
           totalHeight,
         );
         const opacity = round(stripShade(cxLeft + spacing / 2, fieldWidth, fieldHeight));
-        markup += `<path d="${d}" fill-opacity="${opacity}" shape-rendering="geometricPrecision"/>`;
+        let strip = strips.children[column + 1];
+        if (!strip) {
+          strip = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          strip.setAttribute("shape-rendering", "geometricPrecision");
+          strips.appendChild(strip);
+        }
+        strip.setAttribute("d", d);
+        strip.setAttribute("fill-opacity", String(opacity));
       }
-      return markup;
+      while (strips.children.length > columnMax + 1) {
+        strips.lastElementChild.remove();
+      }
     };
 
     // Field pixel size only changes on resize, so cache it (avoids a layout
@@ -452,7 +595,7 @@ if (!prefersReducedMotion) {
       if (strips) {
         const stripsKey = `${fieldWidth}:${fieldHeight}:${round(amplitude)}:${wavelength}`;
         if (stripsKey !== lastStripsKey) {
-          strips.innerHTML = buildStrips(amplitude, wavelength, fieldWidth, fieldHeight);
+          buildStrips(amplitude, wavelength, fieldWidth, fieldHeight);
           lastStripsKey = stripsKey;
         }
       }

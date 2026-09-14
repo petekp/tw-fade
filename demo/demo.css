@@ -216,8 +216,11 @@ html[data-surface] {
 html[data-surface] body {
     position: relative;
     isolation: isolate;
+    background-color: var(--demo-page-bg);
     color: var(--demo-text-primary);
-    transition: color 180ms ease;
+    transition:
+        background-color 180ms ease,
+        color 180ms ease;
 }
 
 html[data-surface] body::before {
@@ -486,6 +489,9 @@ h3 {
     display: inline-grid;
     max-width: 100%;
     --hero-scroll: 0;
+    --hero-entrance-progress: 1;
+    --hero-pointer-x: 0;
+    --hero-pointer-y: 0;
 }
 
 .hero-title-stack > span {
@@ -501,10 +507,21 @@ h3 {
 }
 
 .hero-wordmark {
+    --hero-pointer-weight: calc(
+        var(--hero-layer-depth, 0) * var(--hero-entrance-progress)
+    );
     display: block;
     width: 100%;
     height: 100%;
     overflow: visible;
+    transform-origin: center;
+    transform: perspective(10em)
+        translate(
+            calc(var(--hero-pointer-x) * var(--hero-pointer-weight) * 0.065em),
+            calc(var(--hero-pointer-y) * var(--hero-pointer-weight) * 0.05em)
+        )
+        rotateX(calc(var(--hero-pointer-y) * var(--hero-pointer-weight) * -2.4deg))
+        rotateY(calc(var(--hero-pointer-x) * var(--hero-pointer-weight) * 2.4deg));
 }
 
 .hero-title-depth {
@@ -514,13 +531,21 @@ h3 {
     );
     pointer-events: none;
     transform: translate(
-            calc(var(--hero-scroll) * var(--depth-scroll-x)),
-            calc(var(--depth-y) + var(--hero-scroll) * var(--depth-scroll-y))
+            calc(
+                var(--hero-entrance-progress) * var(--hero-scroll) *
+                    var(--depth-scroll-x)
+            ),
+            calc(
+                (1 - var(--hero-entrance-progress)) * 0.292em +
+                    var(--hero-entrance-progress) *
+                    (var(--depth-y) + var(--hero-scroll) * var(--depth-scroll-y))
+            )
         )
         scale(
             calc(
-                var(--depth-scale) - var(--hero-scroll) *
-                    var(--depth-scroll-scale)
+                0.91 + var(--hero-entrance-progress) *
+                    (var(--depth-scale) - 0.91 -
+                        var(--hero-scroll) * var(--depth-scroll-scale))
             )
         );
 }
@@ -529,26 +554,40 @@ h3 {
     position: relative;
 }
 
-@keyframes hero-emerge {
-    from {
-        color: color-mix(
-            in oklab,
-            var(--demo-page-bg) 86%,
-            var(--demo-text-strong)
-        );
-        transform: translateY(0.292em) scale(0.91);
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    [data-hero-reveal] {
+        opacity: 0;
+        pointer-events: none;
     }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-    .hero-title-stack[data-hero-entrance] > span {
-        animation: hero-emerge 1600ms cubic-bezier(0.22, 0.68, 0.24, 1) backwards;
+    [data-hero-reveal]:focus-within {
+        opacity: 1 !important;
+        pointer-events: auto;
+    }
+
+    .hero-title-stack[data-hero-entrance=""] {
+        --hero-entrance-progress: 0;
+        opacity: var(--hero-entrance-progress);
+        filter: brightness(calc(0.14 + 0.86 * var(--hero-entrance-progress)));
+    }
+
+    .hero-title-stack[data-hero-entrance=""] .hero-title-main {
+        transform: translateY(calc((1 - var(--hero-entrance-progress)) * 0.292em))
+            scale(calc(0.91 + 0.09 * var(--hero-entrance-progress)));
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
+    [data-hero-reveal] {
+        opacity: 1 !important;
+        pointer-events: auto;
+    }
+
     .hero-title-stack {
         --hero-scroll: 0 !important;
+        --hero-entrance-progress: 1 !important;
+        --hero-pointer-x: 0 !important;
+        --hero-pointer-y: 0 !important;
     }
 }
 

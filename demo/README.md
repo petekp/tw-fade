@@ -9,7 +9,7 @@ This demo is intentionally static: opening `index.html` directly from disk shoul
 - `torph.js` is the vendored [torph](https://github.com/lochie/torph) text-morph library wrapped for a classic script (`window.Torph`). It must load before `demo-controls.js`, which morphs the Advanced class readout with it.
 - `demo-animations.js` owns the local spring runtime, decorative SVG animations, and the scroll-modulated SVG wave path. It must run before `demo-controls.js`.
 - `demo-controls.js` owns user-facing controls: theme switching, rail card selection, install-command copy state, advanced fade controls, and edge toggles.
-- The theme selector uses the pinned Motion browser script loaded by `index.html`. Button scales change immediately for touch, reduced motion, or an unavailable Motion script. The other controls use the local spring runtime.
+- The hero entrance, pointer tilt, and theme selector use the pinned Motion browser script loaded by `index.html`. The pointer tilt keeps the root blur layer anchored and is inactive for touch or reduced motion. Button scales change immediately for touch, reduced motion, or an unavailable Motion script. The other controls use the local spring runtime.
 - `hero-lab.html` and `wave-lab.html` are noindex design scratchpads. They are intentionally excluded from the production `/tw-fade` static export and should be treated as source references, not shipped demo code.
 - `../build/demo-static.mjs` owns the production static export contract for `/tw-fade`.
 - `../build/verify-demo-assets.mjs` checks local asset links, script order, static export rewriting, spring rest thresholds, and the SVG wave morph contract.

@@ -166,7 +166,7 @@ const checks = [
   ],
   ['body is the real scroll container', structure.bodyIsScroller, String(structure.bodyIsScroller)],
   ['surface is on <html> (non-transparent)', !transparent(structure.htmlBg), structure.htmlBg],
-  ['body is transparent (mask reveals the surface)', transparent(structure.bodyBg), structure.bodyBg],
+  ['body matches the dark page surface', structure.bodyBg === structure.htmlBg, structure.bodyBg],
   ['body does not own a page-level fade utility', !/\bfade(?:\b|-)/.test(structure.bodyClass), structure.bodyClass],
   [
     'advanced demo supports a single top fade',
