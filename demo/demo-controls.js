@@ -641,18 +641,6 @@ function springRailSelection(card) {
   }, 130);
 }
 
-function initRailLetterLayers() {
-  const letters = railCards
-    .map((card) => card.querySelector(".rail-card-initial"))
-    .filter(Boolean);
-  for (const letter of letters) {
-    letter.dataset.railLetter = letter.textContent.trim();
-  }
-  if (letters.length) {
-    document.documentElement.dataset.railLetterLayers = "true";
-  }
-}
-
 function setSurface(nextSurface, { animated = true } = {}) {
   document.documentElement.dataset.surface = nextSurface;
   scheduleThemeFaviconUpdate();
@@ -1098,7 +1086,6 @@ for (const button of surfaceButtons) {
 }
 
 updateThemeFavicon();
-initRailLetterLayers();
 
 for (const card of railCards) {
   syncRailCardSpring(card, false);

@@ -1889,53 +1889,38 @@ h3 {
     bottom: calc(-0.28em + 18px);
     left: 0.35rem;
     z-index: -1;
-    color: var(--demo-text-primary);
-    font-family:
-        "Climate Crisis", "Arial Black", Impact, ui-sans-serif, system-ui,
-        sans-serif;
     font-size: 11.2125rem;
-    line-height: 0.8;
-    opacity: calc(0.12 + var(--rail-letter-active) * 0.88);
+    height: 0.8em;
     pointer-events: none;
     transform: translate(-16px, -24px) scale(var(--rail-letter-scale));
     transform-origin: left bottom;
-    /* Tween the big letter's color when the theme/surface swaps the accent and
-       text tokens, matching the parent .rail-card's 180ms color transition so
-       the letter no longer snaps. */
-    transition: color 180ms ease;
     will-change: transform;
 }
 
 .rail-card[aria-selected="true"] .rail-card-initial {
     --rail-letter-active: 1;
     --rail-letter-scale: 1.08;
-    color: var(--demo-accent-text);
 }
 
-html[data-rail-letter-layers="true"] .rail-card-initial {
-    color: transparent;
-    opacity: 1;
+.rail-letter {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
 }
 
-html[data-rail-letter-layers="true"] .rail-card-initial::before,
-html[data-rail-letter-layers="true"] .rail-card-initial::after {
-    content: attr(data-rail-letter);
-    position: absolute;
-    inset: 0 auto auto 0;
-    pointer-events: none;
-    /* Each layer holds one theme token (text on ::before, accent on ::after);
-       a color transition lets them tween on theme switch while opacity still
-       drives the select-state crossfade. */
+.rail-letter-base,
+.rail-letter-accent {
     transition: color 180ms ease;
     will-change: opacity;
 }
 
-html[data-rail-letter-layers="true"] .rail-card-initial::before {
+.rail-letter-base {
     color: var(--demo-text-primary);
     opacity: calc(0.12 - var(--rail-letter-active) * 0.12);
 }
 
-html[data-rail-letter-layers="true"] .rail-card-initial::after {
+.rail-letter-accent {
     color: var(--demo-accent-text);
     opacity: var(--rail-letter-active);
 }
