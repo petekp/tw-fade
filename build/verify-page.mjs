@@ -49,7 +49,7 @@ const singleEdgeSpecimen = await page.evaluate(async () => {
   const specimen = document.querySelector('[data-demo="type-specimen"]')
   if (!specimen) return null
 
-  specimen.className = 'fade-top fade-size-2xl fade-travel-md thin-scroll type-scale-sample h-64 overflow-auto p-5 sm:h-72'
+  specimen.className = 'fade-top fade-always fade-size-2xl fade-travel-md thin-scroll type-scale-sample h-64 overflow-auto p-5 sm:h-72'
   specimen.scrollTop = 96
   specimen.scrollLeft = 96
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
@@ -57,10 +57,10 @@ const singleEdgeSpecimen = await page.evaluate(async () => {
   const cs = getComputedStyle(specimen)
   return {
     maskComposite: cs.maskComposite || cs.webkitMaskComposite,
-    maskT: cs.getPropertyValue('--tw-fade-mask-t').trim(),
-    maskB: cs.getPropertyValue('--tw-fade-mask-b').trim(),
-    maskL: cs.getPropertyValue('--tw-fade-mask-l').trim(),
-    maskR: cs.getPropertyValue('--tw-fade-mask-r').trim(),
+    amountT: Number(cs.getPropertyValue('--tw-fade-opacity-t').trim()),
+    amountB: Number(cs.getPropertyValue('--tw-fade-opacity-b').trim()),
+    amountL: Number(cs.getPropertyValue('--tw-fade-opacity-l').trim()),
+    amountR: Number(cs.getPropertyValue('--tw-fade-opacity-r').trim()),
   }
 })
 
@@ -112,8 +112,8 @@ const dirControl = await page.evaluate(async () => {
   const masks = () => {
     const cs = getComputedStyle(specimen)
     return {
-      maskL: cs.getPropertyValue('--tw-fade-mask-l').trim(),
-      maskR: cs.getPropertyValue('--tw-fade-mask-r').trim(),
+      amountL: Number(cs.getPropertyValue('--tw-fade-opacity-l').trim()),
+      amountR: Number(cs.getPropertyValue('--tw-fade-opacity-r').trim()),
     }
   }
   const scrollMid = () => {
@@ -154,8 +154,8 @@ await browser.close()
 const transparent = (c) => c === 'rgba(0, 0, 0, 0)' || c === 'transparent'
 // A horizontal mask layer is "active" when its gradient points inward:
 // physical-left fades "to right", physical-right fades "to left".
-const hasLeftMask = (m) => !!m && /to right/.test(m.maskL)
-const hasRightMask = (m) => !!m && /to left/.test(m.maskR)
+const hasLeftMask = (m) => !!m && m.amountL > 0.08
+const hasRightMask = (m) => !!m && m.amountR > 0.08
 
 const checks = [
   ['demo build does not emit private .tw-fade-mask utility', !/\.tw-fade-mask\s*\{/.test(demoCss), '.tw-fade-mask absent'],
@@ -170,13 +170,13 @@ const checks = [
   ['body does not own a page-level fade utility', !/\bfade(?:\b|-)/.test(structure.bodyClass), structure.bodyClass],
   [
     'advanced demo supports a single top fade',
-    /to bottom/.test(singleEdgeSpecimen?.maskT || '') &&
-      !/to top/.test(singleEdgeSpecimen?.maskB || '') &&
-      !/to right/.test(singleEdgeSpecimen?.maskL || '') &&
-      !/to left/.test(singleEdgeSpecimen?.maskR || '') &&
+    singleEdgeSpecimen?.amountT > 0.08 &&
+      singleEdgeSpecimen?.amountB === 0 &&
+      singleEdgeSpecimen?.amountL === 0 &&
+      singleEdgeSpecimen?.amountR === 0 &&
       /intersect/.test(singleEdgeSpecimen.maskComposite || ''),
     singleEdgeSpecimen
-      ? `t:${/to bottom/.test(singleEdgeSpecimen.maskT)} b:${/to top/.test(singleEdgeSpecimen.maskB)} l:${/to right/.test(singleEdgeSpecimen.maskL)} r:${/to left/.test(singleEdgeSpecimen.maskR)}`
+      ? `t:${singleEdgeSpecimen.amountT} b:${singleEdgeSpecimen.amountB} l:${singleEdgeSpecimen.amountL} r:${singleEdgeSpecimen.amountR}`
       : 'missing specimen',
   ],
   [

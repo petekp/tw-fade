@@ -20,9 +20,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # The verify chain launches both Chromium and WebKit.
+      # The verify chain launches Chromium, Firefox, and WebKit.
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium webkit
+        run: npx playwright install --with-deps chromium firefox webkit
 
       # Run unit tests against the committed dist first, so the
       # "dist === fresh compile" freshness gate stays meaningful

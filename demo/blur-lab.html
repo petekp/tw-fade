@@ -1,0 +1,471 @@
+<!doctype html>
+<html
+    lang="en"
+    data-scenario="vertical"
+    data-preset="md"
+    data-size="auto"
+    data-surface="paper"
+    data-direction="ltr"
+    data-guides="false"
+>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="robots" content="noindex" />
+        <meta name="color-scheme" content="light dark" />
+        <title>tw-fade · progressive blur review lab</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Zalando+Sans+SemiExpanded:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="./styles.css" />
+        <link rel="stylesheet" href="./blur-lab.css" />
+        <script src="./blur-lab.js" defer></script>
+    </head>
+    <body>
+        <header class="lab-header">
+            <div class="lab-nav">
+                <a class="wordmark" href="./index.html" aria-label="Back to the tw-fade demo">
+                    <span class="wordmark-mark" aria-hidden="true">tw</span>
+                    <span>fade</span>
+                </a>
+                <span class="experiment-badge">Blur playground</span>
+            </div>
+
+            <div class="lab-intro">
+                <div>
+                    <p class="lab-kicker">Optical test bench / 01</p>
+                    <h1>One blur,<br />or progressive.</h1>
+                </div>
+                <div class="lab-summary">
+                    <p>
+                        Compare opacity alone, single and progressive blur with a fade,
+                        and blur without a fade. Every viewport uses the same
+                        content and scroll position.
+                    </p>
+                    <div class="support-status" data-support-status role="status">
+                        Checking browser support…
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="lab-main">
+            <section class="control-deck" aria-label="Review controls">
+                <div class="control-group control-group-scenario">
+                    <span class="control-label">Scenario</span>
+                    <div class="segmented" role="group" aria-label="Scenario">
+                        <button type="button" data-control="scenario" data-value="vertical" aria-pressed="true">
+                            Vertical
+                        </button>
+                        <button type="button" data-control="scenario" data-value="horizontal" aria-pressed="false">
+                            Horizontal
+                        </button>
+                        <button type="button" data-control="scenario" data-value="mixed" aria-pressed="false">
+                            Top + end
+                        </button>
+                        <button type="button" data-control="scenario" data-value="all" aria-pressed="false">
+                            All edges
+                        </button>
+                        <button type="button" data-control="scenario" data-value="nooverflow" aria-pressed="false">
+                            No overflow
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <span class="control-label">Blur strength</span>
+                    <div class="segmented" role="group" aria-label="Blur preset">
+                        <button type="button" data-control="preset" data-value="sm" aria-pressed="false">sm</button>
+                        <button type="button" data-control="preset" data-value="md" aria-pressed="true">md</button>
+                        <button type="button" data-control="preset" data-value="lg" aria-pressed="false">lg</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <span class="control-label">Fade size</span>
+                    <div class="segmented segmented-size" role="group" aria-label="Fade size">
+                        <button type="button" data-control="size" data-value="auto" aria-pressed="true">
+                            <span>Auto</span><small>responsive</small>
+                        </button>
+                        <button type="button" data-control="size" data-value="sm" aria-pressed="false">
+                            <span>sm</span><small>fade-size-sm</small>
+                        </button>
+                        <button type="button" data-control="size" data-value="lg" aria-pressed="false">
+                            <span>lg</span><small>fade-size-lg</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <span class="control-label">Surface</span>
+                    <div class="swatches" role="group" aria-label="Content surface">
+                        <button type="button" data-control="surface" data-value="paper" aria-label="Paper surface" aria-pressed="true"></button>
+                        <button type="button" data-control="surface" data-value="night" aria-label="Night surface" aria-pressed="false"></button>
+                        <button type="button" data-control="surface" data-value="chroma" aria-label="Chroma surface" aria-pressed="false"></button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <span class="control-label">Writing direction</span>
+                    <div class="segmented" role="group" aria-label="Writing direction">
+                        <button type="button" data-control="direction" data-value="ltr" aria-pressed="true">LTR</button>
+                        <button type="button" data-control="direction" data-value="rtl" aria-pressed="false">RTL</button>
+                    </div>
+                </div>
+
+                <label class="guide-toggle">
+                    <input type="checkbox" data-guide-toggle />
+                    <span>Show effect bands</span>
+                </label>
+            </section>
+
+            <section class="scroll-console" aria-label="Synchronized scroll position">
+                <div class="scroll-console-head">
+                    <div>
+                        <span class="control-label">Synchronized position</span>
+                        <strong data-scroll-name>Middle · both edges active</strong>
+                    </div>
+                    <output data-scroll-output for="scroll-position">50%</output>
+                </div>
+                <div class="scrub-row">
+                    <button type="button" data-scroll-jump="0">Start</button>
+                    <input
+                        id="scroll-position"
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value="50"
+                        aria-label="Synchronized scroll position"
+                        data-scroll-slider
+                    />
+                    <button type="button" data-scroll-jump="50">Middle</button>
+                    <button type="button" data-scroll-jump="100">End</button>
+                </div>
+                <div class="calibration-strip" aria-label="Current calibration">
+                    <span><b data-size-value>auto</b> fade size</span>
+                    <span><b data-strength-value>3px</b> single radius</span>
+                    <span>Progressive mode uses five increasing radii</span>
+                </div>
+            </section>
+
+            <section class="comparison-section" aria-labelledby="comparison-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="lab-kicker">Live comparison</p>
+                        <h2 id="comparison-title" data-scenario-title>Vertical detail</h2>
+                    </div>
+                    <p data-scenario-note>
+                        Fine text, hairlines, color boundaries, and checker detail.
+                    </p>
+                </div>
+
+                <div class="comparison-grid">
+                    <article class="variant-card" data-variant-card="baseline">
+                        <header class="variant-head">
+                            <div>
+                                <span class="variant-index">A</span>
+                                <h3>Opacity only</h3>
+                            </div>
+                            <span class="layer-count" data-layer-count="baseline">0 blur sheets</span>
+                        </header>
+                        <p class="variant-description">
+                            The shipped CSS mask. This is the control.
+                        </p>
+                        <div class="viewport-shell">
+                            <div
+                                class="review-scrollport fade-y lab-scrollbar"
+                                data-sync-scroll
+                                data-variant="baseline"
+                            >
+                                <div data-signal-mount></div>
+                            </div>
+                            <div class="effect-guides" aria-hidden="true"></div>
+                        </div>
+                        <code data-api-label="baseline">fade-y</code>
+                    </article>
+
+                    <article class="variant-card blur-card" data-variant-card="single">
+                        <header class="variant-head">
+                            <div>
+                                <span class="variant-index">B</span>
+                                <h3>Single blur</h3>
+                            </div>
+                            <span class="layer-count" data-layer-count="single">1 blur sheet</span>
+                        </header>
+                        <p class="variant-description">
+                            Opacity and blur select the same edges. No extra elements.
+                        </p>
+                        <div class="viewport-shell">
+                            <div
+                                class="review-scrollport fade-y fade-blur-y fade-blur-md lab-scrollbar"
+                                data-sync-scroll
+                                data-variant="single"
+                            >
+                                <div data-signal-mount></div>
+                            </div>
+                            <div class="effect-guides" aria-hidden="true"></div>
+                        </div>
+                        <code data-api-label="single">fade-y fade-blur-y fade-blur-md</code>
+                    </article>
+
+                    <article class="variant-card blur-card progressive-card" data-variant-card="progressive">
+                        <header class="variant-head">
+                            <div>
+                                <span class="variant-index">C</span>
+                                <h3>Progressive blur</h3>
+                            </div>
+                            <span class="layer-count" data-layer-count="progressive">5 blur sheets</span>
+                        </header>
+                        <p class="variant-description">
+                            Four layer spans create a gradual increase in blur strength.
+                        </p>
+                        <div class="viewport-shell">
+                            <div
+                                class="review-scrollport fade-y fade-blur-y fade-blur-md lab-scrollbar"
+                                data-sync-scroll
+                                data-variant="progressive"
+                            >
+                                <div data-signal-mount></div>
+                                <span class="fade-blur-layer" aria-hidden="true"></span>
+                                <span class="fade-blur-layer" aria-hidden="true"></span>
+                                <span class="fade-blur-layer" aria-hidden="true"></span>
+                                <span class="fade-blur-layer" aria-hidden="true"></span>
+                            </div>
+                            <div class="effect-guides" aria-hidden="true"></div>
+                        </div>
+                        <code data-api-label="progressive">fade-y fade-blur-y fade-blur-md + 4 layers</code>
+                    </article>
+
+                    <article class="variant-card blur-card" data-variant-card="blur-only" id="blur-only">
+                        <header class="variant-head">
+                            <div>
+                                <span class="variant-index">D</span>
+                                <h3>Blur only</h3>
+                            </div>
+                            <span class="layer-count" data-layer-count="blur-only">1 blur sheet</span>
+                        </header>
+                        <p class="variant-description">
+                            Single blur with no opacity fade. The content stays fully opaque.
+                        </p>
+                        <div class="viewport-shell">
+                            <div
+                                class="review-scrollport fade-blur-y fade-blur-md lab-scrollbar"
+                                data-sync-scroll
+                                data-variant="blur-only"
+                            >
+                                <div data-signal-mount></div>
+                            </div>
+                            <div class="effect-guides" aria-hidden="true"></div>
+                        </div>
+                        <code data-api-label="blur-only">fade-blur-y fade-blur-md</code>
+                    </article>
+                </div>
+            </section>
+
+            <section class="contract-section" aria-labelledby="contract-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="lab-kicker">Fail-closed structure</p>
+                        <h2 id="contract-title">Try the layer count</h2>
+                    </div>
+                    <p>
+                        Only zero and exactly four direct layer spans have a special meaning.
+                    </p>
+                </div>
+
+                <div class="contract-grid">
+                    <div class="structure-panel">
+                        <div class="structure-controls">
+                            <span class="control-label">Direct layer spans</span>
+                            <div class="segmented" role="group" aria-label="Direct layer span count">
+                                <button type="button" data-structure-count="0" aria-pressed="false">0</button>
+                                <button type="button" data-structure-count="1" aria-pressed="false">1</button>
+                                <button type="button" data-structure-count="2" aria-pressed="false">2</button>
+                                <button type="button" data-structure-count="3" aria-pressed="true">3</button>
+                                <button type="button" data-structure-count="4" aria-pressed="false">4</button>
+                                <button type="button" data-structure-count="5" aria-pressed="false">5</button>
+                            </div>
+                        </div>
+                        <div class="structure-result">
+                            <div>
+                                <span class="result-state" data-structure-state>Single blur</span>
+                                <strong data-structure-result>1 active blur sheet</strong>
+                            </div>
+                            <code data-structure-code>3 spans → incomplete layers hidden</code>
+                        </div>
+                        <div class="structure-viewport-shell">
+                            <div
+                                class="structure-scrollport fade-y fade-blur-y fade-blur-md lab-scrollbar"
+                                data-structure-scrollport
+                            >
+                                <div class="structure-content">
+                                    <div>Sharp center</div>
+                                    <div class="structure-checker">Checker detail</div>
+                                    <button type="button" class="edge-action" data-edge-action>
+                                        Edge button remains clickable
+                                    </button>
+                                    <div>Terminal pixels</div>
+                                </div>
+                            </div>
+                        </div>
+                        <output class="click-readout" data-click-readout>0 edge clicks</output>
+                    </div>
+
+                    <aside class="api-panel">
+                        <div class="api-panel-head">
+                            <span class="control-label">Shared API</span>
+                            <button type="button" class="copy-button" data-copy-markup>Copy</button>
+                        </div>
+                        <pre><code data-markup-code>&lt;div class="fade-y fade-blur-y fade-blur-md overflow-y-auto"&gt;
+  &lt;!-- content --&gt;
+
+  &lt;!-- Optional progressive blur: add all four --&gt;
+  &lt;span class="fade-blur-layer" aria-hidden="true"&gt;&lt;/span&gt;
+  &lt;span class="fade-blur-layer" aria-hidden="true"&gt;&lt;/span&gt;
+  &lt;span class="fade-blur-layer" aria-hidden="true"&gt;&lt;/span&gt;
+  &lt;span class="fade-blur-layer" aria-hidden="true"&gt;&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+                        <p>
+                            Progressive mode needs a scrollport that allows direct spans, such as <code>div</code>.
+                            Direct spans are not valid children of native lists or tables.
+                        </p>
+                    </aside>
+                </div>
+            </section>
+
+            <section class="review-notes" aria-label="Review checklist">
+                <div>
+                    <p class="lab-kicker">What to look for</p>
+                    <h2>A good result loses detail by degrees.</h2>
+                </div>
+                <ul>
+                    <li>The center stays crisp and still.</li>
+                    <li>The last pixels land without a bright hard clip.</li>
+                    <li>Selected edges have equal apparent strength.</li>
+                    <li>Mixed and corner cases have no seam or halo.</li>
+                    <li>Changing blur strength should preserve the fade size.</li>
+                    <li>Buttons and scrolling still work through every sheet.</li>
+                </ul>
+            </section>
+        </main>
+
+        <footer class="lab-footer">
+            <span>tw-fade blur playground</span>
+            <span>The effects use the library CSS. No runtime JavaScript is needed.</span>
+        </footer>
+
+        <template id="signal-template">
+            <div class="signal-grid">
+                <article class="signal-card tone-cream pattern-lines">
+                    <span class="signal-number">01</span>
+                    <p class="signal-kicker">Fine type / 11px</p>
+                    <h4>Hairlines reveal the onset.</h4>
+                    <p>Thin rules and compact text make a sudden blur boundary easy to find.</p>
+                    <div class="hairlines" aria-hidden="true"><i></i><i></i><i></i></div>
+                </article>
+                <article class="signal-card tone-orange pattern-checker">
+                    <span class="signal-number">02</span>
+                    <p class="signal-kicker">High frequency</p>
+                    <h4>Checker detail should dissolve by degrees.</h4>
+                    <p>The center must remain sharp while the edge loses structure.</p>
+                    <div class="micro-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                </article>
+                <article class="signal-card tone-blue pattern-grid">
+                    <span class="signal-number">03</span>
+                    <p class="signal-kicker">Color boundary</p>
+                    <h4>Blur detail, not the whole surface.</h4>
+                    <p>Strong adjacent colors expose haze and unwanted tint.</p>
+                    <div class="micro-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+                </article>
+                <article class="signal-card tone-violet pattern-checker">
+                    <span class="signal-number">04</span>
+                    <p class="signal-kicker">Hard line</p>
+                    <h4>A clean center makes the ramp legible.</h4>
+                    <p>Watch the small letters as they pass through each band.</p>
+                    <div class="hairlines" aria-hidden="true"><i></i><i></i></div>
+                </article>
+                <article class="signal-card tone-teal pattern-grid">
+                    <span class="signal-number">05</span>
+                    <p class="signal-kicker">Terminal edge</p>
+                    <h4>The final pixels fade out.</h4>
+                    <p>The opacity fade keeps the blurred content from ending abruptly.</p>
+                    <button type="button" class="signal-button">Focusable control</button>
+                </article>
+                <article class="signal-card tone-cream pattern-checker">
+                    <span class="signal-number">06</span>
+                    <p class="signal-kicker">Small geometry</p>
+                    <h4>Round and square forms show radius spread.</h4>
+                    <p>Edges should soften without a visible layer seam.</p>
+                    <div class="shape-row" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                </article>
+                <article class="signal-card tone-blue pattern-lines">
+                    <span class="signal-number">07</span>
+                    <p class="signal-kicker">Calm center</p>
+                    <h4>No effect belongs here.</h4>
+                    <p>This region is the reference for color and sharpness.</p>
+                    <div class="micro-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                </article>
+                <article class="signal-card tone-orange pattern-grid">
+                    <span class="signal-number">08</span>
+                    <p class="signal-kicker">Motion</p>
+                    <h4>The gate should turn on without a pop.</h4>
+                    <p>Scrub from start to middle and watch the band grow.</p>
+                    <div class="hairlines" aria-hidden="true"><i></i><i></i><i></i></div>
+                </article>
+                <article class="signal-card tone-teal pattern-checker">
+                    <span class="signal-number">09</span>
+                    <p class="signal-kicker">Logical edge</p>
+                    <h4>RTL must swap start and end.</h4>
+                    <p>Use the writing direction control with the mixed test.</p>
+                    <div class="shape-row" aria-hidden="true"><i></i><i></i><i></i></div>
+                </article>
+                <article class="signal-card tone-violet pattern-lines">
+                    <span class="signal-number">10</span>
+                    <p class="signal-kicker">Corner union</p>
+                    <h4>Check the corner transitions.</h4>
+                    <p>The all-edge test should not make a bright diagonal halo.</p>
+                    <div class="micro-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+                </article>
+                <article class="signal-card tone-cream pattern-grid">
+                    <span class="signal-number">11</span>
+                    <p class="signal-kicker">Surface</p>
+                    <h4>Transparent sheets need no tint.</h4>
+                    <p>Switch surfaces and check that the treatment keeps their hue.</p>
+                    <div class="hairlines" aria-hidden="true"><i></i><i></i></div>
+                </article>
+                <article class="signal-card tone-orange pattern-checker">
+                    <span class="signal-number">12</span>
+                    <p class="signal-kicker">Input</p>
+                    <h4>The layers must ignore the pointer.</h4>
+                    <p>Buttons, text selection, wheel input, and drag scrolling stay live.</p>
+                    <button type="button" class="signal-button">Try this button</button>
+                </article>
+                <article class="signal-card tone-blue pattern-grid">
+                    <span class="signal-number">13</span>
+                    <p class="signal-kicker">Density</p>
+                    <h4>Fine structure makes broad haze obvious.</h4>
+                    <p>A useful preset softens the edge without swallowing the card.</p>
+                    <div class="shape-row" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                </article>
+                <article class="signal-card tone-teal pattern-lines">
+                    <span class="signal-number">14</span>
+                    <p class="signal-kicker">End gate</p>
+                    <h4>The trailing effect must clear at the end.</h4>
+                    <p>Move the synchronized control to 100% and look for residue.</p>
+                    <div class="micro-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+                </article>
+                <article class="signal-card tone-violet pattern-checker">
+                    <span class="signal-number">15</span>
+                    <p class="signal-kicker">Last sample</p>
+                    <h4>The outer edge returns to full detail.</h4>
+                    <p>At the end, the trailing edge becomes inactive and crisp.</p>
+                    <div class="hairlines" aria-hidden="true"><i></i><i></i><i></i></div>
+                </article>
+            </div>
+        </template>
+    </body>
+</html>

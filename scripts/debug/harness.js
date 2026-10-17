@@ -11,8 +11,8 @@
  * Notes baked into the controls:
  *   - onset = 1 reproduces the OLD coupled behavior (alpha = t); 8 is the new
  *     decoupled default. That IS the A/B toggle.
- *   - "Static fallback" forces .fade-always, mirroring the @supports-not path
- *     that pins t/b/l/r = 1 where scroll-driven animation is unsupported.
+ *   - "Force opacity" applies .fade-always to selected opacity edges without
+ *     changing the raw scroll progress. It does not disable browser features.
  */
 (() => {
   'use strict';
@@ -147,7 +147,7 @@
       { id: 'clip', label: 'overflow: clip (trap)', cls: 'fade-y', special: 'clip', content: 'text', note: 'overflow:clip is not a scroll container → timeline inert → NO fade though content IS clipped.' },
       { id: 'fnone', label: 'fade-none (control)', cls: 'fade-y fade-none', special: 'simple', content: 'text', noFallback: true, note: 'Forced off — must never fade, even mid-scroll.' },
       { id: 'noney', label: 'fade-none-y on fade', cls: 'fade fade-none-y', special: 'plane', noFallback: true, note: 'All edges armed, vertical forced off → only the inline (l/r) edges fade.' },
-      { id: 'alwaysx', label: 'fade-always-x on fade-y', cls: 'fade-y fade-always-x', special: 'simple', content: 'text', noFallback: true, note: 'l/r pinned to 1 but fade-y has no horizontal layer → identity mask, NO horizontal fade.' },
+      { id: 'alwaysx', label: 'fade-always-x on fade-y', cls: 'fade-y fade-always-x', special: 'simple', content: 'text', noFallback: true, note: 'Horizontal activation does not select edges. Only vertical opacity follows scrolling.' },
     ],
   };
 
@@ -326,14 +326,14 @@
       const maxY = el.scrollHeight - el.clientHeight;
       const maxX = el.scrollWidth - el.clientWidth;
       const cs = getComputedStyle(el);
-      const amt = (p) => (Number(cs.getPropertyValue('--tw-fade-' + p)) || 0).toFixed(2).replace(/^0(?=\.)/, '');
+      const amt = (p) => (Number(cs.getPropertyValue('--tw-fade-opacity-' + p)) || 0).toFixed(2).replace(/^0(?=\.)/, '');
       if (maxX > maxY && maxX > 0) {
         const x = Math.abs(el.scrollLeft);
-        out.textContent = `x ${x|0}/${maxX|0} · ${Math.round(x / maxX * 100)}% · l${amt('l')} r${amt('r')}`;
+        out.textContent = `x ${x|0}/${maxX|0} · ${Math.round(x / maxX * 100)}% · opacity l${amt('l')} r${amt('r')}`;
       } else if (maxY > 0) {
-        out.textContent = `y ${el.scrollTop|0}/${maxY|0} · ${Math.round(el.scrollTop / maxY * 100)}% · t${amt('t')} b${amt('b')}`;
+        out.textContent = `y ${el.scrollTop|0}/${maxY|0} · ${Math.round(el.scrollTop / maxY * 100)}% · opacity t${amt('t')} b${amt('b')}`;
       } else {
-        out.textContent = 'no overflow → no fade';
+        out.textContent = `no overflow · opacity t${amt('t')} b${amt('b')} l${amt('l')} r${amt('r')}`;
       }
     });
   }

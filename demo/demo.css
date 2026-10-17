@@ -712,6 +712,11 @@ h3 {
         flex-basis: 100%;
         white-space: normal;
     }
+
+    .demo-hero {
+        min-height: 56vh;
+        min-height: 56svh;
+    }
 }
 
 .visually-hidden {
@@ -886,6 +891,14 @@ h3 {
 .install-copy-button[data-copied="true"] {
     color: var(--demo-accent-text-strong);
     background: color-mix(in oklab, var(--demo-focus) 18%, transparent);
+}
+
+.install-copy-error {
+    max-width: calc(100% - 1rem);
+    margin: 0.5rem 0 0 1rem;
+    color: var(--demo-warning-text);
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -1621,6 +1634,12 @@ h3 {
     will-change: transform;
 }
 
+.surface-float-button:focus-visible {
+    box-shadow:
+        inset 0 0 0 2px var(--demo-page-bg),
+        inset 0 0 0 4px var(--demo-focus);
+}
+
 .surface-float-button[aria-checked="true"] {
     --surface-button-scale: 1.05;
     --surface-swatch-scale: 0.92;
@@ -1808,6 +1827,18 @@ h3 {
 .thin-scroll::-webkit-scrollbar-thumb {
     background: var(--demo-border-strong);
     border-radius: 9999px;
+}
+
+@supports selector(:has(*)) {
+    .tuning-card:has(.demo-scrollport:focus-visible),
+    .anybg-stage:has(> .demo-scrollport:focus-visible) {
+        outline: 2px solid var(--demo-focus);
+        outline-offset: 3px;
+    }
+
+    .demo-scrollport:focus-visible {
+        outline: none;
+    }
 }
 
 .ui-button {

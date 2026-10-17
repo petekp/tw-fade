@@ -72,7 +72,13 @@ const exportedHtml = fs.readFileSync(
 const missingExportedFiles = demoStaticFiles.filter((fileName) => {
   return !fileExists(path.join(exportResult.targetDir, fileName))
 })
-const exportedLabFiles = ['hero-lab.html', 'wave-lab.html'].filter((fileName) => {
+const exportedLabFiles = [
+  'hero-lab.html',
+  'wave-lab.html',
+  'blur-lab.html',
+  'blur-lab.css',
+  'blur-lab.js',
+].filter((fileName) => {
   return fileExists(path.join(exportResult.targetDir, fileName))
 })
 fs.rmSync(tmpRoot, { recursive: true, force: true })

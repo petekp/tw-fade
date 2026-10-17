@@ -2,7 +2,7 @@
  * verify-fade.mjs — pixel-level regression: does the mask ACTUALLY render visible
  * transparency, on BOTH axes and at the correct band width?
  *
- * verify.mjs / verify-dist.mjs only read the numeric `--tw-fade-t/--tw-fade-b` amounts —
+ * The demo checks read effective amounts; this script tests opacity pixels —
  * which were NEVER the broken part — so they stayed green straight through the
  * "only large fades" bug. This file rasters real panels in Chromium and samples
  * pixels, where the mask is baked into the bitmap. It covers:

@@ -5,5 +5,6 @@
 
 /* Scan the demo markup for utility classes. */
 @source "./index.html";
-/* The Advanced sides control composes these classes at runtime. */
-@source inline("fade-{top,bottom,start,end}");
+@source "./blur-lab.html";
+/* Demo controls select these effect, strength, and size classes at runtime. */
+@source inline("fade fade-{x,y,top,bottom,start,end} fade-blur fade-blur-{x,y,top,bottom,start,end} fade-blur-{sm,md,lg} fade-size-{sm,lg}");

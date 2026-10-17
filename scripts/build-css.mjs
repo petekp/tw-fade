@@ -41,8 +41,68 @@ const outFile = path.join(root, 'dist', 'tw-fade.css')
 // absent — those require Tailwind's JIT and belong to the v4 source path, not
 // the prebuilt drop-in.
 const SCALE = 'xs,sm,md,lg,xl,2xl,3xl,4xl'
-const CLASSES =
-  `fade fade-{x,y,top,bottom,start,end} fade-none fade-none-{x,y} fade-always fade-always-{x,y} fade-size-{${SCALE}} fade-size-{x,y,top,bottom,start,end}-{${SCALE}} fade-travel-{${SCALE}} fade-clear-{${SCALE},var} fade-clear-{x,y,top,bottom,start,end}-{${SCALE},var} fade-scrollbar-width-{sm,md,lg}`
+const DIRECTIONS = 'x,y,top,bottom,start,end'
+const CLASSES = [
+  `fade fade-{${DIRECTIONS}}`,
+  `fade-blur fade-blur-{${DIRECTIONS}} fade-blur-{sm,md,lg} fade-blur-layer`,
+  `fade-{always,auto,none} fade-{always,auto,none}-{${DIRECTIONS}}`,
+  `fade-blur-{always,auto,none} fade-blur-{always,auto,none}-{${DIRECTIONS}}`,
+  `fade-size-{${SCALE}} fade-size-{${DIRECTIONS}}-{${SCALE}}`,
+  `fade-travel-{${SCALE}}`,
+  `fade-clear-{${SCALE},var} fade-clear-{${DIRECTIONS}}-{${SCALE},var}`,
+  'fade-scrollbar-safe-{x,y,xy} fade-scrollbar-width-{sm,md,lg}',
+].join(' ')
+
+const OPACITY_DIRECTIONS = ['fade', ...DIRECTIONS.split(',').map((direction) => `fade-${direction}`)]
+const BLUR_DIRECTIONS = OPACITY_DIRECTIONS.map((name) => name.replace(/^fade/, 'fade-blur'))
+
+function directionBlock(source, name) {
+  const pattern = new RegExp(`^@utility ${name} \\{`, 'gm')
+  const matches = [...source.matchAll(pattern)]
+  if (matches.length !== 1) throw new Error(`Expected one @utility ${name}, found ${matches.length}`)
+  const start = matches[0].index
+  let depth = 0
+  for (let index = source.indexOf('{', start); index < source.length; index++) {
+    if (source[index] === '{') depth++
+    else if (source[index] === '}' && --depth === 0) {
+      return { start, end: index + 1, text: source.slice(start, index + 1) }
+    }
+  }
+  throw new Error(`Unclosed @utility ${name}`)
+}
+
+function sharedPrebuiltSource(source) {
+  const blocks = [...OPACITY_DIRECTIONS, ...BLUR_DIRECTIONS]
+    .map((name) => ({ name, ...directionBlock(source, name) }))
+    .sort((left, right) => left.start - right.start)
+  const blurGates = blocks
+    .filter(({ name }) => name.startsWith('fade-blur'))
+    .map(({ text }) => text.match(/@supports\s+[^{}]+(?=\s*\{)/)?.[0].trim())
+  if (blurGates.some((gate) => !gate || gate !== blurGates[0])) {
+    throw new Error('Blur direction support gates differ')
+  }
+
+  const selector = (names) => `:is(${names.map((name) => `.${name}`).join(', ')})`
+  // Share only renderer declarations; each public utility still owns its raw hooks and selection.
+  const shared = `@layer utilities {
+  ${selector(OPACITY_DIRECTIONS)} { @apply tw-fade-base tw-fade-mask; }
+  ${blurGates[0]} {
+    ${selector(BLUR_DIRECTIONS)} { @apply tw-fade-base tw-fade-mask tw-fade-overlay; }
+  }
+}
+`
+  let output = source.slice(0, blocks[0].start) + shared
+  let cursor = blocks[0].start
+  for (const { name, start, end, text } of blocks) {
+    const prefix = name.startsWith('fade-blur')
+      ? '@apply tw-fade-base tw-fade-mask tw-fade-overlay '
+      : '@apply tw-fade-base tw-fade-mask '
+    if (text.split(prefix).length !== 2) throw new Error(`Shared @apply changed in ${name}`)
+    output += source.slice(cursor, start) + text.replace(prefix, '@apply ')
+    cursor = end
+  }
+  return output + source.slice(cursor)
+}
 
 const BANNER =
   '/*! tw-fade — framework-free build for plain HTML / CDN.\n' +
@@ -58,9 +118,14 @@ export function compileCss({ classes = CLASSES } = {}) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'tw-fade-build-'))
   try {
     const entry = path.join(tmp, 'entry.css')
+    let sourcePath = src
+    if (classes === CLASSES) {
+      sourcePath = path.join(tmp, 'shared-source.css')
+      fs.writeFileSync(sourcePath, sharedPrebuiltSource(fs.readFileSync(src, 'utf8')))
+    }
     fs.writeFileSync(
       entry,
-      `@import "${utilities}";\n@import "${src}";\n@source inline("${classes}");\n`,
+      `@layer theme, base, components, utilities;\n@import "${utilities}" layer(utilities);\n@import "${sourcePath}";\n@source inline("${classes}");\n`,
     )
     const tmpOut = path.join(tmp, 'out.css')
     execFileSync(process.execPath, [cli, '-i', entry, '-o', tmpOut], {

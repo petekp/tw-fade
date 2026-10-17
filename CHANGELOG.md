@@ -18,10 +18,35 @@ Notable changes since 0.7.0 are documented here. The format follows
 
 **Migration:** None.
 
+## [0.9.0] - 2026-10-17
+
+**Migration:** Draft blur users must adopt independent selectors and controls. Existing opacity users should review overlapping modes: `none` now wins over `always` at the same scope and condition. Follow the [0.9.0 migration procedure](./MIGRATING.md#migrating-to-090).
+
+### Added
+
+- `fade-blur`, `fade-blur-x`, `fade-blur-y`, and the `top`, `bottom`, `start`, and `end` blur selectors choose edges independently of opacity fading. Single blur needs no layer elements; four direct `fade-blur-layer` spans opt into progressive blur.
+- `fade-auto` and the independent `fade-blur-auto`, `fade-blur-always`, and `fade-blur-none` controls configure selected edges. Both effect families support global, axis, and edge scopes, with edge-over-axis-over-global resolution.
+- Responsive and state variants now work for effect selectors, activation controls, named blur strengths, and scrollbar-safe controls through the Tailwind source path. The prebuilt stylesheet remains the named, unprefixed API.
+
 ### Changed
 
+- The prebuilt stylesheet shares renderer rules across direction selectors while preserving the single-class API.
+- The demo shows more of the first scrolling example on mobile.
+- `fade-blur-sm`, `fade-blur-md`, and `fade-blur-lg` now set strength only. Blur selectors default to `md` (`3px`); size, clear zones, travel, and onset remain shared between effects.
+- Activation modes at the same scope and identical variant chain now resolve as `none` > `auto` > `always`, independently of class-string order. Active conditional modes can still replace base modes at the same scope. Explicit `auto` restores scrolling there.
+- Blur fallback preserves the requested effects: blur-only content remains unmodified, while combined usage retains opacity fading. Force controls do not bypass missing renderer support or ineligible anchors.
 - Documentation: shortened the README and made the 0.6.x migration procedure explicit about package updates, RTL decisions, scan scope, recovery, and verification.
 - Release metadata: release preparation now requires a first-line migration status and at least one change-note bullet under `Unreleased`.
+
+### Fixed
+
+- Component-layer `@apply` configuration and authored `--tw-fade-onset` values override internal defaults. Onset stays local to each scroller.
+- Demo scrollers show keyboard focus on their unmasked containers. The surface picker keeps one Tab stop on the selected color and shows keyboard focus.
+- Failed install-command copies show and announce the recovery action.
+
+### Removed
+
+- Draft `fade-opaque` was removed. Select blur without opacity directions for blur-only rendering. No alias is provided.
 
 ## [0.8.0] - 2026-07-31
 
@@ -87,7 +112,8 @@ See [Scrollbars](./README.md#scrollbars) for setup, limits, and examples.
 - The global `fade-range-*` family was removed in favor of `fade-travel-*`.
 - No public `fade-left` or `fade-right` alias is provided.
 
-[Unreleased]: https://github.com/petekp/tw-fade/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/petekp/tw-fade/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/petekp/tw-fade/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/petekp/tw-fade/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/petekp/tw-fade/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/petekp/tw-fade/releases/tag/v0.7.0

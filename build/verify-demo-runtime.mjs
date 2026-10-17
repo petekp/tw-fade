@@ -56,13 +56,71 @@ async function withStaticServer(root, run) {
 }
 
 async function exposePalette(page) {
-  await page.locator('[data-floating-surface-palette]').evaluate((el) => {
-    el.dataset.visible = 'true'
-    el.setAttribute('aria-hidden', 'false')
-    for (const button of el.querySelectorAll('[data-surface-option]')) {
-      button.tabIndex = 0
+  await page.evaluate(() => {
+    document.body.scrollTop = 80
+    document.body.dispatchEvent(new Event('scroll'))
+  })
+  await page.waitForFunction(() => document.querySelector('[data-floating-surface-palette]').dataset.visible === 'true')
+}
+
+async function readPaletteRovingState(page) {
+  return page.evaluate(() => {
+    const palette = document.querySelector('[data-floating-surface-palette]')
+    const buttons = Array.from(palette.querySelectorAll('[data-surface-option]'))
+    return {
+      visible: palette.dataset.visible === 'true',
+      selected: buttons.find((button) => button.getAttribute('aria-checked') === 'true')?.dataset.surfaceOption,
+      tabStops: buttons.filter((button) => button.tabIndex === 0).map((button) => button.dataset.surfaceOption),
+      focused: document.activeElement?.dataset.surfaceOption,
     }
   })
+}
+
+async function checkSurfacePickerRovingTab(page, label) {
+  const hidden = await readPaletteRovingState(page)
+  assert(!hidden.visible && hidden.selected === 'graphite' && hidden.tabStops.length === 0,
+    `${label}: hidden palette keeps its selected swatch out of the Tab order`, JSON.stringify(hidden))
+
+  const previous = page.locator('.footer-social-links a').last()
+  await previous.evaluate((element) => element.focus({ preventScroll: true }))
+  await exposePalette(page)
+  const firstReveal = await readPaletteRovingState(page)
+  assert(firstReveal.selected === 'graphite' && firstReveal.tabStops.join() === 'graphite',
+    `${label}: first reveal keeps one Tab stop on the selected swatch`, JSON.stringify(firstReveal))
+  await page.keyboard.press('Tab')
+  const firstEntry = await readPaletteRovingState(page)
+  assert(firstEntry.focused === 'graphite' && firstEntry.tabStops.join() === 'graphite',
+    `${label}: Tab enters the first reveal on its selected swatch`, JSON.stringify(firstEntry))
+
+  await page.locator('[data-surface-option="cobalt"]').click()
+  await page.waitForFunction(() => document.documentElement.dataset.surface === 'cobalt')
+  await page.evaluate(() => {
+    document.body.scrollTop = 0
+    document.body.dispatchEvent(new Event('scroll'))
+  })
+  await page.waitForFunction(() => document.querySelector('[data-floating-surface-palette]').dataset.visible === 'false')
+  const hiddenAgain = await readPaletteRovingState(page)
+  assert(hiddenAgain.selected === 'cobalt' && hiddenAgain.tabStops.length === 0,
+    `${label}: hidden palette keeps the changed selection out of the Tab order`, JSON.stringify(hiddenAgain))
+
+  await previous.evaluate((element) => element.focus({ preventScroll: true }))
+  await exposePalette(page)
+  const secondReveal = await readPaletteRovingState(page)
+  assert(secondReveal.selected === 'cobalt' && secondReveal.tabStops.join() === 'cobalt',
+    `${label}: second reveal keeps one Tab stop on the changed selection`, JSON.stringify(secondReveal))
+  await page.keyboard.press('Tab')
+  const secondEntry = await readPaletteRovingState(page)
+  assert(secondEntry.focused === 'cobalt' && secondEntry.tabStops.join() === 'cobalt',
+    `${label}: Tab enters the second reveal on its selected swatch`, JSON.stringify(secondEntry))
+
+  await page.locator('[data-surface-option="graphite"]').click()
+  await page.waitForFunction(() => document.documentElement.dataset.surface === 'graphite')
+  await page.locator('[data-surface-option="graphite"]').evaluate((element) => element.blur())
+  await page.evaluate(() => {
+    document.body.scrollTop = 0
+    document.body.dispatchEvent(new Event('scroll'))
+  })
+  await page.waitForFunction(() => document.querySelector('[data-floating-surface-palette]').dataset.visible === 'false')
 }
 
 async function readPageState(page) {
@@ -132,12 +190,24 @@ async function runInteractions(page, label) {
   const keyboardSurface = await page.evaluate(() => ({
     surface: document.documentElement.dataset.surface,
     cobaltChecked: document.querySelector('[data-surface-option="cobalt"]')?.getAttribute('aria-checked'),
+    tabStops: Array.from(document.querySelectorAll('[data-surface-option]')).filter((button) => button.tabIndex === 0).map((button) => button.dataset.surfaceOption),
+    focused: document.activeElement?.dataset.surfaceOption,
   }))
   assert(
     keyboardSurface.surface === 'cobalt' && keyboardSurface.cobaltChecked === 'true',
     `${label}: surface radio keyboard navigation updates theme`,
     JSON.stringify(keyboardSurface),
   )
+  assert(keyboardSurface.tabStops.join() === 'cobalt' && keyboardSurface.focused === 'cobalt', `${label}: selected surface is the only palette Tab stop`, JSON.stringify(keyboardSurface))
+  const focusStyle = await page.evaluate(() => {
+    const button = document.activeElement
+    const focused = { outline: getComputedStyle(button).outlineStyle, shadow: getComputedStyle(button).boxShadow }
+    button.blur()
+    const restingShadow = getComputedStyle(button).boxShadow
+    button.focus()
+    return { ...focused, restingShadow }
+  })
+  assert(focusStyle.outline !== 'none' || focusStyle.shadow !== focusStyle.restingShadow, `${label}: keyboard focus is visible on the surface picker`, JSON.stringify(focusStyle))
 
   await page.locator('.rail-card', { hasText: 'Dim' }).focus()
   await page.keyboard.press('Enter')
@@ -162,6 +232,54 @@ async function runInteractions(page, label) {
   await page.waitForTimeout(160)
   const edgeAfterKeyboard = await topEdge.getAttribute('aria-pressed')
   assert(edgeAfterKeyboard === 'false', `${label}: edge toggle activates from keyboard`, edgeAfterKeyboard)
+
+  for (const [demo, key, axis] of [['chat', 'ArrowDown', 'scrollTop'], ['type-specimen', 'ArrowDown', 'scrollTop'], ['anybg', 'ArrowRight', 'scrollLeft']]) {
+    const scroller = page.locator(`[data-demo="${demo}"]`)
+    const initial = await scroller.evaluate((element, axis) => {
+      element[axis] = 0
+      return { tabindex: element.tabIndex, name: element.getAttribute('aria-label') || element.getAttribute('aria-labelledby') }
+    }, axis)
+    assert(initial.tabindex === 0 && Boolean(initial.name), `${label}: ${demo} provides named keyboard access`, JSON.stringify(initial))
+    await scroller.focus()
+    await page.keyboard.press(key)
+    await page.waitForTimeout(250)
+    assert(await scroller.evaluate((element, axis) => element[axis] > 0, axis), `${label}: keyboard scrolls the ${demo} example`)
+  }
+}
+
+async function checkInstallCopy(page, label) {
+  await page.evaluate(() => {
+    window.__copiedCommand = null
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText: async () => { throw new Error('Clipboard unavailable') } },
+    })
+    window.__originalCopyCommand = document.execCommand
+    document.execCommand = () => false
+  })
+  try {
+    const button = page.locator('[data-copy-install]')
+    await button.focus()
+    await page.keyboard.press('Enter')
+    await page.waitForFunction(() => !document.querySelector('[data-copy-install-error]').hidden)
+    assert(await button.evaluate((element) => document.activeElement === element), `${label}: failed fallback copy preserves keyboard focus`)
+    const copyFailure = await page.evaluate(() => {
+      const visible = document.querySelector('[data-copy-install-error]').textContent.replace(/\s+/g, ' ').trim()
+      const status = document.querySelector('[data-copy-install-status]')
+      return { visible, announcement: status.textContent.replace(/\s+/g, ' ').trim(), live: status.getAttribute('aria-live') }
+    })
+    assert(await page.locator('[data-copy-install-error]').isVisible(), `${label}: failed install copy displays recovery feedback`)
+    assert(copyFailure.live === 'polite' && copyFailure.visible.length > 0 && copyFailure.announcement.includes(copyFailure.visible),
+      `${label}: live failure announcement includes the visible recovery action`, JSON.stringify(copyFailure))
+    await page.evaluate(() => {
+      navigator.clipboard.writeText = async (text) => { window.__copiedCommand = text }
+    })
+    await button.click()
+    await page.waitForFunction(() => document.querySelector('[data-copy-install]').dataset.copied === 'true')
+    assert(await page.evaluate(() => document.querySelector('[data-copy-install-error]').hidden && window.__copiedCommand === document.querySelector('[data-install-command]').textContent.trim()), `${label}: a successful retry copies the command and clears the error`)
+  } finally {
+    await page.evaluate(() => { document.execCommand = window.__originalCopyCommand })
+  }
 }
 
 // Touch must not drive the lexicon's hover/press springs. On Android the
@@ -446,6 +564,7 @@ async function smokePage(browser, options) {
   assert(/transform/.test(state.movingWillChange.railCard), `${label}: rail cards are composited`, state.movingWillChange.railCard)
   assert(/transform/.test(state.movingWillChange.easedLine), `${label}: eased line is composited`, state.movingWillChange.easedLine)
   assert(/opacity/.test(state.movingWillChange.token), `${label}: composable tokens expose compositor hints`, state.movingWillChange.token)
+  if (checkKeyboard) await checkSurfacePickerRovingTab(page, label)
 
   // Drive the scroll-linked wave field and confirm it morphs. Set scrollTop
   // directly (the most portable scroll primitive) and dispatch the `scroll`
@@ -493,7 +612,10 @@ async function smokePage(browser, options) {
   await checkTouchHoverInert(page, label)
   await checkTouchSurfacePickerIsSteady(page, label)
 
-  if (checkKeyboard) await runInteractions(page, label)
+  if (checkKeyboard) {
+    await runInteractions(page, label)
+    await checkInstallCopy(page, label)
+  }
   await context.close()
 }
 
@@ -529,6 +651,11 @@ try {
       viewport: { width: 1280, height: 1100 },
       reducedMotion: true,
       checkKeyboard: false,
+    })
+    await smokePage(webkitBrowser, {
+      label: 'export WebKit desktop',
+      url: `${baseUrl}/tw-fade`,
+      viewport: { width: 1280, height: 1100 },
     })
     await smokePage(webkitBrowser, {
       label: 'export WebKit iPhone',

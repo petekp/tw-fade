@@ -1,6 +1,8 @@
 # tw-fade
 
-Scroll-aware edge fades for Tailwind CSS v4. Add a utility to a scroll container. The fade appears while content remains beyond an edge and clears when you reach it.
+Scroll-aware opacity fades and edge blur for Tailwind CSS v4. Select either effect, or combine them. Each appears while content remains beyond an edge and clears when you reach it.
+
+Version `0.9.0` adds independent opacity and blur controls. See the [migration notes](./MIGRATING.md#migrating-to-090) for overlapping activation modes and earlier draft blur usages.
 
 **[Live demo](https://pete.design/tw-fade)**
 
@@ -10,13 +12,13 @@ Scroll-aware edge fades for Tailwind CSS v4. Add a utility to a scroll container
 </div>
 ```
 
-`tw-fade` masks the scroll container itself, so your existing surface shows through. It requires no wrapper or runtime JavaScript. You can compose direction, size, travel, and clear-zone utilities. Browsers without scroll-driven animations show a static fade.
+`tw-fade` works on the scroll container itself. Opacity fading reveals your existing surface; blur softens content near its selected edges. Neither requires a wrapper or runtime JavaScript. Size, travel, and clear-zone settings are shared by both effects. Browsers without scroll-driven animations retain static opacity fading and omit blur.
 
 ## Install
 
 ### Tailwind v4 source path
 
-Use the source path in a Tailwind v4 app. It supports bracket values such as `fade-size-[2rem]`.
+Use the source path in a Tailwind v4 app. It generates responsive and state variants, plus bracket values such as `fade-size-[2rem]`.
 
 ```bash
 npm install tw-fade
@@ -32,18 +34,25 @@ npm install tw-fade
 Use the prebuilt file with plain HTML, a CDN, or a bundler that imports CSS.
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/tw-fade@0.8.0/dist/tw-fade.css" />
+<link rel="stylesheet" href="https://unpkg.com/tw-fade@0.9.0/dist/tw-fade.css" />
 ```
 
 ```js
 import "tw-fade/css";
 ```
 
-The prebuilt file contains the named utility set. Bracket values require Tailwind's source path. Pin CDN imports to a version to avoid breaking changes.
+The prebuilt file contains the named, unprefixed utility set. Variants and bracket values require Tailwind's source path. Pin CDN imports to a version to avoid breaking changes.
 
 ## Usage
 
-Apply the fade utility to the scrolling element.
+Apply effect selectors to the scrolling element.
+
+| Intent | Classes |
+| --- | --- |
+| Vertical opacity fade | `fade-y` |
+| Vertical blur | `fade-blur-y` |
+| Both effects vertically | `fade-y fade-blur-y` |
+| Top blur and bottom opacity fade | `fade-blur-top fade-bottom` |
 
 ```html
 <!-- Top and bottom -->
@@ -64,15 +73,17 @@ Apply the fade utility to the scrolling element.
 
 ## Direction Utilities
 
-| Utility | Edges |
-| --- | --- |
-| `fade` | all four edges |
-| `fade-y` | top + bottom |
-| `fade-top` | top |
-| `fade-bottom` | bottom |
-| `fade-x` | horizontal start + horizontal end |
-| `fade-start` | horizontal start |
-| `fade-end` | horizontal end |
+| Opacity selector | Blur selector | Edges |
+| --- | --- | --- |
+| `fade` | `fade-blur` | all four edges |
+| `fade-y` | `fade-blur-y` | top + bottom |
+| `fade-top` | `fade-blur-top` | top |
+| `fade-bottom` | `fade-blur-bottom` | bottom |
+| `fade-x` | `fade-blur-x` | horizontal start + horizontal end |
+| `fade-start` | `fade-blur-start` | horizontal start |
+| `fade-end` | `fade-blur-end` | horizontal end |
+
+Selections add together within each effect. `fade-top fade-bottom` selects both opacity edges. `fade-blur-y fade-blur-x` selects all blur edges. Neither family changes the other's selection. Strength, geometry, and activation settings do not select edges by themselves.
 
 `start` and `end` name horizontal edges and follow the HTML `dir` attribute. In LTR, start is left and end is right. RTL reverses them. `top` and `bottom` stay physical.
 
@@ -82,9 +93,43 @@ Set `dir` on the scroll container or an ancestor. A CSS `direction: rtl` rule do
 <div dir="rtl" class="fade-start overflow-x-auto">...</div>
 ```
 
+## Blur
+
+Use a blur selector such as `fade-blur-y` for blur without opacity fading. With no extra elements, it blends one blur into the selected edges. Add an opacity selector when you want both effects.
+
+```html
+<div class="fade-blur-y h-80 overflow-y-auto">
+  <!-- Content -->
+</div>
+```
+
+Add exactly four empty direct layer spans for progressive blur. This uses five increasing blur radii: the scroller's pseudo-element and the four spans. The following example combines progressive blur with opacity fading.
+
+```html
+<div class="fade-y fade-blur-y fade-blur-md h-80 overflow-y-auto">
+  <!-- Content -->
+  <span class="fade-blur-layer" aria-hidden="true"></span>
+  <span class="fade-blur-layer" aria-hidden="true"></span>
+  <span class="fade-blur-layer" aria-hidden="true"></span>
+  <span class="fade-blur-layer" aria-hidden="true"></span>
+</div>
+```
+
+`fade-blur-sm`, `fade-blur-md`, and `fade-blur-lg` set strength only. They do nothing without a blur selector. The single radii are `2px`, `3px`, and `6px`; a selector without a strength class uses `md` (`3px`). There is no arbitrary-radius utility in this API. Override `--fade-blur-sm`, `--fade-blur-md`, or `--fade-blur-lg` with a CSS length to tune a preset.
+
+Progressive mode uses a stronger sequence of radii in the same region. It approximates a gradual change in blur, without promising an exact radius at every pixel. Layer counts other than four use single blur. Content may appear after the layer spans. Keep the structural `fade-blur-layer` marker unprefixed; apply variants to the parent blur utilities. Conditional switching between single and progressive structure is not a utility feature.
+
+Blur strength does not change opacity. `fade-size-*`, per-edge sizes, `fade-clear-*`, travel, and onset configure both effects. Activation is independent: `fade-none` disables opacity, and `fade-blur-none` disables blur. See [activation controls](#activation-controls).
+
+Both renderers preserve pointer input. A blur selector reserves the scroller's `::after`, `anchor-name`, and `anchor-scope`, including while `fade-blur-none` suppresses its appearance. Layers use z-index 1000–1004 within the masked stacking context; keep content below that range. Progressive markup requires a container that permits direct spans, such as a `div`, rather than a native `ul` or `table`.
+
+Blur needs backdrop filters, CSS anchor positioning and scope, filtered `:nth-child()`, and scroll-driven animations. A transform, filter, or paint/layout containment on the scroller can make its anchor ineligible. The no-wrapper API omits blur on those hosts. A transformed ancestor outside the scroller can still work. See [fallbacks and support](#browser-support) for the effect-specific result.
+
+Blur uses the same raw scroll state as opacity fading. The [dynamic-content limitation](#dynamic-content-on-a-stable-scrollport) applies to both. When an axis cannot overflow, disable each selected effect on that axis.
+
 ## Size
 
-Size controls how thick the fade band is.
+Size controls the reach of both effects from each selected edge.
 
 | Utility | Affects |
 | --- | --- |
@@ -103,6 +148,8 @@ Size controls how thick the fade band is.
 Size precedence runs from edge to axis to global to default. For example, `fade-size-top-*` overrides `fade-size-y-*`, which overrides `fade-size-*`.
 
 `tw-fade` caps the default at `min(12%, 3rem)`. Named sizes use Tailwind's `--spacing` token, with `0.25rem` as the fallback.
+
+Explicit sizes are not capped. Opposing bands can overlap and cover the center of a small scroller.
 
 | Step | Value | Step | Value |
 | --- | --- | --- | --- |
@@ -123,20 +170,22 @@ The source path accepts named values, lengths, and percentages, including `fade-
 
 ## Travel Distance
 
-`fade-travel-*` controls how far you scroll before the band reaches full width.
+`fade-travel-*` controls how far you scroll before either effect reaches its full band width. Travel and onset are shared by opacity and blur.
 
 ```html
 <div class="fade-y fade-travel-sm overflow-y-auto">...</div>
 <div class="fade-y fade-travel-[80px] overflow-y-auto">...</div>
 ```
 
-Smaller values open the band sooner. The edge reaches full transparency after about `travel ÷ 8` while the band continues to widen. Set `--tw-fade-onset` to change that ratio; the default is `8`. Higher values make the edge transparent sooner.
+Smaller values open the band sooner. The edge reaches full transparency after about `travel ÷ 8` while the band continues to widen.
+
+Set `--tw-fade-onset` to a number on the scroll container to change that ratio. The default is `8`; higher values make the edge transparent sooner. Onset stays local to each scroller. A nested scroller keeps its default unless you set a value on it.
 
 Travel uses the same named steps as size through its own `--fade-travel-*` tokens, and defaults to `sm`. The source path also accepts bracket values such as `fade-travel-[80px]`.
 
 ## Clear Zones
 
-Clear zones keep an opaque strip before the fade starts. Use them for sticky headers, sticky footers, or fixed controls inside the scroll container.
+Clear zones offset an edge's opacity fade and blur. Use them for sticky headers, sticky footers, or fixed controls inside the scroll container. A clear zone applies to its edge; it does not protect a rectangle from other selected edges. For example, a top clear zone does not prevent a horizontal effect crossing the same header.
 
 | Utility | Affects |
 | --- | --- |
@@ -175,23 +224,54 @@ Use `fade-clear-var`, an axis form such as `fade-clear-y-var`, or an edge form s
 --fade-clear: 0px;
 ```
 
-## Force Or Disable A Fade
+<a id="force-or-disable-a-fade"></a>
 
-These utilities set active fade amounts. Pair them with a direction utility because they do not select edges.
+## Activation Controls
 
-| Utility | Effect |
+Each effect has its own activation settings. Pair a setting with an effect selector; a mode alone does not select an edge or create an effect.
+
+| Meaning | Opacity | Blur |
+| --- | --- | --- |
+| Follow scrolling; default | `fade-auto` | `fade-blur-auto` |
+| Force selected edges on | `fade-always` | `fade-blur-always` |
+| Disable selected edges | `fade-none` | `fade-blur-none` |
+
+Every mode supports global, `x`, `y`, `top`, `bottom`, `start`, and `end` scopes. Examples include `fade-auto-top`, `fade-none-y`, and `fade-blur-always-start`.
+
+An edge setting wins over an axis setting, which wins over a global setting. An absent setting falls through to the broader scope, then to automatic behavior. An explicit `auto` stops that fallthrough. None of these modes removes an edge selection.
+
+| Classes | Result |
 | --- | --- |
-| `fade-none` | disables all selected fades |
-| `fade-none-y` | disables selected vertical fades |
-| `fade-none-x` | disables selected horizontal fades |
-| `fade-always` | pins all selected fades at full strength |
-| `fade-always-y` | pins selected vertical fades at full strength |
-| `fade-always-x` | pins selected horizontal fades at full strength |
+| `fade fade-always fade-none-x` | Vertical opacity forced on; horizontal opacity off |
+| `fade fade-none fade-always-y` | Vertical opacity forced on; horizontal opacity off |
+| `fade-y fade-always fade-none-y fade-auto-top` | Top opacity follows scrolling; bottom opacity off |
+| `fade-y fade-blur-y fade-none` | Blur remains automatic; opacity off |
+| `fade-y fade-blur-y fade-none fade-blur-none` | Both effects off |
 
-```html
-<div class="fade-y fade-always-y overflow-y-auto">...</div>
-<div class="fade fade-none-x overflow-auto">...</div>
-```
+Prefer one mode per scope and condition. Conflicting modes at the same scope and identical variant chain resolve as **`none` > `auto` > `always`**, regardless of class-string order. Thus `fade-always fade-auto` is automatic, and adding `fade-none` disables it. This order is a tie-break within one condition; it does not outrank active conditional overrides.
+
+### Conditional Composition
+
+On the Tailwind source path, responsive and state variants replace the base mode at the same scope while their condition matches. When the condition ends, the base applies again. All six transitions work:
+
+| Classes, alongside `fade-y` | Below `md` | At `md` and above |
+| --- | --- | --- |
+| `fade-auto md:fade-always` | automatic | forced on |
+| `fade-auto md:fade-none` | automatic | off |
+| `fade-always md:fade-auto` | forced on | automatic |
+| `fade-always md:fade-none` | forced on | off |
+| `fade-none md:fade-auto` | off | automatic |
+| `fade-none md:fade-always` | off | forced on |
+
+The same rules apply to `fade-blur-*` modes and state conditions such as `hover:`, `focus-visible:`, `group-hover:`, and `data-[open]:`. To disable both effects at a breakpoint, use both `md:fade-none` and `md:fade-blur-none`.
+
+Scope still takes priority. `fade-blur-y fade-blur-none-y md:fade-blur-auto` stays disabled because the axis setting is narrower. Use `md:fade-blur-auto-y` to replace that setting.
+
+Selectors add edges. `fade-y md:fade-x` selects both axes at `md`. Use `max-md:fade-y md:fade-x` to switch from vertical to horizontal selection, or `fade-y md:fade-x md:fade-none-y` to suppress the vertical treatment there. The same applies to blur.
+
+There is no public unset mode. To resume broader-scope resolution, bound the narrower setting: `fade-y fade-always max-md:fade-auto-y` is automatic below `md` and forced at `md`. An unconditional `fade-auto-y` would continue to override the global mode.
+
+Class concatenation is not a merge strategy. Remove obsolete selectors or modes when replacing a component's configuration. Different simultaneously active conditions use CSS specificity, cascade layers, and Tailwind's variant order. Custom variants can change those factors; equivalent conditions written as different variant chains are not treated as one conflict group.
 
 ## Scrollbars
 
@@ -260,14 +340,18 @@ Fade the element that scrolls. For a full-page fade, make `<body>` the scroll co
 | | `@import "tw-fade"` | `tw-fade/css` |
 | --- | --- | --- |
 | Needs Tailwind v4 | yes | no |
-| Direction utilities | yes | yes |
+| Opacity and blur selectors | yes | yes |
+| Named blur strengths | yes | yes |
+| Both activation families, at every scope | yes | yes |
 | Named size/travel/clear utilities | yes | yes |
 | `fade-scrollbar-safe-*` and named `fade-scrollbar-width-*` | yes | yes |
 | `fade-clear-*-var` | yes | yes |
+| Structural `fade-blur-layer` marker | yes, unprefixed | yes, unprefixed |
+| Responsive and state variants | yes, using the app's theme | no |
 | Arbitrary values like `fade-size-[6rem]` | yes | no |
 | Integer clear values like `fade-clear-top-14` | yes | no |
 
-The release build generates the prebuilt file from an explicit safelist. It excludes Tailwind Preflight, core Tailwind utilities, arbitrary values, and integer `fade-clear-*` classes.
+The package build generates the prebuilt file from an explicit safelist. It excludes Tailwind Preflight, core Tailwind utilities, prefixed variants, arbitrary values, and integer `fade-clear-*` classes. Neither distribution provides arbitrary blur-radius utilities. When classes are built dynamically, include the complete names in Tailwind's scanned source or safelist.
 
 ## Exports
 
@@ -281,9 +365,13 @@ The release build generates the prebuilt file from an explicit safelist. It excl
 
 ## How It Works
 
-Each faded element uses four gradient mask layers and two dormant scrollbar-shield strips. Scroll timelines drive the physical edge layers with `scroll(self y)` and `scroll(self inline)`. The `:dir()` selector routes `start` and `end` to the correct horizontal layer.
+Each effect host uses one shared four-slot animation list for raw scroll progress. Unselected edges have empty slots. Its opacity and blur amounts resolve independently from that progress, their selections, and their activation settings. For a selected edge, `auto` uses scroll progress, `always` uses the full amount, and `none` uses zero. Scroll timelines use `scroll(self y)` and `scroll(self inline)`. The `:dir()` selector routes horizontal start and end.
 
-An edge amount stays at `0` when its axis cannot scroll. Browsers without scroll-driven animations pin selected fades on as a static fallback.
+Opacity uses four gradient mask layers and two dormant scrollbar-shield strips. Blur uses the same host mask as a backdrop boundary. With blur alone, the mask is opaque; adding a blur selector preserves an existing opacity fade. Missing blur capabilities do not install a blur-only host mask. An ineligible anchor can leave an opaque mask while omitting the blur.
+
+Raw progress normally stays at `0` when its axis cannot scroll. Forced modes do not change raw progress. Without scroll-driven animations, selected automatic opacity fades use the static full amount; disabled fades stay disabled. Blur remains unavailable even with `fade-blur-always`.
+
+Effect selections and mode settings are local to each scroller. A nested scroller does not inherit the parent's activation or strength class. Theme tokens can inherit. Ancestor masks, opacity, and filters still affect the composed result; a child effect cannot undo them. An authored mask or `::after` on the same host can conflict with the plugin's rendering.
 
 ### Dynamic content on a stable scrollport
 
@@ -292,7 +380,7 @@ WebKit can retain a stale fade when a mounted scrollport swaps long content for 
 1. Upgrade to the latest `tw-fade`.
 2. Remount or key the scrollport by content identity.
 3. Restart the fade animation after the content swap.
-4. Add `fade-none-y` or `fade-none-x` when your app knows that axis cannot overflow.
+4. Add `fade-none-y` or `fade-none-x` when your app knows that axis cannot overflow. For blur, use `fade-blur-none-y` or `fade-blur-none-x`. An element using both effects needs both disable controls for that axis.
 
 ```tsx
 <div key={activeTabId} className="fade-y overflow-y-auto">
@@ -315,29 +403,39 @@ function resetTwFade(el) {
 }
 ```
 
-The public CSS API includes the `fade-*` utilities and the `--fade-size-*`, `--fade-travel-*`, `--fade-clear-*`, and `--fade-scrollbar-width-*` theme tokens. The three author properties are `--tw-fade-onset`, `--tw-fade-scrollbar-width`, and `--tw-fade-scrollbar-thumb`. Treat other `--tw-fade-*` properties as internal.
+The helper restarts the shared raw animations for both effects. It does not change selections or activation modes. Browser invalidation can still leave stale state after a content swap; do not treat the helper as a guarantee in affected WebKit builds.
+
+### Public Properties
+
+Theme with `--fade-size-*`, `--fade-travel-*`, `--fade-clear-*`, `--fade-blur-sm/md/lg`, and `--fade-scrollbar-width-*`. Runtime clear-zone properties such as `--fade-clear-top` feed the matching `-var` utilities.
+
+The three author properties are `--tw-fade-onset`, `--tw-fade-scrollbar-width`, and `--tw-fade-scrollbar-thumb`. Treat other `--tw-fade-*` properties as internal. Raw scroll progress and effective opacity/blur amounts have different meanings; neither is an author-facing activation control.
 
 ## Accessibility
 
-`tw-fade` changes appearance without moving content or changing focus order. Masking lowers contrast near an edge, so use modest bands and clear zones around controls or critical text.
+`tw-fade` changes appearance without moving content or changing focus order. Masking and blur reduce readability near an edge, so use modest bands and clear zones around controls or critical text. Blur layers pass pointer events through. Empty progressive spans should use `aria-hidden="true"`.
 
 ## Browser Support
 
-| Engine | Masking | Scroll-driven animation | `:dir()` | Result |
-| --- | --- | --- | --- | --- |
-| Chrome / Edge | 120+ | 115+ | 120+ | Full scroll-gated, direction-aware fade |
-| Safari (WebKit) | 15.4+ | 26.0+ | 16.4+ | Full on 26+; static fade fallback below |
-| Firefox (release) | 53+ | not by default | 49+ | Static always-on fade |
+Opacity requires CSS masking. Its animated path also uses scroll-driven animations, registered numeric custom properties, and `:dir()` routing. Without scroll timelines, static opacity fallback remains available, including when property registration is unavailable. Activation still applies: selected automatic or forced edges show a static fade, and disabled edges stay clear.
 
-Browsers without scroll-driven animations render selected fades as static, always-on masks. Safari 17.x, Safari 18.x, and Firefox release use this fallback.
+Blur additionally requires backdrop filtering, anchor positioning and scope, and filtered `:nth-child()`. Syntax support alone does not prove that a browser renders blur correctly. `always` changes activation; it does not bypass the renderer's capability gate.
 
-Chrome 115 through 119 map RTL `start` and `end` to LTR edges. LTR scrollers are unaffected.
+| Requested effects | Blur unsupported or anchor ineligible | Scroll timelines unavailable |
+| --- | --- | --- |
+| Opacity only | Opacity fade remains | Static opacity fade |
+| Blur only | Unmodified content | Unmodified content |
+| Both | Opacity fade remains | Static opacity fade; no blur |
+
+Each effect's disable modes still apply in these fallback paths. A blur-only fallback never introduces an opacity fade. Transform, filter, or paint/layout containment on the scroller can make its anchor ineligible even when all required syntax is supported.
+
+Native Safari 18.6 passes checks for static opacity, disabled effects, and blur-only fallback. It lacks the features required for blur. Safari 26.2 on an iPhone 17 Pro simulator passes single and progressive blur pixel checks through both import paths, plus scroll endpoints, RTL routing, and a tap through the overlay. Physical iPhone rendering remains unverified. WebKit can retain scroll-state residue after content shrinks; this also reproduces in the simulator. See the [dynamic-content guidance](#dynamic-content-on-a-stable-scrollport).
 
 Older WebKit may need `-webkit-mask-*`. Run the prebuilt CSS through Autoprefixer if you support it.
 
 ## Migrating
 
-Upgrading from `0.6.x`? Follow [MIGRATING.md](./MIGRATING.md) for the `0.7.0` renames and RTL checks.
+For the draft blur API or overlapping activation modes, follow the [0.9.0 migration](./MIGRATING.md#migrating-to-090). Ordinary opacity-only usage keeps its names. Upgrading from `0.6.x` also requires the [existing rename procedure](./MIGRATING.md#migrating-from-tw-fade-06x-to-07) and RTL checks.
 
 ## Development
 

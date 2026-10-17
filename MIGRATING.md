@@ -1,4 +1,56 @@
-# Migrating from tw-fade 0.6.x to 0.7+
+# Migrating tw-fade
+
+Use the [0.9.0 migration](#migrating-to-090) for independent opacity and blur controls. The [0.6.x to 0.7+ procedure](#migrating-from-tw-fade-06x-to-07) covers the earlier direction and travel renames. Apply required migrations in release order.
+
+## Migrating to 0.9.0
+
+Version `0.9.0` keeps ordinary opacity-only selectors and their appearance. Review overlapping activation modes when upgrading from `0.8.0` or earlier, even if your project does not use blur. Projects using the earlier draft blur API also need the selector changes below.
+
+The draft blur API coupled a strength class to opacity selection. The revised API selects opacity with `fade-*` directions and blur with `fade-blur-*` directions. Strength classes configure blur without activating it. See the [current API reference](./README.md#direction-utilities) for the complete contract.
+
+### Replace draft blur usages
+
+| Current draft usage | Replacement with the same intent |
+| --- | --- |
+| `fade-y` | unchanged |
+| `fade-y fade-blur-md` | `fade-y fade-blur-y fade-blur-md` |
+| `fade-y fade-blur-md fade-opaque` | `fade-blur-y fade-blur-md` |
+| `fade-x fade-blur-sm fade-opaque` | `fade-blur-x fade-blur-sm` |
+| `fade fade-blur-md` | `fade fade-blur fade-blur-md` |
+| `fade-top fade-end fade-blur-lg` | `fade-top fade-end fade-blur-top fade-blur-end fade-blur-lg` |
+| `fade-top fade-end fade-blur-lg fade-opaque` | `fade-blur-top fade-blur-end fade-blur-lg` |
+| `fade-none` intended to disable both effects | `fade-none fade-blur-none` |
+| `fade-none-y` intended to disable both vertically | `fade-none-y fade-blur-none-y` |
+| `fade-always` intended to force both effects | `fade-always fade-blur-always` |
+
+Add only the blur directions the call site intended. Do not replace every strength class with all-edge `fade-blur`. An explicit `fade-blur-md` may be omitted after migration because `md` (`3px`) is the default strength.
+
+Remove `fade-opaque`; there is no compatibility alias. If it appeared without blur, remove the opacity selector to request no effect. Use `fade-none` when an explicit opacity override is needed. A blur selector alone now produces the blur-only result.
+
+Keep exactly four empty direct `fade-blur-layer` spans to retain progressive rendering. Keep the marker unprefixed. Zero or any other layer count uses single blur. No renderer-mode class is needed.
+
+### Review activation and conditional composition
+
+Opacity and blur now have separate `auto`, `always`, and `none` families. Each supports global, `x`, `y`, `top`, `bottom`, `start`, and `end` scopes. Edge overrides axis, axis overrides global, and an absent mode falls through to automatic behavior. Explicit `auto` restores scrolling at that scope; it is not an unset operation.
+
+At the same scope and identical variant chain, conflicts resolve as `none` > `auto` > `always`. The old implementation made `always` win over `none`. To retain forced opacity from `fade-y fade-none fade-always`, remove `fade-none`. To retain disabled opacity, remove `fade-always`. Reordering the class string does not change the result.
+
+A matching conditional mode can replace the base at the same scope. `fade-none md:fade-always` remains a valid disabled-to-forced transition. A broader conditional mode cannot replace a narrower scope: change `fade-blur-none-y md:fade-blur-auto` to `fade-blur-none-y md:fade-blur-auto-y` when the intent is to restore automatic vertical blur.
+
+Selectors remain additive. Use `max-md:fade-y md:fade-x` to switch axes. `fade-y md:fade-x` now selects both axes at `md`, because the previously inert prefixed selector is generated on the source path. To let a global mode resume after a breakpoint, bound a narrower mode: `fade-y fade-always max-md:fade-auto-y`. There is no public unset utility.
+
+### Rebuild and verify
+
+1. Record the starting diff and preserve unrelated work. Inventory authored class strings, class builders, safelists, and any code reading internal `--tw-fade-*` values.
+2. Migrate each call site by intent. Keep opacity-only controls unchanged. Apply both disable namespaces when an app knows an axis cannot overflow and uses both effects.
+3. Rebuild generated CSS from source. The standalone stylesheet contains named, unprefixed utilities; responsive and state variants require Tailwind's source path and the app's theme. Safelist complete dynamic class names.
+4. Check pure opacity, pure blur, combined effects, and mixed edges at both scroll endpoints and mid-scroll. Check LTR/RTL, nested scrollers, and conditional entry and exit. Confirm geometry, scrollbar protection, and four-span progressive rendering retain their intended behavior.
+5. Check fallbacks. Unsupported or anchor-ineligible blur-only hosts keep unmodified content. Combined hosts retain opacity fading. Without scroll timelines, opacity uses its static fallback and blur is omitted. Disabled effects remain disabled.
+6. Remove active `fade-opaque` usages and implicit blur activation through strength classes. Historical notes and focused negative tests can retain the retired name.
+
+Internal raw scroll amounts no longer encode selected, forced, or disabled effects. Diagnostics that display treatment should read effective opacity/blur amounts; prefer the public mode utilities for application controls. See [How it works](./README.md#how-it-works) and [dynamic-content guidance](./README.md#dynamic-content-on-a-stable-scrollport).
+
+## Migrating from tw-fade 0.6.x to 0.7+
 
 Use this procedure to replace the 0.6.x API and install an exact 0.7.0-or-newer release.
 

@@ -74,12 +74,12 @@ const panel = `
     ${ctrl('Container shape', null, '<select id="shapeSel"><option value="rounded">rounded</option><option value="squircle">squircle</option><option value="sharp">sharp</option></select>')}
     <div class="ctrl"><label>Toggles</label><div class="scrubrow">
       <label class="toggle"><input type="checkbox" id="rtlChk"> RTL</label>
-      <label class="toggle warn" data-on="false"><input type="checkbox" id="fallbackChk"> static fallback</label>
+      <label class="toggle warn" data-on="false"><input type="checkbox" id="fallbackChk"> force opacity</label>
     </div></div>
   </div>
   <p class="hint">
     <b>onset 1</b> reproduces the old coupled hard-clip (<code>alpha = t</code>); <b>8</b> is the decoupled default.
-    <b>static fallback</b> forces <code>fade-always</code> (the no-scroll-driven-animation path). Set scroll to <b>8px from start</b> to inspect the onset edge-coverage window; switch to <b>px from end</b> to probe the trailing edge (<code>fade-bottom</code> / <code>fade-end</code> — a separate range).
+    <b>force opacity</b> applies <code>fade-always</code> to selected opacity edges. Raw scroll progress still updates; browser support is unchanged. Readouts show effective opacity amounts. Set scroll to <b>8px from start</b> to inspect the onset edge-coverage window; switch to <b>px from end</b> to probe the trailing edge (<code>fade-bottom</code> / <code>fade-end</code> — a separate range).
   </p>
 </div>`
 

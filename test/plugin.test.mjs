@@ -1,34 +1,58 @@
-/**
- * Unit tests for tw-fade.
- *
- * These tests compile src/tw-fade.css through the same Tailwind v4 path used by
- * scripts/build-css.mjs, then assert on the emitted CSS bytes. Browser-level
- * behavior is covered by build/verify*.mjs.
- */
+/** Compiler contracts. Rendering and composition are verified by build/verify*.mjs. */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { gzipSync } from 'node:zlib'
+import { compile } from '@tailwindcss/node'
 import { compileCss } from '../scripts/build-css.mjs'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const root = path.resolve(__dirname, '..')
-
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const css = compileCss()
 const customCss = compileCss({
-  classes:
-    'fade-size-[15%] fade-size-top-[56px] fade-travel-[80px] fade-clear-14 fade-clear-y-14 fade-clear-x-14 fade-clear-top-14 fade-clear-bottom-14 fade-clear-start-14 fade-clear-end-14',
+  classes: 'fade-size-[15%] fade-size-top-[56px] fade-travel-[80px] fade-clear-14 fade-clear-y-14 fade-clear-x-14 fade-clear-top-14 fade-clear-bottom-14 fade-clear-start-14 fade-clear-end-14',
 })
+const SCALE = [['xs', 6], ['sm', 8], ['md', 12], ['lg', 16], ['xl', 20], ['2xl', 24], ['3xl', 32], ['4xl', 40]]
+const SCOPES = ['', 'x', 'y', 'top', 'bottom', 'start', 'end']
+const suffix = (scope) => scope ? `-${scope}` : ''
+const directions = ['fade', ...SCOPES.slice(1).map((scope) => `fade-${scope}`)]
+const blurDirections = directions.map((name) => name.replace('fade', 'fade-blur'))
+const modeNames = ['fade', 'fade-blur'].flatMap((effect) => SCOPES.flatMap((scope) => ['always', 'auto', 'none'].map((mode) => `${effect}-${mode}${suffix(scope)}`)))
+const PUBLIC_CLASSES = [
+  ...directions, ...blurDirections, ...modeNames, 'fade-blur-layer',
+  ...['sm', 'md', 'lg'].map((strength) => `fade-blur-${strength}`),
+  ...SCOPES.flatMap((scope) => SCALE.map(([step]) => `fade-size${suffix(scope)}-${step}`)),
+  ...SCOPES.flatMap((scope) => [...SCALE.map(([step]) => step), 'var'].map((step) => `fade-clear${suffix(scope)}-${step}`)),
+  ...SCALE.map(([step]) => `fade-travel-${step}`),
+  ...['x', 'y', 'xy'].map((scope) => `fade-scrollbar-safe-${scope}`),
+  ...['sm', 'md', 'lg'].map((step) => `fade-scrollbar-width-${step}`),
+]
+const REJECTED_CLASSES = [
+  'fade-t', 'fade-b', 'fade-l', 'fade-r', 'fade-xy', 'fade-left', 'fade-right',
+  'fade-block', 'fade-block-start', 'fade-block-end', 'fade-inline', 'fade-inline-start', 'fade-inline-end',
+  'fade-range-sm', 'fade-ramp-sm', 'fade-static', 'fade-opaque', 'fade-blur-[4px]',
+]
+const variantFamilies = [
+  'fade-y', 'fade-blur-x', 'fade-blur-lg', 'fade-auto', 'fade-blur-none-y',
+  'fade-size-lg', 'fade-clear-top-sm', 'fade-travel-xl', 'fade-scrollbar-safe-y', 'fade-scrollbar-width-sm',
+]
+const prefixes = ['md:', 'hover:', 'focus-visible:', 'group-hover:', 'data-[open]:', 'md:group-hover:']
+const variantClasses = [
+  ...prefixes.flatMap((prefix) => variantFamilies.map((name) => prefix + name)),
+  ...modeNames.map((name) => 'md:' + name),
+]
+const sourceCompiler = await compile('@import "tailwindcss"; @import "./src/tw-fade.css";', { base: root, onDependency() {} })
+const sourceCss = sourceCompiler.build([...PUBLIC_CLASSES, ...variantClasses, ...REJECTED_CLASSES, 'md:fade-blur-layer'])
 
 function block(selector, source = css) {
-  const at = source.indexOf(selector + ' {')
-  if (at === -1) return null
-  const open = source.indexOf('{', at)
+  const match = source.match(new RegExp('(?:^|\\n)[ \t]*' + selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ' \\{'))
+  if (!match) return null
+  const open = source.indexOf('{', match.index)
   let depth = 0
-  for (let i = open; i < source.length; i++) {
-    if (source[i] === '{') depth++
-    else if (source[i] === '}' && --depth === 0) return source.slice(open + 1, i)
+  for (let index = open; index < source.length; index++) {
+    if (source[index] === '{') depth++
+    else if (source[index] === '}' && --depth === 0) return source.slice(open + 1, index)
   }
   return null
 }
@@ -36,155 +60,130 @@ function block(selector, source = css) {
 function property(name) {
   const body = block('@property ' + name)
   if (body == null) return null
-  const field = (k) => {
-    const m = body.match(new RegExp(`${k}:\\s*([^;]+);`))
-    return m ? m[1].trim() : undefined
-  }
+  const field = (key) => body.match(new RegExp(`${key}:\\s*([^;]+);`))?.[1].trim()
   return { syntax: field('syntax'), inherits: field('inherits'), 'initial-value': field('initial-value') }
 }
 
 function declValue(body, prop) {
-  const m = body?.match(new RegExp(`${prop}:\\s*([^;]+);`))
-  return m ? m[1].trim() : undefined
+  return body?.match(new RegExp(`${prop}:\\s*([^;]+);`))?.[1].trim()
 }
 
-function compact(value) {
-  return value?.replace(/\s+/g, ' ')
+const compact = (value) => value?.replace(/\s+/g, ' ')
+const escaped = (name) => '.' + name.replace(/([^\w-])/g, '\\$1')
+const classSelectors = (source = css) => new Set([...source.matchAll(/\.(-?[_a-zA-Z][\w-]*)/g)].map((match) => match[1]).filter((name) => name === 'fade' || name.startsWith('fade-')))
+
+function ruleDeclarations(name, source = css) {
+  const body = block(escaped(name), source)
+  assert.ok(body, `missing .${name}`)
+  return [...body.matchAll(/(^|[;\n])\s*([\w-]+):\s*([^;]+);/g)].map((match) => [match[2], match[3].trim()])
 }
 
-function classSelectors(source = css) {
-  return new Set(
-    [...source.matchAll(/\.(-?[_a-zA-Z][\w-]*)/g)]
-      .map((m) => m[1])
-      .filter((name) => name === 'fade' || name.startsWith('fade-')),
-  )
-}
-
-const SCALE = [
-  ['xs', 6],
-  ['sm', 8],
-  ['md', 12],
-  ['lg', 16],
-  ['xl', 20],
-  ['2xl', 24],
-  ['3xl', 32],
-  ['4xl', 40],
-]
-
-const PUBLIC_DIRECTIONS = ['fade', 'fade-y', 'fade-top', 'fade-bottom', 'fade-x', 'fade-start', 'fade-end']
-// Classes that must NOT compile, both groups intentional:
-//  - the old physical API removed in 0.7.0 (fade-t/b/l/r, fade-xy, fade-static, fade-left/right);
-//  - the fully-logical block/inline aliases from an earlier draft. The shipped API deliberately
-//    uses plain directions (physical top/bottom, direction-aware start/end) instead of
-//    fade-inline-start / fade-block-* — see "Why Plain Directions" in MIGRATING.md. Re-adding
-//    any of these should be a conscious decision, not an accidental regression.
-const REJECTED_CLASSES = [
-  'fade-t',
-  'fade-b',
-  'fade-l',
-  'fade-r',
-  'fade-xy',
-  'fade-left',
-  'fade-right',
-  'fade-block',
-  'fade-block-start',
-  'fade-block-end',
-  'fade-inline',
-  'fade-inline-start',
-  'fade-inline-end',
-  'fade-range-sm',
-  'fade-ramp-sm',
-  'fade-static',
-]
-const SHARED_SELECTOR = '.fade, .fade-y, .fade-top, .fade-bottom, .fade-x, .fade-start, .fade-end'
-const RTL_SELECTOR =
-  '.fade:where(:dir(rtl)), .fade-y:where(:dir(rtl)), .fade-top:where(:dir(rtl)), .fade-bottom:where(:dir(rtl)), .fade-x:where(:dir(rtl)), .fade-start:where(:dir(rtl)), .fade-end:where(:dir(rtl))'
-const TOP_SELECTOR = '.fade, .fade-y, .fade-top'
-const BOTTOM_SELECTOR = '.fade, .fade-y, .fade-bottom'
-const START_SELECTOR = '.fade, .fade-x, .fade-start'
-const END_SELECTOR = '.fade, .fade-x, .fade-end'
-const MASK_VARS = ['--tw-fade-mask-t', '--tw-fade-mask-b', '--tw-fade-mask-l', '--tw-fade-mask-r']
-const SIZE_VARS = [
-  '--tw-fade-size',
-  '--tw-fade-size-y',
-  '--tw-fade-size-x',
-  '--tw-fade-size-top',
-  '--tw-fade-size-bottom',
-  '--tw-fade-size-start',
-  '--tw-fade-size-end',
-]
-const CLEAR_VARS = [
-  '--tw-fade-clear',
-  '--tw-fade-clear-y',
-  '--tw-fade-clear-x',
-  '--tw-fade-clear-top',
-  '--tw-fade-clear-bottom',
-  '--tw-fade-clear-start',
-  '--tw-fade-clear-end',
-]
-const ROUTING_VARS = [
-  '--tw-fade-ltr-start-layer',
-  '--tw-fade-ltr-end-layer',
-  '--tw-fade-rtl-start-layer',
-  '--tw-fade-rtl-end-layer',
-  '--tw-fade-ltr-start-animation',
-  '--tw-fade-ltr-end-animation',
-  '--tw-fade-rtl-start-animation',
-  '--tw-fade-rtl-end-animation',
-  '--tw-fade-ltr-start-timeline',
-  '--tw-fade-ltr-end-timeline',
-  '--tw-fade-rtl-start-timeline',
-  '--tw-fade-rtl-end-timeline',
-  '--tw-fade-ltr-start-animation-range',
-  '--tw-fade-ltr-end-animation-range',
-  '--tw-fade-rtl-start-animation-range',
-  '--tw-fade-rtl-end-animation-range',
-]
-const ALPHA_MULTIPLIERS = [
-  '0.983',
-  '0.933',
-  '0.854',
-  '0.75',
-  '0.629',
-  '0.5',
-  '0.371',
-  '0.25',
-  '0.146',
-  '0.067',
-  '0.017',
-]
-const POSITION_MULTIPLIERS = [
-  '0.08333',
-  '0.16667',
-  '0.25',
-  '0.33333',
-  '0.41667',
-  '0.5',
-  '0.58333',
-  '0.66667',
-  '0.75',
-  '0.83333',
-  '0.91667',
-]
-
-test('registers amounts as typed numbers and config/routing vars as universal non-inheriting', () => {
-  for (const amt of ['--tw-fade-t', '--tw-fade-b', '--tw-fade-l', '--tw-fade-r']) {
-    const prop = property(amt)
-    assert.ok(prop, `missing @property ${amt}`)
-    assert.equal(prop.syntax, '"<number>"')
-    assert.equal(prop.inherits, 'false')
-    assert.equal(prop['initial-value'], '0')
+test('standalone inventory contains the complete named API and stays within budget', () => {
+  assert.equal(new Set(PUBLIC_CLASSES).size, 193)
+  assert.deepEqual([...classSelectors()].sort(), [...PUBLIC_CLASSES].sort())
+  for (const name of REJECTED_CLASSES) {
+    assert.equal(block(escaped(name)), null, `standalone must not emit ${name}`)
+    assert.equal(block(escaped(name), sourceCss), null, `source must not emit retired or unsupported ${name}`)
   }
+  assert.ok(Buffer.byteLength(css) <= 90_000, `raw CSS budget exceeded: ${Buffer.byteLength(css)}`)
+  const compressedBytes = gzipSync(css).length
+  assert.ok(compressedBytes <= 8_000, `gzip CSS budget exceeded: ${compressedBytes}`)
+})
 
-  for (const v of [...SIZE_VARS, '--tw-fade-travel', ...CLEAR_VARS, ...MASK_VARS, ...ROUTING_VARS]) {
-    const prop = property(v)
-    assert.ok(prop, `missing @property ${v}`)
-    assert.equal(prop.syntax, '"*"')
-    assert.equal(prop.inherits, 'false')
-    assert.equal(prop['initial-value'], undefined)
+test('named configuration and structural utilities agree across distribution paths', () => {
+  const effectSelectors = new Set([...directions, ...blurDirections])
+  for (const name of PUBLIC_CLASSES.filter((name) => !effectSelectors.has(name))) {
+    assert.equal(compact(block(escaped(name), sourceCss)), compact(block(escaped(name))), `named distribution parity: ${name}`)
   }
 })
 
+test('source compiles breakpoint, state, and compound variants for every control family', () => {
+  for (const name of variantClasses) assert.ok(block(escaped(name), sourceCss), `missing variant ${name}`)
+  assert.equal(block('.md\\:fade-blur-layer', sourceCss), null, 'the layer marker stays structural')
+  const blur = block('.md\\:fade-blur-x', sourceCss)
+  assert.match(blur, /@media/)
+  assert.match(blur, /backdrop-filter/)
+  assert.match(blur, /::after/)
+  assert.match(blur, /nth-(?:last-)?child/)
+  assert.match(block('.md\\:group-hover\\:fade-blur-x', sourceCss), /:hover/)
+})
+
+test('activation is one scoped declaration with always, auto, none emission priority', () => {
+  for (const source of [css, sourceCss]) {
+    for (const prefix of source === css ? [''] : ['', 'md:']) {
+      for (const effect of ['fade', 'fade-blur']) {
+        for (const scope of SCOPES) {
+          const names = ['always', 'auto', 'none'].map((mode) => `${prefix}${effect}-${mode}${suffix(scope)}`)
+          const offsets = names.map((name) => source.indexOf(escaped(name) + ' {'))
+          assert.ok(offsets.every((offset) => offset >= 0) && offsets[0] < offsets[1] && offsets[1] < offsets[2], `mode priority: ${names.join(', ')}`)
+          const declarations = names.map((name) => ruleDeclarations(name, source))
+          assert.ok(declarations.every((values) => values.length === 1), `modes must remain pure setters: ${names}`)
+          assert.ok(declarations.every((values) => values[0][0] === declarations[0][0][0]), `same scope must replace one property: ${names}`)
+          assert.equal(new Set(declarations.map((values) => values[0][1])).size, 3, `auto, always, and none must remain distinct: ${names}`)
+          assert.doesNotMatch(declarations.flat().join(' '), /!important|animation|mask|anchor|--tw-fade-[tblr]\b/)
+        }
+      }
+    }
+  }
+})
+
+test('configuration utilities do not initialize either renderer', () => {
+  const setters = [...modeNames, 'fade-blur-sm', 'fade-blur-md', 'fade-blur-lg', 'fade-size-lg', 'fade-clear-top-sm', 'fade-travel-sm']
+  for (const name of setters) {
+    const declarations = ruleDeclarations(name)
+    assert.equal(declarations.length, 1, `${name} only sets its configuration`)
+    assert.ok(declarations[0][0].startsWith('--tw-fade-'))
+    assert.doesNotMatch(block(escaped(name)), /::after|mask-image|animation:|anchor-name|display:/, `${name} must not create an effect`)
+  }
+  assert.equal(declValue(block('.fade-blur-layer'), 'display'), 'none')
+})
+
+test('local configuration can be absent and raw progress stays non-inheriting', () => {
+  for (const edge of ['t', 'b', 'l', 'r']) {
+    const raw = property(`--tw-fade-${edge}`)
+    assert.equal(raw.syntax, '"<number>"')
+    assert.equal(raw.inherits, 'false')
+    assert.equal(raw['initial-value'], '0')
+  }
+  for (const name of [...modeNames, ...SCOPES.map((scope) => `fade-size${suffix(scope)}-sm`), ...SCOPES.map((scope) => `fade-clear${suffix(scope)}-sm`), 'fade-travel-sm']) {
+    const [prop] = ruleDeclarations(name)[0]
+    const registration = property(prop)
+    assert.equal(registration?.syntax, '"*"', `${name} must distinguish unset configuration`)
+    assert.equal(registration?.inherits, 'false', `${name} must stay local to its host`)
+    assert.equal(registration?.['initial-value'], undefined)
+  }
+})
+
+test('scrollbar opt-ins keep the pin, strips, and gutter inside their capability gate', () => {
+  for (const scope of ['x', 'y', 'xy']) {
+    const body = block(`.fade-scrollbar-safe-${scope}`)
+    const gated = block('@supports (animation-timeline: scroll())', body)
+    assert.ok(gated, `missing gated scrollbar ${scope}`)
+    const outside = body.replace(gated, '')
+    assert.doesNotMatch(outside, /scrollbar-gutter:|scrollbar-width:|--tw-fade-scrollbar:|--tw-fade-scrollbar-block:|width:/)
+    const pinned = block('&::-webkit-scrollbar', gated)
+    assert.equal(declValue(pinned, 'width'), 'max(0px, var(--tw-fade-scrollbar-width, 15px))')
+    assert.equal(declValue(pinned, 'height'), 'max(0px, var(--tw-fade-scrollbar-width, 15px))')
+    const webkit = block('@supports selector(::-webkit-scrollbar)', gated)
+    assert.ok(webkit)
+    assert.equal(declValue(webkit, '--tw-fade-scrollbar'), scope === 'x' ? undefined : 'max(0px, var(--tw-fade-scrollbar-width, 15px))')
+    assert.equal(declValue(webkit, '--tw-fade-scrollbar-block'), scope === 'y' ? undefined : 'max(0px, var(--tw-fade-scrollbar-width, 15px))')
+    assert.equal(declValue(gated, 'scrollbar-gutter'), scope === 'x' ? undefined : 'stable')
+  }
+  for (const name of ['--tw-fade-scrollbar', '--tw-fade-scrollbar-block']) {
+    assert.deepEqual(property(name), { syntax: '"<length>"', inherits: 'false', 'initial-value': '0px' })
+  }
+  assert.deepEqual(property('--tw-fade-scrollbar-width'), { syntax: '"<length>"', inherits: 'true', 'initial-value': '15px' })
+})
+
+test('negative arbitrary scrollbar width stays a setter and geometry consumers clamp it', () => {
+  const negative = compileCss({ classes: 'fade-scrollbar-width-[-5px] fade-scrollbar-safe-x fade-scrollbar-safe-y fade-scrollbar-safe-xy' })
+  assert.equal(declValue(block('.fade-scrollbar-width-\\[-5px\\]', negative), '--tw-fade-scrollbar-width'), '-5px')
+  for (const name of ['x', 'y', 'xy']) {
+    const body = block(`.fade-scrollbar-safe-${name}`, negative)
+    for (const prop of ['width', 'height']) assert.equal(declValue(block('&::-webkit-scrollbar', body), prop), 'max(0px, var(--tw-fade-scrollbar-width, 15px))')
+  }
+})
 test('every typed @property has a computationally-independent initial-value', () => {
   const ABSOLUTE = /^-?(?:\d+\.?\d*|\.\d+)(px|cm|mm|in|pt|pc|q)?$/i
   const names = [...css.matchAll(/@property\s+(--[\w-]+)\s*\{/g)].map((m) => m[1])
@@ -204,27 +203,13 @@ test('every typed @property has a computationally-independent initial-value', ()
   }
 })
 
-test('direction inventory matches the plain public API and stays within budget', () => {
-  const selectors = classSelectors()
-  for (const name of PUBLIC_DIRECTIONS) assert.ok(selectors.has(name), `missing .${name}`)
-  for (const name of REJECTED_CLASSES) assert.equal(selectors.has(name), false, `must not emit .${name}`)
-  assert.ok(selectors.size <= 150, `selector budget exceeded: ${selectors.size}`)
-  assert.ok(css.length <= 55_000, `byte budget exceeded: ${css.length}`)
-})
 
 test('prebuilt dist is generated from the current default compile output', () => {
   const dist = fs.readFileSync(path.join(root, 'dist', 'tw-fade.css'), 'utf8')
   assert.equal(dist, css)
 })
 
-// Guards against a dormant retired utility name surviving in the shipped CSS.
-// The REJECTED_CLASSES checks only prove the *default* compile omits a name; a
-// stray @utility / @property / @keyframes / theme token for a retired name
-// ("range" -> "ramp" -> "travel", and the never-shipped intermediate "reveal")
-// could still ship undetected. Scan the source and prebuilt artifacts on disk.
-// Scoped to the CSS files only — README/MIGRATING/CHANGELOG legitimately
-// reference the old names when documenting the rename. Token-specific patterns,
-// so the English nouns "reveal"/"ramp" in prose/comments are never matched.
+
 test('shipped CSS carries no retired reveal/range/ramp token names', () => {
   const retired = [
     /fade-reveal/,
@@ -248,6 +233,7 @@ test('shipped CSS carries no retired reveal/range/ramp token names', () => {
   }
 })
 
+
 test('leading and trailing keyframes include RTL horizontal variants', () => {
   const kf = (n) => block('@keyframes ' + n)
   assert.match(kf('tw-fade-travel-t'), /from\s*\{[^}]*--tw-fade-t:\s*0/)
@@ -262,209 +248,6 @@ test('leading and trailing keyframes include RTL horizontal variants', () => {
   assert.match(kf('tw-fade-travel-l-trailing'), /to\s*\{[^}]*--tw-fade-l:\s*0/)
 })
 
-test('the shared mask setup owns four physical layers and scroll animation wiring', () => {
-  const shared = block(SHARED_SELECTOR)
-  assert.ok(shared, 'missing shared direction block')
-  // Four edge gradients (intersect) preceded by two scrollbar-protection strips
-  // (add), block axis then inline axis. The strips are listed first so they
-  // union onto the intersection; both default to 0px and stay inert. See the
-  // mask block in src/tw-fade.css.
-  assert.equal(declValue(shared, 'mask-composite'), 'add, add, intersect, intersect, intersect, intersect')
-  assert.equal(declValue(shared, 'mask-repeat'), 'no-repeat')
-  assert.equal(
-    compact(declValue(shared, 'mask-size')),
-    '100% var(--tw-fade-scrollbar-block, 0px), var(--tw-fade-scrollbar, 0px) 100%, 100% 100%, ' +
-      '100% calc(100% - var(--tw-fade-scrollbar-block, 0px)), var(--tw-fade-mask-size-l), var(--tw-fade-mask-size-r)',
-  )
-  // The strips anchor to the padding box because the reserved gutter is folded
-  // into the padding area for painting; the gradients keep the border box.
-  assert.equal(
-    compact(declValue(shared, 'mask-origin')),
-    'padding-box, padding-box, border-box, border-box, border-box, border-box',
-  )
-  const maskImage = declValue(shared, 'mask-image')
-  for (const v of MASK_VARS) assert.match(maskImage, new RegExp(`var\\(${v.replaceAll('-', '\\-')}`), `${v} in mask-image`)
-
-  const supports = block('@supports (animation-timeline: scroll())')
-  const animated = block(SHARED_SELECTOR, supports)
-  assert.ok(animated, 'missing animation support block')
-  assert.equal((declValue(animated, 'animation').match(/auto linear both/g) || []).length, 4)
-  assert.equal((declValue(animated, 'animation-timeline').match(/var\(--tw-fade-timeline-/g) || []).length, 4)
-  assert.equal((declValue(animated, 'animation-range').match(/var\(--tw-fade-animation-range-/g) || []).length, 4)
-})
-
-test('the scrollbar strip is inert until opted in, and typed so a bad value stays inert', () => {
-  const shared = block(SHARED_SELECTOR)
-  assert.equal(declValue(shared, '--tw-fade-scrollbar-pos'), '100% 0%')
-
-  // Typed <length> with an initial value, NOT syntax:"*". This one is
-  // substituted into mask-size, where a single unparseable component invalidates
-  // the whole declaration -- all six layers fall back to `auto`, which on a
-  // gradient covers the full positioning area and silently disables the fade.
-  // The registration makes `11` (no unit) degrade to the 0px initial value.
-  const prop = property('--tw-fade-scrollbar')
-  assert.equal(prop.syntax, '"<length>"')
-  assert.equal(prop.inherits, 'false')
-  assert.equal(prop['initial-value'], '0px')
-
-  // RTL moves the vertical scrollbar to the inline-start edge, so the strip and
-  // the inline-end ramp inset both flip with it.
-  const rtl = block(RTL_SELECTOR)
-  assert.equal(declValue(rtl, '--tw-fade-scrollbar-pos'), '0% 0%')
-  assert.equal(compact(declValue(rtl, '--tw-fade-mask-size-l')), 'calc(100% - var(--tw-fade-scrollbar, 0px)) 100%')
-  assert.equal(compact(declValue(rtl, '--tw-fade-mask-size-r')), '100% 100%')
-})
-
-test('fade-scrollbar-safe-y pins the bar geometry rather than guessing it', () => {
-  const safe = block('.fade-scrollbar-safe-y, .fade-scrollbar-safe-xy')
-  assert.ok(safe, 'missing .fade-scrollbar-safe-y rule')
-
-  // Required, not cosmetic: without a reserved gutter the bar exists only while
-  // content overflows, so the strip would land on content when it doesn't.
-  assert.equal(declValue(safe, 'scrollbar-gutter'), 'stable')
-
-  // scrollbar-width / scrollbar-color must NOT be set unconditionally: either
-  // one makes Blink discard ::-webkit-scrollbar customization (scrollbar-width
-  // does the same in WebKit), which cancels the pin and takes the gutter to 0
-  // while leaving the strip sitting on content.
-  assert.equal(declValue(safe, 'scrollbar-width'), undefined)
-  assert.equal(declValue(safe, 'scrollbar-color'), undefined)
-
-  // Blink/WebKit branch: declare the bar width, and size the strip from the very
-  // same custom property so bar and strip agree by construction.
-  const pinned = block(
-    '.fade-scrollbar-safe-y::-webkit-scrollbar, .fade-scrollbar-safe-x::-webkit-scrollbar, ' +
-      '.fade-scrollbar-safe-xy::-webkit-scrollbar',
-  )
-  assert.ok(pinned, 'missing ::-webkit-scrollbar pin')
-  // Fallbacks on every reference, not decoration: --tw-fade-scrollbar-width is
-  // only ever DECLARED by an author, so without @property support (Safari
-  // 15.4-16.3, Firefox < 128) a bare var() is guaranteed-invalid and takes the
-  // whole declaration down with it. In mask-size that silently deletes the fade.
-  assert.equal(declValue(pinned, 'width'), 'max(0px, var(--tw-fade-scrollbar-width, 15px))')
-  // height is pinned too: the custom-scrollbar opt-in is per-element, so an
-  // unscoped ::-webkit-scrollbar rule turns the horizontal bar classic whether
-  // or not height is mentioned. Omitting it surrenders the size (measured: 11px
-  // -> the 16px UA default) without restoring the overlay bar.
-  assert.equal(declValue(pinned, 'height'), 'max(0px, var(--tw-fade-scrollbar-width, 15px))')
-  assert.match(css, /@supports selector\(::-webkit-scrollbar\)/)
-  assert.match(compact(css), /--tw-fade-scrollbar: max\(0px, var\(--tw-fade-scrollbar-width, 15px\)\)/)
-
-  // The public knob is registered, so an unparseable value degrades to 15px;
-  // well-typed negative lengths are clamped at every consumption point below.
-  const width = property('--tw-fade-scrollbar-width')
-  assert.equal(width.syntax, '"<length>"')
-  // The pin REPLACES the native bar, so the default is the user's actual hit
-  // target: match the macOS classic bar rather than defaulting to something
-  // slimmer and prettier.
-  assert.equal(width['initial-value'], '15px')
-  // Must INHERIT, unlike everything else here. ::-webkit-scrollbar is a
-  // pseudo-element and only sees a custom property by inheriting it from its
-  // originating element; with inherits:false the pin reads the 15px initial
-  // value while the strip reads the author's, which is a slab over content.
-  assert.equal(width.inherits, 'true')
-
-  // Gecko branch: it ignores ::-webkit-scrollbar and its overlay mode is not
-  // detectable, so it gets a thin styled bar but deliberately NO strip.
-  assert.match(compact(css), /@supports not selector\(::-webkit-scrollbar\)/)
-})
-
-test('the whole opt-in, pin included, sits inside the scroll-gating feature query', () => {
-  // Without animation-timeline: scroll() the plugin takes the static fallback,
-  // which pins every selected fade ON regardless of overflow -- and a faded
-  // container that is not overflowing has no reserved gutter, so the strip lands
-  // on content. Measured in WebKit: a plain overflow-auto fade-y container with
-  // non-overflowing content faded its inline end to fully transparent and then
-  // painted a hard 15px opaque band of content beyond it.
-  //
-  // Gating only the STRIP would be worse than useless: the pin is what makes the
-  // bar classic, so pinned-but-unshielded manufactures a space-consuming bar on
-  // macOS -- a platform with no bug -- and then lets the fade dim it. Both move
-  // together or neither does.
-  const gate = '@supports (animation-timeline: scroll())'
-  const bodies = []
-  for (let at = css.indexOf(gate + ' {'); at !== -1; at = css.indexOf(gate + ' {', at + 1)) {
-    bodies.push(block(gate, css.slice(at)))
-  }
-  assert.ok(bodies.length >= 2, 'expected a scroll-gated block for the animations and one for the scrollbars')
-
-  const gated = bodies.filter((b) => b.includes('.fade-scrollbar-safe-y'))
-  assert.equal(gated.length, 1, 'the scrollbar opt-in must live in exactly one scroll-gated block')
-
-  // Everything the opt-in does has to be in there: the gutter reservation, the
-  // strip widths for both axes, and the pin itself.
-  assert.match(gated[0], /scrollbar-gutter:\s*stable/)
-  assert.match(gated[0], /--tw-fade-scrollbar:\s*max\(0px, var\(--tw-fade-scrollbar-width, 15px\)\)/)
-  assert.match(gated[0], /--tw-fade-scrollbar-block:\s*max\(0px, var\(--tw-fade-scrollbar-width, 15px\)\)/)
-  assert.match(gated[0], /::-webkit-scrollbar\b/)
-
-  // ...and nothing the opt-in does may sit outside it. A stray rule here is the
-  // exact regression this test exists for, since no engine we can run reaches
-  // the ungated path.
-  const outside = bodies.reduce((rest, b) => rest.replace(b, ''), css)
-  assert.ok(
-    !/\.fade-scrollbar-safe-[xy]/.test(outside),
-    'a fade-scrollbar-safe rule escaped the scroll-gating feature query',
-  )
-})
-
-test('the block-axis strip is a separate opt-in, because that gutter is not reservable', () => {
-  // scrollbar-gutter:stable reserves the inline gutter unconditionally, but
-  // measured across Chromium and WebKit the block gutter stays 0 unless content
-  // actually overflows horizontally -- and no scrollbar-gutter value changes
-  // that. A blind block strip would paint over content on vertical-only
-  // scrollers, so it waits for the author to assert horizontal overflow.
-  const prop = property('--tw-fade-scrollbar-block')
-  assert.equal(prop.syntax, '"<length>"')
-  assert.equal(prop.inherits, 'false')
-  assert.equal(prop['initial-value'], '0px')
-
-  const webkit = block('@supports selector(::-webkit-scrollbar)')
-  assert.ok(webkit, 'missing webkit support block')
-
-  // -y owns the inline strip and must NOT reach the block axis.
-  const inline = block('.fade-scrollbar-safe-y, .fade-scrollbar-safe-xy', webkit)
-  assert.ok(inline, 'missing inline-axis opt-in block')
-  assert.equal(declValue(inline, '--tw-fade-scrollbar'), 'max(0px, var(--tw-fade-scrollbar-width, 15px))')
-  assert.equal(declValue(inline, '--tw-fade-scrollbar-block'), undefined, '-y must not set the block strip')
-
-  // -x owns the block strip and must NOT reach the inline axis.
-  const blockAxis = block('.fade-scrollbar-safe-x, .fade-scrollbar-safe-xy', webkit)
-  assert.ok(blockAxis, 'missing block-axis opt-in block')
-  assert.equal(
-    declValue(blockAxis, '--tw-fade-scrollbar-block'),
-    'max(0px, var(--tw-fade-scrollbar-width, 15px))',
-  )
-  assert.equal(declValue(blockAxis, '--tw-fade-scrollbar'), undefined, '-x must not set the inline strip')
-})
-
-test('the axis suffix names the SCROLL axis, and only -y stabilizes a gutter', () => {
-  // The one thing about this API that can be misread. -y is the bar you get from
-  // scrolling on y -- the VERTICAL bar at the inline end -- following overflow-y,
-  // NOT this plugin's own fade-y (which means the top and bottom edges).
-  const gutter = block('.fade-scrollbar-safe-y, .fade-scrollbar-safe-xy')
-  assert.ok(gutter, 'missing the gutter-stabilizing rule')
-  assert.equal(declValue(gutter, 'scrollbar-gutter'), 'stable')
-
-  // -x must never stabilize a gutter. scrollbar-gutter only reserves on the
-  // INLINE axis, so on an x-only scroller it would reserve space for a vertical
-  // bar the author just said is absent -- and Chromium reserves it even with
-  // overflow-y:hidden, which puts the inline strip on content. That notch is
-  // exactly what naming the axis is supposed to avoid; rendering proof is in
-  // build/verify-scrollbar.mjs (sections 4 and 4b, which compare -y vs -x on the
-  // same container).
-  const xOnly = [...css.matchAll(/\n\s*\.fade-scrollbar-safe-x \{([^}]*)\}/g)]
-  for (const m of xOnly) {
-    assert.equal(declValue(m[1], 'scrollbar-gutter'), undefined, '-x must not set scrollbar-gutter')
-  }
-  // And it is genuinely absent from the -x-only selector list, not merely
-  // unmatched by the regex above.
-  assert.equal(
-    /\.fade-scrollbar-safe-x[,\s][^{]*\{[^}]*scrollbar-gutter/.test(css.replace(/-xy/g, '-ZZ')),
-    false,
-    'scrollbar-gutter reached a selector list containing -x',
-  )
-})
 
 test('scrollbar vars never appear without a fallback, so @property stays optional', () => {
   // The three scrollbar properties are only ever DECLARED inside
@@ -489,6 +272,7 @@ test('scrollbar vars never appear without a fallback, so @property stays optiona
     'every scrollbar var() must carry a fallback, e.g. var(--tw-fade-scrollbar, 0px)',
   )
 })
+
 
 test('fade-scrollbar-width-* is a pure setter over an absolute-px scale', () => {
   // Three steps, real native bar widths. Absolute px, not the spacing ramp the
@@ -517,163 +301,6 @@ test('fade-scrollbar-width-* is a pure setter over an absolute-px scale', () => 
   assert.equal(block('.fade-scrollbar-width-thin', bare), null, 'must not shadow the real keyword')
 })
 
-test('negative arbitrary scrollbar widths compile but every geometry consumer clamps them to zero', () => {
-  // Tailwind correctly accepts this because -5px is a valid <length>. The
-  // plugin has to sanitize it where the value becomes scrollbar or mask
-  // geometry: a negative mask-size component invalidates the whole six-layer
-  // declaration and silently removes the fade.
-  const negative = compileCss({ classes: 'fade-scrollbar-width-[-5px]' })
-  const setter = block('.fade-scrollbar-width-\\[-5px\\]', negative)
-  assert.ok(setter, 'the negative arbitrary length should compile')
-  assert.equal(declValue(setter, '--tw-fade-scrollbar-width'), '-5px')
-
-  const webkit = block('@supports selector(::-webkit-scrollbar)', negative)
-  const inline = block('.fade-scrollbar-safe-y, .fade-scrollbar-safe-xy', webkit)
-  const blockAxis = block('.fade-scrollbar-safe-x, .fade-scrollbar-safe-xy', webkit)
-  const pinned = block(
-    '.fade-scrollbar-safe-y::-webkit-scrollbar, .fade-scrollbar-safe-x::-webkit-scrollbar, ' +
-      '.fade-scrollbar-safe-xy::-webkit-scrollbar',
-    webkit,
-  )
-  const clamped = 'max(0px, var(--tw-fade-scrollbar-width, 15px))'
-  assert.equal(declValue(inline, '--tw-fade-scrollbar'), clamped)
-  assert.equal(declValue(blockAxis, '--tw-fade-scrollbar-block'), clamped)
-  assert.equal(declValue(pinned, 'width'), clamped)
-  assert.equal(declValue(pinned, 'height'), clamped)
-})
-
-test('direction classes select the expected layers and central RTL routing', () => {
-  const shared = block(SHARED_SELECTOR)
-  assert.equal(declValue(shared, '--tw-fade-scroll-epsilon'), '0.1px')
-
-  const top = block(TOP_SELECTOR)
-  assert.equal(declValue(top, '--tw-fade-mask-t'), 'var(--tw-fade-gradient-t)')
-  assert.equal(declValue(top, '--tw-fade-animation-t'), 'tw-fade-travel-t')
-  assert.equal(declValue(top, '--tw-fade-timeline-t'), 'scroll(self y)')
-  assert.equal(
-    compact(declValue(top, '--tw-fade-animation-range-t')),
-    'var(--tw-fade-scroll-epsilon) max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active))',
-  )
-
-  const bottom = block(BOTTOM_SELECTOR)
-  assert.equal(declValue(bottom, '--tw-fade-mask-b'), 'var(--tw-fade-gradient-b)')
-  assert.equal(declValue(bottom, '--tw-fade-animation-b'), 'tw-fade-travel-b')
-  assert.equal(declValue(bottom, '--tw-fade-timeline-b'), 'scroll(self y)')
-  assert.equal(
-    compact(declValue(bottom, '--tw-fade-animation-range-b')),
-    'min( calc(100% - var(--tw-fade-travel-active)), calc(100% - var(--tw-fade-scroll-epsilon)) ) calc(100% - var(--tw-fade-scroll-epsilon))',
-  )
-
-  const start = block(START_SELECTOR)
-  assert.equal(declValue(start, '--tw-fade-ltr-start-layer'), 'var(--tw-fade-gradient-l)')
-  assert.equal(declValue(start, '--tw-fade-rtl-start-layer'), 'var(--tw-fade-gradient-r)')
-  assert.equal(declValue(start, '--tw-fade-ltr-start-animation'), 'tw-fade-travel-l')
-  assert.equal(declValue(start, '--tw-fade-rtl-start-animation'), 'tw-fade-travel-r-leading')
-  assert.equal(declValue(start, '--tw-fade-ltr-start-timeline'), 'scroll(self inline)')
-  assert.equal(declValue(start, '--tw-fade-rtl-start-timeline'), 'scroll(self inline)')
-  assert.equal(
-    compact(declValue(start, '--tw-fade-ltr-start-animation-range')),
-    'var(--tw-fade-scroll-epsilon) max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active))',
-  )
-  assert.equal(
-    compact(declValue(start, '--tw-fade-rtl-start-animation-range')),
-    'var(--tw-fade-scroll-epsilon) max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active))',
-  )
-
-  const end = block(END_SELECTOR)
-  assert.equal(declValue(end, '--tw-fade-ltr-end-layer'), 'var(--tw-fade-gradient-r)')
-  assert.equal(declValue(end, '--tw-fade-rtl-end-layer'), 'var(--tw-fade-gradient-l)')
-  assert.equal(declValue(end, '--tw-fade-ltr-end-animation'), 'tw-fade-travel-r')
-  assert.equal(declValue(end, '--tw-fade-rtl-end-animation'), 'tw-fade-travel-l-trailing')
-  assert.equal(
-    compact(declValue(end, '--tw-fade-ltr-end-animation-range')),
-    'min( calc(100% - var(--tw-fade-travel-active)), calc(100% - var(--tw-fade-scroll-epsilon)) ) calc(100% - var(--tw-fade-scroll-epsilon))',
-  )
-  assert.equal(
-    compact(declValue(end, '--tw-fade-rtl-end-animation-range')),
-    'min( calc(100% - var(--tw-fade-travel-active)), calc(100% - var(--tw-fade-scroll-epsilon)) ) calc(100% - var(--tw-fade-scroll-epsilon))',
-  )
-
-  const rtl = block(RTL_SELECTOR)
-  assert.ok(rtl, 'missing central RTL routing block')
-  assert.equal(declValue(rtl, '--tw-fade-mask-l'), 'var(--tw-fade-rtl-end-layer, var(--tw-fade-identity-mask))')
-  assert.equal(declValue(rtl, '--tw-fade-mask-r'), 'var(--tw-fade-rtl-start-layer, var(--tw-fade-identity-mask))')
-  assert.equal(declValue(rtl, '--tw-fade-animation-l'), 'var(--tw-fade-rtl-end-animation, none)')
-  assert.equal(declValue(rtl, '--tw-fade-animation-r'), 'var(--tw-fade-rtl-start-animation, none)')
-  assert.equal(declValue(rtl, '--tw-fade-edge-size-l'), 'var(--tw-fade-size-end, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))))')
-  assert.equal(declValue(rtl, '--tw-fade-edge-size-r'), 'var(--tw-fade-size-start, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))))')
-})
-
-test('the smoothstep ramp is the 13-stop sigmoid from the reference', () => {
-  const shared = block(SHARED_SELECTOR)
-  const edges = { t: '--tw-fade-gradient-t', b: '--tw-fade-gradient-b', l: '--tw-fade-gradient-l', r: '--tw-fade-gradient-r' }
-  for (const [edge, prop] of Object.entries(edges)) {
-    const grad = declValue(shared, prop)
-    assert.ok(grad, `missing ${prop}`)
-    const stops = (grad.match(/rgb\(0 0 0 \//g) || []).length
-    assert.equal(stops, 13, `${prop} should have 13 colour stops`)
-    const alphaMultipliers = [
-      ...grad.matchAll(new RegExp(`var\\(--tw-fade-alpha-${edge}\\)\\s*\\*\\s*([0-9.]+)`, 'g')),
-    ].map((m) => m[1])
-    assert.deepEqual(alphaMultipliers, ALPHA_MULTIPLIERS, `${prop} alpha ramp coefficients must stay exact`)
-    const positionMultipliers = [
-      ...grad.matchAll(new RegExp(`var\\(--tw-fade-edge-band-${edge}\\)\\s*\\*\\s*([0-9.]+)`, 'g')),
-    ].map((m) => m[1])
-    assert.deepEqual(positionMultipliers, POSITION_MULTIPLIERS, `${prop} position ramp coefficients must stay exact`)
-  }
-  assert.match(declValue(shared, '--tw-fade-gradient-t'), /^linear-gradient\(\s*to bottom/)
-  assert.match(declValue(shared, '--tw-fade-gradient-b'), /^linear-gradient\(\s*to top/)
-  assert.match(declValue(shared, '--tw-fade-gradient-l'), /^linear-gradient\(\s*to right/)
-  assert.match(declValue(shared, '--tw-fade-gradient-r'), /^linear-gradient\(\s*to left/)
-})
-
-test('edge alpha is decoupled from band growth so the clip is covered before the band finishes widening', () => {
-  const shared = block(SHARED_SELECTOR)
-  assert.ok(shared, 'missing shared block')
-
-  // The onset constant sets how fast the edge reaches full transparency relative
-  // to the travel: full coverage by travel/onset of scroll, independent of band width.
-  assert.equal(declValue(shared, '--tw-fade-onset'), '8')
-
-  for (const edge of ['t', 'b', 'l', 'r']) {
-    // alpha-* is a saturated copy of raw scroll progress (clamped at 1). This is
-    // what drives edge transparency, so the clip is covered almost immediately.
-    assert.equal(
-      declValue(shared, `--tw-fade-alpha-${edge}`),
-      `min(1, calc(var(--tw-fade-${edge}) * var(--tw-fade-onset)))`,
-      `--tw-fade-alpha-${edge} must saturate raw progress`,
-    )
-    // Band WIDTH stays keyed to raw progress, so it still eases open over the
-    // full travel distance (cosmetic widening) while the edge is already covered.
-    assert.equal(
-      declValue(shared, `--tw-fade-edge-band-${edge}`),
-      `calc(var(--tw-fade-edge-size-${edge}) * var(--tw-fade-${edge}))`,
-      `band size for ${edge} must stay on raw --tw-fade-${edge}`,
-    )
-    const grad = declValue(shared, `--tw-fade-gradient-${edge}`)
-    // Every alpha stop reads the saturated alpha var...
-    assert.match(
-      grad,
-      new RegExp(`calc\\(1 - var\\(--tw-fade-alpha-${edge}\\)`),
-      `${edge} gradient alpha must read the saturated alpha var`,
-    )
-    // ...and never raw progress, or the clip would re-couple to the full travel.
-    assert.doesNotMatch(
-      grad,
-      new RegExp(`calc\\(1 - var\\(--tw-fade-${edge}\\)`),
-      `${edge} gradient alpha must not key off raw --tw-fade-${edge}`,
-    )
-  }
-})
-
-test('static fallback pins selected fades on when scroll-driven animation is unsupported', () => {
-  const fallback = block('@supports not (animation-timeline: scroll())')
-  const shared = block(SHARED_SELECTOR, fallback)
-  assert.ok(shared, 'missing fallback block')
-  for (const amt of ['--tw-fade-t', '--tw-fade-b', '--tw-fade-l', '--tw-fade-r']) {
-    assert.equal(declValue(shared, amt), '1')
-  }
-})
 
 test('exposes the size and travel scales as theme-backed utilities', () => {
   for (const [name] of SCALE) {
@@ -696,26 +323,6 @@ test('exposes the size and travel scales as theme-backed utilities', () => {
   assert.equal(block('.fade-size-left-sm'), null)
 })
 
-test('size resolves as edge over axis over global over capped default', () => {
-  const shared = block(SHARED_SELECTOR)
-  assert.equal(declValue(shared, '--tw-fade-size-default'), 'min(12%, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12)))')
-  assert.equal(
-    declValue(shared, '--tw-fade-edge-size-t'),
-    'var(--tw-fade-size-top, var(--tw-fade-size-y, var(--tw-fade-size, var(--tw-fade-size-default))))',
-  )
-  assert.equal(
-    declValue(shared, '--tw-fade-edge-size-b'),
-    'var(--tw-fade-size-bottom, var(--tw-fade-size-y, var(--tw-fade-size, var(--tw-fade-size-default))))',
-  )
-  assert.equal(
-    declValue(shared, '--tw-fade-edge-size-l'),
-    'var(--tw-fade-size-start, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))))',
-  )
-  assert.equal(
-    declValue(shared, '--tw-fade-edge-size-r'),
-    'var(--tw-fade-size-end, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))))',
-  )
-})
 
 test('arbitrary size and travel utilities compile only through the source path', () => {
   assert.equal(declValue(block('.fade-size-\\[15\\%\\]', customCss), '--tw-fade-size'), '15%')
@@ -724,6 +331,7 @@ test('arbitrary size and travel utilities compile only through the source path',
   assert.equal(block('.fade-size-\\[15\\%\\]'), null)
   assert.equal(block('.fade-travel-\\[80px\\]'), null)
 })
+
 
 test('exposes directional clear utilities and source-path integer clear values', () => {
   for (const [name] of SCALE) {
@@ -742,6 +350,7 @@ test('exposes directional clear utilities and source-path integer clear values',
   assert.equal(block('.fade-clear-left-sm'), null)
   assert.equal(block('.fade-clear-xy-sm'), null)
 })
+
 
 test('dynamic clear variables follow edge to axis to global precedence', () => {
   assert.equal(declValue(block('.fade-clear-var'), '--tw-fade-clear'), 'var(--fade-clear, 0px)')
@@ -765,28 +374,6 @@ test('dynamic clear variables follow edge to axis to global precedence', () => {
   )
 })
 
-test('fade-none and fade-always pin amounts without disabling shared animations', () => {
-  const none = block('.fade-none')
-  for (const amt of ['--tw-fade-t', '--tw-fade-b', '--tw-fade-l', '--tw-fade-r']) {
-    assert.equal(declValue(none, amt), '0 !important')
-  }
-  const noneY = block('.fade-none-y')
-  assert.equal(declValue(noneY, '--tw-fade-t'), '0 !important')
-  assert.equal(declValue(noneY, '--tw-fade-b'), '0 !important')
-  assert.equal(declValue(noneY, '--tw-fade-l'), undefined)
-
-  const noneX = block('.fade-none-x')
-  assert.equal(declValue(noneX, '--tw-fade-l'), '0 !important')
-  assert.equal(declValue(noneX, '--tw-fade-r'), '0 !important')
-  assert.equal(declValue(noneX, '--tw-fade-t'), undefined)
-
-  const always = block('.fade-always')
-  for (const amt of ['--tw-fade-t', '--tw-fade-b', '--tw-fade-l', '--tw-fade-r']) {
-    assert.equal(declValue(always, amt), '1 !important')
-  }
-  assert.ok(!/animation-name:\s*none/.test(css), 'always utilities must not disable shared animations')
-  assert.ok(css.indexOf('.fade-none') < css.indexOf('.fade-always'), 'fade-always should be the emitted source-order winner')
-})
 
 test('the framework-free build is real CSS, self-contained, with no Tailwind noise', () => {
   for (const token of ['@utility', '@theme', '@apply', '--value(']) {

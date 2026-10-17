@@ -49,19 +49,16 @@ async function probe(selector, logicalPosition) {
       await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
       const cs = getComputedStyle(el)
       const num = (v) => Number(cs.getPropertyValue(v).trim() || 'NaN')
-      const prop = (v) => cs.getPropertyValue(v).trim()
       return {
         selector: sel,
         dir,
         requested: target,
         scrollLeft: el.scrollLeft,
         maxScrollLeft: max,
-        t: num('--tw-fade-t'),
-        b: num('--tw-fade-b'),
-        l: num('--tw-fade-l'),
-        r: num('--tw-fade-r'),
-        maskL: prop('--tw-fade-mask-l'),
-        maskR: prop('--tw-fade-mask-r'),
+        t: num('--tw-fade-opacity-t'),
+        b: num('--tw-fade-opacity-b'),
+        l: num('--tw-fade-opacity-l'),
+        r: num('--tw-fade-opacity-r'),
         animationName: cs.animationName,
         animationTimeline: cs.animationTimeline,
         animationRangeStart: cs.animationRangeStart,
@@ -95,25 +92,25 @@ const results = {
 await browser.close()
 
 const approx = (a, b, tol = 0.08) => Number.isFinite(a) && Math.abs(a - b) <= tol
-const hasLeft = (r) => /to right/.test(r.maskL)
-const hasRight = (r) => /to left/.test(r.maskR)
-const noLeft = (r) => !/to right/.test(r.maskL)
-const noRight = (r) => !/to left/.test(r.maskR)
+const hasLeft = (r) => r.l > 0.08
+const hasRight = (r) => r.r > 0.08
+const noLeft = (r) => approx(r.l, 0)
+const noRight = (r) => approx(r.r, 0)
 
 const checks = [
-  ['LTR fade-start maps to physical left only', hasLeft(results.ltrStart0) && noRight(results.ltrStart0)],
+  ['LTR fade-start maps to physical left only', hasLeft(results.ltrStartMid) && noRight(results.ltrStartMid)],
   ['LTR fade-start starts inactive then reveals', approx(results.ltrStart0.l, 0) && approx(results.ltrStartMid.l, 1)],
   ['LTR fade-end maps to physical right only', hasRight(results.ltrEnd0) && noLeft(results.ltrEnd0)],
   ['LTR fade-end starts present then retracts at end', approx(results.ltrEnd0.r, 1) && approx(results.ltrEndMax.r, 0)],
   ['LTR fade-x uses both horizontal layers', hasLeft(results.ltrXMid) && hasRight(results.ltrXMid)],
   ['LTR fade-x is active in middle and inactive at opposite ends', approx(results.ltrX0.l, 0) && approx(results.ltrX0.r, 1) && approx(results.ltrXMid.l, 1) && approx(results.ltrXMid.r, 1) && approx(results.ltrXMax.r, 0)],
-  ['RTL fade-start maps to physical right only', hasRight(results.rtlStart0) && noLeft(results.rtlStart0)],
+  ['RTL fade-start maps to physical right only', hasRight(results.rtlStartMid) && noLeft(results.rtlStartMid)],
   ['RTL fade-start starts inactive then reveals', approx(results.rtlStart0.r, 0) && approx(results.rtlStartMid.r, 1)],
   ['RTL fade-end maps to physical left only', hasLeft(results.rtlEnd0) && noRight(results.rtlEnd0)],
   ['RTL fade-end starts present then retracts at end', approx(results.rtlEnd0.l, 1) && approx(results.rtlEndMax.l, 0)],
   ['RTL fade-x uses both horizontal layers', hasLeft(results.rtlXMid) && hasRight(results.rtlXMid)],
   ['RTL fade-x is active in middle and inactive at opposite ends', approx(results.rtlX0.r, 0) && approx(results.rtlX0.l, 1) && approx(results.rtlXMid.l, 1) && approx(results.rtlXMid.r, 1) && approx(results.rtlXMax.l, 0)],
-  ['nested dir override: LTR scroller inside RTL parent maps start to physical left', hasLeft(results.nestedLtrStart0) && noRight(results.nestedLtrStart0) && approx(results.nestedLtrStart0.l, 0) && approx(results.nestedLtrStartMid.l, 1)],
+  ['nested dir override: LTR scroller inside RTL parent maps start to physical left', hasLeft(results.nestedLtrStartMid) && noRight(results.nestedLtrStartMid) && approx(results.nestedLtrStart0.l, 0) && approx(results.nestedLtrStartMid.l, 1)],
   ['non-scrollable horizontal content leaves both horizontal amounts inactive', approx(results.short.l, 0) && approx(results.short.r, 0)],
   ['horizontal timelines use scroll(self inline)', /scroll\(self inline\)/.test(results.ltrXMid.animationTimeline) && /scroll\(self inline\)/.test(results.rtlXMid.animationTimeline)],
 ]

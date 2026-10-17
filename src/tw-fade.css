@@ -1,6 +1,6 @@
 /* tw-fade - CSS scroll-edge fade masking for Tailwind v4. MIT - github.com/petekp/tw-fade */
 
-/* Amounts: keep <number> so scroll animation interpolates them; initial 0 = no fade. */
+/* Raw scroll progress interpolates independently of effect selection and activation. */
 @property --tw-fade-t {
     syntax: "<number>";
     inherits: false;
@@ -166,38 +166,6 @@ below native trades pointer accuracy for looks, which is not a default's call.
     syntax: "<length>";
     inherits: true;
     initial-value: 15px;
-}
-@property --tw-fade-mask-t {
-    syntax: "*";
-    inherits: false;
-}
-@property --tw-fade-mask-b {
-    syntax: "*";
-    inherits: false;
-}
-@property --tw-fade-mask-l {
-    syntax: "*";
-    inherits: false;
-}
-@property --tw-fade-mask-r {
-    syntax: "*";
-    inherits: false;
-}
-@property --tw-fade-ltr-start-layer {
-    syntax: "*";
-    inherits: false;
-}
-@property --tw-fade-ltr-end-layer {
-    syntax: "*";
-    inherits: false;
-}
-@property --tw-fade-rtl-start-layer {
-    syntax: "*";
-    inherits: false;
-}
-@property --tw-fade-rtl-end-layer {
-    syntax: "*";
-    inherits: false;
 }
 @property --tw-fade-ltr-start-animation {
     syntax: "*";
@@ -430,603 +398,877 @@ the scrollbar consumers clamp them to 0px before they reach geometry or masks.
     --tw-fade-scrollbar-width: --value(--fade-scrollbar-width-*, [length]);
 }
 
-@layer utilities {
-    .fade,
-    .fade-y,
-    .fade-top,
-    .fade-bottom,
-    .fade-x,
-    .fade-start,
-    .fade-end {
-        --tw-fade-size-default: min(12%, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12)));
-        --tw-fade-travel-active: var(--tw-fade-travel, var(--fade-travel-sm, calc(var(--spacing, 0.25rem) * 8)));
-        /*
-        Keep scroll animation ranges off the exact 0% / 100% endpoints. Chromium
-        can otherwise retain a sampled leading fade when a mounted scrollport's
-        content collapses from scrollable to non-scrollable.
-        */
-        --tw-fade-scroll-epsilon: 0.1px;
-        --tw-fade-identity-mask: linear-gradient(#000, #000);
-        --tw-fade-edge-size-t: var(--tw-fade-size-top, var(--tw-fade-size-y, var(--tw-fade-size, var(--tw-fade-size-default))));
-        --tw-fade-edge-size-b: var(--tw-fade-size-bottom, var(--tw-fade-size-y, var(--tw-fade-size, var(--tw-fade-size-default))));
-        --tw-fade-edge-size-l: var(--tw-fade-size-start, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))));
-        --tw-fade-edge-size-r: var(--tw-fade-size-end, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))));
-        --tw-fade-edge-clear-t: var(--tw-fade-clear-top, var(--tw-fade-clear-y, var(--tw-fade-clear, 0px)));
-        --tw-fade-edge-clear-b: var(--tw-fade-clear-bottom, var(--tw-fade-clear-y, var(--tw-fade-clear, 0px)));
-        --tw-fade-edge-clear-l: var(--tw-fade-clear-start, var(--tw-fade-clear-x, var(--tw-fade-clear, 0px)));
-        --tw-fade-edge-clear-r: var(--tw-fade-clear-end, var(--tw-fade-clear-x, var(--tw-fade-clear, 0px)));
-        --tw-fade-edge-band-t: calc(var(--tw-fade-edge-size-t) * var(--tw-fade-t));
-        --tw-fade-edge-band-b: calc(var(--tw-fade-edge-size-b) * var(--tw-fade-b));
-        --tw-fade-edge-band-l: calc(var(--tw-fade-edge-size-l) * var(--tw-fade-l));
-        --tw-fade-edge-band-r: calc(var(--tw-fade-edge-size-r) * var(--tw-fade-r));
-        /*
-        Decouple edge transparency from band growth. --tw-fade-t..r drive the
-        band WIDTH (above), so the band eases open over the full travel distance.
-        But the ALPHA at the very edge is driven by --tw-fade-alpha-*, a
-        saturated copy that reaches full transparency within travel/onset of
-        scroll. This covers the overflow clip almost immediately (no hard cut
-        during early scroll) while the band still widens cosmetically over the
-        whole travel. --tw-fade-onset = how fast the edge goes transparent
-        relative to the travel; higher = snappier clip coverage. At t=0 alpha is
-        also 0, so a flush (unscrolled) edge still shows no fade.
-        */
-        --tw-fade-onset: 8;
-        --tw-fade-alpha-t: min(1, calc(var(--tw-fade-t) * var(--tw-fade-onset)));
-        --tw-fade-alpha-b: min(1, calc(var(--tw-fade-b) * var(--tw-fade-onset)));
-        --tw-fade-alpha-l: min(1, calc(var(--tw-fade-l) * var(--tw-fade-onset)));
-        --tw-fade-alpha-r: min(1, calc(var(--tw-fade-r) * var(--tw-fade-onset)));
-        --tw-fade-gradient-t: linear-gradient(
-            to bottom,
-            #000 0 var(--tw-fade-edge-clear-t),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t))) var(--tw-fade-edge-clear-t),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.983))
-                calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.08333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.933))
-                calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.16667),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.854))
-                calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.25),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.75))
-                calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.33333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.629))
-                calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.41667),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.5))
-                calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.5),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.371))
-                calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.58333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.25))
-                calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.66667),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.146))
-                calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.75),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.067))
-                calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.83333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.017))
-                calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.91667),
-            rgb(0 0 0 / 1) calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t))
-        );
-        --tw-fade-gradient-b: linear-gradient(
-            to top,
-            #000 0 var(--tw-fade-edge-clear-b),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b))) var(--tw-fade-edge-clear-b),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.983))
-                calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.08333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.933))
-                calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.16667),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.854))
-                calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.25),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.75))
-                calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.33333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.629))
-                calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.41667),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.5))
-                calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.5),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.371))
-                calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.58333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.25))
-                calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.66667),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.146))
-                calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.75),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.067))
-                calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.83333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.017))
-                calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.91667),
-            rgb(0 0 0 / 1) calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b))
-        );
-        --tw-fade-gradient-l: linear-gradient(
-            to right,
-            #000 0 var(--tw-fade-edge-clear-l),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l))) var(--tw-fade-edge-clear-l),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.983))
-                calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.08333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.933))
-                calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.16667),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.854))
-                calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.25),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.75))
-                calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.33333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.629))
-                calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.41667),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.5))
-                calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.5),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.371))
-                calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.58333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.25))
-                calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.66667),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.146))
-                calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.75),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.067))
-                calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.83333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.017))
-                calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.91667),
-            rgb(0 0 0 / 1) calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l))
-        );
-        --tw-fade-gradient-r: linear-gradient(
-            to left,
-            #000 0 var(--tw-fade-edge-clear-r),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r))) var(--tw-fade-edge-clear-r),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.983))
-                calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.08333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.933))
-                calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.16667),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.854))
-                calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.25),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.75))
-                calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.33333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.629))
-                calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.41667),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.5))
-                calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.5),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.371))
-                calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.58333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.25))
-                calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.66667),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.146))
-                calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.75),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.067))
-                calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.83333),
-            rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.017))
-                calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.91667),
-            rgb(0 0 0 / 1) calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r))
-        );
-        --tw-fade-mask-l: var(--tw-fade-ltr-start-layer, var(--tw-fade-identity-mask));
-        --tw-fade-mask-r: var(--tw-fade-ltr-end-layer, var(--tw-fade-identity-mask));
-        --tw-fade-animation-l: var(--tw-fade-ltr-start-animation, none);
-        --tw-fade-animation-r: var(--tw-fade-ltr-end-animation, none);
-        --tw-fade-timeline-l: var(--tw-fade-ltr-start-timeline, none);
-        --tw-fade-timeline-r: var(--tw-fade-ltr-end-timeline, none);
-        --tw-fade-animation-range-l: var(--tw-fade-ltr-start-animation-range, normal);
-        --tw-fade-animation-range-r: var(--tw-fade-ltr-end-animation-range, normal);
-        /*
-        Neutral block-axis defaults. Unlike the l/r hooks above, the t/b
-        animation/timeline/range vars are not @property-registered and are set
-        only in the axis blocks below, so without a local default here a nested
-        fade child would inherit a parent's vertical hook and run a spurious
-        (inert) second scroll animation. The axis blocks override these by
-        source order at equal specificity, so top-level fades are unaffected.
-        */
+@theme {
+    --fade-blur-sm: 2px;
+    --fade-blur-md: 3px;
+    --fade-blur-lg: 6px;
+}
+
+@property --tw-fade-mode { syntax: "*"; inherits: false; }
+@property --tw-fade-mode-x { syntax: "*"; inherits: false; }
+@property --tw-fade-mode-y { syntax: "*"; inherits: false; }
+@property --tw-fade-mode-top { syntax: "*"; inherits: false; }
+@property --tw-fade-mode-bottom { syntax: "*"; inherits: false; }
+@property --tw-fade-mode-start { syntax: "*"; inherits: false; }
+@property --tw-fade-mode-end { syntax: "*"; inherits: false; }
+@property --tw-fade-select-top { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --tw-fade-select-bottom { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --tw-fade-select-start { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --tw-fade-select-end { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --tw-fade-blur-mode { syntax: "*"; inherits: false; }
+@property --tw-fade-blur-mode-x { syntax: "*"; inherits: false; }
+@property --tw-fade-blur-mode-y { syntax: "*"; inherits: false; }
+@property --tw-fade-blur-mode-top { syntax: "*"; inherits: false; }
+@property --tw-fade-blur-mode-bottom { syntax: "*"; inherits: false; }
+@property --tw-fade-blur-mode-start { syntax: "*"; inherits: false; }
+@property --tw-fade-blur-mode-end { syntax: "*"; inherits: false; }
+@property --tw-fade-blur-select-top { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --tw-fade-blur-select-bottom { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --tw-fade-blur-select-start { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --tw-fade-blur-select-end { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --tw-fade-opacity-t { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --tw-fade-opacity-b { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --tw-fade-opacity-l { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --tw-fade-opacity-r { syntax: "<number>"; inherits: false; initial-value: 0; }
+/* Blur amounts inherit into overlays; each effect host computes its own four amounts. */
+@property --tw-fade-blur-t { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --tw-fade-blur-b { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --tw-fade-blur-l { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --tw-fade-blur-r { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --tw-fade-blur-strength { syntax: "*"; inherits: false; }
+@property --tw-fade-onset { syntax: "<number>"; inherits: false; initial-value: 8; }
+
+/* Base-layer resets cover variant and @apply hosts without class matching;
+   private settings would inherit into nested fades without @property. */
+@layer base {
+    :where(*) {
+        --tw-fade-mode: initial;
+        --tw-fade-mode-x: initial;
+        --tw-fade-mode-y: initial;
+        --tw-fade-mode-top: initial;
+        --tw-fade-mode-bottom: initial;
+        --tw-fade-mode-start: initial;
+        --tw-fade-mode-end: initial;
+        --tw-fade-select-top: 0;
+        --tw-fade-select-bottom: 0;
+        --tw-fade-select-start: 0;
+        --tw-fade-select-end: 0;
+        --tw-fade-blur-mode: initial;
+        --tw-fade-blur-mode-x: initial;
+        --tw-fade-blur-mode-y: initial;
+        --tw-fade-blur-mode-top: initial;
+        --tw-fade-blur-mode-bottom: initial;
+        --tw-fade-blur-mode-start: initial;
+        --tw-fade-blur-mode-end: initial;
+        --tw-fade-blur-select-top: 0;
+        --tw-fade-blur-select-bottom: 0;
+        --tw-fade-blur-select-start: 0;
+        --tw-fade-blur-select-end: 0;
+        --tw-fade-size: initial;
+        --tw-fade-size-y: initial;
+        --tw-fade-size-x: initial;
+        --tw-fade-size-top: initial;
+        --tw-fade-size-bottom: initial;
+        --tw-fade-size-start: initial;
+        --tw-fade-size-end: initial;
+        --tw-fade-travel: initial;
+        --tw-fade-clear: initial;
+        --tw-fade-clear-y: initial;
+        --tw-fade-clear-x: initial;
+        --tw-fade-clear-top: initial;
+        --tw-fade-clear-bottom: initial;
+        --tw-fade-clear-start: initial;
+        --tw-fade-clear-end: initial;
+        --tw-fade-scrollbar: initial;
+        --tw-fade-scrollbar-block: initial;
+        --tw-fade-ltr-start-animation: initial;
+        --tw-fade-ltr-end-animation: initial;
+        --tw-fade-rtl-start-animation: initial;
+        --tw-fade-rtl-end-animation: initial;
+        --tw-fade-ltr-start-timeline: initial;
+        --tw-fade-ltr-end-timeline: initial;
+        --tw-fade-rtl-start-timeline: initial;
+        --tw-fade-rtl-end-timeline: initial;
+        --tw-fade-ltr-start-animation-range: initial;
+        --tw-fade-ltr-end-animation-range: initial;
+        --tw-fade-rtl-start-animation-range: initial;
+        --tw-fade-rtl-end-animation-range: initial;
+        --tw-fade-blur-strength: initial;
+        --tw-fade-onset: initial;
         --tw-fade-animation-t: none;
-        --tw-fade-animation-b: none;
         --tw-fade-timeline-t: none;
-        --tw-fade-timeline-b: none;
         --tw-fade-animation-range-t: normal;
+        --tw-fade-animation-b: none;
+        --tw-fade-timeline-b: none;
         --tw-fade-animation-range-b: normal;
-        /*
-        Scrollbar-protection strip (opt-in, inert by default). An extra opaque
-        mask layer covering only the inline-end scrollbar column, unioned onto
-        the fade via mask-composite:add. Union can only ADD opacity, so it
-        restores that column to fully opaque -- shielding a classic scrollbar
-        from the fade -- while leaving the content fade untouched. Width defaults
-        to 0px (covers nothing => no-op); fade-scrollbar-safe-y widens it. Position
-        is inline-end (right in LTR; the :dir(rtl) block flips it to left).
-        */
-        --tw-fade-scrollbar-pos: 100% 0%;
-        /*
-        The inline-end gradient is inset by the same width, which fixes a second,
-        quieter symptom of the same root cause. Mask percentages resolve against
-        the border box (gutter included) while content stops at the scrollport
-        edge, so a right-edge ramp authored to reach zero at 100% reaches zero
-        inside the GUTTER -- and over real content it only ever gets
-        (size - gutter)/size of the way down. Measured with a 60px band and the
-        15px default bar, the last content pixel is still 40/255 opaque, and
-        161/255 under a 26px band: the fade visibly fails to complete, leaving a
-        hard edge exactly where it should have dissolved. Tighter bands are hit
-        harder, since the gutter eats a larger share of the ramp. Sizing the layer to
-        calc(100% - scrollbar) lands the ramp's end on the content edge instead,
-        and the strip restores the gutter column afterwards.
-
-        This is only expressible because the width is pinned rather than guessed;
-        at the 0px default calc(100% - 0px) is 100% and nothing changes.
-        */
-        --tw-fade-mask-size-l: 100% 100%;
-        --tw-fade-mask-size-r: calc(100% - var(--tw-fade-scrollbar, 0px)) 100%;
-        --tw-fade-mask-pos-l: 0% 0%;
-        --tw-fade-mask-pos-r: 0% 0%;
-        /*
-        Mask layers accumulate bottom-to-top: the LAST listed layer seeds the
-        stack and each earlier layer composites onto what's below it. So the four
-        edge gradients sit at the bottom and intersect among themselves, and the
-        strips must be listed FIRST with add to union onto that intersection --
-        add can only raise opacity, restoring the scrollbar columns. A 0px strip
-        covers nothing, so add contributes nothing and base fades are unchanged.
-        */
-        mask-image:
-            var(--tw-fade-identity-mask),
-            var(--tw-fade-identity-mask),
-            var(--tw-fade-mask-t, var(--tw-fade-identity-mask)),
-            var(--tw-fade-mask-b, var(--tw-fade-identity-mask)),
-            var(--tw-fade-mask-l, var(--tw-fade-identity-mask)),
-            var(--tw-fade-mask-r, var(--tw-fade-identity-mask));
-        mask-composite: add, add, intersect, intersect, intersect, intersect;
-        mask-repeat: no-repeat;
-        /*
-        The strips use padding-box origin; the gradients keep the default
-        border-box. The gutter sits between the padding and border edges, so a
-        border-box-anchored strip is pushed outward by the border and straddles
-        it: measured on a 5px border with an 11px bar, the strip covered the
-        border plus only 6 of the 11 gutter pixels, leaving 5px of scrollbar
-        still faded. Padding-box is exactly right because CSS Overflow 3 5.1
-        folds the reserved gutter INTO the padding area for painting purposes,
-        so the padding box's inline-end edge is the gutter's outer edge.
-        */
-        mask-origin: padding-box, padding-box, border-box, border-box, border-box, border-box;
-        mask-size:
-            100% var(--tw-fade-scrollbar-block, 0px),
-            var(--tw-fade-scrollbar, 0px) 100%,
-            100% 100%,
-            100% calc(100% - var(--tw-fade-scrollbar-block, 0px)),
-            var(--tw-fade-mask-size-l),
-            var(--tw-fade-mask-size-r);
-        mask-position:
-            0% 100%,
-            var(--tw-fade-scrollbar-pos),
-            0% 0%,
-            0% 0%,
-            var(--tw-fade-mask-pos-l),
-            var(--tw-fade-mask-pos-r);
     }
+}
 
-    .fade:where(:dir(rtl)),
-    .fade-y:where(:dir(rtl)),
-    .fade-top:where(:dir(rtl)),
-    .fade-bottom:where(:dir(rtl)),
-    .fade-x:where(:dir(rtl)),
-    .fade-start:where(:dir(rtl)),
-    .fade-end:where(:dir(rtl)) {
+@utility tw-fade-base {
+    --tw-fade-size-default: min(12%, var(--fade-size-md, calc(var(--spacing, 0.25rem) * 12)));
+    --tw-fade-travel-active: var(--tw-fade-travel, var(--fade-travel-sm, calc(var(--spacing, 0.25rem) * 8)));
+
+    /* Exact endpoints can retain stale progress after scrollable content collapses. */
+    --tw-fade-scroll-epsilon: 0.1px;
+    --tw-fade-identity-mask: linear-gradient(#000, #000);
+    --tw-fade-edge-size-t: var(--tw-fade-size-top, var(--tw-fade-size-y, var(--tw-fade-size, var(--tw-fade-size-default))));
+    --tw-fade-edge-size-b: var(--tw-fade-size-bottom, var(--tw-fade-size-y, var(--tw-fade-size, var(--tw-fade-size-default))));
+    --tw-fade-edge-size-l: var(--tw-fade-size-start, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))));
+    --tw-fade-edge-size-r: var(--tw-fade-size-end, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))));
+    --tw-fade-edge-clear-t: var(--tw-fade-clear-top, var(--tw-fade-clear-y, var(--tw-fade-clear, 0px)));
+    --tw-fade-edge-clear-b: var(--tw-fade-clear-bottom, var(--tw-fade-clear-y, var(--tw-fade-clear, 0px)));
+    --tw-fade-edge-clear-l: var(--tw-fade-clear-start, var(--tw-fade-clear-x, var(--tw-fade-clear, 0px)));
+    --tw-fade-edge-clear-r: var(--tw-fade-clear-end, var(--tw-fade-clear-x, var(--tw-fade-clear, 0px)));
+    --tw-fade-edge-band-t: calc(var(--tw-fade-edge-size-t) * var(--tw-fade-opacity-t));
+    --tw-fade-edge-band-b: calc(var(--tw-fade-edge-size-b) * var(--tw-fade-opacity-b));
+    --tw-fade-edge-band-l: calc(var(--tw-fade-edge-size-l) * var(--tw-fade-opacity-l));
+    --tw-fade-edge-band-r: calc(var(--tw-fade-edge-size-r) * var(--tw-fade-opacity-r));
+
+    /* Edge transparency opens before the band reaches its full width. */
+    --tw-fade-alpha-t: min(1, calc(var(--tw-fade-opacity-t) * var(--tw-fade-onset, 8)));
+    --tw-fade-alpha-b: min(1, calc(var(--tw-fade-opacity-b) * var(--tw-fade-onset, 8)));
+    --tw-fade-alpha-l: min(1, calc(var(--tw-fade-opacity-l) * var(--tw-fade-onset, 8)));
+    --tw-fade-alpha-r: min(1, calc(var(--tw-fade-opacity-r) * var(--tw-fade-onset, 8)));
+    --tw-fade-gradient-t: linear-gradient(
+        to bottom,
+        #000 0 var(--tw-fade-edge-clear-t),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t))) var(--tw-fade-edge-clear-t),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.983))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.933))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.854))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.75))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.629))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.5))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.371))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.25))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.146))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.067))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-t) * 0.017))
+            calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--tw-fade-edge-clear-t) + var(--tw-fade-edge-band-t))
+    );
+    --tw-fade-gradient-b: linear-gradient(
+        to top,
+        #000 0 var(--tw-fade-edge-clear-b),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b))) var(--tw-fade-edge-clear-b),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.983))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.933))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.854))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.75))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.629))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.5))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.371))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.25))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.146))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.067))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-b) * 0.017))
+            calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--tw-fade-edge-clear-b) + var(--tw-fade-edge-band-b))
+    );
+    --tw-fade-gradient-l: linear-gradient(
+        to right,
+        #000 0 var(--tw-fade-edge-clear-l),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l))) var(--tw-fade-edge-clear-l),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.983))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.933))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.854))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.75))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.629))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.5))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.371))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.25))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.146))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.067))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-l) * 0.017))
+            calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--tw-fade-edge-clear-l) + var(--tw-fade-edge-band-l))
+    );
+    --tw-fade-gradient-r: linear-gradient(
+        to left,
+        #000 0 var(--tw-fade-edge-clear-r),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r))) var(--tw-fade-edge-clear-r),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.983))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.08333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.933))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.16667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.854))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.25),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.75))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.33333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.629))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.41667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.5))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.5),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.371))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.58333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.25))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.66667),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.146))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.75),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.067))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.83333),
+        rgb(0 0 0 / calc(1 - var(--tw-fade-alpha-r) * 0.017))
+            calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r) * 0.91667),
+        rgb(0 0 0 / 1) calc(var(--tw-fade-edge-clear-r) + var(--tw-fade-edge-band-r))
+    );
+
+    --tw-fade-animation-l: var(--tw-fade-ltr-start-animation, none);
+    --tw-fade-animation-r: var(--tw-fade-ltr-end-animation, none);
+    --tw-fade-timeline-l: var(--tw-fade-ltr-start-timeline, none);
+    --tw-fade-timeline-r: var(--tw-fade-ltr-end-timeline, none);
+    --tw-fade-animation-range-l: var(--tw-fade-ltr-start-animation-range, normal);
+    --tw-fade-animation-range-r: var(--tw-fade-ltr-end-animation-range, normal);
+
+    --tw-fade-scrollbar-pos: 100% 0%;
+
+    --tw-fade-mask-size-l: 100% 100%;
+    --tw-fade-mask-size-r: calc(100% - var(--tw-fade-scrollbar, 0px)) 100%;
+    --tw-fade-mask-pos-l: 0% 0%;
+    --tw-fade-mask-pos-r: 0% 0%;
+    --tw-fade-mode-t: var(--tw-fade-mode-top, var(--tw-fade-mode-y, var(--tw-fade-mode, -1)));
+    --tw-fade-selected-t: var(--tw-fade-select-top, 0);
+    --tw-fade-opacity-t: calc(var(--tw-fade-selected-t) * (max(0, var(--tw-fade-mode-t)) + max(0, calc(-1 * var(--tw-fade-mode-t))) * var(--tw-fade-t, 1)));
+    --tw-fade-mode-b: var(--tw-fade-mode-bottom, var(--tw-fade-mode-y, var(--tw-fade-mode, -1)));
+    --tw-fade-selected-b: var(--tw-fade-select-bottom, 0);
+    --tw-fade-opacity-b: calc(var(--tw-fade-selected-b) * (max(0, var(--tw-fade-mode-b)) + max(0, calc(-1 * var(--tw-fade-mode-b))) * var(--tw-fade-b, 1)));
+    --tw-fade-mode-l: var(--tw-fade-mode-start, var(--tw-fade-mode-x, var(--tw-fade-mode, -1)));
+    --tw-fade-selected-l: var(--tw-fade-select-start, 0);
+    --tw-fade-opacity-l: calc(var(--tw-fade-selected-l) * (max(0, var(--tw-fade-mode-l)) + max(0, calc(-1 * var(--tw-fade-mode-l))) * var(--tw-fade-l, 1)));
+    --tw-fade-mode-r: var(--tw-fade-mode-end, var(--tw-fade-mode-x, var(--tw-fade-mode, -1)));
+    --tw-fade-selected-r: var(--tw-fade-select-end, 0);
+    --tw-fade-opacity-r: calc(var(--tw-fade-selected-r) * (max(0, var(--tw-fade-mode-r)) + max(0, calc(-1 * var(--tw-fade-mode-r))) * var(--tw-fade-r, 1)));
+    --tw-fade-blur-mode-t: var(--tw-fade-blur-mode-top, var(--tw-fade-blur-mode-y, var(--tw-fade-blur-mode, -1)));
+    --tw-fade-blur-selected-t: var(--tw-fade-blur-select-top, 0);
+    --tw-fade-blur-t: calc(var(--tw-fade-blur-selected-t) * (max(0, var(--tw-fade-blur-mode-t)) + max(0, calc(-1 * var(--tw-fade-blur-mode-t))) * var(--tw-fade-t, 1)));
+    --tw-fade-blur-mode-b: var(--tw-fade-blur-mode-bottom, var(--tw-fade-blur-mode-y, var(--tw-fade-blur-mode, -1)));
+    --tw-fade-blur-selected-b: var(--tw-fade-blur-select-bottom, 0);
+    --tw-fade-blur-b: calc(var(--tw-fade-blur-selected-b) * (max(0, var(--tw-fade-blur-mode-b)) + max(0, calc(-1 * var(--tw-fade-blur-mode-b))) * var(--tw-fade-b, 1)));
+    --tw-fade-blur-mode-l: var(--tw-fade-blur-mode-start, var(--tw-fade-blur-mode-x, var(--tw-fade-blur-mode, -1)));
+    --tw-fade-blur-selected-l: var(--tw-fade-blur-select-start, 0);
+    --tw-fade-blur-l: calc(var(--tw-fade-blur-selected-l) * (max(0, var(--tw-fade-blur-mode-l)) + max(0, calc(-1 * var(--tw-fade-blur-mode-l))) * var(--tw-fade-l, 1)));
+    --tw-fade-blur-mode-r: var(--tw-fade-blur-mode-end, var(--tw-fade-blur-mode-x, var(--tw-fade-blur-mode, -1)));
+    --tw-fade-blur-selected-r: var(--tw-fade-blur-select-end, 0);
+    --tw-fade-blur-r: calc(var(--tw-fade-blur-selected-r) * (max(0, var(--tw-fade-blur-mode-r)) + max(0, calc(-1 * var(--tw-fade-blur-mode-r))) * var(--tw-fade-r, 1)));
+    &:where(:dir(rtl)) {
         --tw-fade-edge-size-l: var(--tw-fade-size-end, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))));
         --tw-fade-edge-size-r: var(--tw-fade-size-start, var(--tw-fade-size-x, var(--tw-fade-size, var(--tw-fade-size-default))));
         --tw-fade-edge-clear-l: var(--tw-fade-clear-end, var(--tw-fade-clear-x, var(--tw-fade-clear, 0px)));
         --tw-fade-edge-clear-r: var(--tw-fade-clear-start, var(--tw-fade-clear-x, var(--tw-fade-clear, 0px)));
-        /*
-        RTL puts the vertical scrollbar on the left, so the shield moves there
-        and the INLINE-END inset swaps to the left layer with it. The inset layer
-        is right-aligned (100% 0%) so it occupies everything to the right of the
-        gutter, putting the ramp's transparent end on the content's left edge.
-        At the 0px default the layer is full-size and the alignment is moot.
-        */
+
         --tw-fade-scrollbar-pos: 0% 0%;
         --tw-fade-mask-size-l: calc(100% - var(--tw-fade-scrollbar, 0px)) 100%;
         --tw-fade-mask-size-r: 100% 100%;
         --tw-fade-mask-pos-l: 100% 0%;
         --tw-fade-mask-pos-r: 0% 0%;
-        --tw-fade-mask-l: var(--tw-fade-rtl-end-layer, var(--tw-fade-identity-mask));
-        --tw-fade-mask-r: var(--tw-fade-rtl-start-layer, var(--tw-fade-identity-mask));
+
         --tw-fade-animation-l: var(--tw-fade-rtl-end-animation, none);
         --tw-fade-animation-r: var(--tw-fade-rtl-start-animation, none);
         --tw-fade-timeline-l: var(--tw-fade-rtl-end-timeline, none);
         --tw-fade-timeline-r: var(--tw-fade-rtl-start-timeline, none);
         --tw-fade-animation-range-l: var(--tw-fade-rtl-end-animation-range, normal);
         --tw-fade-animation-range-r: var(--tw-fade-rtl-start-animation-range, normal);
+        --tw-fade-mode-l: var(--tw-fade-mode-end, var(--tw-fade-mode-x, var(--tw-fade-mode, -1)));
+        --tw-fade-selected-l: var(--tw-fade-select-end, 0);
+        --tw-fade-mode-r: var(--tw-fade-mode-start, var(--tw-fade-mode-x, var(--tw-fade-mode, -1)));
+        --tw-fade-selected-r: var(--tw-fade-select-start, 0);
+        --tw-fade-blur-mode-l: var(--tw-fade-blur-mode-end, var(--tw-fade-blur-mode-x, var(--tw-fade-blur-mode, -1)));
+        --tw-fade-blur-selected-l: var(--tw-fade-blur-select-end, 0);
+        --tw-fade-blur-mode-r: var(--tw-fade-blur-mode-start, var(--tw-fade-blur-mode-x, var(--tw-fade-blur-mode, -1)));
+        --tw-fade-blur-selected-r: var(--tw-fade-blur-select-start, 0);
     }
-
-    .fade,
-    .fade-y,
-    .fade-top {
-        --tw-fade-mask-t: var(--tw-fade-gradient-t);
-        --tw-fade-animation-t: tw-fade-travel-t;
-        --tw-fade-timeline-t: scroll(self y);
-        --tw-fade-animation-range-t: var(--tw-fade-scroll-epsilon)
-            max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active));
-    }
-
-    .fade,
-    .fade-y,
-    .fade-bottom {
-        --tw-fade-mask-b: var(--tw-fade-gradient-b);
-        --tw-fade-animation-b: tw-fade-travel-b;
-        --tw-fade-timeline-b: scroll(self y);
-        --tw-fade-animation-range-b: min(
-                calc(100% - var(--tw-fade-travel-active)),
-                calc(100% - var(--tw-fade-scroll-epsilon))
-            )
-            calc(100% - var(--tw-fade-scroll-epsilon));
-    }
-
-    .fade,
-    .fade-x,
-    .fade-start {
-        --tw-fade-ltr-start-layer: var(--tw-fade-gradient-l);
-        --tw-fade-rtl-start-layer: var(--tw-fade-gradient-r);
-        --tw-fade-ltr-start-animation: tw-fade-travel-l;
-        --tw-fade-rtl-start-animation: tw-fade-travel-r-leading;
-        --tw-fade-ltr-start-timeline: scroll(self inline);
-        --tw-fade-rtl-start-timeline: scroll(self inline);
-        --tw-fade-ltr-start-animation-range: var(--tw-fade-scroll-epsilon)
-            max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active));
-        --tw-fade-rtl-start-animation-range: var(--tw-fade-scroll-epsilon)
-            max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active));
-    }
-
-    .fade,
-    .fade-x,
-    .fade-end {
-        --tw-fade-ltr-end-layer: var(--tw-fade-gradient-r);
-        --tw-fade-rtl-end-layer: var(--tw-fade-gradient-l);
-        --tw-fade-ltr-end-animation: tw-fade-travel-r;
-        --tw-fade-rtl-end-animation: tw-fade-travel-l-trailing;
-        --tw-fade-ltr-end-timeline: scroll(self inline);
-        --tw-fade-rtl-end-timeline: scroll(self inline);
-        --tw-fade-ltr-end-animation-range: min(
-                calc(100% - var(--tw-fade-travel-active)),
-                calc(100% - var(--tw-fade-scroll-epsilon))
-            )
-            calc(100% - var(--tw-fade-scroll-epsilon));
-        --tw-fade-rtl-end-animation-range: min(
-                calc(100% - var(--tw-fade-travel-active)),
-                calc(100% - var(--tw-fade-scroll-epsilon))
-            )
-            calc(100% - var(--tw-fade-scroll-epsilon));
-    }
-
     @supports (animation-timeline: scroll()) {
-        .fade,
-        .fade-y,
-        .fade-top,
-        .fade-bottom,
-        .fade-x,
-        .fade-start,
-        .fade-end {
-            animation:
-                var(--tw-fade-animation-t, none) auto linear both,
-                var(--tw-fade-animation-b, none) auto linear both,
-                var(--tw-fade-animation-l, none) auto linear both,
-                var(--tw-fade-animation-r, none) auto linear both;
-            animation-timeline:
-                var(--tw-fade-timeline-t, none),
-                var(--tw-fade-timeline-b, none),
-                var(--tw-fade-timeline-l, none),
-                var(--tw-fade-timeline-r, none);
-            animation-range:
-                var(--tw-fade-animation-range-t, normal),
-                var(--tw-fade-animation-range-b, normal),
-                var(--tw-fade-animation-range-l, normal),
-                var(--tw-fade-animation-range-r, normal);
-        }
+        animation-name: var(--tw-fade-animation-t, none), var(--tw-fade-animation-b, none), var(--tw-fade-animation-l, none), var(--tw-fade-animation-r, none);
+        animation-duration: auto;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline:
+            var(--tw-fade-timeline-t, none),
+            var(--tw-fade-timeline-b, none),
+            var(--tw-fade-timeline-l, none),
+            var(--tw-fade-timeline-r, none);
+        animation-range:
+            var(--tw-fade-animation-range-t, normal),
+            var(--tw-fade-animation-range-b, normal),
+            var(--tw-fade-animation-range-l, normal),
+            var(--tw-fade-animation-range-r, normal);
     }
-
     @supports not (animation-timeline: scroll()) {
-        .fade,
-        .fade-y,
-        .fade-top,
-        .fade-bottom,
-        .fade-x,
-        .fade-start,
-        .fade-end {
-            --tw-fade-t: 1;
-            --tw-fade-b: 1;
-            --tw-fade-l: 1;
-            --tw-fade-r: 1;
-        }
-    }
-
-    .fade-none {
-        --tw-fade-t: 0 !important;
-        --tw-fade-b: 0 !important;
-        --tw-fade-l: 0 !important;
-        --tw-fade-r: 0 !important;
-    }
-
-    .fade-none-y {
-        --tw-fade-t: 0 !important;
-        --tw-fade-b: 0 !important;
-    }
-
-    .fade-none-x {
-        --tw-fade-l: 0 !important;
-        --tw-fade-r: 0 !important;
-    }
-
-    .fade-always {
-        --tw-fade-t: 1 !important;
-        --tw-fade-b: 1 !important;
-        --tw-fade-l: 1 !important;
-        --tw-fade-r: 1 !important;
-    }
-
-    .fade-always-y {
-        --tw-fade-t: 1 !important;
-        --tw-fade-b: 1 !important;
-    }
-
-    .fade-always-x {
-        --tw-fade-l: 1 !important;
-        --tw-fade-r: 1 !important;
-    }
-
-    /*
-    Opt-in: keep a classic (space-consuming) scrollbar out of the fade.
-
-    Why a mask hits the scrollbar at all: masking applies to the element after it
-    and its descendants are drawn to one temporary canvas, and a "visible
-    scrolling mechanism" is part of that canvas. Filter Effects says so in as
-    many words for filter, CSS Masking says so for clip-path, and mask inherits
-    it structurally. Overlay scrollbars (macOS/iOS/Android default) are composited
-    separately and escape -- which is why this is invisible on a Mac and obvious
-    on Windows.
-
-    Why the strip's width can't be derived: the reserved gutter sits inside the
-    mask's reference boxes by normative reference (CSS Overflow 3 folds it into
-    the padding area for background positioning; CSS Masking defines the mask
-    boxes as the background boxes), so no <coord-box> isolates it. Container
-    query units DO measure it -- 100cqi excludes the gutter -- but cq units
-    resolve against an ancestor container, so only descendants can read them,
-    never the masked element itself. The width is therefore knowable everywhere
-    except where it is needed.
-
-    So it is not derived, it is DECLARED. ::-webkit-scrollbar pins the bar to
-    exactly --tw-fade-scrollbar-width in Blink and WebKit on every platform, and
-    the strip is set from the same custom property, so bar and strip are equal by
-    construction rather than by coincidence. That also survives page zoom: a
-    native bar holds a constant physical size, so its width in CSS px drifts as
-    1/zoom (15 -> 12 -> 7.5 from 1x to 2x), while two author-declared lengths
-    scale together and stay aligned.
-
-    scrollbar-width and scrollbar-color are deliberately NOT set here: specifying
-    either one makes Blink discard ::-webkit-scrollbar customization entirely
-    (scrollbar-width does the same in WebKit), which would cancel the pin and
-    take the gutter to 0 while leaving a 15px strip sitting on top of content.
-    They are confined to the Gecko branch below, where they are the only levers
-    that exist. The same collision applies to Tailwind's own utilities that set
-    those properties -- scrollbar-thin / -auto / -none for the width, and
-    scrollbar-thumb-* / scrollbar-track-* for the colour (there is no
-    scrollbar-color-* utility) -- so putting any of them on the same element
-    cancels the pin. Use fade-scrollbar-width-* for the size and
-    ::-webkit-scrollbar-track / -thumb for the colours, which is why the width
-    utility exists at all.
-    */
-    /*
-    THE SUFFIX IS THE SCROLL AXIS, NOT THE FADED EDGE. -y is the bar you get
-    from scrolling on y: the VERTICAL bar, at the inline end. -x is the
-    horizontal bar along the block end. This follows overflow-y / overflow-x,
-    which is the model an author already has, and it deliberately does NOT
-    follow this plugin's own fade-y (top+bottom edges) -- the noun differs, and
-    in practice the two agree anyway: a y-scroller wants fade-y and
-    fade-scrollbar-safe-y, and all three axes line up.
-
-    Only -y stabilizes a gutter, because only the inline axis has one to
-    stabilize. -x deliberately omits it: scrollbar-gutter reserves nothing on
-    the block axis, and setting it on an x-only scroller would reserve an inline
-    gutter for a vertical bar the author just said they do not have.
-    */
-    /*
-    THE WHOLE UTILITY REQUIRES SCROLL GATING. Not just the strip -- the pin too.
-
-    Without animation-timeline: scroll() the plugin takes its static fallback,
-    which pins every selected fade ON regardless of whether the container
-    overflows (see the @supports not (animation-timeline: scroll()) block). A
-    faded container with no overflow has no reserved gutter, so the strip lands
-    on content: measured in WebKit, a plain overflow-auto fade-y container whose
-    content does not overflow renders the inline-end fade to fully transparent
-    and then a hard 15px opaque band of content beyond it -- the exact inversion
-    of what this utility is for, on markup that never mentions fade-always.
-
-    Dropping only the strip is not enough, because the pin is what makes the bar
-    classic in the first place. Pinned-but-unshielded is strictly worse than not
-    opting in at all: on macOS it manufactures a space-consuming bar and then
-    lets the fade dim it, converting a platform with no bug into one with the
-    bug. So the entire opt-in stands down together, and those engines get their
-    native behaviour -- overlay bars on macOS, which the mask never touches.
-
-    This costs nothing where the feature works: every engine that can shield a
-    scrollbar (Blink, WebKit 26+) supports scroll-driven animations. It removes
-    the feature on Safari 17.x / 18.x and on release Firefox with the
-    scroll-driven-animation pref off, where it could only have done harm.
-    */
-    @supports (animation-timeline: scroll()) {
-    .fade-scrollbar-safe-y,
-    .fade-scrollbar-safe-xy {
-        /*
-        Required, not cosmetic: without a stable gutter the bar appears only
-        while the content overflows, so the strip would be right when it does
-        and a bright slab over content when it doesn't. Note this only takes
-        effect once the pin below has made the bar classic -- scrollbar-gutter
-        reserves nothing for overlay bars, which consume no space to begin with.
-
-        Blink honours this for custom bars and reserves the gutter even when the
-        content does not overflow. WebKit does not: measured, gutter 0 on a
-        non-overflowing container while the strip is still 15px wide. That
-        residual is documented, and an author can close it with
-        overflow-y: scroll, which forces the gutter in WebKit too (measured 15px,
-        strip landing exactly on the track).
-        */
-        scrollbar-gutter: stable;
-    }
-
-    @supports selector(::-webkit-scrollbar) {
-        .fade-scrollbar-safe-y,
-        .fade-scrollbar-safe-xy {
-            --tw-fade-scrollbar: max(0px, var(--tw-fade-scrollbar-width, 15px));
-        }
-
-        /*
-        The block axis, for the horizontal bar. Only safe when the container
-        really does overflow horizontally: unlike the inline gutter, this one is
-        reserved only while a bar is actually present, and no scrollbar-gutter
-        value changes that -- see the --tw-fade-scrollbar-block registration for
-        the measurements. CSS cannot detect horizontal overflow; the author can.
-        That is the whole reason the axis is named rather than inferred.
-        */
-        .fade-scrollbar-safe-x,
-        .fade-scrollbar-safe-xy {
-            --tw-fade-scrollbar-block: max(0px, var(--tw-fade-scrollbar-width, 15px));
-        }
-
-        /*
-        The pin. Declaring a width here forces a classic, space-consuming bar of
-        exactly this size on every platform -- including macOS, where the default
-        would otherwise be an overlay bar. That is the trade this utility makes:
-        it takes ownership of the scrollbar's geometry in exchange for being
-        exact rather than approximate.
-
-        Both dimensions are pinned on all three classes, even though -y shields
-        only the inline bar. Both engines treat the custom-scrollbar opt-in as
-        per-ELEMENT, not per-axis: an unscoped ::-webkit-scrollbar rule turns the
-        horizontal bar classic too, whether or not this rule mentions height.
-        Omitting height therefore does not restore the overlay bar, it just
-        surrenders the size -- measured, the manufactured horizontal bar grows
-        from 11px to the 16px UA default while remaining equally faded. Pinning
-        it keeps that bar small and, more importantly, keeps it a known quantity
-        that -x and -xy can shield exactly.
-        */
-        .fade-scrollbar-safe-y::-webkit-scrollbar,
-        .fade-scrollbar-safe-x::-webkit-scrollbar,
-        .fade-scrollbar-safe-xy::-webkit-scrollbar {
-            width: max(0px, var(--tw-fade-scrollbar-width, 15px));
-            height: max(0px, var(--tw-fade-scrollbar-width, 15px));
-        }
-
-        .fade-scrollbar-safe-y::-webkit-scrollbar-track,
-        .fade-scrollbar-safe-x::-webkit-scrollbar-track,
-        .fade-scrollbar-safe-xy::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .fade-scrollbar-safe-y::-webkit-scrollbar-thumb,
-        .fade-scrollbar-safe-x::-webkit-scrollbar-thumb,
-        .fade-scrollbar-safe-xy::-webkit-scrollbar-thumb {
-            background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent));
-            border-radius: 999px;
-        }
-    }
-
-    /*
-    Gecko ignores ::-webkit-scrollbar, so its bar cannot be pinned -- and its
-    overlay-vs-classic mode cannot be detected either (there is no media feature
-    for it; @media (-moz-overlay-scrollbars) is dropped as unknown, and no
-    combination of scrollbar-width / -color / -gutter forces a classic bar on
-    macOS). A strip here would be correct on Windows and Linux and a hard opaque
-    slab over content on macOS, with no way to tell which. Since a missed strip
-    damages content while the bug it prevents only dims chrome, a Gecko build
-    that passes the outer scroll-animation gate gets no strip: its bar is merely
-    made thin, and the fade over it remains a documented limitation. Release
-    Firefox fails that gate and skips the whole opt-in, keeping its native bar.
-    */
-    @supports not selector(::-webkit-scrollbar) {
-        .fade-scrollbar-safe-y,
-        .fade-scrollbar-safe-x,
-        .fade-scrollbar-safe-xy {
-            scrollbar-width: thin;
-            scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent))
-                transparent;
-        }
-    }
+        --tw-fade-t: 1;
+        --tw-fade-b: 1;
+        --tw-fade-l: 1;
+        --tw-fade-r: 1;
     }
 }
+
+/* Union the protected gutter strips above the intersected opacity gradients. */
+@utility tw-fade-mask {
+    mask-image:
+        var(--tw-fade-identity-mask),
+        var(--tw-fade-identity-mask),
+        var(--tw-fade-gradient-t),
+        var(--tw-fade-gradient-b),
+        var(--tw-fade-gradient-l),
+        var(--tw-fade-gradient-r);
+    mask-composite: add, add, intersect, intersect, intersect, intersect;
+    mask-repeat: no-repeat;
+
+    mask-origin: padding-box, padding-box, border-box, border-box, border-box, border-box;
+    mask-size:
+        100% var(--tw-fade-scrollbar-block, 0px),
+        var(--tw-fade-scrollbar, 0px) 100%,
+        100% 100%,
+        100% calc(100% - var(--tw-fade-scrollbar-block, 0px)),
+        var(--tw-fade-mask-size-l),
+        var(--tw-fade-mask-size-r);
+    mask-position:
+        0% 100%,
+        var(--tw-fade-scrollbar-pos),
+        0% 0%,
+        0% 0%,
+        var(--tw-fade-mask-pos-l),
+        var(--tw-fade-mask-pos-r);
+}
+
+@utility tw-fade-raw-top {
+    --tw-fade-animation-t: tw-fade-travel-t;
+    --tw-fade-timeline-t: scroll(self y);
+    --tw-fade-animation-range-t: var(--tw-fade-scroll-epsilon)
+        max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active));
+}
+
+@utility tw-fade-raw-bottom {
+    --tw-fade-animation-b: tw-fade-travel-b;
+    --tw-fade-timeline-b: scroll(self y);
+    --tw-fade-animation-range-b: min(
+            calc(100% - var(--tw-fade-travel-active)),
+            calc(100% - var(--tw-fade-scroll-epsilon))
+        )
+        calc(100% - var(--tw-fade-scroll-epsilon));
+}
+
+@utility tw-fade-raw-start {
+    --tw-fade-ltr-start-animation: tw-fade-travel-l;
+    --tw-fade-rtl-start-animation: tw-fade-travel-r-leading;
+    --tw-fade-ltr-start-timeline: scroll(self inline);
+    --tw-fade-rtl-start-timeline: scroll(self inline);
+    --tw-fade-ltr-start-animation-range: var(--tw-fade-scroll-epsilon)
+        max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active));
+    --tw-fade-rtl-start-animation-range: var(--tw-fade-scroll-epsilon)
+        max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active));
+}
+
+@utility tw-fade-raw-end {
+    --tw-fade-ltr-end-animation: tw-fade-travel-r;
+    --tw-fade-rtl-end-animation: tw-fade-travel-l-trailing;
+    --tw-fade-ltr-end-timeline: scroll(self inline);
+    --tw-fade-rtl-end-timeline: scroll(self inline);
+    --tw-fade-ltr-end-animation-range: min(
+            calc(100% - var(--tw-fade-travel-active)),
+            calc(100% - var(--tw-fade-scroll-epsilon))
+        )
+        calc(100% - var(--tw-fade-scroll-epsilon));
+    --tw-fade-rtl-end-animation-range: min(
+            calc(100% - var(--tw-fade-travel-active)),
+            calc(100% - var(--tw-fade-scroll-epsilon))
+        )
+        calc(100% - var(--tw-fade-scroll-epsilon));
+}
+
+/* Fixed anchors keep the overlay at the scrollport; ineligible anchors give it zero area. */
+@utility tw-fade-overlay {
+    anchor-name: --tw-fade-blur;
+    anchor-scope: --tw-fade-blur;
+
+    --tw-fade-blur-size-t: var(--tw-fade-edge-size-t, 0px);
+    --tw-fade-blur-size-b: var(--tw-fade-edge-size-b, 0px);
+    --tw-fade-blur-size-l: var(--tw-fade-edge-size-l, 0px);
+    --tw-fade-blur-size-r: var(--tw-fade-edge-size-r, 0px);
+    --tw-fade-blur-clear-t: var(--tw-fade-edge-clear-t, 0px);
+    --tw-fade-blur-clear-b: var(--tw-fade-edge-clear-b, 0px);
+    --tw-fade-blur-clear-l: var(--tw-fade-edge-clear-l, 0px);
+    --tw-fade-blur-clear-r: var(--tw-fade-edge-clear-r, 0px);
+    --tw-fade-blur-onset: var(--tw-fade-onset, 8);
+    --tw-fade-blur-scrollbar: var(--tw-fade-scrollbar, 0px);
+    --tw-fade-blur-scrollbar-block: var(--tw-fade-scrollbar-block, 0px);
+    --tw-fade-blur-gutter-position: 0% 0%;
+    --tw-fade-blur-mask-size-l: var(--tw-fade-mask-size-l, 100% 100%);
+    --tw-fade-blur-mask-size-r: var(--tw-fade-mask-size-r, 100% 100%);
+    --tw-fade-blur-mask-pos-l: var(--tw-fade-mask-pos-l, 0% 0%);
+    --tw-fade-blur-mask-pos-r: var(--tw-fade-mask-pos-r, 0% 0%);
+    --tw-fade-blur-radius: var(--tw-fade-blur-strength, var(--fade-blur-md, 3px));
+    &:where(:dir(rtl)) {
+        --tw-fade-blur-gutter-position: 100% 0%;
+    }
+    &::after,
+    &:where(:has(> .fade-blur-layer:nth-child(4 of .fade-blur-layer):nth-last-child(1 of .fade-blur-layer))) > .fade-blur-layer {
+        --tw-fade-blur-radius-factor: 1;
+        --tw-fade-blur-solid: 0.5;
+        --tw-fade-blur-end: 1;
+        --tw-fade-blur-order: 0;
+        --tw-fade-blur-alpha-t: min(1, calc(var(--tw-fade-blur-t) * var(--tw-fade-blur-onset)));
+        --tw-fade-blur-alpha-b: min(1, calc(var(--tw-fade-blur-b) * var(--tw-fade-blur-onset)));
+        --tw-fade-blur-alpha-l: min(1, calc(var(--tw-fade-blur-l) * var(--tw-fade-blur-onset)));
+        --tw-fade-blur-alpha-r: min(1, calc(var(--tw-fade-blur-r) * var(--tw-fade-blur-onset)));
+        --tw-fade-blur-band-t: calc(var(--tw-fade-blur-size-t) * var(--tw-fade-blur-t));
+        --tw-fade-blur-band-b: calc(var(--tw-fade-blur-size-b) * var(--tw-fade-blur-b));
+        --tw-fade-blur-band-l: calc(var(--tw-fade-blur-size-l) * var(--tw-fade-blur-l));
+        --tw-fade-blur-band-r: calc(var(--tw-fade-blur-size-r) * var(--tw-fade-blur-r));
+        position: fixed;
+        position-anchor: --tw-fade-blur;
+
+        top: anchor(top, 0px);
+        left: anchor(left, 0px);
+        width: anchor-size(width, 0px);
+        height: anchor-size(height, 0px);
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        border-style: solid;
+        border-width: inherit;
+        border-color: transparent;
+        border-radius: inherit;
+        background: transparent;
+        pointer-events: none;
+        z-index: calc(1000 + var(--tw-fade-blur-order));
+        backdrop-filter: blur(calc(max(0px, var(--tw-fade-blur-radius)) * var(--tw-fade-blur-radius-factor)));
+        -webkit-backdrop-filter: blur(calc(max(0px, var(--tw-fade-blur-radius)) * var(--tw-fade-blur-radius-factor)));
+        mask-image:
+            linear-gradient(#000, #000),
+            linear-gradient(#000, #000),
+            linear-gradient(
+                to bottom,
+                transparent 0 var(--tw-fade-blur-clear-t),
+                rgb(0 0 0 / var(--tw-fade-blur-alpha-t)) var(--tw-fade-blur-clear-t)
+                    calc(var(--tw-fade-blur-clear-t) + var(--tw-fade-blur-band-t) * var(--tw-fade-blur-solid)),
+                transparent calc(var(--tw-fade-blur-clear-t) + var(--tw-fade-blur-band-t) * var(--tw-fade-blur-end))
+            ),
+            linear-gradient(
+                to top,
+                transparent 0 var(--tw-fade-blur-clear-b),
+                rgb(0 0 0 / var(--tw-fade-blur-alpha-b)) var(--tw-fade-blur-clear-b)
+                    calc(var(--tw-fade-blur-clear-b) + var(--tw-fade-blur-band-b) * var(--tw-fade-blur-solid)),
+                transparent calc(var(--tw-fade-blur-clear-b) + var(--tw-fade-blur-band-b) * var(--tw-fade-blur-end))
+            ),
+            linear-gradient(
+                to right,
+                transparent 0 var(--tw-fade-blur-clear-l),
+                rgb(0 0 0 / var(--tw-fade-blur-alpha-l)) var(--tw-fade-blur-clear-l)
+                    calc(var(--tw-fade-blur-clear-l) + var(--tw-fade-blur-band-l) * var(--tw-fade-blur-solid)),
+                transparent calc(var(--tw-fade-blur-clear-l) + var(--tw-fade-blur-band-l) * var(--tw-fade-blur-end))
+            ),
+            linear-gradient(
+                to left,
+                transparent 0 var(--tw-fade-blur-clear-r),
+                rgb(0 0 0 / var(--tw-fade-blur-alpha-r)) var(--tw-fade-blur-clear-r)
+                    calc(var(--tw-fade-blur-clear-r) + var(--tw-fade-blur-band-r) * var(--tw-fade-blur-solid)),
+                transparent calc(var(--tw-fade-blur-clear-r) + var(--tw-fade-blur-band-r) * var(--tw-fade-blur-end))
+            );
+
+        mask-composite: intersect, intersect, add, add, add, add;
+        mask-mode: alpha;
+        mask-repeat: no-repeat;
+        mask-origin: padding-box, padding-box, border-box, border-box, border-box, border-box;
+        mask-size:
+            calc(100% - var(--tw-fade-blur-scrollbar)) 100%,
+            100% calc(100% - var(--tw-fade-blur-scrollbar-block)),
+            100% 100%,
+            100% calc(100% - var(--tw-fade-blur-scrollbar-block)),
+            var(--tw-fade-blur-mask-size-l),
+            var(--tw-fade-blur-mask-size-r);
+        mask-position:
+            var(--tw-fade-blur-gutter-position),
+            0% 0%,
+            0% 0%,
+            0% 0%,
+            var(--tw-fade-blur-mask-pos-l),
+            var(--tw-fade-blur-mask-pos-r);
+        content: "";
+    }
+    &:where(:has(> .fade-blur-layer:nth-child(4 of .fade-blur-layer):nth-last-child(1 of .fade-blur-layer)))::after {
+        --tw-fade-blur-radius-factor: 0.4;
+        --tw-fade-blur-solid: 0.8;
+    }
+    &:where(:has(> .fade-blur-layer:nth-child(4 of .fade-blur-layer):nth-last-child(1 of .fade-blur-layer))) > .fade-blur-layer {
+        display: block;
+    }
+    & > .fade-blur-layer:nth-child(1 of .fade-blur-layer) {
+        --tw-fade-blur-radius-factor: 0.69282032;
+        --tw-fade-blur-solid: 0.6;
+        --tw-fade-blur-end: 0.8;
+        --tw-fade-blur-order: 1;
+    }
+    & > .fade-blur-layer:nth-child(2 of .fade-blur-layer) {
+        --tw-fade-blur-radius-factor: 0.89442719;
+        --tw-fade-blur-solid: 0.4;
+        --tw-fade-blur-end: 0.6;
+        --tw-fade-blur-order: 2;
+    }
+    & > .fade-blur-layer:nth-child(3 of .fade-blur-layer) {
+        --tw-fade-blur-radius-factor: 1.05830052;
+        --tw-fade-blur-solid: 0.2;
+        --tw-fade-blur-end: 0.4;
+        --tw-fade-blur-order: 3;
+    }
+    & > .fade-blur-layer:nth-child(4 of .fade-blur-layer) {
+        --tw-fade-blur-radius-factor: 1.2;
+        --tw-fade-blur-solid: 0;
+        --tw-fade-blur-end: 0.2;
+        --tw-fade-blur-order: 4;
+    }
+}
+
+@utility fade {
+    @apply tw-fade-base tw-fade-mask tw-fade-raw-top tw-fade-raw-bottom tw-fade-raw-start tw-fade-raw-end;
+    --tw-fade-select-top: 1;
+    --tw-fade-select-bottom: 1;
+    --tw-fade-select-start: 1;
+    --tw-fade-select-end: 1;
+}
+
+@utility fade-y {
+    @apply tw-fade-base tw-fade-mask tw-fade-raw-top tw-fade-raw-bottom;
+    --tw-fade-select-top: 1;
+    --tw-fade-select-bottom: 1;
+}
+
+@utility fade-x {
+    @apply tw-fade-base tw-fade-mask tw-fade-raw-start tw-fade-raw-end;
+    --tw-fade-select-start: 1;
+    --tw-fade-select-end: 1;
+}
+
+@utility fade-top {
+    @apply tw-fade-base tw-fade-mask tw-fade-raw-top;
+    --tw-fade-select-top: 1;
+}
+
+@utility fade-bottom {
+    @apply tw-fade-base tw-fade-mask tw-fade-raw-bottom;
+    --tw-fade-select-bottom: 1;
+}
+
+@utility fade-start {
+    @apply tw-fade-base tw-fade-mask tw-fade-raw-start;
+    --tw-fade-select-start: 1;
+}
+
+@utility fade-end {
+    @apply tw-fade-base tw-fade-mask tw-fade-raw-end;
+    --tw-fade-select-end: 1;
+}
+
+@utility fade-blur {
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
+        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-top tw-fade-raw-bottom tw-fade-raw-start tw-fade-raw-end;
+        --tw-fade-blur-select-top: 1;
+        --tw-fade-blur-select-bottom: 1;
+        --tw-fade-blur-select-start: 1;
+        --tw-fade-blur-select-end: 1;
+    }
+}
+
+@utility fade-blur-y {
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
+        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-top tw-fade-raw-bottom;
+        --tw-fade-blur-select-top: 1;
+        --tw-fade-blur-select-bottom: 1;
+    }
+}
+
+@utility fade-blur-x {
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
+        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-start tw-fade-raw-end;
+        --tw-fade-blur-select-start: 1;
+        --tw-fade-blur-select-end: 1;
+    }
+}
+
+@utility fade-blur-top {
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
+        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-top;
+        --tw-fade-blur-select-top: 1;
+    }
+}
+
+@utility fade-blur-bottom {
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
+        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-bottom;
+        --tw-fade-blur-select-bottom: 1;
+    }
+}
+
+@utility fade-blur-start {
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
+        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-start;
+        --tw-fade-blur-select-start: 1;
+    }
+}
+
+@utility fade-blur-end {
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
+        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-end;
+        --tw-fade-blur-select-end: 1;
+    }
+}
+
+/* Mode values: -1 follows raw progress, 0 disables, 1 forces the selected effect.
+   Each mode writes one property so Tailwind orders always, auto, none consistently. */
+@utility fade-always {
+    --tw-fade-mode: 1;
+}
+
+@utility fade-auto {
+    --tw-fade-mode: -1;
+}
+
+@utility fade-none {
+    --tw-fade-mode: 0;
+}
+
+@utility fade-always-x {
+    --tw-fade-mode-x: 1;
+}
+
+@utility fade-auto-x {
+    --tw-fade-mode-x: -1;
+}
+
+@utility fade-none-x {
+    --tw-fade-mode-x: 0;
+}
+
+@utility fade-always-y {
+    --tw-fade-mode-y: 1;
+}
+
+@utility fade-auto-y {
+    --tw-fade-mode-y: -1;
+}
+
+@utility fade-none-y {
+    --tw-fade-mode-y: 0;
+}
+
+@utility fade-always-top {
+    --tw-fade-mode-top: 1;
+}
+
+@utility fade-auto-top {
+    --tw-fade-mode-top: -1;
+}
+
+@utility fade-none-top {
+    --tw-fade-mode-top: 0;
+}
+
+@utility fade-always-bottom {
+    --tw-fade-mode-bottom: 1;
+}
+
+@utility fade-auto-bottom {
+    --tw-fade-mode-bottom: -1;
+}
+
+@utility fade-none-bottom {
+    --tw-fade-mode-bottom: 0;
+}
+
+@utility fade-always-start {
+    --tw-fade-mode-start: 1;
+}
+
+@utility fade-auto-start {
+    --tw-fade-mode-start: -1;
+}
+
+@utility fade-none-start {
+    --tw-fade-mode-start: 0;
+}
+
+@utility fade-always-end {
+    --tw-fade-mode-end: 1;
+}
+
+@utility fade-auto-end {
+    --tw-fade-mode-end: -1;
+}
+
+@utility fade-none-end {
+    --tw-fade-mode-end: 0;
+}
+
+@utility fade-blur-always {
+    --tw-fade-blur-mode: 1;
+}
+
+@utility fade-blur-auto {
+    --tw-fade-blur-mode: -1;
+}
+
+@utility fade-blur-none {
+    --tw-fade-blur-mode: 0;
+}
+
+@utility fade-blur-always-x {
+    --tw-fade-blur-mode-x: 1;
+}
+
+@utility fade-blur-auto-x {
+    --tw-fade-blur-mode-x: -1;
+}
+
+@utility fade-blur-none-x {
+    --tw-fade-blur-mode-x: 0;
+}
+
+@utility fade-blur-always-y {
+    --tw-fade-blur-mode-y: 1;
+}
+
+@utility fade-blur-auto-y {
+    --tw-fade-blur-mode-y: -1;
+}
+
+@utility fade-blur-none-y {
+    --tw-fade-blur-mode-y: 0;
+}
+
+@utility fade-blur-always-top {
+    --tw-fade-blur-mode-top: 1;
+}
+
+@utility fade-blur-auto-top {
+    --tw-fade-blur-mode-top: -1;
+}
+
+@utility fade-blur-none-top {
+    --tw-fade-blur-mode-top: 0;
+}
+
+@utility fade-blur-always-bottom {
+    --tw-fade-blur-mode-bottom: 1;
+}
+
+@utility fade-blur-auto-bottom {
+    --tw-fade-blur-mode-bottom: -1;
+}
+
+@utility fade-blur-none-bottom {
+    --tw-fade-blur-mode-bottom: 0;
+}
+
+@utility fade-blur-always-start {
+    --tw-fade-blur-mode-start: 1;
+}
+
+@utility fade-blur-auto-start {
+    --tw-fade-blur-mode-start: -1;
+}
+
+@utility fade-blur-none-start {
+    --tw-fade-blur-mode-start: 0;
+}
+
+@utility fade-blur-always-end {
+    --tw-fade-blur-mode-end: 1;
+}
+
+@utility fade-blur-auto-end {
+    --tw-fade-blur-mode-end: -1;
+}
+
+@utility fade-blur-none-end {
+    --tw-fade-blur-mode-end: 0;
+}
+
+@utility fade-blur-sm {
+    --tw-fade-blur-strength: var(--fade-blur-sm, 2px);
+}
+
+@utility fade-blur-md {
+    --tw-fade-blur-strength: var(--fade-blur-md, 3px);
+}
+
+@utility fade-blur-lg {
+    --tw-fade-blur-strength: var(--fade-blur-lg, 6px);
+}
+
+@utility fade-scrollbar-safe-y {
+    @supports (animation-timeline: scroll()) {
+        scrollbar-gutter: stable;
+        @supports selector(::-webkit-scrollbar) {
+            --tw-fade-scrollbar: max(0px, var(--tw-fade-scrollbar-width, 15px));
+            &::-webkit-scrollbar { width: max(0px, var(--tw-fade-scrollbar-width, 15px)); height: max(0px, var(--tw-fade-scrollbar-width, 15px)); }
+            &::-webkit-scrollbar-track { background: transparent; }
+            &::-webkit-scrollbar-thumb { background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)); border-radius: 999px; }
+        }
+        @supports not selector(::-webkit-scrollbar) {
+            scrollbar-width: thin;
+            scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)) transparent;
+        }
+    }
+}
+
+@utility fade-scrollbar-safe-x {
+    @supports (animation-timeline: scroll()) {
+        @supports selector(::-webkit-scrollbar) {
+            --tw-fade-scrollbar-block: max(0px, var(--tw-fade-scrollbar-width, 15px));
+            &::-webkit-scrollbar { width: max(0px, var(--tw-fade-scrollbar-width, 15px)); height: max(0px, var(--tw-fade-scrollbar-width, 15px)); }
+            &::-webkit-scrollbar-track { background: transparent; }
+            &::-webkit-scrollbar-thumb { background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)); border-radius: 999px; }
+        }
+        @supports not selector(::-webkit-scrollbar) {
+            scrollbar-width: thin;
+            scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)) transparent;
+        }
+    }
+}
+
+@utility fade-scrollbar-safe-xy {
+    @supports (animation-timeline: scroll()) {
+        scrollbar-gutter: stable;
+        @supports selector(::-webkit-scrollbar) {
+            --tw-fade-scrollbar: max(0px, var(--tw-fade-scrollbar-width, 15px));
+            --tw-fade-scrollbar-block: max(0px, var(--tw-fade-scrollbar-width, 15px));
+            &::-webkit-scrollbar { width: max(0px, var(--tw-fade-scrollbar-width, 15px)); height: max(0px, var(--tw-fade-scrollbar-width, 15px)); }
+            &::-webkit-scrollbar-track { background: transparent; }
+            &::-webkit-scrollbar-thumb { background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)); border-radius: 999px; }
+        }
+        @supports not selector(::-webkit-scrollbar) {
+            scrollbar-width: thin;
+            scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)) transparent;
+        }
+    }
+}
+
+@layer utilities { .fade-blur-layer { display: none; } }

@@ -21,6 +21,7 @@ const installCommand = document.querySelector("[data-install-command]");
 const installCopyButton = document.querySelector("[data-copy-install]");
 const installCopyIconStack = document.querySelector(".install-copy-icon-stack");
 const installCopyStatus = document.querySelector("[data-copy-install-status]");
+const installCopyError = document.querySelector("[data-copy-install-error]");
 const fadeDepthSlider = document.querySelector("[data-fade-depth-slider]");
 const fadeTravelSlider = document.querySelector("[data-fade-travel-slider]");
 const fadeOptionLabel = document.querySelector("[data-fade-option-label]");
@@ -647,6 +648,8 @@ function setSurface(nextSurface, { animated = true } = {}) {
   for (const button of surfaceButtons) {
     const checked = button.dataset.surfaceOption === nextSurface;
     button.setAttribute("aria-checked", String(checked));
+    button.tabIndex =
+      floatingSurfacePalette?.dataset.visible === "true" && checked ? 0 : -1;
     syncSurfaceButtonSpring(button, animated);
   }
 }
@@ -977,7 +980,8 @@ function setFloatingPaletteVisible(nextVisible) {
   for (const button of floatingSurfacePalette.querySelectorAll(
     "[data-surface-option]",
   )) {
-    button.tabIndex = nextVisible ? 0 : -1;
+    button.tabIndex =
+      nextVisible && button.getAttribute("aria-checked") === "true" ? 0 : -1;
   }
 }
 
@@ -991,6 +995,7 @@ async function copyText(text) {
     }
   }
 
+  const previousFocus = document.activeElement;
   const textarea = document.createElement("textarea");
   textarea.value = text;
   textarea.setAttribute("readonly", "");
@@ -1000,11 +1005,13 @@ async function copyText(text) {
   textarea.style.opacity = "0";
   textarea.style.pointerEvents = "none";
   document.body.append(textarea);
-  textarea.select();
-
-  const copied = document.execCommand("copy");
-  textarea.remove();
-  if (!copied) throw new Error("Copy command failed");
+  try {
+    textarea.select();
+    if (!document.execCommand("copy")) throw new Error("Copy command failed");
+  } finally {
+    textarea.remove();
+    if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
+  }
 }
 
 // Hover and press are affordances of a device that actually hovers (a mouse).
@@ -1251,6 +1258,7 @@ if (installCopyButton) {
 installCopyButton?.addEventListener("click", async () => {
   const command = installCommand?.textContent.trim() || "npm i tw-fade";
   window.clearTimeout(installCopyResetTimer);
+  if (installCopyError) installCopyError.hidden = true;
 
   try {
     await copyText(command);
@@ -1263,7 +1271,10 @@ installCopyButton?.addEventListener("click", async () => {
   } catch {
     installCopyButton.dataset.copied = "false";
     installCopyButton.setAttribute("aria-label", "Copy npm install command");
-    installCopyStatus.textContent = "Copy failed";
+    if (installCopyError) {
+      installCopyStatus.textContent = installCopyError.textContent.trim();
+      installCopyError.hidden = false;
+    }
     return;
   }
 

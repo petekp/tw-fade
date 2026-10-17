@@ -188,7 +188,7 @@
 
         <main class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:py-16">
             <header
-                class="flex min-h-[75vh] max-w-[45rem] flex-col justify-center"
+                class="demo-hero flex min-h-[75vh] max-w-[45rem] flex-col justify-center"
             >
                 <div class="masthead-lockup ml-4">
                     <div class="masthead-top-row" data-hero-reveal="0">
@@ -577,6 +577,9 @@
                         </span>
                     </button>
                 </div>
+                <p class="install-copy-error" data-copy-install-error hidden>
+                    Copy failed. Select the command and copy it.
+                </p>
                 <p
                     class="visually-hidden"
                     aria-live="polite"
@@ -1203,10 +1206,11 @@
                                     class="tuning-card overflow-hidden rounded-lg"
                                 >
                                     <div
-                                        class="chat-thread fade-y thin-scroll overflow-y-auto"
+                                        class="demo-scrollport chat-thread fade-y thin-scroll overflow-y-auto"
                                         data-demo="chat"
                                         role="log"
                                         aria-label="Messages fade demo"
+                                        tabindex="0"
                                     >
                                         <div class="chat-msg chat-msg-in">
                                             <p class="chat-bubble">
@@ -1344,8 +1348,11 @@
                             <div class="option-card-body">
                                 <div class="option-demo-panel">
                                     <div
-                                        class="fade fade-size-2xl fade-travel-lg thin-scroll type-scale-sample h-[26.25rem] overflow-auto sm:h-[29.375rem]"
+                                        class="demo-scrollport fade fade-size-2xl fade-travel-lg thin-scroll type-scale-sample h-[26.25rem] overflow-auto sm:h-[29.375rem]"
                                         data-demo="type-specimen"
+                                        role="region"
+                                        aria-label="Scrollable type scale specimen"
+                                        tabindex="0"
                                     >
                                         <article
                                             class="type-scale-content space-y-6"
@@ -2392,10 +2399,11 @@
                         />
                     </svg>
                     <div
-                        class="anybg-rail fade-x fade-travel-sm fade-size-2xl thin-scroll overflow-x-auto"
+                        class="anybg-rail demo-scrollport fade-x fade-travel-sm fade-size-2xl thin-scroll overflow-x-auto"
                         data-demo="anybg"
                         role="group"
                         aria-label="Words dissolving over a patterned background"
+                        tabindex="0"
                     >
                         <span class="anybg-word">Dissolve</span>
                         <span class="anybg-word">Recede</span>

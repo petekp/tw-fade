@@ -192,8 +192,10 @@ async function sample({
         // vertical bar's column or the scrollbar corner.
         const col = []
         for (let i = mCount - 1; i >= 0; i--) col.push(rgb(g[id].x + xo, g[id].y + g[id].h - 1 - i))
+        const start = []
+        for (let i = 0; i < count; i++) start.push(rgb(g[id].x + i, g[id].y + yo))
         const center = rgb(g[id].x + g[id].w / 2, g[id].y + yo)
-        o[id] = { row, col, center }
+        o[id] = { row, col, center, start }
       }
       return o
     },
@@ -203,6 +205,7 @@ async function sample({
   return {
     geo,
     prof: mapVals(prof, (v) => v.row),
+    start: mapVals(prof, (v) => v.start),
     col: mapVals(prof, (v) => v.col),
     center: mapVals(prof, (v) => v.center),
   }
@@ -754,6 +757,30 @@ console.log('\nthe block-axis strip')
   )
 }
 
+console.log('\nblur-only rendering preserves classic gutters')
+{
+  const cases = [
+    ['single-ltr', 'ltr', 0], ['progressive-ltr', 'ltr', 4],
+    ['single-rtl', 'rtl', 0], ['progressive-rtl', 'rtl', 4],
+  ]
+  const { geo, prof, start, col } = await sample({
+    body: cases.map(([id, dir, count]) =>
+      `<div dir="${dir}"><div id="${id}" class="panel fade-blur fade-blur-always fade-scrollbar-safe-xy">` +
+      '<span class="fade-blur-layer" aria-hidden="true"></span>'.repeat(count) +
+      '<div data-probe style="width:100%;height:0"></div><div class="plane"></div></div></div>',
+    ).join(''),
+    ids: cases.map(([id]) => id),
+    layout: 'body { display:flex; }',
+    xOff: 60,
+  })
+  for (const [id, dir] of cases) {
+    const vertical = dir === 'rtl' ? start[id][Math.floor(PIN / 2)] : prof[id][prof[id].length - Math.ceil(PIN / 2)]
+    const horizontal = col[id][col[id].length - Math.ceil(PIN / 2)]
+    check(geo[id].gutter === PIN, `${id}: blur-only retains the declared gutter`, JSON.stringify(geo[id]))
+    check(trackDelta(vertical) <= 8 && trackDelta(horizontal) <= 8, `${id}: both scrollbar tracks retain their color`, JSON.stringify({ vertical, horizontal }))
+  }
+}
+
 /* ------------------------------------------------------------------ *
  * 9. The strips must not make @property load-bearing for the WHOLE plugin.
  *
@@ -857,15 +884,15 @@ console.log('\nthe opt-in stands down without scroll gating')
       scrollbarGutter: cs.scrollbarGutter,
       // the fallback is expected to still pin the fade on -- that is the
       // premise this gate exists to defuse, so assert it rather than assume it
-      amounts: ['t', 'b', 'l', 'r'].map((k) => cs.getPropertyValue(`--tw-fade-${k}`).trim()).join('/'),
+      amounts: ['t', 'b', 'l', 'r'].map((k) => cs.getPropertyValue(`--tw-fade-opacity-${k}`).trim()).join('/'),
     }
   })
   await page.close()
 
   check(gates >= 2, 'the feature query is present to flip', `found ${gates} occurrences — the substitution is a no-op`)
   check(
-    got.amounts === '1/1/1/1',
-    'the static fallback still pins fades on regardless of overflow',
+    got.amounts === '1/1/0/0',
+    'the static fallback still activates selected fades regardless of overflow',
     `amounts were ${got.amounts} — the premise of this section no longer holds, re-derive it`,
   )
   check(
