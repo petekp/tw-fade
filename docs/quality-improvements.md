@@ -4,7 +4,9 @@ The October 11 audit fixes preserve the independent-effects work and single-clas
 
 ## Plan
 
-Release `0.9.0` includes these improvements and the independent opacity/blur API. Prepare versioned migration notes, run the release checks, and push the source to `main`. Publish the package to npm and deploy the demo through the existing site sync command. Use an isolated site worktree because the main site checkout contains unrelated work. Verify the published package and production assets before declaring the release complete.
+Release `0.9.0` shipped on October 17, 2026. The source commit is `f86a41f`, tagged `v0.9.0` and pushed to `main`. npm's `latest` tag resolves to `0.9.0`; its downloaded tarball matches all seven local release files byte-for-byte. The demo deployed from site commit `eb110dcc`. All 13 production files match the tested export. The temporary site worktree was removed, and unrelated portfolio work was preserved.
+
+The release build, full local verifier, 33 package tests, and package dry run passed. [Remote CI](https://github.com/petekp/tw-fade/actions/runs/39067204401) failed on both attempts in the Linux WebKit desktop demo checks: initial Recede rail position, chat keyboard scrolling, and patterned-rail keyboard scrolling. All 1,123 library checks passed in CI. The demo failures need targeted diagnostics; their cause is unproven.
 
 The Opus review fixes are complete. Onset stays local to each scroller. Focus rings use unmasked demo containers, and copy failures announce the recovery action. Palette checks exercise first reveal and reveal after a changed selection, before arrow-key handling can repair the Tab order. Explicit scroll events make these checks reliable in Linux WebKit.
 
@@ -24,7 +26,7 @@ The source-default and build-sharing changes received independent review. The de
 
 Both stylesheets have been regenerated. The package tests pass 33/33. The full `npm run verify` command exits successfully, including 1,123/1,123 independent-effect checks, RTL, stale-state, opacity, scrollbar, demo assets, page behavior, runtime interactions, favicons, SEO, and export checks. The blur lab passes 56/56 checks and reproduces its documented WebKit stale-state limitation.
 
-The complete demo runtime verifier also passes in a disposable Debian 12 container with Linux Chromium and WebKit. This covers palette visibility, real Tab entry on both reveals, copy failure and retry, and existing desktop/mobile scenarios. The container was removed afterward. No remote CI run was started.
+The October 11 demo runtime verifier passed in a disposable Debian 12 container with Linux Chromium and WebKit. This covered palette visibility, real Tab entry on both reveals, copy failure and retry, and existing desktop/mobile scenarios. The container was removed afterward. The October 17 remote CI failures are recorded above.
 
 Disposable checks confirmed the regressions themselves. A browser response that restored the old palette bug failed both reveal checks, while the current code passed. Focused onset checks reproduced the inheritance failures with pre-fix CSS; all 22 pass with the fix. Pixel comparisons in Chrome 155 confirmed visible focus rings on the chat, type specimen, and patterned-background scrollers while their masks remained active.
 
@@ -42,7 +44,7 @@ The known shrink limitation reproduced. After content shrank from 2,389 to 390 p
 
 Safari WebDriver's element screenshots omitted backdrop blur, including the plain control. Pixel proof therefore uses `simctl` display screenshots, calibrated against a viewport-origin marker and downsampled from device pixels to CSS pixels. The native tap check used the Simulator UI after closing the automation session, because WebDriver click calls produced no touch events. No project dependency or simulator setting was changed. [WebKit documents Safari's native simulator automation support](https://webkit.org/blog/9395/webdriver-is-coming-to-safari-in-ios-13/).
 
-No publication, deployment, version bump, or release-tooling change was made. The approved CI change is limited to installing Firefox and keeping its explanatory comment accurate. A remote CI run was not started.
+The approved CI change is limited to installing Firefox and keeping its explanatory comment accurate. Release tooling was unchanged. npm commands used a cache scoped to `/private/tmp` because the default cache contains unwritable files. The Vercel CLI was signed out, so deployment verification used GitHub's deployment status and direct checks of the live assets.
 
 Current verification logs are in `/private/tmp/`: `tw-fade-review-fixes-unit.log`, `tw-fade-review-fixes-verify.log`, `tw-fade-review-fixes-blur-lab.log`, `tw-fade-review-fixes-linux-runtime-final.log`, `tw-fade-review-palette-mutation.log`, and `tw-fade-review-onset-verifier.log`. Focus evidence is in `tw-fade-focus-repair-state.json` and `tw-fade-focus-repair-pixels.json` in that directory. The saved state before these follow-up fixes is `/private/tmp/tw-fade-before-review-fixes-1791768993`.
 
