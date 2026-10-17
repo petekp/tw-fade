@@ -3,7 +3,7 @@ import http from 'node:http'
 import os from 'node:os'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { chromium, devices, webkit } from 'playwright'
+import { chromium, devices, errors as playwrightErrors, webkit } from 'playwright'
 import { demoDir, exportDemoStatic } from './demo-static.mjs'
 
 const failures = []
@@ -242,8 +242,15 @@ async function runInteractions(page, label) {
     assert(initial.tabindex === 0 && Boolean(initial.name), `${label}: ${demo} provides named keyboard access`, JSON.stringify(initial))
     await scroller.focus()
     await page.keyboard.press(key)
-    await page.waitForTimeout(250)
-    assert(await scroller.evaluate((element, axis) => element[axis] > 0, axis), `${label}: keyboard scrolls the ${demo} example`)
+    const moved = await page.waitForFunction(
+      ({ demo, axis }) => document.querySelector(`[data-demo="${demo}"]`)[axis] > 0,
+      { demo, axis },
+      { timeout: 3000 },
+    ).then(() => true, (error) => {
+      if (error instanceof playwrightErrors.TimeoutError) return false
+      throw error
+    })
+    assert(moved, `${label}: keyboard scrolls the ${demo} example`)
   }
 }
 
@@ -518,6 +525,16 @@ async function smokePage(browser, options) {
   await page.goto(url, { waitUntil: 'load' })
   await page.waitForTimeout(reducedMotion ? 500 : 1000)
 
+  const railAligned = !checkRailInset || await page.waitForFunction(() => {
+    const rail = document.querySelector('[data-demo="rail"]')
+    const recede = Array.from(rail?.querySelectorAll('.rail-card') ?? [])
+      .find((card) => card.querySelector('.rail-card-label')?.textContent.trim() === 'Recede')
+    return rail && recede && Math.abs(recede.getBoundingClientRect().left - rail.getBoundingClientRect().left - 140) <= 1
+  }, null, { timeout: 3000 }).then(() => true, (error) => {
+    if (error instanceof playwrightErrors.TimeoutError) return false
+    throw error
+  })
+
   const state = await readPageState(page)
   assert(errors.length === 0, `${label}: no browser errors`, errors.join('; '))
   assert(state.bodyIsScroller, `${label}: body remains the page scroller`)
@@ -533,7 +550,7 @@ async function smokePage(browser, options) {
   assert(state.selectedRail === 'Recede', `${label}: Recede selected by default`, state.selectedRail)
   if (checkRailInset) {
     assert(
-      Math.abs((state.recedeLeftFromRail ?? 0) - 140) <= 1,
+      railAligned && Math.abs((state.recedeLeftFromRail ?? 0) - 140) <= 1,
       `${label}: Recede starts 140px from rail edge`,
       String(state.recedeLeftFromRail),
     )

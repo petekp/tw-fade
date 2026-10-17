@@ -4,9 +4,13 @@ The October 11 audit fixes preserve the independent-effects work and single-clas
 
 ## Plan
 
+Linux WebKit verification now waits up to three seconds for the required rail position and keyboard scroll movement. The rail must also remain within one pixel of its expected 140px inset in the final snapshot. Timeouts fail the checks; other browser errors propagate. The demo, package CSS, single-class API, and CI workflow are unchanged.
+
 Release `0.9.0` shipped on October 17, 2026. The source commit is `f86a41f`, tagged `v0.9.0` and pushed to `main`. npm's `latest` tag resolves to `0.9.0`; its downloaded tarball matches all seven local release files byte-for-byte. The demo deployed from site commit `eb110dcc`. All 13 production files match the tested export. The temporary site worktree was removed, and unrelated portfolio work was preserved.
 
-The release build, full local verifier, 33 package tests, and package dry run passed. [Remote CI](https://github.com/petekp/tw-fade/actions/runs/39067204401) failed on both attempts in the Linux WebKit desktop demo checks: initial Recede rail position, chat keyboard scrolling, and patterned-rail keyboard scrolling. All 1,123 library checks passed in CI. The demo failures need targeted diagnostics; their cause is unproven.
+The release build, full local verifier, 33 package tests, and package dry run passed. [Release CI](https://github.com/petekp/tw-fade/actions/runs/39067204401) passed all 1,123 library checks but failed the initial rail position and two keyboard-scroll checks in Linux WebKit. The verifier relied on fixed delays. A reduced Linux test reproduced the chat failure on five of five runs even though focus and overflow were correct. The same keypress moved the content after later rendering frames.
+
+The updated full runtime suite passes in the official Playwright 1.61 Ubuntu 24.04 container. Disposable negative controls still fail when initial rail alignment is removed or arrow-key scrolling is blocked. Independent review confirmed the final-position check and timeout handling. Diagnostic scripts and logs are outside the repository in `/private/tmp/tw-fade-webkit-ci/`.
 
 The Opus review fixes are complete. Onset stays local to each scroller. Focus rings use unmasked demo containers, and copy failures announce the recovery action. Palette checks exercise first reveal and reveal after a changed selection, before arrow-key handling can repair the Tab order. Explicit scroll events make these checks reliable in Linux WebKit.
 
@@ -44,7 +48,7 @@ The known shrink limitation reproduced. After content shrank from 2,389 to 390 p
 
 Safari WebDriver's element screenshots omitted backdrop blur, including the plain control. Pixel proof therefore uses `simctl` display screenshots, calibrated against a viewport-origin marker and downsampled from device pixels to CSS pixels. The native tap check used the Simulator UI after closing the automation session, because WebDriver click calls produced no touch events. No project dependency or simulator setting was changed. [WebKit documents Safari's native simulator automation support](https://webkit.org/blog/9395/webdriver-is-coming-to-safari-in-ios-13/).
 
-The approved CI change is limited to installing Firefox and keeping its explanatory comment accurate. Release tooling was unchanged. npm commands used a cache scoped to `/private/tmp` because the default cache contains unwritable files. The Vercel CLI was signed out, so deployment verification used GitHub's deployment status and direct checks of the live assets.
+The approved CI change is limited to installing Firefox and keeping its explanatory comment accurate. Release tooling was unchanged. npm commands used a temporary cache because the workspace sandbox blocked writes to `~/.npm`. The default cache has correct ownership and permissions; metadata lookup and package dry runs succeed when cache access is permitted. Deployment verification used GitHub's deployment status and direct checks of the live assets. Vercel CLI authentication is restored, with access to Team Pete's `pete-2025` project and its production deployments verified.
 
 Current verification logs are in `/private/tmp/`: `tw-fade-review-fixes-unit.log`, `tw-fade-review-fixes-verify.log`, `tw-fade-review-fixes-blur-lab.log`, `tw-fade-review-fixes-linux-runtime-final.log`, `tw-fade-review-palette-mutation.log`, and `tw-fade-review-onset-verifier.log`. Focus evidence is in `tw-fade-focus-repair-state.json` and `tw-fade-focus-repair-pixels.json` in that directory. The saved state before these follow-up fixes is `/private/tmp/tw-fade-before-review-fixes-1791768993`.
 
