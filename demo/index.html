@@ -511,8 +511,7 @@
                     class="ml-4 mt-11 max-w-[40rem] text-balance text-lg leading-8 text-neutral-300/85 sm:text-xl"
                     data-hero-reveal="0"
                 >
-                    Elegant, scroll-driven edge masking. One class. Zero
-                    JavaScript.
+                    Scroll-driven fades and blur. Zero JavaScript.
                     <br />
                     By one of the creators of
                     <span class="creator-note-tooltip-root support-tooltip-root">
@@ -1201,15 +1200,15 @@
                                 </div>
                             </div>
 
-                            <div class="min-w-0 space-y-3">
+                            <div class="min-w-0 space-y-3" id="chat-demo">
                                 <div
-                                    class="tuning-card overflow-hidden rounded-lg"
+                                    class="tuning-card chat-card overflow-hidden rounded-lg"
                                 >
                                     <div
                                         class="demo-scrollport chat-thread fade-y thin-scroll overflow-y-auto"
                                         data-demo="chat"
                                         role="log"
-                                        aria-label="Messages fade demo"
+                                        aria-label="Scrollable messages"
                                         tabindex="0"
                                     >
                                         <div class="chat-msg chat-msg-in">
@@ -1318,6 +1317,25 @@
                                             </p>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="chat-effects" data-chat-effects hidden>
+                                    <fieldset class="chat-effect-picker">
+                                        <legend class="sr-only">Chat effect</legend>
+                                        <label class="chat-effect-option">
+                                            <input class="sr-only" type="radio" name="chat-effect" value="fade" checked />
+                                            <span>Fade</span>
+                                        </label>
+                                        <label class="chat-effect-option">
+                                            <input class="sr-only" type="radio" name="chat-effect" value="blur" />
+                                            <span>Blur</span>
+                                        </label>
+                                        <label class="chat-effect-option">
+                                            <input class="sr-only" type="radio" name="chat-effect" value="both" />
+                                            <span>Both</span>
+                                        </label>
+                                    </fieldset>
+                                    <code class="chat-effect-readout font-mono" data-chat-class aria-live="polite">fade-y</code>
+                                    <p class="chat-effect-support" id="chat-blur-support" data-chat-blur-support hidden>Blur isn’t available in this browser.</p>
                                 </div>
                             </div>
                         </div>

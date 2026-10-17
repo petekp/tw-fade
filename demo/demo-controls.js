@@ -1157,6 +1157,38 @@ if (lexiconList) {
 
 const chatThread = document.querySelector('[data-demo="chat"]');
 if (chatThread) {
+  const controls = document.querySelector("[data-chat-effects]");
+  const readout = document.querySelector("[data-chat-class]");
+  const supportNote = document.querySelector("[data-chat-blur-support]");
+  const blurSupported =
+    CSS.supports("anchor-name: --tw-fade-blur") &&
+    CSS.supports("position-anchor: --tw-fade-blur") &&
+    CSS.supports("anchor-scope: --tw-fade-blur") &&
+    CSS.supports("backdrop-filter: blur(1px)") &&
+    CSS.supports("animation-timeline: scroll()") &&
+    CSS.supports("selector(:nth-child(1 of .fade-blur-layer))");
+
+  if (controls && readout && supportNote) {
+    const picker = controls.querySelector("fieldset");
+    for (const input of picker.querySelectorAll('input[name="chat-effect"]')) {
+      input.disabled = input.value !== "fade" && !blurSupported;
+      input.addEventListener("change", () => {
+        if (!input.checked) return;
+        const classes = {
+          fade: ["fade-y"],
+          blur: ["fade-blur-y"],
+          both: ["fade-y", "fade-blur-y"],
+        }[input.value];
+        chatThread.classList.remove("fade-y", "fade-blur-y");
+        chatThread.classList.add(...classes);
+        readout.textContent = classes.join(" ");
+      });
+    }
+    supportNote.hidden = blurSupported;
+    if (!blurSupported) picker.setAttribute("aria-describedby", supportNote.id);
+    controls.hidden = false;
+  }
+
   // Start pinned to the newest message so the fade-y edge reads immediately:
   // older messages dissolve into the top edge while the latest reply stays crisp
   // at the bottom (the bottom fade is scroll-gated off here). Re-pin after

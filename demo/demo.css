@@ -1375,6 +1375,10 @@ h3 {
     }
 }
 
+.chat-card {
+    corner-shape: round;
+}
+
 /* Messages thread — the fade-y companion to the lexicon. It starts pinned to
    the bottom (newest reply crisp) so scrolling up dissolves older messages into
    the top edge only. Height matches the lexicon so the two cards balance. */
@@ -1389,6 +1393,78 @@ h3 {
 
 .chat-msg {
     display: flex;
+}
+
+#chat-demo {
+    scroll-margin-top: 5rem;
+}
+
+.chat-effects {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.75rem 1rem;
+    padding: 0 0.25rem;
+}
+
+.chat-effects[hidden] {
+    display: none;
+}
+
+.chat-effect-picker {
+    display: inline-flex;
+    flex-shrink: 0;
+    gap: 0.1875rem;
+    margin: 0;
+    padding: 0.1875rem;
+    border: 1px solid color-mix(in oklab, var(--demo-border-strong) 34%, transparent);
+    border-radius: 0.5rem;
+    background: color-mix(in oklab, var(--demo-page-bg) 35%, transparent);
+}
+
+.chat-effect-option span {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    color: var(--demo-text-muted);
+    font-size: 0.8125rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.chat-effect-option {
+    position: relative;
+}
+
+.chat-effect-option input:checked + span {
+    color: var(--demo-accent-text);
+    background: color-mix(in oklab, var(--demo-accent-text) 16%, transparent);
+}
+
+.chat-effect-option input:focus-visible + span {
+    outline: 2px solid var(--demo-focus);
+    outline-offset: 2px;
+}
+
+.chat-effect-option input:disabled + span {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.chat-effect-readout {
+    min-width: 18ch;
+    color: var(--demo-text-muted);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.chat-effect-support {
+    flex-basis: 100%;
+    margin: 0;
+    color: var(--demo-text-muted);
+    font-size: 0.75rem;
 }
 
 .chat-msg-in {

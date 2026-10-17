@@ -254,6 +254,52 @@ async function runInteractions(page, label) {
   }
 }
 
+async function checkChatEffects(page, label) {
+  const chat = page.locator('[data-demo="chat"]')
+  const controls = page.locator('[data-chat-effects]')
+  const blur = controls.locator('input[value="blur"]')
+  if (!(await blur.isEnabled())) {
+    assert(await controls.locator('input[value="both"]').isDisabled(), `${label}: unavailable blur disables both blur options`)
+    assert(await page.locator('[data-chat-blur-support]').isVisible(), `${label}: unavailable blur has an explanation`)
+    assert(await controls.locator('input[value="fade"]').isChecked(), `${label}: unavailable blur keeps fading selected`)
+    return
+  }
+  const position = await chat.evaluate((element) => {
+    element.scrollTop = Math.floor((element.scrollHeight - element.clientHeight) / 2)
+    return element.scrollTop
+  })
+  for (const [mode, code, opacity, blurred] of [
+    ['Blur', 'fade-blur-y', false, true],
+    ['Both', 'fade-y fade-blur-y', true, true],
+    ['Fade', 'fade-y', true, false],
+  ]) {
+    await controls.getByText(mode, { exact: true }).click()
+    const effectsReady = await page.waitForFunction(({ opacity, blurred }) => {
+      const chat = document.querySelector('[data-demo="chat"]')
+      const host = getComputedStyle(chat)
+      const overlay = getComputedStyle(chat, '::after')
+      const faded = ['t', 'b'].some((edge) => Number(host.getPropertyValue(`--tw-fade-opacity-${edge}`)) > 0)
+      return faded === opacity && (overlay.content !== 'none' && overlay.backdropFilter !== 'none') === blurred
+    }, { opacity, blurred }, { timeout: 3000 }).then(() => true, (error) => {
+      if (error instanceof playwrightErrors.TimeoutError) return false
+      throw error
+    })
+    const state = await chat.evaluate((element) => ({
+      top: element.scrollTop,
+      faded: ['t', 'b'].some((edge) => Number(getComputedStyle(element).getPropertyValue(`--tw-fade-opacity-${edge}`)) > 0),
+      blurred: getComputedStyle(element, '::after').content !== 'none' && getComputedStyle(element, '::after').backdropFilter !== 'none',
+    }))
+    assert(effectsReady && state.faded === opacity && state.blurred === blurred, `${label}: chat ${mode} selects the requested effects`, JSON.stringify(state))
+    assert(Math.abs(state.top - position) <= 1, `${label}: chat ${mode} preserves scroll position`, JSON.stringify(state))
+    assert(await page.locator('[data-chat-class]').textContent() === code, `${label}: chat ${mode} shows its public classes`)
+  }
+  await controls.locator('input[value="fade"]').focus()
+  await page.keyboard.press('ArrowRight')
+  assert(await blur.isChecked(), `${label}: chat effects support native radio keyboard selection`)
+  assert(await page.locator('[data-chat-class]').textContent() === 'fade-blur-y', `${label}: keyboard selection updates the chat effect`)
+  await controls.getByText('Fade', { exact: true }).click()
+}
+
 async function checkInstallCopy(page, label) {
   await page.evaluate(() => {
     window.__copiedCommand = null
@@ -633,6 +679,7 @@ async function smokePage(browser, options) {
     await runInteractions(page, label)
     await checkInstallCopy(page, label)
   }
+  await checkChatEffects(page, label)
   await context.close()
 }
 
