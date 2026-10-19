@@ -276,8 +276,8 @@ async function checkChatEffects(page, label) {
     await controls.getByText(mode, { exact: true }).click()
     const effectsReady = await page.waitForFunction(({ opacity, blurred }) => {
       const chat = document.querySelector('[data-demo="chat"]')
-      const host = getComputedStyle(chat)
-      const overlay = getComputedStyle(chat, '::after')
+      const host = getComputedStyle(chat.parentElement)
+      const overlay = getComputedStyle(chat.parentElement, '::after')
       const faded = ['t', 'b'].some((edge) => Number(host.getPropertyValue(`--tw-fade-opacity-${edge}`)) > 0)
       return faded === opacity && (overlay.content !== 'none' && overlay.backdropFilter !== 'none') === blurred
     }, { opacity, blurred }, { timeout: 3000 }).then(() => true, (error) => {
@@ -286,17 +286,66 @@ async function checkChatEffects(page, label) {
     })
     const state = await chat.evaluate((element) => ({
       top: element.scrollTop,
-      faded: ['t', 'b'].some((edge) => Number(getComputedStyle(element).getPropertyValue(`--tw-fade-opacity-${edge}`)) > 0),
-      blurred: getComputedStyle(element, '::after').content !== 'none' && getComputedStyle(element, '::after').backdropFilter !== 'none',
+      faded: ['t', 'b'].some((edge) => Number(getComputedStyle(element.parentElement).getPropertyValue(`--tw-fade-opacity-${edge}`)) > 0),
+      blurred: getComputedStyle(element.parentElement, '::after').content !== 'none' && getComputedStyle(element.parentElement, '::after').backdropFilter !== 'none',
     }))
     assert(effectsReady && state.faded === opacity && state.blurred === blurred, `${label}: chat ${mode} selects the requested effects`, JSON.stringify(state))
     assert(Math.abs(state.top - position) <= 1, `${label}: chat ${mode} preserves scroll position`, JSON.stringify(state))
-    assert(await page.locator('[data-chat-class]').textContent() === code, `${label}: chat ${mode} shows its public classes`)
+    assert(await page.locator('[data-chat-class]').textContent() === `fade-blur-frame ${code}`, `${label}: chat ${mode} shows its public classes`)
   }
   await controls.locator('input[value="fade"]').focus()
   await page.keyboard.press('ArrowRight')
   assert(await blur.isChecked(), `${label}: chat effects support native radio keyboard selection`)
-  assert(await page.locator('[data-chat-class]').textContent() === 'fade-blur-y', `${label}: keyboard selection updates the chat effect`)
+  assert(await page.locator('[data-chat-class]').textContent() === 'fade-blur-frame fade-blur-y', `${label}: keyboard selection updates the chat effect`)
+  await controls.getByText('Fade', { exact: true }).click()
+}
+
+async function checkAdvancedEffects(page, label) {
+  const controls = page.locator('[data-advanced-effects]')
+  const specimen = page.locator('[data-demo="type-specimen"]')
+  const strength = page.locator('[data-blur-strength-slider]')
+  if (!(await controls.locator('input[value="blur"]').isEnabled())) {
+    assert(await controls.locator('input[value="both"]').isDisabled() && await strength.isDisabled(), `${label}: unsupported advanced blur controls are disabled`)
+    assert(await page.locator('[data-advanced-blur-support]').isVisible(), `${label}: advanced blur fallback is explained`)
+    return
+  }
+  for (const edge of await page.locator('[data-fade-edge-toggle]').all()) {
+    if (await edge.getAttribute('aria-pressed') !== 'true') {
+      await edge.focus()
+      await page.keyboard.press('Space')
+    }
+  }
+  const position = await specimen.evaluate((element) => {
+    element.scrollTop = (element.scrollHeight - element.clientHeight) / 2
+    element.scrollLeft = (element.scrollWidth - element.clientWidth) / 2
+    return [element.scrollTop, element.scrollLeft]
+  })
+  for (const [mode, faded, blurred] of [['Blur', false, true], ['Both', true, true], ['Fade', true, false]]) {
+    await controls.getByText(mode, { exact: true }).click()
+    await page.waitForFunction(({ faded, blurred }) => {
+      const style = getComputedStyle(document.querySelector('[data-demo="type-specimen"]').parentElement)
+      return ['t', 'b', 'l', 'r'].every((edge) =>
+        (Number(style.getPropertyValue(`--tw-fade-opacity-${edge}`)) > 0) === faded &&
+        (Number(style.getPropertyValue(`--tw-fade-blur-${edge}`)) > 0) === blurred)
+    }, { faded, blurred }, { timeout: 3000 })
+    const state = await specimen.evaluate((element) => ({
+      position: [element.scrollTop, element.scrollLeft],
+      classes: [...element.parentElement.classList].filter((name) => name === 'fade' || name.startsWith('fade-')).join(' '),
+    }))
+    assert(state.position.every((value, index) => Math.abs(value - position[index]) <= 1), `${label}: advanced ${mode} preserves both scroll axes`, state)
+    assert(await page.locator('[data-fade-option-label]').getAttribute('aria-label') === state.classes, `${label}: advanced ${mode} readout matches the active utilities`)
+    assert(await strength.isDisabled() === !blurred, `${label}: strength is available only with blur`)
+  }
+  await controls.locator('input[value="fade"]').focus()
+  await page.keyboard.press('ArrowRight')
+  assert(await controls.locator('input[value="blur"]').isChecked(), `${label}: advanced effects support native keyboard selection`)
+  await strength.focus()
+  for (const [key, filter, token] of [['End', 'blur(6px)', 'fade-blur-lg'], ['Home', 'blur(2px)', 'fade-blur-sm']]) {
+    await page.keyboard.press(key)
+    await page.waitForFunction((filter) => getComputedStyle(document.querySelector('[data-demo="type-specimen"]').parentElement, '::after').backdropFilter === filter, filter)
+    assert((await page.locator('[data-fade-option-label]').getAttribute('aria-label')).includes(token), `${label}: strength updates the public class readout`)
+  }
+  assert(await page.locator('[data-chat-effects] input[value="fade"]').isChecked(), `${label}: advanced settings do not change chat settings`)
   await controls.getByText('Fade', { exact: true }).click()
 }
 
@@ -602,7 +651,7 @@ async function smokePage(browser, options) {
     )
   }
   assert(state.verticalRows >= 5, `${label}: vertical list rendered`, String(state.verticalRows))
-  assert(state.advancedLabel === 'fade fade-size-2xl fade-travel-lg', `${label}: advanced controls initialize class readout`, state.advancedLabel)
+  assert(state.advancedLabel === 'fade-blur-frame fade fade-size-2xl fade-travel-lg', `${label}: advanced controls initialize class readout`, state.advancedLabel)
   assert(state.edgePressed === 'true,true,true,true', `${label}: all edge toggles initialize on`, state.edgePressed)
   assert(state.advancedScrollLeft === 100 && state.advancedScrollTop === 100, `${label}: advanced content starts scrolled 100px on both axes`, `${state.advancedScrollLeft},${state.advancedScrollTop}`)
   assert(state.easedLine && state.scrollAwareThumb && state.composableTokens >= 3, `${label}: key animated graphics rendered`)
@@ -680,6 +729,7 @@ async function smokePage(browser, options) {
     await checkInstallCopy(page, label)
   }
   await checkChatEffects(page, label)
+  await checkAdvancedEffects(page, label)
   await context.close()
 }
 

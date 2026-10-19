@@ -1,6 +1,9 @@
 /* tw-fade - CSS scroll-edge fade masking for Tailwind v4. MIT - github.com/petekp/tw-fade */
 
 /* Raw scroll progress interpolates independently of effect selection and activation. */
+@property --tw-fade-scroll-y { syntax: "*"; inherits: false; }
+@property --tw-fade-scroll-inline { syntax: "*"; inherits: false; }
+
 @property --tw-fade-t {
     syntax: "<number>";
     inherits: false;
@@ -442,6 +445,8 @@ the scrollbar consumers clamp them to 0px before they reach geometry or masks.
    private settings would inherit into nested fades without @property. */
 @layer base {
     :where(*) {
+        --tw-fade-scroll-y: initial;
+        --tw-fade-scroll-inline: initial;
         --tw-fade-mode: initial;
         --tw-fade-mode-x: initial;
         --tw-fade-mode-y: initial;
@@ -732,43 +737,46 @@ the scrollbar consumers clamp them to 0px before they reach geometry or masks.
 
 /* Union the protected gutter strips above the intersected opacity gradients. */
 @utility tw-fade-mask {
-    mask-image:
-        var(--tw-fade-identity-mask),
-        var(--tw-fade-identity-mask),
-        var(--tw-fade-gradient-t),
-        var(--tw-fade-gradient-b),
-        var(--tw-fade-gradient-l),
-        var(--tw-fade-gradient-r);
-    mask-composite: add, add, intersect, intersect, intersect, intersect;
-    mask-repeat: no-repeat;
+    &:where(:not(.fade-blur-frame)),
+    &:where(.fade-blur-frame) > :first-child {
+        mask-image:
+            var(--tw-fade-identity-mask),
+            var(--tw-fade-identity-mask),
+            var(--tw-fade-gradient-t),
+            var(--tw-fade-gradient-b),
+            var(--tw-fade-gradient-l),
+            var(--tw-fade-gradient-r);
+        mask-composite: add, add, intersect, intersect, intersect, intersect;
+        mask-repeat: no-repeat;
 
-    mask-origin: padding-box, padding-box, border-box, border-box, border-box, border-box;
-    mask-size:
-        100% var(--tw-fade-scrollbar-block, 0px),
-        var(--tw-fade-scrollbar, 0px) 100%,
-        100% 100%,
-        100% calc(100% - var(--tw-fade-scrollbar-block, 0px)),
-        var(--tw-fade-mask-size-l),
-        var(--tw-fade-mask-size-r);
-    mask-position:
-        0% 100%,
-        var(--tw-fade-scrollbar-pos),
-        0% 0%,
-        0% 0%,
-        var(--tw-fade-mask-pos-l),
-        var(--tw-fade-mask-pos-r);
+        mask-origin: padding-box, padding-box, border-box, border-box, border-box, border-box;
+        mask-size:
+            100% var(--tw-fade-scrollbar-block, 0px),
+            var(--tw-fade-scrollbar, 0px) 100%,
+            100% 100%,
+            100% calc(100% - var(--tw-fade-scrollbar-block, 0px)),
+            var(--tw-fade-mask-size-l),
+            var(--tw-fade-mask-size-r);
+        mask-position:
+            0% 100%,
+            var(--tw-fade-scrollbar-pos),
+            0% 0%,
+            0% 0%,
+            var(--tw-fade-mask-pos-l),
+            var(--tw-fade-mask-pos-r);
+    }
 }
 
 @utility tw-fade-raw-top {
     --tw-fade-animation-t: tw-fade-travel-t;
-    --tw-fade-timeline-t: scroll(self y);
+    --tw-fade-timeline-t: var(--tw-fade-scroll-y, scroll(self y));
     --tw-fade-animation-range-t: var(--tw-fade-scroll-epsilon)
         max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active));
 }
 
 @utility tw-fade-raw-bottom {
     --tw-fade-animation-b: tw-fade-travel-b;
-    --tw-fade-timeline-b: scroll(self y);
+    --tw-fade-timeline-b: var(--tw-fade-scroll-y, scroll(self y));
     --tw-fade-animation-range-b: min(
             calc(100% - var(--tw-fade-travel-active)),
             calc(100% - var(--tw-fade-scroll-epsilon))
@@ -779,8 +787,8 @@ the scrollbar consumers clamp them to 0px before they reach geometry or masks.
 @utility tw-fade-raw-start {
     --tw-fade-ltr-start-animation: tw-fade-travel-l;
     --tw-fade-rtl-start-animation: tw-fade-travel-r-leading;
-    --tw-fade-ltr-start-timeline: scroll(self inline);
-    --tw-fade-rtl-start-timeline: scroll(self inline);
+    --tw-fade-ltr-start-timeline: var(--tw-fade-scroll-inline, scroll(self inline));
+    --tw-fade-rtl-start-timeline: var(--tw-fade-scroll-inline, scroll(self inline));
     --tw-fade-ltr-start-animation-range: var(--tw-fade-scroll-epsilon)
         max(var(--tw-fade-scroll-epsilon), var(--tw-fade-travel-active));
     --tw-fade-rtl-start-animation-range: var(--tw-fade-scroll-epsilon)
@@ -790,8 +798,8 @@ the scrollbar consumers clamp them to 0px before they reach geometry or masks.
 @utility tw-fade-raw-end {
     --tw-fade-ltr-end-animation: tw-fade-travel-r;
     --tw-fade-rtl-end-animation: tw-fade-travel-l-trailing;
-    --tw-fade-ltr-end-timeline: scroll(self inline);
-    --tw-fade-rtl-end-timeline: scroll(self inline);
+    --tw-fade-ltr-end-timeline: var(--tw-fade-scroll-inline, scroll(self inline));
+    --tw-fade-rtl-end-timeline: var(--tw-fade-scroll-inline, scroll(self inline));
     --tw-fade-ltr-end-animation-range: min(
             calc(100% - var(--tw-fade-travel-active)),
             calc(100% - var(--tw-fade-scroll-epsilon))
@@ -804,9 +812,7 @@ the scrollbar consumers clamp them to 0px before they reach geometry or masks.
         calc(100% - var(--tw-fade-scroll-epsilon));
 }
 
-/* Fixed anchors keep the overlay at the scrollport; ineligible anchors give it zero area. */
 @utility tw-fade-overlay {
-    anchor-name: --tw-fade-blur;
     anchor-scope: --tw-fade-blur;
 
     --tw-fade-blur-size-t: var(--tw-fade-edge-size-t, 0px);
@@ -843,7 +849,7 @@ the scrollbar consumers clamp them to 0px before they reach geometry or masks.
         --tw-fade-blur-band-b: calc(var(--tw-fade-blur-size-b) * var(--tw-fade-blur-b));
         --tw-fade-blur-band-l: calc(var(--tw-fade-blur-size-l) * var(--tw-fade-blur-l));
         --tw-fade-blur-band-r: calc(var(--tw-fade-blur-size-r) * var(--tw-fade-blur-r));
-        position: fixed;
+        position: absolute;
         position-anchor: --tw-fade-blur;
 
         top: anchor(top, 0px);
@@ -854,9 +860,9 @@ the scrollbar consumers clamp them to 0px before they reach geometry or masks.
         margin: 0;
         padding: 0;
         border-style: solid;
-        border-width: inherit;
+        border-width: 0;
         border-color: transparent;
-        border-radius: inherit;
+        border-radius: 0;
         background: transparent;
         pointer-events: none;
         z-index: calc(1000 + var(--tw-fade-blur-order));
@@ -987,57 +993,96 @@ the scrollbar consumers clamp them to 0px before they reach geometry or masks.
     --tw-fade-select-end: 1;
 }
 
+@layer utilities {
+    .fade-blur-frame {
+        position: relative;
+        contain: paint;
+        overflow: hidden;
+        timeline-scope: --tw-fade-y, --tw-fade-inline;
+        --tw-fade-scroll-y: --tw-fade-y;
+        --tw-fade-scroll-inline: --tw-fade-inline;
+
+        & > :first-child {
+            scroll-timeline: --tw-fade-y y, --tw-fade-inline inline;
+            anchor-name: --tw-fade-blur;
+            --tw-fade-scrollbar: inherit;
+            --tw-fade-scrollbar-block: inherit;
+        }
+
+        @supports not (timeline-scope: --tw-fade-y) {
+            --tw-fade-t: 1;
+            --tw-fade-b: 1;
+            --tw-fade-l: 1;
+            --tw-fade-r: 1;
+        }
+    }
+}
+
 @utility fade-blur {
-    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
-        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-top tw-fade-raw-bottom tw-fade-raw-start tw-fade-raw-end;
-        --tw-fade-blur-select-top: 1;
-        --tw-fade-blur-select-bottom: 1;
-        --tw-fade-blur-select-start: 1;
-        --tw-fade-blur-select-end: 1;
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and (timeline-scope: --tw-fade-y) and selector(:nth-child(1 of .fade-blur-layer)) {
+        &:where(.fade-blur-frame) {
+            @apply tw-fade-base tw-fade-overlay tw-fade-raw-top tw-fade-raw-bottom tw-fade-raw-start tw-fade-raw-end;
+            --tw-fade-blur-select-top: 1;
+            --tw-fade-blur-select-bottom: 1;
+            --tw-fade-blur-select-start: 1;
+            --tw-fade-blur-select-end: 1;
+        }
     }
 }
 
 @utility fade-blur-y {
-    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
-        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-top tw-fade-raw-bottom;
-        --tw-fade-blur-select-top: 1;
-        --tw-fade-blur-select-bottom: 1;
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and (timeline-scope: --tw-fade-y) and selector(:nth-child(1 of .fade-blur-layer)) {
+        &:where(.fade-blur-frame) {
+            @apply tw-fade-base tw-fade-overlay tw-fade-raw-top tw-fade-raw-bottom;
+            --tw-fade-blur-select-top: 1;
+            --tw-fade-blur-select-bottom: 1;
+        }
     }
 }
 
 @utility fade-blur-x {
-    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
-        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-start tw-fade-raw-end;
-        --tw-fade-blur-select-start: 1;
-        --tw-fade-blur-select-end: 1;
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and (timeline-scope: --tw-fade-y) and selector(:nth-child(1 of .fade-blur-layer)) {
+        &:where(.fade-blur-frame) {
+            @apply tw-fade-base tw-fade-overlay tw-fade-raw-start tw-fade-raw-end;
+            --tw-fade-blur-select-start: 1;
+            --tw-fade-blur-select-end: 1;
+        }
     }
 }
 
 @utility fade-blur-top {
-    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
-        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-top;
-        --tw-fade-blur-select-top: 1;
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and (timeline-scope: --tw-fade-y) and selector(:nth-child(1 of .fade-blur-layer)) {
+        &:where(.fade-blur-frame) {
+            @apply tw-fade-base tw-fade-overlay tw-fade-raw-top;
+            --tw-fade-blur-select-top: 1;
+        }
     }
 }
 
 @utility fade-blur-bottom {
-    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
-        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-bottom;
-        --tw-fade-blur-select-bottom: 1;
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and (timeline-scope: --tw-fade-y) and selector(:nth-child(1 of .fade-blur-layer)) {
+        &:where(.fade-blur-frame) {
+            @apply tw-fade-base tw-fade-overlay tw-fade-raw-bottom;
+            --tw-fade-blur-select-bottom: 1;
+        }
     }
 }
 
 @utility fade-blur-start {
-    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
-        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-start;
-        --tw-fade-blur-select-start: 1;
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and (timeline-scope: --tw-fade-y) and selector(:nth-child(1 of .fade-blur-layer)) {
+        &:where(.fade-blur-frame) {
+            @apply tw-fade-base tw-fade-overlay tw-fade-raw-start;
+            --tw-fade-blur-select-start: 1;
+        }
     }
 }
 
 @utility fade-blur-end {
-    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and selector(:nth-child(1 of .fade-blur-layer)) {
-        @apply tw-fade-base tw-fade-mask tw-fade-overlay tw-fade-raw-end;
-        --tw-fade-blur-select-end: 1;
+    @supports (anchor-name: --tw-fade-blur) and (position-anchor: --tw-fade-blur) and (anchor-scope: --tw-fade-blur) and (backdrop-filter: blur(1px)) and (animation-timeline: scroll()) and (timeline-scope: --tw-fade-y) and selector(:nth-child(1 of .fade-blur-layer)) {
+        &:where(.fade-blur-frame) {
+            @apply tw-fade-base tw-fade-overlay tw-fade-raw-end;
+            --tw-fade-blur-select-end: 1;
+        }
     }
 }
 
@@ -1225,16 +1270,23 @@ the scrollbar consumers clamp them to 0px before they reach geometry or masks.
 
 @utility fade-scrollbar-safe-y {
     @supports (animation-timeline: scroll()) {
-        scrollbar-gutter: stable;
+        &:where(:not(.fade-blur-frame)),
+        &:where(.fade-blur-frame) > :first-child { scrollbar-gutter: stable; }
         @supports selector(::-webkit-scrollbar) {
             --tw-fade-scrollbar: max(0px, var(--tw-fade-scrollbar-width, 15px));
             &::-webkit-scrollbar { width: max(0px, var(--tw-fade-scrollbar-width, 15px)); height: max(0px, var(--tw-fade-scrollbar-width, 15px)); }
+            &:where(.fade-blur-frame) > :first-child::-webkit-scrollbar { width: max(0px, var(--tw-fade-scrollbar-width, 15px)); height: max(0px, var(--tw-fade-scrollbar-width, 15px)); }
             &::-webkit-scrollbar-track { background: transparent; }
+            &:where(.fade-blur-frame) > :first-child::-webkit-scrollbar-track { background: transparent; }
             &::-webkit-scrollbar-thumb { background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)); border-radius: 999px; }
+            &:where(.fade-blur-frame) > :first-child::-webkit-scrollbar-thumb { background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)); border-radius: 999px; }
         }
         @supports not selector(::-webkit-scrollbar) {
-            scrollbar-width: thin;
-            scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)) transparent;
+            &:where(:not(.fade-blur-frame)),
+            &:where(.fade-blur-frame) > :first-child {
+                scrollbar-width: thin;
+                scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)) transparent;
+            }
         }
     }
 }
@@ -1244,29 +1296,42 @@ the scrollbar consumers clamp them to 0px before they reach geometry or masks.
         @supports selector(::-webkit-scrollbar) {
             --tw-fade-scrollbar-block: max(0px, var(--tw-fade-scrollbar-width, 15px));
             &::-webkit-scrollbar { width: max(0px, var(--tw-fade-scrollbar-width, 15px)); height: max(0px, var(--tw-fade-scrollbar-width, 15px)); }
+            &:where(.fade-blur-frame) > :first-child::-webkit-scrollbar { width: max(0px, var(--tw-fade-scrollbar-width, 15px)); height: max(0px, var(--tw-fade-scrollbar-width, 15px)); }
             &::-webkit-scrollbar-track { background: transparent; }
+            &:where(.fade-blur-frame) > :first-child::-webkit-scrollbar-track { background: transparent; }
             &::-webkit-scrollbar-thumb { background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)); border-radius: 999px; }
+            &:where(.fade-blur-frame) > :first-child::-webkit-scrollbar-thumb { background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)); border-radius: 999px; }
         }
         @supports not selector(::-webkit-scrollbar) {
-            scrollbar-width: thin;
-            scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)) transparent;
+            &:where(:not(.fade-blur-frame)),
+            &:where(.fade-blur-frame) > :first-child {
+                scrollbar-width: thin;
+                scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)) transparent;
+            }
         }
     }
 }
 
 @utility fade-scrollbar-safe-xy {
     @supports (animation-timeline: scroll()) {
-        scrollbar-gutter: stable;
+        &:where(:not(.fade-blur-frame)),
+        &:where(.fade-blur-frame) > :first-child { scrollbar-gutter: stable; }
         @supports selector(::-webkit-scrollbar) {
             --tw-fade-scrollbar: max(0px, var(--tw-fade-scrollbar-width, 15px));
             --tw-fade-scrollbar-block: max(0px, var(--tw-fade-scrollbar-width, 15px));
             &::-webkit-scrollbar { width: max(0px, var(--tw-fade-scrollbar-width, 15px)); height: max(0px, var(--tw-fade-scrollbar-width, 15px)); }
+            &:where(.fade-blur-frame) > :first-child::-webkit-scrollbar { width: max(0px, var(--tw-fade-scrollbar-width, 15px)); height: max(0px, var(--tw-fade-scrollbar-width, 15px)); }
             &::-webkit-scrollbar-track { background: transparent; }
+            &:where(.fade-blur-frame) > :first-child::-webkit-scrollbar-track { background: transparent; }
             &::-webkit-scrollbar-thumb { background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)); border-radius: 999px; }
+            &:where(.fade-blur-frame) > :first-child::-webkit-scrollbar-thumb { background: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)); border-radius: 999px; }
         }
         @supports not selector(::-webkit-scrollbar) {
-            scrollbar-width: thin;
-            scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)) transparent;
+            &:where(:not(.fade-blur-frame)),
+            &:where(.fade-blur-frame) > :first-child {
+                scrollbar-width: thin;
+                scrollbar-color: var(--tw-fade-scrollbar-thumb, color-mix(in srgb, currentColor 30%, transparent)) transparent;
+            }
         }
     }
 }

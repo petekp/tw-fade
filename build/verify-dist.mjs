@@ -26,7 +26,8 @@ const layerMarkup = '<span class="fade-blur-layer" aria-hidden="true"></span>'
 const harness = `
   * { box-sizing: border-box; }
   body { margin: 24px; background: #ddd; font: 14px system-ui; }
-  .sample { width: 240px; height: 240px; overflow: auto; background: white; scrollbar-width: none; }
+  .sample { width: 240px; height: 240px; }
+  .sample-scrollport { height: 100%; overflow: auto; background: white; scrollbar-width: none; }
   .content { width: 800px; height: 800px; background: linear-gradient(to right, black 120px, white 120px); }
   .short { width: 100%; height: 80px; }
 `
@@ -42,8 +43,8 @@ async function settle(page) {
 }
 
 function markup(classes, { id = 'sample', count = 0, style = '', dir = '', contentStyle = '', content = '' } = {}) {
-  return `<div id="${id}" class="sample ${classes}" style="${style}" ${dir ? `dir="${dir}"` : ''} tabindex="0">` +
-    layerMarkup.repeat(count) + `<div class="content" style="${contentStyle}">${content}</div></div>`
+  return `<div id="${id}" class="sample fade-blur-frame ${classes}" tabindex="0" style="${style}" ${dir ? `dir="${dir}"` : ''}>` +
+    `<div class="sample-scrollport" tabindex="0"><div class="content" style="${contentStyle}">${content}</div></div>` + layerMarkup.repeat(count) + '</div>'
 }
 
 async function render(page, classes, options = {}, stylesheet = css) {
@@ -52,7 +53,7 @@ async function render(page, classes, options = {}, stylesheet = css) {
 }
 
 async function scroll(page, top = 4, left = 4) {
-  await page.locator('.sample').evaluateAll((elements, [t, l]) => {
+  await page.locator('.sample-scrollport').evaluateAll((elements, [t, l]) => {
     for (const element of elements) {
       element.scrollTop = t
       element.scrollLeft = getComputedStyle(element).direction === 'rtl' ? -l : l
@@ -63,6 +64,7 @@ async function scroll(page, top = 4, left = 4) {
 
 async function states(page) {
   return page.locator('.sample').evaluateAll((elements) => elements.map((element) => {
+    const scrollport = element.querySelector(':scope > .sample-scrollport') ?? element
     const style = getComputedStyle(element)
     const pseudo = getComputedStyle(element, '::after')
     const read = (prefix) => ['t', 'b', 'l', 'r'].map((edge) => Number(style.getPropertyValue(`${prefix}${edge}`).trim()))
@@ -74,9 +76,9 @@ async function states(page) {
     })
     return {
       id: element.id, raw: read('--tw-fade-'), opacity: read('--tw-fade-opacity-'), blur: read('--tw-fade-blur-'),
-      top: element.scrollTop, left: element.scrollLeft, width: element.clientWidth, height: element.clientHeight,
-      scrollWidth: element.scrollWidth, scrollHeight: element.scrollHeight,
-      mask: style.maskImage, maskSize: style.maskSize,
+      top: scrollport.scrollTop, left: scrollport.scrollLeft, width: scrollport.clientWidth, height: scrollport.clientHeight,
+      scrollWidth: scrollport.scrollWidth, scrollHeight: scrollport.scrollHeight,
+      mask: getComputedStyle(scrollport).maskImage, maskSize: getComputedStyle(scrollport).maskSize,
       anchor: style.anchorName,
       animation: style.animationName.split(',').map((value) => value.trim()),
       timeline: (style.animationTimeline || '').split(',').map((value) => value.trim()),
@@ -252,7 +254,7 @@ async function checkConditions(page, sourceClassInventory) {
     'fade', 'fade-top', 'fade-y', 'fade-none', 'fade-always', 'fade-always-x',
     'fade-always-y', 'fade-none-y', 'fade-none-top', 'fade-auto-top',
     'fade-blur', 'fade-blur-top', 'fade-blur-y', 'fade-blur-always',
-    'fade-blur-layer', 'fade-size-sm', 'fade-size-lg', 'fade-size-4xl', 'fade-size-y-4xl',
+    'fade-blur-layer', 'fade-blur-frame', 'fade-size-sm', 'fade-size-lg', 'fade-size-4xl', 'fade-size-y-4xl',
     'fade-size-y-md', 'fade-size-top-sm', 'fade-clear-top-sm', 'fade-travel-lg',
     'fade-blur-sm', 'fade-blur-md', 'fade-blur-lg',
   ]
@@ -321,7 +323,7 @@ async function checkConditions(page, sourceClassInventory) {
     await page.mouse.move(590, 590)
     const before = await state(page)
     if (entry === 'hover' || entry === 'group') await page.locator('.sample').hover()
-    if (entry === 'focus') { await page.locator('#outside').focus(); await page.keyboard.press('Shift+Tab') }
+    if (entry === 'focus') { await page.locator('#outside').focus(); await page.keyboard.press('Shift+Tab'); await page.keyboard.press('Shift+Tab') }
     if (entry === 'data') await page.locator('.sample').evaluate((element) => { element.dataset.paused = '' })
     await settle(page)
     const during = await state(page)
@@ -346,6 +348,169 @@ async function checkConditions(page, sourceClassInventory) {
   await settle(page)
   check(allNear((await state(page)).blur, complex.blur), 'conditional blur selection is removed when group hover ends')
   return sourceCss
+}
+
+async function checkFrameIsolation(page, stylesheet, label) {
+  const inner = markup('fade-blur-y', { id:'inner-frame', style:'height:160px' })
+  await render(page, 'fade-blur-y', { id:'outer-frame', style:'height:300px', content:inner }, stylesheet)
+  const read = () => page.evaluate(() => ['outer-frame', 'inner-frame'].map((id) => Number(getComputedStyle(document.getElementById(id)).getPropertyValue('--tw-fade-blur-t'))))
+  await page.locator('#outer-frame > .sample-scrollport').evaluate((element) => { element.scrollTop = 64 })
+  await settle(page)
+  check(allNear(await read(), [1, 0]), `${label}: outer scrolling does not activate the nested frame`)
+  await page.locator('#inner-frame > .sample-scrollport').evaluate((element) => { element.scrollTop = 32 })
+  await settle(page)
+  check(allNear(await read(), [1, 1]), `${label}: the nested frame reads its own scroll timeline`)
+  await page.locator('#outer-frame > .sample-scrollport').evaluate((element) => { element.scrollTop = 0 })
+  await settle(page)
+  check(allNear(await read(), [0, 1]), `${label}: resetting the outer frame preserves nested scroll state`)
+
+  await page.setContent(`<!doctype html><style>${stylesheet}
+    body{margin:0;background:#ddd}.frame{width:240px;--tw-fade-scrollbar-width:21px}
+    #scrollport{height:240px;overflow:auto}#scrollport::-webkit-scrollbar-track{background:rgb(0,255,0)}
+    .ink{width:800px;height:800px;background:black}
+  </style><div class="frame fade-blur-frame fade-y fade-blur-y fade-scrollbar-safe-y">
+    <div id="scrollport"><div class="ink"></div></div></div>`)
+  await page.locator('#scrollport').evaluate((element) => { element.scrollTop = 200 })
+  await settle(page)
+  const geometry = await page.locator('#scrollport').evaluate((element) => ({ frameWidth:element.parentElement.clientWidth, width:element.offsetWidth, gutter:element.offsetWidth-element.clientWidth }))
+  check(geometry.frameWidth === 240 && geometry.width === 240 && geometry.gutter === 21, `${label}: scrollbar safety reserves one gutter on the child`, geometry)
+  const screenshot = await page.locator('.frame').screenshot()
+  const track = await page.evaluate(async (data) => {
+    const image = new Image(); image.src = 'data:image/png;base64,' + data; await image.decode()
+    const canvas = document.createElement('canvas'); canvas.width = image.width; canvas.height = image.height
+    const context = canvas.getContext('2d'); context.drawImage(image, 0, 0)
+    return [...context.getImageData(230, 12, 1, 1).data].slice(0, 3)
+  }, screenshot.toString('base64'))
+  check(track[0] === 0 && track[1] === 255 && track[2] === 0, `${label}: fade and blur leave the protected scrollbar track intact`, track)
+}
+
+async function checkTransparentBlur(page, stylesheet, label) {
+  for (const count of [0, 4]) for (const border of [0, 8]) {
+    await render(page, 'fade-blur-top fade-blur-always fade-size-md fade-blur-lg', {
+      count,
+      style:`border:${border}px solid transparent;width:${240 + 2 * border}px;height:${240 + 2 * border}px`,
+      contentStyle:'background:linear-gradient(to right,transparent 100px,white 100px 140px,transparent 140px)',
+    }, stylesheet)
+    await page.addStyleTag({ content:'.sample-scrollport{background:transparent}body{background:repeating-linear-gradient(#222 0 40px,#456 40px 80px)}' })
+    const active = await page.locator('#sample > .sample-scrollport').screenshot()
+    await page.locator('#sample').evaluate((element) => element.classList.add('fade-blur-none'))
+    await settle(page)
+    const plain = await page.locator('#sample > .sample-scrollport').screenshot()
+    const result = await page.evaluate(async ([activeData, plainData]) => {
+      async function read(data) {
+        const image = new Image()
+        image.src = 'data:image/png;base64,' + data
+        await image.decode()
+        const canvas = document.createElement('canvas')
+        canvas.width = image.width; canvas.height = image.height
+        const context = canvas.getContext('2d')
+        context.drawImage(image, 0, 0)
+        return { width:canvas.width, pixels:context.getImageData(0, 0, canvas.width, canvas.height).data }
+      }
+      const active = await read(activeData), plain = await read(plainData)
+      let centerMax = 0
+      for (let y = 80; y < 160; y++) for (let x = 60; x < 180; x++) for (let channel = 0; channel < 3; channel++) {
+        const index = (y * active.width + x) * 4 + channel
+        centerMax = Math.max(centerMax, Math.abs(active.pixels[index] - plain.pixels[index]))
+      }
+      const at = (image, x, y) => image.pixels[(y * image.width + x) * 4]
+      return { edge:at(active, 100, 6), plainEdge:at(plain, 100, 6), outside:at(active, 99, 6), plainOutside:at(plain, 99, 6), centerMax }
+    }, [active.toString('base64'), plain.toString('base64')])
+    const replacesEdge = result.plainEdge === 255 && result.edge < 220 && result.edge > 90 && result.outside > result.plainOutside + 30
+    check(replacesEdge && result.centerMax <= 1, `${label}: ${count} sibling layers, ${border}px frame border replace the sharp edge over a transparent pattern and preserve the entire center`, result)
+    const backgrounds = await page.locator('#sample').evaluate((element) => [element, element.firstElementChild].map((node) => getComputedStyle(node).backgroundColor))
+    check(backgrounds.every((color) => color === 'rgba(0, 0, 0, 0)'), `${label}: blur does not fill transparent frames or scrollports`, backgrounds)
+  }
+  await render(page, 'fade-blur-top fade-blur-always', {}, stylesheet)
+  await page.locator('#sample').evaluate((element) => element.classList.remove('fade-blur-frame'))
+  const unframed = await state(page)
+  check(unframed.pseudo.content === 'none' && unframed.mask === 'none', `${label}: missing frame omits the retired glow overlay`, unframed.pseudo)
+}
+
+async function checkBlurWrappers(browser, stylesheet, label) {
+  const layouts = [
+    ['block', 'display:block'],
+    ['flex', 'display:flex;flex-direction:column'],
+    ['grid', 'display:grid'],
+    ['positioned', 'position:relative'],
+    ['absolute', 'position:absolute;inset:0'],
+  ]
+  const radii = [0, 24]
+  for (const dpr of [1, 2]) {
+    const page = await browser.newPage({ viewport: { width: 500, height: 500 }, deviceScaleFactor: dpr })
+    try {
+      for (const [layout, layoutStyle] of layouts) for (const count of [0, 4]) {
+        const radius = radii[(layouts.findIndex(([name]) => name === layout) + count / 4) % radii.length]
+        const direction = count === 4 ? 'rtl' : 'ltr'
+        await page.setContent(`<!doctype html><style>${stylesheet}
+          * { box-sizing:border-box }
+          body { margin:40px;background:#151515 }
+          .frame { width:256px;height:256px;background:#303030;border-radius:${radius}px }
+          .host { height:100%;overflow:auto;scrollbar-width:none;${layoutStyle} }
+          .tiles { display:grid;grid-template-columns:repeat(8,128px);width:1024px;height:1024px;flex-shrink:0;background:rgb(255 255 255 / .15) }
+          .tile { height:128px;padding:32px;background:repeating-linear-gradient(90deg,#eee 0 2px,#222 2px 4px);background-clip:content-box }
+        </style><div class="frame fade-blur-frame fade fade-blur fade-blur-lg fade-size-md" dir="${direction}"><div class="host"><div class="tiles">${'<div class="tile"></div>'.repeat(64)}</div></div>${layerMarkup.repeat(count)}</div>`)
+        for (const offset of [0, 128, 768]) {
+          await page.locator('.host').evaluate((element, value) => {
+            element.scrollTop = value
+            element.scrollLeft = getComputedStyle(element).direction === 'rtl' ? -value : value
+          }, offset)
+          await settle(page)
+          const before = await page.locator('.host').evaluate((element) => {
+            const overlay = getComputedStyle(element.parentElement, '::after')
+            return { width:element.scrollWidth, height:element.scrollHeight, top:element.scrollTop, left:element.scrollLeft,
+              overlayWidth:parseFloat(overlay.width), overlayHeight:parseFloat(overlay.height),
+              layers:Array.from(element.parentElement.querySelectorAll(':scope > .fade-blur-layer'), (layer) => {
+                const host = element.getBoundingClientRect(), rect = layer.getBoundingClientRect()
+                return { x:rect.x-host.x, y:rect.y-host.y, width:rect.width, height:rect.height }
+              }) }
+          })
+          const disabled = await page.addStyleTag({ content:'.frame::after{content:none!important}.frame>.fade-blur-layer{display:none!important}' })
+          const plain = await page.locator('.frame').screenshot()
+          await disabled.evaluate((element) => element.remove())
+          await settle(page)
+          const blurred = await page.locator('.frame').screenshot()
+          const delta = await page.evaluate(async ({ a, b, radius, scale }) => {
+            async function read(data) {
+              const image = new Image()
+              image.src = 'data:image/png;base64,' + data
+              await image.decode()
+              const canvas = document.createElement('canvas')
+              canvas.width = image.width; canvas.height = image.height
+              const context = canvas.getContext('2d')
+              context.drawImage(image, 0, 0)
+              return { width:canvas.width, height:canvas.height, data:context.getImageData(0, 0, canvas.width, canvas.height).data }
+            }
+            const plain = await read(a), blurred = await read(b)
+            let centerMax = 0, cornerMax = 0, edgeSum = 0, edgeCount = 0
+            for (let y = 0; y < plain.height; y++) for (let x = 0; x < plain.width; x++) {
+              const inCenter = x > 60 * scale && x < plain.width - 60 * scale && y > 60 * scale && y < plain.height - 60 * scale
+              const nearVerticalEdge = x < radius * scale || x >= plain.width - radius * scale
+              const nearHorizontalEdge = y < radius * scale || y >= plain.height - radius * scale
+              const inCorner = nearVerticalEdge && nearHorizontalEdge
+              const cornerX = x < radius * scale ? radius * scale : plain.width - radius * scale
+              const cornerY = y < radius * scale ? radius * scale : plain.height - radius * scale
+              const outsideRoundedClip = inCorner && Math.hypot(x + 0.5 - cornerX, y + 0.5 - cornerY) > radius * scale + 1
+              for (let channel = 0; channel < 3; channel++) {
+                const index = (y * plain.width + x) * 4 + channel
+                const difference = Math.abs(plain.data[index] - blurred.data[index])
+                if (inCenter) centerMax = Math.max(centerMax, difference)
+                if (outsideRoundedClip) cornerMax = Math.max(cornerMax, Math.abs(blurred.data[index] - 21))
+                if (!inCenter && !inCorner) { edgeSum += difference; edgeCount++ }
+              }
+            }
+            return { centerMax, cornerMax, edgeMean:edgeSum / edgeCount }
+          }, { a:plain.toString('base64'), b:blurred.toString('base64'), radius, scale:dpr })
+          const name = `${label}: contained ${layout}, ${count} spans, ${direction}, DPR ${dpr}, scroll ${offset}`
+          check(delta.centerMax <= 1 && delta.cornerMax <= 2 && delta.edgeMean > 0.1, `${name} clips active blur to the frame and keeps the center crisp`, delta)
+          const pinnedLayers = before.layers.every((layer) => Math.abs(layer.x) < 1 && Math.abs(layer.y) < 1 && layer.width === 256 && layer.height === 256)
+          const preservedGeometry = before.width === 1024 && before.height === 1024 && before.top === offset && Math.abs(before.left) === offset &&
+            before.overlayWidth === 256 && before.overlayHeight === 256 && pinnedLayers
+          check(preservedGeometry, `${name} preserves scroll extent and overlay bounds`, before)
+        }
+      }
+    } finally { await page.close() }
+  }
 }
 
 async function checkBlurPixels(browserType, label, { stylesheet = css, representativeOnly = false } = {}) {
@@ -387,7 +552,7 @@ async function checkBlurPixels(browserType, label, { stylesheet = css, represent
       await renderWithStylesheet('fade-blur-top fade-blur-always fade-size-sm', { count })
       const blurOnly = await pixels(page)
       const active = await state(page)
-      check(blurOnly.nearEdge === 0 && blurOnly.edge < 1 && active.mask !== 'none' && allNear(active.opacity, zero), `${label}: ${count} spans preserve blur without opacity fading`, { blurOnly, active })
+      check(blurOnly.nearEdge === 0 && blurOnly.edge < 1 && active.mask === 'none' && allNear(active.opacity, zero), `${label}: ${count} spans preserve blur without opacity fading`, { blurOnly, active })
       check(active.layers.filter((layer) => layer.display !== 'none').length === (count === 4 ? 4 : 0), `${label}: exact-four selects progressive; ${count} spans`, active.layers)
       if (count === 4) {
         check(active.layers.every((layer) => Math.abs(layer.width - active.geometry.width) <= 1 && Math.abs(layer.height - active.geometry.height) <= 1), `${label}: layers match host geometry with content after spans`, active)
@@ -404,7 +569,9 @@ async function checkBlurPixels(browserType, label, { stylesheet = css, represent
         for (const classes of ['fade-top fade-always', 'fade-blur-top fade-blur-always', 'fade-top fade-blur-top fade-always fade-blur-always']) {
           await renderWithStylesheet(`${classes} fade-size-sm`, { count, style })
           const fallback = await pixels(page)
-          check(fallback.edge === plain.edge && fallback.center === plain.center && (classes.includes('fade-top') || fallback.nearEdge === 0), `${label}: no-wrapper fallback ${style}, ${classes}, ${count} spans`, fallback)
+          const hasBlur = classes.includes('fade-blur-top')
+          const expectedEdge = hasBlur ? fallback.edge < plain.edge : fallback.edge === plain.edge
+          check(expectedEdge && fallback.center === plain.center && (classes.includes('fade-top') || fallback.nearEdge === 0), `${label}: frame supports ${style}, ${classes}, ${count} spans`, fallback)
         }
       }
     }
@@ -435,7 +602,7 @@ async function checkBlurPixels(browserType, label, { stylesheet = css, represent
     check(await page.locator('#edge-action').evaluate((element) => document.activeElement === element), `${label}: overlay preserves pointer focus`)
     await page.locator('#text').dblclick({ position: { x: 10, y: 8 } })
     check(await page.evaluate(() => getSelection().toString()) === 'Selectable', `${label}: overlay preserves pointer text selection`)
-    await page.locator('.sample').focus()
+    await page.locator('.sample-scrollport').focus()
     await page.keyboard.press('ArrowDown')
     await settle(page)
     check((await state(page)).top > 0, `${label}: focused host preserves keyboard scrolling`)
@@ -478,12 +645,10 @@ async function checkStaticFallback(page, stylesheet = css) {
 
 async function checkOnsetLocality(page, stylesheet, label, registered) {
   for (const ancestor of ['2', '2px']) {
-    await page.setContent(`<!doctype html><style>${stylesheet}${harness}</style>
-      <div id="onset-parent" class="sample fade-y fade-blur-y fade-always fade-blur-always" style="--tw-fade-onset:${ancestor};height:300px">
-        <div id="onset-default" class="sample fade-y fade-blur-y fade-always fade-blur-always" style="height:100px"><div style="height:400px"></div></div>
-        <div id="onset-explicit" class="sample fade-y fade-blur-y fade-always fade-blur-always" style="--tw-fade-onset:3;height:100px"><div style="height:400px"></div></div>
-        <div style="height:400px"></div>
-      </div>`)
+    const effects = 'fade-y fade-blur-y fade-always fade-blur-always'
+    const children = markup(effects, { id:'onset-default', style:'height:100px' }) +
+      markup(effects, { id:'onset-explicit', style:'--tw-fade-onset:3;height:100px' })
+    await page.setContent(`<!doctype html><style>${stylesheet}${harness}</style>${markup(effects, { id:'onset-parent', style:`--tw-fade-onset:${ancestor};height:300px`, content:children })}`)
     const result = await page.evaluate(() => Object.fromEntries(['onset-parent', 'onset-default', 'onset-explicit'].map((id) => {
       const element = document.getElementById(id)
       const host = getComputedStyle(element)
@@ -493,7 +658,7 @@ async function checkOnsetLocality(page, stylesheet, label, registered) {
         blurOnset: host.getPropertyValue('--tw-fade-blur-onset').trim(),
         opacityAlpha: host.getPropertyValue('--tw-fade-alpha-t').trim(),
         blurAlpha: overlay.getPropertyValue('--tw-fade-blur-alpha-t').trim(),
-        hostMask: host.maskImage !== 'none',
+        hostMask: getComputedStyle(element.firstElementChild).maskImage !== 'none',
         blurMask: overlay.maskImage !== 'none',
       }]
     })))
@@ -512,7 +677,7 @@ async function checkOnsetLocality(page, stylesheet, label, registered) {
   }
 }
 
-const browser = await chromium.launch()
+const browser = await chromium.launch({ ignoreDefaultArgs: ['--hide-scrollbars'] })
 const page = await browser.newPage({ viewport: { width: 900, height: 700 }, deviceScaleFactor: 1 })
 let sourceCss
 try {
@@ -525,6 +690,12 @@ try {
     await checkOnsetLocality(page, stylesheet.replace(/@property\s+[^{]+\{[^}]*\}\s*/g, ''), `${label} without registrations`, false)
   }
   await checkStaticFallback(page)
+  await checkFrameIsolation(page, css, 'standalone')
+  await checkFrameIsolation(page, sourceCss, 'source')
+  await checkTransparentBlur(page, css, 'standalone')
+  await checkTransparentBlur(page, sourceCss, 'source')
+  await checkBlurWrappers(browser, css, 'standalone')
+  await checkBlurWrappers(browser, sourceCss, 'source')
 } finally { await browser.close() }
 await checkBlurPixels(chromium, 'Chromium')
 await checkBlurPixels(firefox, 'Firefox')

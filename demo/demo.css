@@ -693,6 +693,12 @@ h3 {
     white-space: nowrap;
 }
 
+.fade-option-label[torph-root] {
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+}
+
 /* Torph renders each morph segment as a [torph-item] span. Entering segments get a
    brief accent flash that decays over the long color transition. */
 .fade-option-label [torph-item] {
@@ -1375,7 +1381,8 @@ h3 {
     }
 }
 
-.chat-card {
+.chat-card,
+.advanced-card {
     corner-shape: round;
 }
 
@@ -1395,7 +1402,8 @@ h3 {
     display: flex;
 }
 
-#chat-demo {
+#chat-demo,
+#advanced-demo {
     scroll-margin-top: 5rem;
 }
 
@@ -1412,7 +1420,7 @@ h3 {
     display: none;
 }
 
-.chat-effect-picker {
+.effect-picker {
     display: inline-flex;
     flex-shrink: 0;
     gap: 0.1875rem;
@@ -1423,7 +1431,7 @@ h3 {
     background: color-mix(in oklab, var(--demo-page-bg) 35%, transparent);
 }
 
-.chat-effect-option span {
+.effect-option span {
     display: block;
     padding: 0.5rem 0.75rem;
     border-radius: 0.375rem;
@@ -1433,21 +1441,21 @@ h3 {
     cursor: pointer;
 }
 
-.chat-effect-option {
+.effect-option {
     position: relative;
 }
 
-.chat-effect-option input:checked + span {
+.effect-option input:checked + span {
     color: var(--demo-accent-text);
     background: color-mix(in oklab, var(--demo-accent-text) 16%, transparent);
 }
 
-.chat-effect-option input:focus-visible + span {
+.effect-option input:focus-visible + span {
     outline: 2px solid var(--demo-focus);
     outline-offset: 2px;
 }
 
-.chat-effect-option input:disabled + span {
+.effect-option input:disabled + span {
     opacity: 0.4;
     cursor: not-allowed;
 }
@@ -1460,7 +1468,7 @@ h3 {
     white-space: nowrap;
 }
 
-.chat-effect-support {
+.effect-support {
     flex-basis: 100%;
     margin: 0;
     color: var(--demo-text-muted);
@@ -2141,7 +2149,36 @@ h3 {
 }
 
 .option-demo-panel {
+    position: relative;
     min-width: 0;
+    min-height: 29.375rem;
+}
+
+.option-demo-panel > .type-scale-sample {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+}
+
+.advanced-effect-picker {
+    display: flex;
+}
+
+.advanced-effect-picker .effect-option {
+    flex: 1;
+    text-align: center;
+}
+
+.advanced-effect-picker .effect-option span {
+    padding-inline: 0.375rem;
+}
+
+.option-control[hidden] {
+    display: none;
+}
+
+.option-slider-control:has(input:disabled) {
+    opacity: 0.4;
 }
 
 .option-controls-panel {
@@ -2708,6 +2745,10 @@ class drawers up from below when composed / drops away when removed. */
         grid-template-columns: 1fr;
     }
 
+    .option-demo-panel {
+        min-height: 26.25rem;
+    }
+
     .option-controls-panel {
         border-top: 1px solid
             color-mix(in oklab, var(--demo-border-strong) 42%, transparent);
@@ -2770,4 +2811,36 @@ class drawers up from below when composed / drops away when removed. */
     .ui-row:hover {
         background: rgb(255 255 255 / 0.06);
     }
+}
+
+.blur-setup {
+    padding: 1rem;
+    border: 1px solid var(--demo-border);
+    border-radius: 1rem;
+    color: var(--demo-text-muted);
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.blur-setup summary {
+    width: fit-content;
+    cursor: pointer;
+    color: var(--demo-text-primary);
+}
+
+.blur-setup p,
+.blur-setup pre {
+    margin-block-start: 1rem;
+}
+
+.blur-setup pre {
+    overflow-x: auto;
+    font-size: 0.75rem;
+}
+
+.blur-setup-link {
+    color: var(--demo-text-muted);
+    font-size: 0.75rem;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
 }

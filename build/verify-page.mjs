@@ -49,14 +49,14 @@ const singleEdgeSpecimen = await page.evaluate(async () => {
   const specimen = document.querySelector('[data-demo="type-specimen"]')
   if (!specimen) return null
 
-  specimen.className = 'fade-top fade-always fade-size-2xl fade-travel-md thin-scroll type-scale-sample h-64 overflow-auto p-5 sm:h-72'
+  specimen.parentElement.className = 'option-demo-panel fade-blur-frame fade-top fade-always fade-size-2xl fade-travel-md'
   specimen.scrollTop = 96
   specimen.scrollLeft = 96
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
 
-  const cs = getComputedStyle(specimen)
+  const cs = getComputedStyle(specimen.parentElement)
   return {
-    maskComposite: cs.maskComposite || cs.webkitMaskComposite,
+    maskComposite: getComputedStyle(specimen).maskComposite || getComputedStyle(specimen).webkitMaskComposite,
     amountT: Number(cs.getPropertyValue('--tw-fade-opacity-t').trim()),
     amountB: Number(cs.getPropertyValue('--tw-fade-opacity-b').trim()),
     amountL: Number(cs.getPropertyValue('--tw-fade-opacity-l').trim()),
@@ -110,7 +110,7 @@ const dirControl = await page.evaluate(async () => {
     endToggle.getAttribute('aria-pressed') === 'true' ||
     startToggle.getAttribute('aria-pressed') === 'true'
   const masks = () => {
-    const cs = getComputedStyle(specimen)
+    const cs = getComputedStyle(specimen.parentElement)
     return {
       amountL: Number(cs.getPropertyValue('--tw-fade-opacity-l').trim()),
       amountR: Number(cs.getPropertyValue('--tw-fade-opacity-r').trim()),
@@ -127,13 +127,13 @@ const dirControl = await page.evaluate(async () => {
   if (endToggle.getAttribute('aria-pressed') !== 'true') endToggle.click()
   scrollMid()
   await settle()
-  const ltr = { dir: specimen.getAttribute('dir'), ...masks() }
+  const ltr = { dir: getComputedStyle(specimen).direction, ...masks() }
 
   // Flip to RTL: the same `end` edge must migrate to the opposite physical side.
   rtlRadio.click()
   scrollMid()
   await settle()
-  const rtl = { dir: specimen.getAttribute('dir'), ...masks() }
+  const rtl = { dir: getComputedStyle(specimen).direction, ...masks() }
 
   // Safeguard: from a clean no-horizontal-edge state, RTL auto-enables one.
   ltrRadio.click()

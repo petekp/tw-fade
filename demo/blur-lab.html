@@ -175,9 +175,9 @@
                         <p class="variant-description">
                             The shipped CSS mask. This is the control.
                         </p>
-                        <div class="viewport-shell">
+                        <div class="viewport-shell fade-blur-frame fade-y">
                             <div
-                                class="review-scrollport fade-y lab-scrollbar"
+                                class="review-scrollport lab-scrollbar"
                                 data-sync-scroll
                                 data-variant="baseline"
                             >
@@ -197,11 +197,11 @@
                             <span class="layer-count" data-layer-count="single">1 blur sheet</span>
                         </header>
                         <p class="variant-description">
-                            Opacity and blur select the same edges. No extra elements.
+                            Opacity and blur select the same edges inside a containing wrapper.
                         </p>
-                        <div class="viewport-shell">
+                        <div class="viewport-shell fade-blur-frame fade-y fade-blur-y fade-blur-md">
                             <div
-                                class="review-scrollport fade-y fade-blur-y fade-blur-md lab-scrollbar"
+                                class="review-scrollport lab-scrollbar"
                                 data-sync-scroll
                                 data-variant="single"
                             >
@@ -223,18 +223,19 @@
                         <p class="variant-description">
                             Four layer spans create a gradual increase in blur strength.
                         </p>
-                        <div class="viewport-shell">
+                        <div class="viewport-shell fade-blur-frame fade-y fade-blur-y fade-blur-md">
                             <div
-                                class="review-scrollport fade-y fade-blur-y fade-blur-md lab-scrollbar"
+                                class="review-scrollport lab-scrollbar"
                                 data-sync-scroll
                                 data-variant="progressive"
                             >
                                 <div data-signal-mount></div>
-                                <span class="fade-blur-layer" aria-hidden="true"></span>
-                                <span class="fade-blur-layer" aria-hidden="true"></span>
-                                <span class="fade-blur-layer" aria-hidden="true"></span>
-                                <span class="fade-blur-layer" aria-hidden="true"></span>
                             </div>
+                                <span class="fade-blur-layer" aria-hidden="true"></span>
+                                <span class="fade-blur-layer" aria-hidden="true"></span>
+                                <span class="fade-blur-layer" aria-hidden="true"></span>
+                                <span class="fade-blur-layer" aria-hidden="true"></span>
+
                             <div class="effect-guides" aria-hidden="true"></div>
                         </div>
                         <code data-api-label="progressive">fade-y fade-blur-y fade-blur-md + 4 layers</code>
@@ -251,9 +252,9 @@
                         <p class="variant-description">
                             Single blur with no opacity fade. The content stays fully opaque.
                         </p>
-                        <div class="viewport-shell">
+                        <div class="viewport-shell fade-blur-frame fade-blur-y fade-blur-md">
                             <div
-                                class="review-scrollport fade-blur-y fade-blur-md lab-scrollbar"
+                                class="review-scrollport lab-scrollbar"
                                 data-sync-scroll
                                 data-variant="blur-only"
                             >
@@ -297,9 +298,9 @@
                             </div>
                             <code data-structure-code>3 spans → incomplete layers hidden</code>
                         </div>
-                        <div class="structure-viewport-shell">
+                        <div class="structure-viewport-shell fade-blur-frame fade-y fade-blur-y fade-blur-md">
                             <div
-                                class="structure-scrollport fade-y fade-blur-y fade-blur-md lab-scrollbar"
+                                class="structure-scrollport lab-scrollbar"
                                 data-structure-scrollport
                             >
                                 <div class="structure-content">
@@ -320,18 +321,17 @@
                             <span class="control-label">Shared API</span>
                             <button type="button" class="copy-button" data-copy-markup>Copy</button>
                         </div>
-                        <pre><code data-markup-code>&lt;div class="fade-y fade-blur-y fade-blur-md overflow-y-auto"&gt;
-  &lt;!-- content --&gt;
-
-  &lt;!-- Optional progressive blur: add all four --&gt;
+                        <pre><code data-markup-code>&lt;div class="fade-blur-frame fade-y fade-blur-y fade-blur-md" style="border-radius: 1rem"&gt;
+  &lt;div style="height: 20rem; overflow: auto"&gt;
+    ...
+  &lt;/div&gt;
   &lt;span class="fade-blur-layer" aria-hidden="true"&gt;&lt;/span&gt;
   &lt;span class="fade-blur-layer" aria-hidden="true"&gt;&lt;/span&gt;
   &lt;span class="fade-blur-layer" aria-hidden="true"&gt;&lt;/span&gt;
   &lt;span class="fade-blur-layer" aria-hidden="true"&gt;&lt;/span&gt;
 &lt;/div&gt;</code></pre>
                         <p>
-                            Progressive mode needs a scrollport that allows direct spans, such as <code>div</code>.
-                            Direct spans are not valid children of native lists or tables.
+                            Progressive mode adds four empty spans to the frame, after the scrolling element.
                         </p>
                     </aside>
                 </div>

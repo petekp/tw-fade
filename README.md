@@ -2,7 +2,7 @@
 
 Scroll-aware opacity fades and edge blur for Tailwind CSS v4. Select either effect, or combine them. Each appears while content remains beyond an edge and clears when you reach it.
 
-Version `0.9.0` adds independent opacity and blur controls. See the [migration notes](./MIGRATING.md#migrating-to-090) for overlapping activation modes and earlier draft blur usages.
+Version `0.10.0` introduces the frame renderer for blur. Existing blur users need the [frame migration](./MIGRATING.md#containing-existing-blur-scrollers). Opacity-only usage is unchanged.
 
 **[Live demo](https://pete.design/tw-fade)**
 
@@ -12,7 +12,7 @@ Version `0.9.0` adds independent opacity and blur controls. See the [migration n
 </div>
 ```
 
-`tw-fade` works on the scroll container itself. Opacity fading reveals your existing surface; blur softens content near its selected edges. Neither requires a wrapper or runtime JavaScript. Size, travel, and clear-zone settings are shared by both effects. Browsers without scroll-driven animations retain static opacity fading and omit blur.
+Apply opacity-only classes to the scroll container. Opacity fading reveals your existing surface and needs no wrapper. Blur softens content near its selected edges and requires a [containing wrapper](#blur-setup). Both effects are CSS-only. Size, travel, and clear-zone settings are shared. Browsers without scroll-driven animations retain static opacity fading and omit blur.
 
 ## Install
 
@@ -34,7 +34,7 @@ npm install tw-fade
 Use the prebuilt file with plain HTML, a CDN, or a bundler that imports CSS.
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/tw-fade@0.9.0/dist/tw-fade.css" />
+<link rel="stylesheet" href="https://unpkg.com/tw-fade@0.10.0/dist/tw-fade.css" />
 ```
 
 ```js
@@ -45,7 +45,7 @@ The prebuilt file contains the named, unprefixed utility set. Variants and brack
 
 ## Usage
 
-Apply effect selectors to the scrolling element.
+Apply opacity-only selectors to the scrolling element. For blur or combined effects, put the selectors and configuration on `fade-blur-frame`; its first child is the scroller.
 
 | Intent | Classes |
 | --- | --- |
@@ -87,7 +87,7 @@ Selections add together within each effect. `fade-top fade-bottom` selects both 
 
 `start` and `end` name horizontal edges and follow the HTML `dir` attribute. In LTR, start is left and end is right. RTL reverses them. `top` and `bottom` stay physical.
 
-Set `dir` on the scroll container or an ancestor. A CSS `direction: rtl` rule does not trigger RTL routing. See [Why plain directions](./MIGRATING.md#why-plain-directions) for the naming rationale.
+Set `dir` on the plain fade scroller or blur frame, or on an ancestor. A CSS `direction: rtl` rule does not trigger RTL routing. See [Why plain directions](./MIGRATING.md#why-plain-directions) for the naming rationale.
 
 ```html
 <div dir="rtl" class="fade-start overflow-x-auto">...</div>
@@ -95,19 +95,43 @@ Set `dir` on the scroll container or an ancestor. A CSS `direction: rtl` rule do
 
 ## Blur
 
-Use a blur selector such as `fade-blur-y` for blur without opacity fading. With no extra elements, it blends one blur into the selected edges. Add an opacity selector when you want both effects.
+Use a blur selector such as `fade-blur-y` for blur without opacity fading. Add an opacity selector when you want both effects.
+
+### Blur setup
+
+Put `fade-blur-frame`, effect selectors, and configuration on the outer frame. Its first child must be the scrolling element. Size that child for your layout and give it `overflow: auto`.
 
 ```html
-<div class="fade-blur-y h-80 overflow-y-auto">
-  <!-- Content -->
+<div class="fade-blur-frame fade-blur-y" style="border-radius: 1rem">
+  <div style="height: 20rem; overflow: auto">
+    ...
+  </div>
 </div>
 ```
 
-Add exactly four empty direct layer spans for progressive blur. This uses five increasing blur radii: the scroller's pseudo-element and the four spans. The following example combines progressive blur with opacity fading.
+Keep `fade-blur-frame` unprefixed in the markup; it is structural and cannot be used through `@apply`. Apply responsive and state variants to the effect and configuration utilities on that frame.
+
+With Tailwind, use `rounded-xl` on the frame and `h-80 overflow-y-auto` on the child. Set `dir` on the frame or an ancestor so its controls and scrolling child share the same direction. The frame renderer is available in both the Tailwind source and prebuilt CSS.
+
+The frame reads its child's scroll timelines. It applies opacity fading to that child and renders blur beside it, outside the fade mask. This lets blur sample the content together with the visible page background and replace sharp edges instead of adding a halo. Transparent backgrounds stay visible and also soften within the selected blur bands.
+
+Put borders and equal-radius round corners on the frame; keep its scrolling child borderless. Unequal radii and `corner-shape` shapes other than `round` can cause Chromium to blur the center despite its mask. See [Chromium issue 574875260](https://issues.chromium.org/issues/574875260).
+
+Keep masks, filters, opacity below `1`, and backdrop filters off the frame and its ancestors between the frame and the visible background. They can isolate that background from the renderer and restore the halo. Put transforms on the frame rather than the scrolling child. Paint containment clips content outside the frame and makes it a containing block for positioned descendants; place popovers outside it when they need to escape. Use an inset focus indicator on the scroller, such as `outline-offset: -2px`, or draw the indicator on the frame.
+
+Block, flex, grid, relative, and absolute scrollers can use the frame. An absolutely positioned scroller needs a sized frame and can fill it with `inset: 0`. Keep the scrollport inside the frame's bounds. Large effect bands can meet in the middle; leave space between the selected bands when you want a crisp center.
+
+The frame renderer requires version `0.10.0` or newer. See [migration guidance](./MIGRATING.md#containing-existing-blur-scrollers) when upgrading from `0.9.0`.
+
+### Progressive blur
+
+The default uses one blur layer. Add exactly four empty spans to the frame, after the scrolling child, for five increasing blur radii.
 
 ```html
-<div class="fade-y fade-blur-y fade-blur-md h-80 overflow-y-auto">
-  <!-- Content -->
+<div class="fade-blur-frame fade-y fade-blur-y fade-blur-md" style="border-radius: 1rem">
+  <div style="height: 20rem; overflow: auto">
+    ...
+  </div>
   <span class="fade-blur-layer" aria-hidden="true"></span>
   <span class="fade-blur-layer" aria-hidden="true"></span>
   <span class="fade-blur-layer" aria-hidden="true"></span>
@@ -117,13 +141,13 @@ Add exactly four empty direct layer spans for progressive blur. This uses five i
 
 `fade-blur-sm`, `fade-blur-md`, and `fade-blur-lg` set strength only. They do nothing without a blur selector. The single radii are `2px`, `3px`, and `6px`; a selector without a strength class uses `md` (`3px`). There is no arbitrary-radius utility in this API. Override `--fade-blur-sm`, `--fade-blur-md`, or `--fade-blur-lg` with a CSS length to tune a preset.
 
-Progressive mode uses a stronger sequence of radii in the same region. It approximates a gradual change in blur, without promising an exact radius at every pixel. Layer counts other than four use single blur. Content may appear after the layer spans. Keep the structural `fade-blur-layer` marker unprefixed; apply variants to the parent blur utilities. Conditional switching between single and progressive structure is not a utility feature.
+Progressive mode uses a stronger sequence of radii in the same region. It approximates a gradual change in blur, without promising an exact radius at every pixel. Layer counts other than four use single blur. The scrolling element must remain the first child. Keep the structural `fade-blur-layer` marker unprefixed; apply variants to the parent blur utilities. Conditional switching between single and progressive structure is not a utility feature.
 
 Blur strength does not change opacity. `fade-size-*`, per-edge sizes, `fade-clear-*`, travel, and onset configure both effects. Activation is independent: `fade-none` disables opacity, and `fade-blur-none` disables blur. See [activation controls](#activation-controls).
 
-Both renderers preserve pointer input. A blur selector reserves the scroller's `::after`, `anchor-name`, and `anchor-scope`, including while `fade-blur-none` suppresses its appearance. Layers use z-index 1000–1004 within the masked stacking context; keep content below that range. Progressive markup requires a container that permits direct spans, such as a `div`, rather than a native `ul` or `table`.
+Both renderers preserve pointer input. A blur selector reserves the frame's `::after` and `anchor-scope`. The frame reserves its own `timeline-scope` and its child's `anchor-name` and `scroll-timeline`. Layers use z-index 1000–1004 inside the frame; keep content below that range. Use a frame that permits direct spans, such as a `div`. Its scrolling child may be a native list.
 
-Blur needs backdrop filters, CSS anchor positioning and scope, filtered `:nth-child()`, and scroll-driven animations. A transform, filter, or paint/layout containment on the scroller can make its anchor ineligible. The no-wrapper API omits blur on those hosts. A transformed ancestor outside the scroller can still work. See [fallbacks and support](#browser-support) for the effect-specific result.
+Blur needs backdrop filters, CSS anchor positioning and scope, filtered `:nth-child()`, scroll-driven animations, and `timeline-scope`. Blur selectors outside a `fade-blur-frame` do not render blur. See [fallbacks and support](#browser-support) for the effect-specific result.
 
 Blur uses the same raw scroll state as opacity fading. The [dynamic-content limitation](#dynamic-content-on-a-stable-scrollport) applies to both. When an axis cannot overflow, disable each selected effect on that axis.
 
@@ -179,7 +203,7 @@ The source path accepts named values, lengths, and percentages, including `fade-
 
 Smaller values open the band sooner. The edge reaches full transparency after about `travel ÷ 8` while the band continues to widen.
 
-Set `--tw-fade-onset` to a number on the scroll container to change that ratio. The default is `8`; higher values make the edge transparent sooner. Onset stays local to each scroller. A nested scroller keeps its default unless you set a value on it.
+Set `--tw-fade-onset` to a number on the effect owner, either the plain fade scroller or the blur frame to change that ratio. The default is `8`; higher values make the edge transparent sooner. Onset stays local to each scroller. A nested scroller keeps its default unless you set a value on it.
 
 Travel uses the same named steps as size through its own `--fade-travel-*` tokens, and defaults to `sm`. The source path also accepts bracket values such as `fade-travel-[80px]`.
 
@@ -346,6 +370,7 @@ Fade the element that scrolls. For a full-page fade, make `<body>` the scroll co
 | Named size/travel/clear utilities | yes | yes |
 | `fade-scrollbar-safe-*` and named `fade-scrollbar-width-*` | yes | yes |
 | `fade-clear-*-var` | yes | yes |
+| Structural `fade-blur-frame` | yes, unprefixed | yes, unprefixed |
 | Structural `fade-blur-layer` marker | yes, unprefixed | yes, unprefixed |
 | Responsive and state variants | yes, using the app's theme | no |
 | Arbitrary values like `fade-size-[6rem]` | yes | no |
@@ -365,9 +390,9 @@ The package build generates the prebuilt file from an explicit safelist. It excl
 
 ## How It Works
 
-Each effect host uses one shared four-slot animation list for raw scroll progress. Unselected edges have empty slots. Its opacity and blur amounts resolve independently from that progress, their selections, and their activation settings. For a selected edge, `auto` uses scroll progress, `always` uses the full amount, and `none` uses zero. Scroll timelines use `scroll(self y)` and `scroll(self inline)`. The `:dir()` selector routes horizontal start and end.
+Each effect host uses one shared four-slot animation list for raw scroll progress. Unselected edges have empty slots. Its opacity and blur amounts resolve independently from that progress, their selections, and their activation settings. For a selected edge, `auto` uses scroll progress, `always` uses the full amount, and `none` uses zero. Plain fades use `scroll(self y)` and `scroll(self inline)`. Frames use named timelines from their first child, isolated by `timeline-scope`. The `:dir()` selector routes horizontal start and end.
 
-Opacity uses four gradient mask layers and two dormant scrollbar-shield strips. Blur uses the same host mask as a backdrop boundary. With blur alone, the mask is opaque; adding a blur selector preserves an existing opacity fade. Missing blur capabilities do not install a blur-only host mask. An ineligible anchor can leave an opaque mask while omitting the blur.
+Opacity uses four gradient mask layers and two dormant scrollbar-shield strips. With a frame, this mask belongs to the scrolling child. Blur layers are siblings of that child, anchored to its bounds. The frame itself stays unmasked so the blur can sample the visible background. Missing blur capabilities leave opacity fading available and omit blur.
 
 Raw progress normally stays at `0` when its axis cannot scroll. Forced modes do not change raw progress. Without scroll-driven animations, selected automatic opacity fades use the static full amount; disabled fades stay disabled. Blur remains unavailable even with `fade-blur-always`.
 

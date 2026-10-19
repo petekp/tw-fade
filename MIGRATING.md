@@ -2,6 +2,18 @@
 
 Use the [0.9.0 migration](#migrating-to-090) for independent opacity and blur controls. The [0.6.x to 0.7+ procedure](#migrating-from-tw-fade-06x-to-07) covers the earlier direction and travel renames. Apply required migrations in release order.
 
+## Containing existing blur scrollers
+
+Version `0.10.0` replaces the scroller-owned blur in `0.9.0` with a frame renderer. Use the [frame setup](./README.md#blur-setup):
+
+1. Add the unprefixed `fade-blur-frame` class to the outer frame; do not use it through variants or `@apply`. Keep the scrolling element as its first child.
+2. Move effect selectors, strength, size, clear-zone, travel, activation, scrollbar-safe classes, and custom configuration from the scroller to the frame. Set `dir` on the frame so the scrolling child inherits it.
+3. Keep height, overflow, focusability, and content layout on the scrolling child. Move the optional four `fade-blur-layer` spans out of it and place them after it as frame children.
+4. Put borders and equal-radius round corners on the frame and keep the scrolling child borderless. Keep masks, filters, translucent opacity, and backdrop filters off the frame and ancestors that separate it from the visible background.
+5. Check scroll endpoints, RTL, pointer and keyboard input, and the center. The blur now softens the visible background within its edge bands as well as the content.
+
+Opacity-only usages on plain scrollers are unchanged. Blur selectors on an element without `fade-blur-frame` no longer render the old overlay. A manual wrapper with only containment and clipping is not equivalent to the new renderer; upgrade to `0.10.0` or newer.
+
 ## Migrating to 0.9.0
 
 Version `0.9.0` keeps ordinary opacity-only selectors and their appearance. Review overlapping activation modes when upgrading from `0.8.0` or earlier, even if your project does not use blur. Projects using the earlier draft blur API also need the selector changes below.

@@ -44,7 +44,7 @@ const SCALE = 'xs,sm,md,lg,xl,2xl,3xl,4xl'
 const DIRECTIONS = 'x,y,top,bottom,start,end'
 const CLASSES = [
   `fade fade-{${DIRECTIONS}}`,
-  `fade-blur fade-blur-{${DIRECTIONS}} fade-blur-{sm,md,lg} fade-blur-layer`,
+  `fade-blur fade-blur-{${DIRECTIONS}} fade-blur-{sm,md,lg} fade-blur-layer fade-blur-frame`,
   `fade-{always,auto,none} fade-{always,auto,none}-{${DIRECTIONS}}`,
   `fade-blur-{always,auto,none} fade-blur-{always,auto,none}-{${DIRECTIONS}}`,
   `fade-size-{${SCALE}} fade-size-{${DIRECTIONS}}-{${SCALE}}`,
@@ -87,7 +87,7 @@ function sharedPrebuiltSource(source) {
   const shared = `@layer utilities {
   ${selector(OPACITY_DIRECTIONS)} { @apply tw-fade-base tw-fade-mask; }
   ${blurGates[0]} {
-    ${selector(BLUR_DIRECTIONS)} { @apply tw-fade-base tw-fade-mask tw-fade-overlay; }
+    ${selector(BLUR_DIRECTIONS)}:where(.fade-blur-frame) { @apply tw-fade-base tw-fade-overlay; }
   }
 }
 `
@@ -95,7 +95,7 @@ function sharedPrebuiltSource(source) {
   let cursor = blocks[0].start
   for (const { name, start, end, text } of blocks) {
     const prefix = name.startsWith('fade-blur')
-      ? '@apply tw-fade-base tw-fade-mask tw-fade-overlay '
+      ? '@apply tw-fade-base tw-fade-overlay '
       : '@apply tw-fade-base tw-fade-mask '
     if (text.split(prefix).length !== 2) throw new Error(`Shared @apply changed in ${name}`)
     output += source.slice(cursor, start) + text.replace(prefix, '@apply ')

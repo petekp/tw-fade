@@ -41,4 +41,6 @@ git diff --check -- demo/index.html demo/input.css demo/styles.css demo/demo.css
 
 For visual changes, smoke-test the file URL in Chromium and check the masthead, theme switcher, horizontal rail default state, vertical list, advanced controls, edge toggles, and animated graphics. Run `npm run export:demo -- --out .tmp/demo-static` when you need the same `/tw-fade` asset paths used by production.
 
+The chat card, Advanced preview panel, and blur lab shells use `fade-blur-frame` and own effect configuration. Their first children own scrolling. Progressive spans are frame children after the scroller. The [blur setup](../README.md#blur-setup) documents the same CSS-only structure.
+
 For blur changes, check the existing lab with separate opacity and blur selections. Verify axis changes replace prior selectors, readouts match active classes, and reset restores both effects' configuration. Blur-only fallback must not introduce opacity fading. A bundled WebKit viewport does not establish physical iPhone or current Safari blur behavior; record those verification gaps separately.

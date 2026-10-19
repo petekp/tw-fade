@@ -20,7 +20,7 @@ const directions = ['fade', ...SCOPES.slice(1).map((scope) => `fade-${scope}`)]
 const blurDirections = directions.map((name) => name.replace('fade', 'fade-blur'))
 const modeNames = ['fade', 'fade-blur'].flatMap((effect) => SCOPES.flatMap((scope) => ['always', 'auto', 'none'].map((mode) => `${effect}-${mode}${suffix(scope)}`)))
 const PUBLIC_CLASSES = [
-  ...directions, ...blurDirections, ...modeNames, 'fade-blur-layer',
+  ...directions, ...blurDirections, ...modeNames, 'fade-blur-layer', 'fade-blur-frame',
   ...['sm', 'md', 'lg'].map((strength) => `fade-blur-${strength}`),
   ...SCOPES.flatMap((scope) => SCALE.map(([step]) => `fade-size${suffix(scope)}-${step}`)),
   ...SCOPES.flatMap((scope) => [...SCALE.map(([step]) => step), 'var'].map((step) => `fade-clear${suffix(scope)}-${step}`)),
@@ -43,7 +43,7 @@ const variantClasses = [
   ...modeNames.map((name) => 'md:' + name),
 ]
 const sourceCompiler = await compile('@import "tailwindcss"; @import "./src/tw-fade.css";', { base: root, onDependency() {} })
-const sourceCss = sourceCompiler.build([...PUBLIC_CLASSES, ...variantClasses, ...REJECTED_CLASSES, 'md:fade-blur-layer'])
+const sourceCss = sourceCompiler.build([...PUBLIC_CLASSES, ...variantClasses, ...REJECTED_CLASSES, 'md:fade-blur-layer', 'md:fade-blur-frame'])
 
 function block(selector, source = css) {
   const match = source.match(new RegExp('(?:^|\\n)[ \t]*' + selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ' \\{'))
@@ -79,7 +79,7 @@ function ruleDeclarations(name, source = css) {
 }
 
 test('standalone inventory contains the complete named API and stays within budget', () => {
-  assert.equal(new Set(PUBLIC_CLASSES).size, 193)
+  assert.equal(new Set(PUBLIC_CLASSES).size, 194)
   assert.deepEqual([...classSelectors()].sort(), [...PUBLIC_CLASSES].sort())
   for (const name of REJECTED_CLASSES) {
     assert.equal(block(escaped(name)), null, `standalone must not emit ${name}`)
@@ -97,9 +97,14 @@ test('named configuration and structural utilities agree across distribution pat
   }
 })
 
-test('source compiles breakpoint, state, and compound variants for every control family', () => {
+test('source compiles breakpoint, state, and compound variants for every control family', async () => {
   for (const name of variantClasses) assert.ok(block(escaped(name), sourceCss), `missing variant ${name}`)
   assert.equal(block('.md\\:fade-blur-layer', sourceCss), null, 'the layer marker stays structural')
+  assert.equal(block('.md\\:fade-blur-frame', sourceCss), null, 'the frame marker stays structural')
+  await assert.rejects(
+    compile('@import "tailwindcss"; @import "./src/tw-fade.css"; .alias { @apply fade-blur-frame; }', { base:root, onDependency() {} }),
+    /Cannot apply unknown utility class `fade-blur-frame`/,
+  )
   const blur = block('.md\\:fade-blur-x', sourceCss)
   assert.match(blur, /@media/)
   assert.match(blur, /backdrop-filter/)

@@ -61,14 +61,14 @@ async function waitForScrollSampling(page) {
 
 async function readScrollerState(page, variant) {
   return page.locator(`[data-variant="${variant}"]`).evaluate((scrollport) => {
-    const style = getComputedStyle(scrollport)
-    const pseudo = getComputedStyle(scrollport, '::after')
+    const style = getComputedStyle(scrollport.parentElement)
+    const pseudo = getComputedStyle(scrollport.parentElement, '::after')
     const number = (name) => Number.parseFloat(style.getPropertyValue(name)) || 0
     const effect = scrollport.dataset.variant === 'baseline' ? 'opacity' : 'blur'
-    const spans = Array.from(scrollport.querySelectorAll(':scope > .fade-blur-layer'))
+    const spans = Array.from(scrollport.parentElement.querySelectorAll(':scope > .fade-blur-layer'))
     return {
-      classes: Array.from(scrollport.classList),
-      dir: scrollport.dir,
+      classes: Array.from(scrollport.parentElement.classList),
+      dir: getComputedStyle(scrollport).direction,
       clientWidth: scrollport.clientWidth,
       clientHeight: scrollport.clientHeight,
       scrollWidth: scrollport.scrollWidth,
@@ -295,10 +295,10 @@ async function checkPage(browserType, baseUrl, label, screenshotDir) {
     const malformed = await page.evaluate(() => {
       const scroller = document.querySelector('[data-structure-scrollport]')
       return {
-        active: Array.from(scroller.querySelectorAll(':scope > .fade-blur-layer')).filter(
+        active: Array.from(scroller.parentElement.querySelectorAll(':scope > .fade-blur-layer')).filter(
           (layer) => getComputedStyle(layer).display !== 'none',
         ).length,
-        total: scroller.querySelectorAll(':scope > .fade-blur-layer').length,
+        total: scroller.parentElement.querySelectorAll(':scope > .fade-blur-layer').length,
         reported: document.querySelector('[data-structure-result]').textContent.trim(),
       }
     })
@@ -313,7 +313,7 @@ async function checkPage(browserType, baseUrl, label, screenshotDir) {
       const exact = await page.evaluate(() => {
         const scroller = document.querySelector('[data-structure-scrollport]')
         return {
-          active: Array.from(scroller.querySelectorAll(':scope > .fade-blur-layer')).filter(
+          active: Array.from(scroller.parentElement.querySelectorAll(':scope > .fade-blur-layer')).filter(
             (layer) => getComputedStyle(layer).display !== 'none',
           ).length,
           reported: document.querySelector('[data-structure-result]').textContent.trim(),

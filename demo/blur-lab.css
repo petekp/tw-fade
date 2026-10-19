@@ -546,10 +546,8 @@ input[type="range"] {
 
 .viewport-shell,
 .structure-viewport-shell {
-    position: relative;
     min-width: 0;
     padding: 5px;
-    overflow: hidden;
     border: 1px solid var(--lab-line-strong);
     border-radius: 12px;
     background: var(--specimen-bg, #efe9dc);

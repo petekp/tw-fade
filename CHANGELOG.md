@@ -18,6 +18,15 @@ Notable changes since 0.7.0 are documented here. The format follows
 
 **Migration:** None.
 
+## [0.10.0] - 2026-10-19
+
+**Migration:** Blur scrollers need a containing wrapper. Move effect configuration to `fade-blur-frame` and progressive spans beside its scrolling child. See [blur wrapper migration](./MIGRATING.md#containing-existing-blur-scrollers). Opacity-only usages are unchanged.
+
+### Added
+
+- `fade-blur-frame` owns effect configuration and reads its first child's scroll timelines. Blur layers sit outside the child's fade mask to replace sharp edges over transparent backgrounds. Progressive spans are frame children. Equal-radius round corners are supported; the background also softens within blur bands.
+- The homepage's Advanced demo includes Fade, Blur, and Both modes, a blur-strength control, and frame setup instructions.
+
 ## [0.9.0] - 2026-10-17
 
 **Migration:** Draft blur users must adopt independent selectors and controls. Existing opacity users should review overlapping modes: `none` now wins over `always` at the same scope and condition. Follow the [0.9.0 migration procedure](./MIGRATING.md#migrating-to-090).
@@ -112,7 +121,8 @@ See [Scrollbars](./README.md#scrollbars) for setup, limits, and examples.
 - The global `fade-range-*` family was removed in favor of `fade-travel-*`.
 - No public `fade-left` or `fade-right` alias is provided.
 
-[Unreleased]: https://github.com/petekp/tw-fade/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/petekp/tw-fade/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/petekp/tw-fade/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/petekp/tw-fade/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/petekp/tw-fade/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/petekp/tw-fade/compare/v0.7.0...v0.7.1

@@ -5,7 +5,7 @@ const selectionClasses = {
   opacity: ['fade', 'fade-y', 'fade-x', 'fade-top', 'fade-bottom', 'fade-start', 'fade-end'],
   blur: ['fade-blur', 'fade-blur-y', 'fade-blur-x', 'fade-blur-top', 'fade-blur-bottom', 'fade-blur-start', 'fade-blur-end'],
 }
-const blurScrollports = () =>
+const blurFrames = () =>
   Array.from(document.querySelectorAll(selectionClasses.blur.map((name) => `.${name}`).join(', ')))
 const variantEffects = {
   baseline: ['opacity'],
@@ -70,6 +70,7 @@ function supportsBlur() {
     CSS.supports('anchor-scope: --tw-fade-blur') &&
     CSS.supports('backdrop-filter: blur(1px)') &&
     CSS.supports('animation-timeline: scroll()') &&
+    CSS.supports('timeline-scope: --tw-fade-y') &&
     CSS.supports('selector(:nth-child(1 of .fade-blur-layer))')
   )
 }
@@ -103,7 +104,7 @@ function updateApiLabels() {
     if (!label) continue
     const strength = effects.includes('blur') ? ` ${preset}` : ''
     const layers = variant === 'progressive' ? ' + 4 layers' : ''
-    label.textContent = `${selectedClasses(variant).join(' ')}${size}${strength}${layers}`
+    label.textContent = `fade-blur-frame ${selectedClasses(variant).join(' ')}${size}${strength}${layers}`
   }
 }
 
@@ -192,8 +193,8 @@ function updateScenario(value) {
   root.dataset.scenario = value
   const scenario = scenarios[value]
   for (const scrollport of syncScrollports) {
-    scrollport.classList.remove(...selectionClasses.opacity, ...selectionClasses.blur)
-    scrollport.classList.add(...selectedClasses(scrollport.dataset.variant))
+    scrollport.parentElement.classList.remove(...selectionClasses.opacity, ...selectionClasses.blur)
+    scrollport.parentElement.classList.add(...selectedClasses(scrollport.dataset.variant))
   }
   const title = document.querySelector('[data-scenario-title]')
   const note = document.querySelector('[data-scenario-note]')
@@ -217,7 +218,7 @@ function updateScenarioHealth() {
   const note = document.querySelector('[data-scenario-note]')
   const scrollport = document.querySelector('[data-variant="progressive"]')
   if (!note || !scrollport || !supportsBlur()) return
-  const style = getComputedStyle(scrollport)
+  const style = getComputedStyle(scrollport.parentElement)
   const gates = ['--tw-fade-t', '--tw-fade-b', '--tw-fade-l', '--tw-fade-r'].map(
     (name) => Number.parseFloat(style.getPropertyValue(name)) || 0,
   )
@@ -230,7 +231,7 @@ function updateScenarioHealth() {
 
 function updatePreset(value) {
   root.dataset.preset = value
-  for (const scrollport of blurScrollports()) {
+  for (const scrollport of blurFrames()) {
     scrollport.classList.remove('fade-blur-sm', 'fade-blur-md', 'fade-blur-lg')
     scrollport.classList.add(`fade-blur-${value}`)
   }
@@ -244,8 +245,8 @@ function updateSize(value) {
   root.dataset.size = value
   for (const scrollport of [...syncScrollports, document.querySelector('[data-structure-scrollport]')]) {
     if (!scrollport) continue
-    scrollport.classList.remove('fade-size-sm', 'fade-size-lg')
-    if (value !== 'auto') scrollport.classList.add(`fade-size-${value}`)
+    scrollport.parentElement.classList.remove('fade-size-sm', 'fade-size-lg')
+    if (value !== 'auto') scrollport.parentElement.classList.add(`fade-size-${value}`)
   }
   document.querySelector('[data-size-value]').textContent = value === 'auto' ? 'auto' : `fade-size-${value}`
   setPressedState('size', value)
@@ -256,7 +257,7 @@ function updateSize(value) {
 function updateGuides() {
   for (const scrollport of syncScrollports) {
     const guide = scrollport.parentElement.querySelector('.effect-guides')
-    const style = getComputedStyle(scrollport)
+    const style = getComputedStyle(scrollport.parentElement)
     guide?.style.setProperty('--lab-guide-band-y', style.getPropertyValue('--tw-fade-edge-size-t'))
     guide?.style.setProperty('--lab-guide-band-x', style.getPropertyValue('--tw-fade-edge-size-l'))
   }
@@ -270,7 +271,7 @@ function updateSurface(value) {
 function updateDirection(value) {
   root.dataset.direction = value
   for (const scrollport of [...syncScrollports, document.querySelector('[data-structure-scrollport]')]) {
-    if (scrollport) scrollport.dir = value
+    if (scrollport) scrollport.parentElement.dir = value
   }
   setPressedState('direction', value)
   requestAnimationFrame(() => requestAnimationFrame(() => setScrollProgress(scrollProgress)))
@@ -278,11 +279,11 @@ function updateDirection(value) {
 
 function countActiveBlurSheets(scrollport) {
   if (!scrollport) return 0
-  const pseudo = getComputedStyle(scrollport, '::after')
+  const pseudo = getComputedStyle(scrollport.parentElement, '::after')
   const pseudoFilter = pseudo.backdropFilter || pseudo.webkitBackdropFilter || ''
   const pseudoActive = pseudo.content !== 'none' && pseudoFilter !== 'none' ? 1 : 0
   const activeChildren = Array.from(
-    scrollport.querySelectorAll(':scope > .fade-blur-layer'),
+    scrollport.parentElement.querySelectorAll(':scope > .fade-blur-layer'),
   ).filter((layer) => getComputedStyle(layer).display !== 'none').length
   return pseudoActive + activeChildren
 }
@@ -296,7 +297,7 @@ function updateLayerCounts() {
     output.textContent = `${count} blur ${count === 1 ? 'sheet' : 'sheets'}`
   }
   const single = document.querySelector('[data-variant=single]')
-  document.querySelector('[data-strength-value]').textContent = getComputedStyle(single).getPropertyValue('--tw-fade-blur-strength').trim()
+  document.querySelector('[data-strength-value]').textContent = getComputedStyle(single.parentElement).getPropertyValue('--tw-fade-blur-strength').trim()
   updateGuides()
   updateStructureReadout()
 }
@@ -304,12 +305,12 @@ function updateLayerCounts() {
 function updateStructureCount(value) {
   const scrollport = document.querySelector('[data-structure-scrollport]')
   if (!scrollport) return
-  for (const layer of scrollport.querySelectorAll(':scope > .fade-blur-layer')) layer.remove()
+  for (const layer of scrollport.parentElement.querySelectorAll(':scope > .fade-blur-layer')) layer.remove()
   for (let index = 0; index < value; index += 1) {
     const layer = document.createElement('span')
     layer.className = 'fade-blur-layer'
     layer.setAttribute('aria-hidden', 'true')
-    scrollport.append(layer)
+    scrollport.parentElement.append(layer)
   }
   for (const button of document.querySelectorAll('[data-structure-count]')) {
     button.setAttribute('aria-pressed', String(Number(button.dataset.structureCount) === value))
@@ -322,7 +323,7 @@ function updateStructureCount(value) {
 
 function updateStructureReadout() {
   const scrollport = document.querySelector('[data-structure-scrollport]')
-  const count = scrollport?.querySelectorAll(':scope > .fade-blur-layer').length ?? 0
+  const count = scrollport?.parentElement.querySelectorAll(':scope > .fade-blur-layer').length ?? 0
   const active = countActiveBlurSheets(scrollport)
   const state = document.querySelector('[data-structure-state]')
   const result = document.querySelector('[data-structure-result]')

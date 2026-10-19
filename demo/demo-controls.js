@@ -24,10 +24,27 @@ const installCopyStatus = document.querySelector("[data-copy-install-status]");
 const installCopyError = document.querySelector("[data-copy-install-error]");
 const fadeDepthSlider = document.querySelector("[data-fade-depth-slider]");
 const fadeTravelSlider = document.querySelector("[data-fade-travel-slider]");
+const blurStrengthSlider = document.querySelector("[data-blur-strength-slider]");
+const blurStrengthValue = document.querySelector("[data-blur-strength-value]");
+const advancedEffects = document.querySelector("[data-advanced-effects]");
+const blurSupported =
+  CSS.supports("anchor-name: --tw-fade-blur") &&
+  CSS.supports("position-anchor: --tw-fade-blur") &&
+  CSS.supports("anchor-scope: --tw-fade-blur") &&
+  CSS.supports("backdrop-filter: blur(1px)") &&
+  CSS.supports("animation-timeline: scroll()") &&
+  CSS.supports("timeline-scope: --tw-fade-y") &&
+  CSS.supports("selector(:nth-child(1 of .fade-blur-layer))");
+const blurStrengths = [
+  { className: "fade-blur-sm", value: "sm", aria: "small" },
+  { className: "fade-blur-md", value: "md", aria: "medium", default: true },
+  { className: "fade-blur-lg", value: "lg", aria: "large" },
+];
 const fadeOptionLabel = document.querySelector("[data-fade-option-label]");
 const fadeDepthValue = document.querySelector("[data-fade-depth-value]");
 const fadeTravelValue = document.querySelector("[data-fade-travel-value]");
 const fadeSpecimen = document.querySelector('[data-demo="type-specimen"]');
+const fadeFrame = fadeSpecimen?.parentElement;
 const fadeEdgeButtons = Array.from(
   document.querySelectorAll("[data-fade-edge-toggle]"),
 );
@@ -81,7 +98,12 @@ const fadeTravels = [
   },
 ];
 const fadeEdgeOrder = ["top", "end", "bottom", "start"];
-const fadeEdgeClassNames = fadeEdgeOrder.map((edge) => `fade-${edge}`);
+const fadeEdgeClassNames = [
+  "fade",
+  "fade-x",
+  "fade-y",
+  ...fadeEdgeOrder.map((edge) => `fade-${edge}`),
+];
 const faviconSize = 256;
 const faviconCells = 32;
 const faviconBayer8 = [
@@ -851,16 +873,16 @@ function selectLexiconRow(nextRow, { animated = true, scroll = true } = {}) {
   if (scroll) scrollLexiconRowToCenter(nextRow);
 }
 
-function edgeUtilities(activeEdges) {
+function edgeUtilities(activeEdges, prefix = "fade") {
   const has = (edge) => activeEdges.includes(edge);
 
   if (has("top") && has("end") && has("bottom") && has("start"))
-    return ["fade"];
+    return [prefix];
   if (has("top") && has("bottom") && activeEdges.length === 2)
-    return ["fade-y"];
+    return [`${prefix}-y`];
   if (has("start") && has("end") && activeEdges.length === 2)
-    return ["fade-x"];
-  return activeEdges.map((edge) => `fade-${edge}`);
+    return [`${prefix}-x`];
+  return activeEdges.map((edge) => `${prefix}-${edge}`);
 }
 
 function syncSliderKnob(slider) {
@@ -884,10 +906,8 @@ function syncEdgeGradientDepth(depthIndex) {
   }
 }
 
-function setFadeOptionLabel(edgeClasses, sizeClass, travelClass) {
-  const fullClassName = [...edgeClasses, sizeClass, travelClass]
-    .filter(Boolean)
-    .join(" ");
+function setFadeOptionLabel(utilityClasses) {
+  const fullClassName = utilityClasses.join(" ");
 
   const isFirstRender = !fadeOptionMorph;
   if (isFirstRender) {
@@ -947,24 +967,42 @@ function setFadeControls() {
     );
     return button?.getAttribute("aria-pressed") === "true";
   });
-  const edgeClasses = edgeUtilities(activeEdges);
-  // A control sitting at its plugin default needs no class — bare `fade` already
-  // implies `md` size and `sm` travel — so drop it from both the specimen and
-  // the label. The class string then shows exactly what you'd actually type.
+  const mode = advancedEffects?.querySelector("input:checked")?.value ?? "fade";
+  const hasBlur = blurSupported && mode !== "fade";
+  const edgeClasses = [
+    ...(mode !== "blur" ? edgeUtilities(activeEdges) : []),
+    ...(hasBlur ? edgeUtilities(activeEdges, "fade-blur") : []),
+  ];
+  const strengthIndex = Math.min(
+    blurStrengths.length - 1,
+    Math.max(0, Number(blurStrengthSlider?.value ?? 1)),
+  );
+  const strength = blurStrengths[strengthIndex];
+  const strengthClass = hasBlur && !strength.default ? strength.className : null;
   const sizeClass = nextSize.default ? null : nextSize.className;
   const travelClass = nextTravel.default ? null : nextTravel.className;
-  const utilityClasses = [...edgeClasses, sizeClass, travelClass].filter(Boolean);
+  const utilityClasses = [
+    ...edgeClasses,
+    sizeClass,
+    travelClass,
+    strengthClass,
+  ].filter(Boolean);
 
-  fadeSpecimen.classList.remove(
+  fadeFrame.classList.remove(
     ...fadeEdgeClassNames,
-    "fade",
-    "fade-y",
-    "fade-x",
+    ...fadeEdgeClassNames.map((name) => name.replace("fade", "fade-blur")),
+    ...blurStrengths.map((strength) => strength.className),
     ...fadeDepthSizes.map((size) => size.className),
     ...fadeTravels.map((travel) => travel.className),
   );
-  fadeSpecimen.classList.add(...utilityClasses);
-  setFadeOptionLabel(edgeClasses, sizeClass, travelClass);
+  fadeFrame.classList.add(...utilityClasses);
+  setFadeOptionLabel(["fade-blur-frame", ...utilityClasses]);
+  if (blurStrengthSlider && blurStrengthValue) {
+    blurStrengthSlider.disabled = !hasBlur;
+    blurStrengthValue.textContent = strength.value;
+    blurStrengthSlider.setAttribute("aria-valuetext", strength.aria);
+    syncSliderKnob(blurStrengthSlider);
+  }
   fadeDepthValue.textContent = nextSize.value;
   fadeTravelValue.textContent = nextTravel.value;
   fadeDepthSlider.setAttribute("aria-valuetext", nextSize.aria);
@@ -1160,13 +1198,6 @@ if (chatThread) {
   const controls = document.querySelector("[data-chat-effects]");
   const readout = document.querySelector("[data-chat-class]");
   const supportNote = document.querySelector("[data-chat-blur-support]");
-  const blurSupported =
-    CSS.supports("anchor-name: --tw-fade-blur") &&
-    CSS.supports("position-anchor: --tw-fade-blur") &&
-    CSS.supports("anchor-scope: --tw-fade-blur") &&
-    CSS.supports("backdrop-filter: blur(1px)") &&
-    CSS.supports("animation-timeline: scroll()") &&
-    CSS.supports("selector(:nth-child(1 of .fade-blur-layer))");
 
   if (controls && readout && supportNote) {
     const picker = controls.querySelector("fieldset");
@@ -1179,9 +1210,9 @@ if (chatThread) {
           blur: ["fade-blur-y"],
           both: ["fade-y", "fade-blur-y"],
         }[input.value];
-        chatThread.classList.remove("fade-y", "fade-blur-y");
-        chatThread.classList.add(...classes);
-        readout.textContent = classes.join(" ");
+        chatThread.parentElement.classList.remove("fade-y", "fade-blur-y");
+        chatThread.parentElement.classList.add(...classes);
+        readout.textContent = ["fade-blur-frame", ...classes].join(" ");
       });
     }
     supportNote.hidden = blurSupported;
@@ -1316,6 +1347,24 @@ installCopyButton?.addEventListener("click", async () => {
   }, 2000);
 });
 
+if (advancedEffects) {
+  const supportNote = document.querySelector("[data-advanced-blur-support]");
+  for (const input of advancedEffects.querySelectorAll(
+    'input[name="advanced-effect"]',
+  )) {
+    input.disabled = input.value !== "fade" && !blurSupported;
+    input.addEventListener("change", setFadeControls);
+  }
+  if (supportNote) {
+    supportNote.hidden = blurSupported;
+    if (!blurSupported) {
+      advancedEffects.querySelector("fieldset").setAttribute("aria-describedby", supportNote.id);
+    }
+  }
+  advancedEffects.hidden = false;
+}
+blurStrengthSlider?.addEventListener("input", setFadeControls);
+
 fadeDepthSlider?.addEventListener("input", (event) => {
   setFadeControls();
 });
@@ -1372,7 +1421,7 @@ if (dirGroup && fadeSpecimen) {
   };
 
   const setDir = (dir, focus = false) => {
-    fadeSpecimen.setAttribute("dir", dir);
+    fadeFrame.setAttribute("dir", dir);
     for (const option of dirOptions) {
       const active = option.dataset.fadeDir === dir;
       option.setAttribute("aria-checked", active ? "true" : "false");
@@ -1408,7 +1457,7 @@ if (dirGroup && fadeSpecimen) {
   const initialDir =
     dirOptions.find((option) => option.getAttribute("aria-checked") === "true")
       ?.dataset.fadeDir ?? "ltr";
-  fadeSpecimen.setAttribute("dir", initialDir);
+  fadeFrame.setAttribute("dir", initialDir);
 }
 
 if (fadeSpecimen) {
