@@ -1,0 +1,457 @@
+{
+  "runtime": "iOS 26.2",
+  "browser": "Safari 26.2",
+  "device": "iPhone 17 Pro simulator",
+  "viewport": [
+    402,
+    714
+  ],
+  "devicePixelRatio": 3,
+  "capture": "xcrun simctl io screenshot; calibrated to viewport origin marker",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Mobile/15E148 Safari/604.1",
+  "checks": 12,
+  "hashes": {
+    "dist/tw-fade.css": "c34cfa785071228730348627650d326b228a3a75b2ef72f91172a2c22d3b7ed5",
+    "demo/styles.css": "7523020a79991a930219c32237a3cf3fc3664c66b85a454be009992ed575f791"
+  },
+  "results": [
+    {
+      "distribution": "dist",
+      "effect": "blur",
+      "variant": "single",
+      "calibration": {
+        "max": 130,
+        "mean": 127.21541889483066
+      },
+      "top": {
+        "max": 108,
+        "mean": 15.840224358974359
+      },
+      "bottom": {
+        "max": 108,
+        "mean": 15.740384615384615
+      },
+      "center": {
+        "max": 0,
+        "mean": 0
+      },
+      "edgeSharpness": {
+        "on": 0.07075471698113207,
+        "off": 1
+      }
+    },
+    {
+      "distribution": "dist",
+      "effect": "blur",
+      "variant": "progressive",
+      "calibration": {
+        "max": 130,
+        "mean": 127.21541889483066
+      },
+      "top": {
+        "max": 111,
+        "mean": 19.835416666666667
+      },
+      "bottom": {
+        "max": 111,
+        "mean": 19.33125
+      },
+      "center": {
+        "max": 0,
+        "mean": 0
+      },
+      "edgeSharpness": {
+        "on": 0.058823529411764705,
+        "off": 1
+      }
+    },
+    {
+      "distribution": "dist",
+      "effect": "both",
+      "variant": "single",
+      "calibration": {
+        "max": 130,
+        "mean": 127.21541889483066
+      },
+      "top": {
+        "max": 57,
+        "mean": 4.930929487179487
+      },
+      "bottom": {
+        "max": 58,
+        "mean": 5.208974358974359
+      },
+      "center": {
+        "max": 0,
+        "mean": 0
+      },
+      "edgeSharpness": {
+        "on": 0.08333333333333333,
+        "off": 1
+      }
+    },
+    {
+      "distribution": "dist",
+      "effect": "both",
+      "variant": "progressive",
+      "calibration": {
+        "max": 130,
+        "mean": 127.21541889483066
+      },
+      "top": {
+        "max": 62,
+        "mean": 5.67724358974359
+      },
+      "bottom": {
+        "max": 65,
+        "mean": 5.840544871794871
+      },
+      "center": {
+        "max": 0,
+        "mean": 0
+      },
+      "edgeSharpness": {
+        "on": 0.061224489795918366,
+        "off": 1
+      }
+    },
+    {
+      "distribution": "source",
+      "effect": "blur",
+      "variant": "single",
+      "calibration": {
+        "max": 130,
+        "mean": 127.21541889483066
+      },
+      "top": {
+        "max": 108,
+        "mean": 15.840224358974359
+      },
+      "bottom": {
+        "max": 108,
+        "mean": 15.740384615384615
+      },
+      "center": {
+        "max": 0,
+        "mean": 0
+      },
+      "edgeSharpness": {
+        "on": 0.07075471698113207,
+        "off": 1
+      }
+    },
+    {
+      "distribution": "source",
+      "effect": "blur",
+      "variant": "progressive",
+      "calibration": {
+        "max": 130,
+        "mean": 127.21541889483066
+      },
+      "top": {
+        "max": 111,
+        "mean": 19.835416666666667
+      },
+      "bottom": {
+        "max": 111,
+        "mean": 19.33125
+      },
+      "center": {
+        "max": 0,
+        "mean": 0
+      },
+      "edgeSharpness": {
+        "on": 0.058823529411764705,
+        "off": 1
+      }
+    },
+    {
+      "distribution": "source",
+      "effect": "both",
+      "variant": "single",
+      "calibration": {
+        "max": 130,
+        "mean": 127.21541889483066
+      },
+      "top": {
+        "max": 57,
+        "mean": 4.930929487179487
+      },
+      "bottom": {
+        "max": 58,
+        "mean": 5.208974358974359
+      },
+      "center": {
+        "max": 0,
+        "mean": 0
+      },
+      "edgeSharpness": {
+        "on": 0.08333333333333333,
+        "off": 1
+      }
+    },
+    {
+      "distribution": "source",
+      "effect": "both",
+      "variant": "progressive",
+      "calibration": {
+        "max": 130,
+        "mean": 127.21541889483066
+      },
+      "top": {
+        "max": 62,
+        "mean": 5.67724358974359
+      },
+      "bottom": {
+        "max": 65,
+        "mean": 5.840544871794871
+      },
+      "center": {
+        "max": 0,
+        "mean": 0
+      },
+      "edgeSharpness": {
+        "on": 0.061224489795918366,
+        "off": 1
+      }
+    },
+    {
+      "progress": 0,
+      "variant": "single",
+      "top": {
+        "max": 0,
+        "mean": 0
+      },
+      "bottom": {
+        "max": 108,
+        "mean": 15.740384615384615
+      }
+    },
+    {
+      "progress": 0,
+      "variant": "progressive",
+      "top": {
+        "max": 0,
+        "mean": 0
+      },
+      "bottom": {
+        "max": 111,
+        "mean": 19.33125
+      }
+    },
+    {
+      "progress": 100,
+      "variant": "single",
+      "top": {
+        "max": 108,
+        "mean": 15.840224358974359
+      },
+      "bottom": {
+        "max": 0,
+        "mean": 0
+      }
+    },
+    {
+      "progress": 100,
+      "variant": "progressive",
+      "top": {
+        "max": 111,
+        "mean": 19.835416666666667
+      },
+      "bottom": {
+        "max": 0,
+        "mean": 0
+      }
+    }
+  ],
+  "scope": "Published frame-owned backdrop renderer; new SVG wrapper prototype not part of this check",
+  "headlessScreenshotCalibration": [
+    {
+      "browser": "Chromium",
+      "version": "149.0.7827.55",
+      "filter": "blur(6px)",
+      "capturesBackdropBlur": true,
+      "changedPixelRatio": 1,
+      "meanChannelDifference": 126.91
+    },
+    {
+      "browser": "Firefox",
+      "version": "151.0",
+      "filter": "blur(6px)",
+      "capturesBackdropBlur": false,
+      "changedPixelRatio": 0,
+      "meanChannelDifference": 0
+    },
+    {
+      "browser": "WebKit",
+      "version": "26.5",
+      "filter": "blur(6px)",
+      "capturesBackdropBlur": false,
+      "changedPixelRatio": 0,
+      "meanChannelDifference": 0
+    }
+  ],
+  "labVerifier": {
+    "passed": 57,
+    "failed": 0,
+    "knownLimitations": [
+      "Firefox 151 and WebKit 26.5 omit backdrop blur from this screenshot path",
+      "WebKit mounted-content shrink leaves stale scroll animation state"
+    ]
+  },
+  "captureDirectory": "/private/tmp/tw-fade-safari-proof-WqnTzY",
+  "displayCaptures": {
+    "dist-blur-on": {
+      "file": "safari-dist-blur-on.png",
+      "sha256": "08c8eb8eaa22bdaa728a181b3724993e5ff6126bf62db6c67f40576d371ab265",
+      "geometry": {
+        "origin": {
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 4,
+            "top": 0,
+            "right": 4,
+            "bottom": 4,
+            "left": 0
+          },
+          "backdrop": "none",
+          "gates": [
+            "0",
+            "0"
+          ]
+        },
+        "control": {
+          "rect": {
+            "x": 16,
+            "y": 50,
+            "width": 370,
+            "height": 64,
+            "top": 50,
+            "right": 386,
+            "bottom": 114,
+            "left": 16
+          },
+          "backdrop": "blur(6px)",
+          "gates": [
+            "0",
+            "0"
+          ]
+        },
+        "single": {
+          "rect": {
+            "x": 16,
+            "y": 152,
+            "width": 178,
+            "height": 240,
+            "top": 152,
+            "right": 194,
+            "bottom": 392,
+            "left": 16
+          },
+          "backdrop": "blur(6px)",
+          "gates": [
+            "1",
+            "1"
+          ],
+          "scroll": 480
+        },
+        "progressive": {
+          "rect": {
+            "x": 208,
+            "y": 152,
+            "width": 178,
+            "height": 240,
+            "top": 152,
+            "right": 386,
+            "bottom": 392,
+            "left": 208
+          },
+          "backdrop": "blur(2.4px)",
+          "gates": [
+            "1",
+            "1"
+          ],
+          "scroll": 480
+        }
+      }
+    },
+    "dist-blur-off": {
+      "file": "safari-dist-blur-off.png",
+      "sha256": "eaa25a18714765bf01aad87433a00626c6e0e66fc2ba35d0d52cc1d132776434",
+      "geometry": {
+        "origin": {
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 4,
+            "top": 0,
+            "right": 4,
+            "bottom": 4,
+            "left": 0
+          },
+          "backdrop": "none",
+          "gates": [
+            "0",
+            "0"
+          ]
+        },
+        "control": {
+          "rect": {
+            "x": 16,
+            "y": 50,
+            "width": 370,
+            "height": 64,
+            "top": 50,
+            "right": 386,
+            "bottom": 114,
+            "left": 16
+          },
+          "backdrop": "none",
+          "gates": [
+            "0",
+            "0"
+          ]
+        },
+        "single": {
+          "rect": {
+            "x": 16,
+            "y": 152,
+            "width": 178,
+            "height": 240,
+            "top": 152,
+            "right": 194,
+            "bottom": 392,
+            "left": 16
+          },
+          "backdrop": "blur(6px)",
+          "gates": [
+            "1",
+            "1"
+          ],
+          "scroll": 480
+        },
+        "progressive": {
+          "rect": {
+            "x": 208,
+            "y": 152,
+            "width": 178,
+            "height": 240,
+            "top": 152,
+            "right": 386,
+            "bottom": 392,
+            "left": 208
+          },
+          "backdrop": "blur(2.4px)",
+          "gates": [
+            "1",
+            "1"
+          ],
+          "scroll": 480
+        }
+      }
+    }
+  }
+}

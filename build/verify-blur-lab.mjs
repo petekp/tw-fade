@@ -8,6 +8,7 @@ import { demoDir } from './demo-static.mjs'
 const failures = []
 const passes = []
 const knownLimitations = []
+const screenshotCapabilities = []
 
 function assert(ok, label, detail = '') {
   const result = `${label}${detail ? ` (${detail})` : ''}`
@@ -57,6 +58,74 @@ async function withStaticServer(run) {
 async function waitForScrollSampling(page) {
   await page.waitForTimeout(220)
   await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))))
+}
+
+async function checkBackdropScreenshotCapture(page, label, version, screenshotDir) {
+  await page.setContent(`<!doctype html><style>
+    body { margin: 0; }
+    .control { position: relative; width: 200px; height: 200px;
+      background: repeating-linear-gradient(90deg, #000 0 2px, #fff 2px 4px); }
+    .overlay { position: absolute; inset: 0;
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  </style><div class="control"><div class="overlay"></div></div>`)
+  await waitForScrollSampling(page)
+  const control = page.locator('.control')
+  const enabled = await control.screenshot({
+    path: path.join(screenshotDir, `${label.toLowerCase()}-backdrop-on.png`),
+  })
+  const filter = await page.locator('.overlay').evaluate((element) => {
+    const style = getComputedStyle(element)
+    return style.backdropFilter || style.webkitBackdropFilter
+  })
+  await page.addStyleTag({ content: '.overlay { backdrop-filter: none; -webkit-backdrop-filter: none; }' })
+  await waitForScrollSampling(page)
+  const disabled = await control.screenshot({
+    path: path.join(screenshotDir, `${label.toLowerCase()}-backdrop-off.png`),
+  })
+  const pixels = await page.evaluate(async ({ enabled, disabled }) => {
+    const readPixels = async (base64) => {
+      const image = new Image()
+      image.src = `data:image/png;base64,${base64}`
+      await image.decode()
+      const canvas = document.createElement('canvas')
+      canvas.width = image.width
+      canvas.height = image.height
+      const context = canvas.getContext('2d')
+      context.drawImage(image, 0, 0)
+      return context.getImageData(0, 0, image.width, image.height).data
+    }
+    const on = await readPixels(enabled)
+    const off = await readPixels(disabled)
+    let changedPixels = 0
+    let totalDifference = 0
+    for (let offset = 0; offset < on.length; offset += 4) {
+      let pixelDifference = 0
+      for (let channel = 0; channel < 3; channel++) {
+        pixelDifference += Math.abs(on[offset + channel] - off[offset + channel])
+      }
+      if (pixelDifference > 3) changedPixels++
+      totalDifference += pixelDifference
+    }
+    const pixelCount = on.length / 4
+    return {
+      changedPixelRatio: changedPixels / pixelCount,
+      meanChannelDifference: totalDifference / (pixelCount * 3),
+    }
+  }, { enabled: enabled.toString('base64'), disabled: disabled.toString('base64') })
+  const capturesBackdropBlur =
+    filter === 'blur(6px)' &&
+    pixels.changedPixelRatio > 0.25 &&
+    pixels.meanChannelDifference > 5
+  screenshotCapabilities.push({ browser: label, version, filter, capturesBackdropBlur, ...pixels })
+  if (capturesBackdropBlur) {
+    assert(true, `${label}: screenshots capture the basic backdrop-blur control`, JSON.stringify(pixels))
+  } else {
+    knownLimitations.push(
+      `${label} ${version}: screenshot capture cannot verify visible backdrop blur ` +
+      `(${JSON.stringify(pixels)}). Geometry and interaction results are separate; ` +
+      'visual blur requires a calibrated native Safari or simulator display capture.',
+    )
+  }
 }
 
 async function readScrollerState(page, variant) {
@@ -122,6 +191,7 @@ async function checkPage(browserType, baseUrl, label, screenshotDir) {
   page.on('pageerror', (error) => consoleErrors.push(error.message))
 
   try {
+    await checkBackdropScreenshotCapture(page, label, browser.version(), screenshotDir)
     const response = await page.goto(`${baseUrl}/blur-lab.html`, { waitUntil: 'networkidle' })
     assert(response?.ok(), `${label}: lab route loads`, String(response?.status()))
     await page.waitForFunction(() => Boolean(window.__blurLab))
@@ -438,6 +508,11 @@ await withStaticServer(async (baseUrl) => {
   await checkPage(firefox, baseUrl, 'Firefox', screenshotDir)
   await checkPage(webkit, baseUrl, 'WebKit', screenshotDir)
 })
+
+await fs.writeFile(
+  path.join(screenshotDir, 'screenshot-capabilities.json'),
+  JSON.stringify(screenshotCapabilities, null, 2) + '\n',
+)
 
 console.log('Blur playground controls and scenarios')
 for (const pass of passes) console.log(`PASS  ${pass}`)

@@ -1,0 +1,5 @@
+self-hosted-runner:
+  labels:
+    # Actionlint 1.7.12 omits this hosted label; remove after upgrading to a version that includes it.
+    # https://github.com/rhysd/actionlint/blob/v1.7.12/rule_runner_label.go
+    - ubuntu-26.04
